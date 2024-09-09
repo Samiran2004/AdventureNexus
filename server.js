@@ -9,6 +9,7 @@ const swaggerOptions = require('./utils/swaggerOptions');
 const figlet = require('figlet');
 const mongoose = require('mongoose');
 const userroute = require('./routes/userRoutes');
+const sanitizeInput = require('./utils/sanitization');
 
 // Configure env variables...
 require('dotenv').config();
@@ -68,6 +69,9 @@ app.use(
         noSniff: true,
     })
 );
+
+// Configure Sanitization...
+app.use(sanitizeInput);
 
 // Is working route...
 /**
