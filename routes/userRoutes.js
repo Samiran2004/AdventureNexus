@@ -1,5 +1,6 @@
 const express = require('express');
 const create_new_user = require('../controller/registerController');
+const upload = require('../utils/multer');
 const route = express.Router();
 
 //Create new user...
@@ -73,6 +74,6 @@ const route = express.Router();
  *         description: Internal server error
  */
 
-route.post('/register', create_new_user);
+route.post('/register', upload.single("profileimage"), create_new_user);
 
 module.exports = route;

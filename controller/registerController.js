@@ -2,6 +2,8 @@ const User = require('../models/userModel');
 const bcrypt = require('bcrypt');
 const userDataValidation = require('../utils/JoiValidation');
 const generateRandomUserName = require('../utils/generateRandomUserName');
+const cloudinary = require('../service/cloudinaryService');
+const fs = require('fs');
 
 require('dotenv').config();
 
@@ -33,10 +35,19 @@ module.exports = async function create_new_user(req, res) {
                     message: "User already exists"
                 })
             } else {
+                //Generate Salt for hashing...
                 const salt = await bcrypt.genSalt(10);
+                //Generate Hashed Password...
                 const hashedPassword = await bcrypt.hash(password, salt);
+                //Generate a random username...
                 const username = await generateRandomUserName(fullname);
-                
+                console.log(req.file.path);
+                //Upload the profileimage file on cloudinary...
+                const uploadImageUrl = await cloudinary.uploader.upload(req.file.path);
+                console.log(uploadImageUrl);
+                //Remove the profieimege file from system storage...
+                fs.unlinkSync(req.file.path);
+                //Create new user...
                 const newUser = new User({
                     fullname: fullname,
                     email: email,
@@ -49,7 +60,7 @@ module.exports = async function create_new_user(req, res) {
                 });
                 await newUser.save();
                 res.status(201).send({
-                    status:'success',
+                    status: 'success',
                     message: `User created successfully`
                 });
             }
@@ -61,5 +72,3 @@ module.exports = async function create_new_user(req, res) {
         });
     }
 }
-
-// module.exports = create_new_user;
