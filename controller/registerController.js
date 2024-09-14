@@ -1,5 +1,5 @@
 const User = require('../models/userModel');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const userDataValidation = require('../utils/JoiValidation');
 const generateRandomUserName = require('../utils/generateRandomUserName');
 const cloudinary = require('../service/cloudinaryService');
@@ -41,10 +41,10 @@ module.exports = async function create_new_user(req, res) {
                 const hashedPassword = await bcrypt.hash(password, salt);
                 //Generate a random username...
                 const username = await generateRandomUserName(fullname);
-                console.log(req.file.path);
+                // console.log(req.file.path);
                 //Upload the profileimage file on cloudinary...
                 const uploadImageUrl = await cloudinary.uploader.upload(req.file.path);
-                console.log(uploadImageUrl);
+                // console.log(uploadImageUrl);
                 //Remove the profieimege file from system storage...
                 fs.unlinkSync(req.file.path);
                 //Create new user...
@@ -56,7 +56,8 @@ module.exports = async function create_new_user(req, res) {
                     username: username,
                     gender: gender,
                     preferences: preference,
-                    country: country
+                    country: country,
+                    profilepicture: uploadImageUrl.url
                 });
                 await newUser.save();
                 res.status(201).send({
@@ -68,7 +69,8 @@ module.exports = async function create_new_user(req, res) {
     } catch (error) {
         res.status(500).send({
             status: 'failed',
-            message: 'Internal Server Error'
+            message: 'Internal Server Error',
+            error
         });
     }
 }
