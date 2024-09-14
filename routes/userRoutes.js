@@ -76,4 +76,8 @@ const route = express.Router();
 
 route.post('/register', upload.single("profileimage"), create_new_user);
 
+//Login a User...
+//Path: /api/v1/user/login
+route.post('/login', require('../controller/loginController'));
+
 module.exports = route;

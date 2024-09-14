@@ -62,7 +62,10 @@ module.exports = async function create_new_user(req, res) {
                 await newUser.save();
                 res.status(201).send({
                     status: 'success',
-                    message: `User created successfully`
+                    message: `User created successfully`,
+                    userdata: {
+                        fullname: newUser.fullname, email: newUser.email, phonenumber: newUser.phonenumber, username: newUser.username, gender: newUser.gender, preference: newUser.preferences, country: newUser.country, profilepicture: newUser.profilepicture
+                    }
                 });
             }
         }
