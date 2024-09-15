@@ -23,16 +23,30 @@ module.exports = updateProfile = async (req, res) => {
             const username = generateRandomUserName(fullname);
             checkUser.username = username;
         }
-        if(gender){
+        if (gender) {
             checkUser.gender = gender;
         }
-        if(preference){
+        if (preference) {
             checkUser.preferences = preference;
         }
-        if(country){
+        if (country) {
             checkUser.country = country;
         }
         await checkUser.save();
+        res.status(201).send({
+            status: 'Success',
+            message: "User updated.",
+            userData: {
+                fullname: checkUser.fullname,
+                username: checkUser.username,
+                email: checkUser.email,
+                phonenumber: checkUser.phonenumber,
+                gender: checkUser.gender,
+                preference: checkUser.preferences,
+                country: checkUser.country,
+                _id: checkUser._id
+            }
+        })
     } catch (error) {
         res.status(500).send({
             status: 'Failed',
