@@ -89,4 +89,8 @@ route.get('/profile', authTokenMiddleware, require('../controller/userProfileCon
 //Path: /api/v1/user/delete
 route.delete('/delete', authTokenMiddleware, require('../controller/userProfileDeleteController'));
 
+//Update user...
+//Path: /api/v1/user/update
+route.patch('/update', authTokenMiddleware, upload.single("profileimage"), require('../controller/updateProfileController'));
+
 module.exports = route;
