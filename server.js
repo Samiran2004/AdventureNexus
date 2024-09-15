@@ -18,11 +18,11 @@ require('dotenv').config();
 //Database connecton...
 mongoose.connect(process.env.DB_URI).then(
     () => {
-        figlet("Database  connected", (err, data) => err ? console.log("Figlet error...") : console.log(data))
+        figlet("D a t a b a s e   c o n n e c t e d", (err, data) => err ? console.log("Figlet error...") : console.log(data))
     }
 ).catch(
     () => {
-        figlet("Database connection error", (err, data) => err ? console.log("Figlet error") : console.log(data))
+        figlet("D a t a b a s e  c o n n e c t i o n  e r r o r", (err, data) => err ? console.log("Figlet error") : console.log(data))
     }
 )
 
@@ -98,10 +98,10 @@ app.use('/api/v1/user', userroute);
 // Connection with server...
 app.listen(process.env.PORT, (err) =>
     err
-        ? figlet(`Server connection error`, (err, data) => {
+        ? figlet(`S e r v e r  c o n n e c t i o n  e r r o r`, (err, data) => {
             err ? console.log("Figlet error") : console.log(data);
         })
-        : figlet(`Server connected \n PORT:  ${process.env.PORT}`, (err, data) => {
+        : figlet(`S e r v e r  c o n n e c t e d \n P O R T :  ${process.env.PORT}`, (err, data) => {
             err ? console.log("Figlet error...") : console.log(data);
         })
 );

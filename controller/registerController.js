@@ -9,7 +9,7 @@ require('dotenv').config();
 
 module.exports = async function create_new_user(req, res) {
     const { fullname, email, password, phonenumber, gender, preference, country } = req.body;
-    
+
     try {
         // Check for required fields
         if (!fullname || !email || !password || !phonenumber || !gender || !country) {
@@ -116,7 +116,7 @@ module.exports = async function create_new_user(req, res) {
         };
 
         // Send welcome email
-        sendMail(emailData, (mailError) => {
+        sendMail(emailData, (mailError,response) => {
             if (mailError) {
                 return res.status(500).send({
                     status: 'failed',

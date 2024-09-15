@@ -85,4 +85,8 @@ route.post('/login', require('../controller/loginController'));
 //Path: /api/v1/user/profile
 route.get('/profile', authTokenMiddleware, require('../controller/userProfileController'));
 
+//Delete user...
+//Path: /api/v1/user/delete
+route.delete('/delete', authTokenMiddleware, require('../controller/userProfileDeleteController'));
+
 module.exports = route;
