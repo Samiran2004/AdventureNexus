@@ -1,6 +1,7 @@
 const express = require('express');
 const create_new_user = require('../controller/registerController');
 const upload = require('../middlewares/multer');
+const authTokenMiddleware = require('../middlewares/authTokenMiddleware');
 const route = express.Router();
 
 //Create new user...
@@ -79,5 +80,9 @@ route.post('/register', upload.single("profileimage"), create_new_user);
 //Login a User...
 //Path: /api/v1/user/login
 route.post('/login', require('../controller/loginController'));
+
+//Get user profile detials...
+//Path: /api/v1/user/profile
+route.get('/profile', authTokenMiddleware, require('../controller/userProfileController'));
 
 module.exports = route;

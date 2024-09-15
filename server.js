@@ -9,7 +9,8 @@ const swaggerOptions = require('./utils/swaggerOptions');
 const figlet = require('figlet');
 const mongoose = require('mongoose');
 const userroute = require('./routes/userRoutes');
-const sanitizeInput = require('./utils/sanitization');
+const sanitizeInput = require('./middlewares/sanitization');
+const cookieParser = require('cookie-parser');
 
 // Configure env variables...
 require('dotenv').config();
@@ -31,6 +32,7 @@ app.use(cors());
 // Express middlewares...
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 app.use(morgan('dev'));
 
