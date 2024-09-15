@@ -1,6 +1,6 @@
 const express = require('express');
 const create_new_user = require('../controller/registerController');
-const upload = require('../utils/multer');
+const upload = require('../middlewares/multer');
 const route = express.Router();
 
 //Create new user...

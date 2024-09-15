@@ -33,7 +33,8 @@ module.exports = async function loginuser(req, res) {
                             fullname: checkUser.fullname,
                             email: checkUser.email,
                             username: checkUser.username,
-                            gender: checkUser.gender
+                            gender: checkUser.gender,
+                            _id: checkUser._id
                         }
                         //Access token...
                         const accessToken = jwt.sign(userPayload, process.env.JWT_ACCESS_SECRET, { expiresIn: '1h' });
@@ -43,14 +44,15 @@ module.exports = async function loginuser(req, res) {
                         checkUser.refreshtoken = refreshToken;
                         await checkUser.save();
                         //Set cookies...
-                        res.cookie('refreshtoken', refreshToken, {
+                        res.cookie('accessToken', accessToken, {
                             httpOnly: true,
                             secure: process.env.NODE_ENV === 'production',
                             sameSite: 'Strict'
                         })
                         res.status(200).send({
                             status: 'Success',
-                            accessToken
+                            accessToken: accessToken,
+                            refreshToken: refreshToken
                         });
                     } else {
                         res.status(401).send({
