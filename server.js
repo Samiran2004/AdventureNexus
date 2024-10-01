@@ -36,22 +36,6 @@ app.use(cookieParser());
 
 app.use(morgan('dev'));
 
-app.use(
-    helmet({
-        contentSecurityPolicy: {
-            directives: {
-                defaultSrc: ["'self'"],
-                scriptSrc: ["'self'", "'unsafe-inline'"],
-            },
-        },
-        referrerPolicy: {
-            policy: 'no-referrer',
-        },
-        xssFilter: true,
-        noSniff: true,
-    })
-);
-
 const swaggerDocs = swaggerJSDoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
