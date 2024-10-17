@@ -1,6 +1,8 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.swaggerOptions = void 0;
 // swaggerOptions.js
-const swaggerOptions = {
+exports.swaggerOptions = {
     swaggerDefinition: {
         openapi: '3.0.0',
         info: {
@@ -16,4 +18,3 @@ const swaggerOptions = {
     },
     apis: ['./app.ts', './routes/*.ts'], // Adjust paths as needed
 };
-module.exports = swaggerOptions;

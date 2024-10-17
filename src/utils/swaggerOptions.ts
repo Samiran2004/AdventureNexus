@@ -1,5 +1,5 @@
 // swaggerOptions.js
-const swaggerOptions = {
+export const swaggerOptions = {
     swaggerDefinition: {
         openapi: '3.0.0',
         info: {
@@ -15,5 +15,3 @@ const swaggerOptions = {
     },
     apis: ['./app.ts', './routes/*.ts'], // Adjust paths as needed
 };
-
-module.exports = swaggerOptions;
