@@ -70,7 +70,12 @@ const createPlan = async (req, res) => {
                 };
                 const flightPrompt = (0, flightPlanPrompt_1.default)(flightPayload);
                 const generateFlightData = await (0, generateRecommendation_1.default)(flightPrompt);
-                const flightData = JSON.parse(generateFlightData.replace(/```json|```/g, "").trim());
+                if (typeof generateFlightData == 'string') {
+                    var flightData = JSON.parse(generateFlightData.replace(/```json|```/g, "").trim());
+                }
+                else {
+                    console.log("generateFlightData is not a string:", generateFlightData);
+                }
                 // Generate Hotels Data
                 const hotelPayload = {
                     destination: lowerDestination,
@@ -82,7 +87,12 @@ const createPlan = async (req, res) => {
                 };
                 const hotelPrompt = (0, hotelPlanPrompt_1.default)(hotelPayload);
                 const generateHotelData = await (0, generateRecommendation_1.default)(hotelPrompt);
-                const hotelsData = JSON.parse(generateHotelData.replace(/```json|```/g, "").trim());
+                if (typeof generateHotelData == 'string') {
+                    var hotelsData = JSON.parse(generateHotelData.replace(/```json|```/g, "").trim());
+                }
+                else {
+                    console.log("generateHotelData is not a string:", generateHotelData);
+                }
                 // Save the plan in the database
                 const newPlan = new planModel_1.default({
                     user: req.user._id,
@@ -99,36 +109,39 @@ const createPlan = async (req, res) => {
                 });
                 const planSaveRes = await newPlan.save();
                 // Format the response
-                const response = {
-                    _id: planSaveRes._id,
-                    user: req.user._id,
-                    destination: lowerDestination,
-                    dispatch_city: lowerDispatchCity,
-                    budget: lowerBudget,
-                    total_people,
-                    travel_dates: {
-                        start_date: travel_dates.start_date,
-                        end_date: travel_dates.end_date
-                    },
-                    flights: flightData.map(flight => ({
-                        airline: flight.airline,
-                        flight_number: flight.flight_number,
-                        departure_time: flight.departure_time,
-                        arrival_time: flight.arrival_time,
-                        price: flight.price,
-                        class: flight.class,
-                        duration: flight.duration
-                    })),
-                    hotels: hotelsData.map(hotel => ({
-                        hotel_name: hotel.hotel_name,
-                        estimated_cost: hotel.total_cost,
-                        price_per_night: hotel.price_per_night,
-                        address: hotel.address,
-                        rating: hotel.rating,
-                        amenities: hotel.amenities,
-                        distance_to_city_center: hotel.distance_to_city_center
-                    }))
-                };
+                let response;
+                if (Array.isArray(flightData) && Array.isArray(hotelsData)) {
+                    response = {
+                        _id: planSaveRes._id,
+                        user: req.user._id,
+                        destination: lowerDestination,
+                        dispatch_city: lowerDispatchCity,
+                        budget: lowerBudget,
+                        total_people,
+                        travel_dates: {
+                            start_date: travel_dates.start_date,
+                            end_date: travel_dates.end_date
+                        },
+                        flights: flightData.map(flight => ({
+                            airline: flight.airline,
+                            flight_number: flight.flight_number,
+                            departure_time: flight.departure_time,
+                            arrival_time: flight.arrival_time,
+                            price: flight.price,
+                            class: flight.class,
+                            duration: flight.duration
+                        })),
+                        hotels: hotelsData.map(hotel => ({
+                            hotel_name: hotel.hotel_name,
+                            estimated_cost: hotel.total_cost,
+                            price_per_night: hotel.price_per_night,
+                            address: hotel.address,
+                            rating: hotel.rating,
+                            amenities: hotel.amenities,
+                            distance_to_city_center: hotel.distance_to_city_center
+                        }))
+                    };
+                }
                 // Save the plan ID into user database
                 const adminUser = await userModel_1.default.findById(req.user._id);
                 if (adminUser) {
