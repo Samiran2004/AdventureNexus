@@ -8,7 +8,7 @@ const userModel_1 = __importDefault(require("../../models/userModel"));
 const planModel_1 = __importDefault(require("../../models/planModel"));
 const deletePlanById = async (req, res) => {
     try {
-        const { id } = req.params; // Plan ID to be deleted
+        const id = req.params.id; // Plan ID to be deleted
         const userId = req.user._id; // Logged-in user's ID
         // Check if the plan exists
         const plan = await planModel_1.default.findById(id);
@@ -27,7 +27,7 @@ const deletePlanById = async (req, res) => {
             });
         }
         // Check if the plan belongs to the user
-        if (!user.plans.includes(id)) {
+        if (!user.plans.some((planId) => planId.toString() == id)) {
             return res.status(403).json({
                 status: 'Failed',
                 message: 'This plan does not belong to the user.'

@@ -2,9 +2,15 @@ import { Request, Response } from 'express';
 import User from '../../models/userModel';
 import Plan from '../../models/planModel';
 
-export const deletePlanById = async (req: Request, res: Response): Promise<Response> => {
+interface CustomRequest extends Request {
+    user: {
+        _id: string
+    }
+}
+
+export const deletePlanById = async (req: CustomRequest, res: Response) => {
     try {
-        const { id } = req.params; // Plan ID to be deleted
+        const id: string = req.params.id; // Plan ID to be deleted
         const userId = req.user._id; // Logged-in user's ID
 
         // Check if the plan exists
@@ -26,7 +32,7 @@ export const deletePlanById = async (req: Request, res: Response): Promise<Respo
         }
 
         // Check if the plan belongs to the user
-        if (!user.plans.includes(id)) {
+        if (!user.plans.some((planId) => planId.toString() == id)) {
             return res.status(403).json({
                 status: 'Failed',
                 message: 'This plan does not belong to the user.'
