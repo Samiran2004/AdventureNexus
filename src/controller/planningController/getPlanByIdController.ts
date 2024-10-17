@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import Plan from '../../models/planModel';
 import redis from '../../redis/client';
 
-export const getPlanById = async (req: Request, res: Response): Promise<Response> => {
+export const getPlanById = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
 
