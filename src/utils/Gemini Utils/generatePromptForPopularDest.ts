@@ -1,9 +1,9 @@
 interface DestinationPromptData {
-    currency: string;
+  currency: string;
 }
 
 const generatePopularDestinationsPrompt = (data: DestinationPromptData): string => {
-    return `
+  return `
         "Generate a JSON object containing currently popular travel destinations around the world. Each destination should include the following details:
 
         destination: The name of the city or region.
