@@ -3,7 +3,21 @@ import User from '../../models/userModel'; // Adjust the import according to you
 import generateRandomUserName from '../../utils/generateRandomUserName';
 import bcrypt from 'bcryptjs';
 
-const updateProfile = async (req: Request, res: Response): Promise<Response> => {
+interface RequestBody {
+    fullname: string;
+    gender: "male" | "female" | "other";
+    preference: string[];
+    country: string;
+    password: string;
+}
+
+interface CustomRequest<TParams = {}, TQuery = {}, TBody = RequestBody> extends Request<TParams, any, TBody, TQuery> {
+    user: {
+        _id: string;
+    }
+}
+
+const updateProfile = async (req: CustomRequest, res: Response) => {
     try {
         // Fetch the user using id
         const checkUser = await User.findById(req.user._id);
