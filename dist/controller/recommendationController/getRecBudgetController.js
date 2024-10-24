@@ -21,6 +21,12 @@ const getBudgetRecommendations = async (req, res) => {
         if (typeof budget === 'string') {
             budget = parseInt(budget);
         }
+        if (isNaN(budget)) {
+            return res.status(400).json({
+                status: 'Failed',
+                message: 'Invalid budget format'
+            });
+        }
         // Redis Key
         const redisKey = `${budget}:${req.user.country}`;
         // Check if recommendation exists in Redis
@@ -48,6 +54,13 @@ const getBudgetRecommendations = async (req, res) => {
                 const prompt = (0, generatePromptForBudget_1.default)(data);
                 // Generate recommendations
                 const recommendations = await (0, generateRecommendation_1.default)(prompt);
+                if (typeof recommendations != 'string') {
+                    console.error('Error: recommendations is not a valid string.');
+                    return res.status(500).json({
+                        status: 'Failed',
+                        message: 'Invalid response from recommendation service'
+                    });
+                }
                 const result = recommendations.replace(/```json|```/g, "").trim();
                 // Save the new recommendation in Redis (For 5 min)
                 client_1.default.setex(redisKey, 300, JSON.stringify(result));

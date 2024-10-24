@@ -3,7 +3,20 @@ import generatePromptForBudget from '../../utils/Gemini Utils/generatePromptForB
 import generateRecommendation from '../../utils/Gemini Utils/generateRecommendation';
 import redis from '../../redis/client';
 
-export const getBudgetRecommendations = async (req: Request, res: Response): Promise<Response> => {
+interface CustomRequest<TParams = {}, TQuery = {}, TBody = {}> extends Request<TParams, any, TQuery, TBody> {
+    user: {
+        country: string
+    }
+}
+interface RequestParams {
+    budget: number | string;
+}
+interface promptData extends RequestParams {
+    country: string;
+    budget: number;
+}
+
+export const getBudgetRecommendations = async (req: CustomRequest<RequestParams>, res: Response) => {
     try {
         // Fetch budget from req.params
         let { budget } = req.params;
@@ -17,6 +30,13 @@ export const getBudgetRecommendations = async (req: Request, res: Response): Pro
         // If the budget is a string type, convert it into an integer
         if (typeof budget === 'string') {
             budget = parseInt(budget);
+        }
+
+        if (isNaN(budget)) {
+            return res.status(400).json({
+                status: 'Failed',
+                message: 'Invalid budget format'
+            });
         }
 
         // Redis Key
@@ -40,7 +60,7 @@ export const getBudgetRecommendations = async (req: Request, res: Response): Pro
                 });
             } else {
                 // Generate a prompt
-                const data = {
+                const data: promptData = {
                     budget: budget,
                     country: req.user.country
                 };
@@ -48,6 +68,13 @@ export const getBudgetRecommendations = async (req: Request, res: Response): Pro
 
                 // Generate recommendations
                 const recommendations = await generateRecommendation(prompt);
+                if (typeof recommendations != 'string') {
+                    console.error('Error: recommendations is not a valid string.');
+                    return res.status(500).json({
+                        status: 'Failed',
+                        message: 'Invalid response from recommendation service'
+                    });
+                }
                 const result = recommendations.replace(/```json|```/g, "").trim();
 
                 // Save the new recommendation in Redis (For 5 min)
