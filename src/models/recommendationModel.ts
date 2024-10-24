@@ -1,6 +1,7 @@
-import { Schema, model, Document } from 'mongoose';
+import { Schema, model, Document, ObjectId } from 'mongoose';
 
-interface IRecommendation extends Document {
+export interface IRecommendation extends Document {
+    _id: ObjectId;
     destination: string;
     details: string;
     budget: number;

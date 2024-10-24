@@ -11,7 +11,7 @@ interface CustomRequest<TParams = {}, TQuery = {}, TBody = {}> extends Request<T
 interface RequestParams {
     budget: number | string;
 }
-interface promptData extends RequestParams {
+interface promptData {
     country: string;
     budget: number;
 }

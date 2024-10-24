@@ -1,7 +1,7 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
 // Define the validation schema for travel recommendations
-const recommendationValidation = Joi.object({
+export const recommendationValidation = Joi.object({
     day: Joi.number()
         .integer() // Ensures the number is an integer
         .positive() // Ensures the number is positive
@@ -24,6 +24,3 @@ const recommendationValidation = Joi.object({
         .positive() // Ensures the number is positive
         .required() // totalPeople is required
 });
-
-// Export the validation schema
-module.exports = recommendationValidation;

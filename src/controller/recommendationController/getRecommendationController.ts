@@ -1,12 +1,43 @@
 import { Request, Response } from 'express';
 import User from '../../models/userModel';
-import Recommendations from '../../models/recommendationModel';
+import Recommendations, { IRecommendation } from '../../models/recommendationModel';
 import generateRecommendation from '../../utils/Gemini Utils/generateRecommendation';
 import generatePrompt from '../../utils/Gemini Utils/generatePrompt';
-import recommendationValidation from '../../utils/JoiUtils/joiRecommendationValidation';
+import { recommendationValidation } from '../../utils/JoiUtils/joiRecommendationValidation';
 import redis from '../../redis/client';
 
-const generateRecommendations = async (req: Request, res: Response): Promise<Response> => {
+interface RequestBody {
+    day: number;
+    budget: number;
+    destination: string;
+    date: string;
+    totalPeople: number;
+}
+
+interface CustomRequest<TParams = {}, TQuery = {}, TBody = RequestBody> extends Request<TParams, any, TBody, TQuery> {
+    body: TBody;
+    user: {
+        _id: string;
+        country: string;
+        preferences: string[];
+    }
+}
+
+interface promptData {
+    startingDestination: string;
+    destination: string;
+    day: number;
+    budget: number;
+    date: string;
+    totalPerson: number;
+    prevRecommendation: string;
+    preference: string[];
+}
+interface savedRecommendationType {
+    _id: string;
+}
+
+const generateRecommendations = async (req: CustomRequest, res: Response) => {
     try {
         // Validate request body
         const { error } = recommendationValidation.validate(req.body);
@@ -50,6 +81,12 @@ const generateRecommendations = async (req: Request, res: Response): Promise<Res
             } else {
                 // Fetch user and populate recommendation history
                 const user = await User.findById(req.user._id).populate('recommendationhistory');
+                if (!user) {
+                    return res.status(404).json({
+                        status: 'Failed',
+                        message: 'User not found.'
+                    });
+                }
 
                 // Check if recommendation exists in the database (include `day` in the query)
                 const existingRecommendation = await Recommendations.findOne({
@@ -71,12 +108,12 @@ const generateRecommendations = async (req: Request, res: Response): Promise<Res
                 }
 
                 // Generate a new recommendation if it doesn't exist
-                const data = {
-                    startingDestination: user.country,
+                const data: promptData = {
+                    startingDestination: user.country as string,
                     destination: destination,
                     day: day,
                     budget: budget,
-                    date: date || new Date(),
+                    date: date || new Date().toISOString(),
                     totalPerson: totalPeople,
                     prevRecommendation: "Not Provided",
                     preference: user.preferences
@@ -85,6 +122,13 @@ const generateRecommendations = async (req: Request, res: Response): Promise<Res
                 // Generate a prompt and fetch the recommendation using an external AI service
                 const prompt = generatePrompt(data);
                 const getRecommendation = await generateRecommendation(prompt);
+                if (typeof getRecommendation != 'string') {
+                    console.error('Error: recommendations is not a valid string.');
+                    return res.status(500).json({
+                        status: 'Failed',
+                        message: 'Invalid response from recommendation service'
+                    });
+                }
                 const result = getRecommendation.replace(/```json|```/g, "").trim();
 
                 // Create a new recommendation and save it to the database
@@ -92,15 +136,17 @@ const generateRecommendations = async (req: Request, res: Response): Promise<Res
                     destination: destination,
                     budget: budget,
                     totalPerson: totalPeople,
-                    day: day, // Include `day` when saving the recommendation
+                    day: day,
                     details: result,
                     user: req.user._id
                 });
 
-                const savedRecommendation = await newRecommendation.save();
+                // const savedRecommendation = await newRecommendation.save() as IRecommendation & { _id: string };
+                const savedRecommendation: IRecommendation = await newRecommendation.save();
 
                 // Add the new recommendation to the user's recommendation history
                 user.recommendationhistory.push(savedRecommendation._id);
+
                 await user.save();
 
                 // Save the new recommendation in Redis (set expiry to 24 hours)
