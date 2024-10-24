@@ -1,10 +1,16 @@
 import { Request, Response } from 'express';
-import User, { IUser } from '../../models/userModel'; // Adjust the import path based on your project structure
+import User, { IUser } from '../../models/userModel';
 
-const getUserHistory = async (req: Request, res: Response): Promise<Response> => {
+interface CustomRequest<TParams = {}, TQuery = {}, TBody = {}> extends Request<TParams, any, TBody, TQuery> {
+    user: {
+        _id: string;
+    }
+}
+
+const getUserHistory = async (req: CustomRequest, res: Response) => {
     try {
         // Fetch the user id from the token
-        const userId = req.user._id as string; // Assuming req.user has _id property and is of type string
+        const userId = req.user._id as string;
 
         // Check if the user exists in the database
         const user: IUser | null = await User.findById(userId).populate('recommendationhistory').lean();
