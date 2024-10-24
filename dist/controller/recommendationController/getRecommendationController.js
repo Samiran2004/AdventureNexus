@@ -7,12 +7,12 @@ const userModel_1 = __importDefault(require("../../models/userModel"));
 const recommendationModel_1 = __importDefault(require("../../models/recommendationModel"));
 const generateRecommendation_1 = __importDefault(require("../../utils/Gemini Utils/generateRecommendation"));
 const generatePrompt_1 = __importDefault(require("../../utils/Gemini Utils/generatePrompt"));
-const joiRecommendationValidation_1 = __importDefault(require("../../utils/JoiUtils/joiRecommendationValidation"));
+const joiRecommendationValidation_1 = require("../../utils/JoiUtils/joiRecommendationValidation");
 const client_1 = __importDefault(require("../../redis/client"));
 const generateRecommendations = async (req, res) => {
     try {
         // Validate request body
-        const { error } = joiRecommendationValidation_1.default.validate(req.body);
+        const { error } = joiRecommendationValidation_1.recommendationValidation.validate(req.body);
         if (error) {
             return res.status(400).json({
                 status: 'Failed',
@@ -49,6 +49,12 @@ const generateRecommendations = async (req, res) => {
             else {
                 // Fetch user and populate recommendation history
                 const user = await userModel_1.default.findById(req.user._id).populate('recommendationhistory');
+                if (!user) {
+                    return res.status(404).json({
+                        status: 'Failed',
+                        message: 'User not found.'
+                    });
+                }
                 // Check if recommendation exists in the database (include `day` in the query)
                 const existingRecommendation = await recommendationModel_1.default.findOne({
                     destination: destination,
@@ -71,7 +77,7 @@ const generateRecommendations = async (req, res) => {
                     destination: destination,
                     day: day,
                     budget: budget,
-                    date: date || new Date(),
+                    date: date || new Date().toISOString(),
                     totalPerson: totalPeople,
                     prevRecommendation: "Not Provided",
                     preference: user.preferences
@@ -79,16 +85,24 @@ const generateRecommendations = async (req, res) => {
                 // Generate a prompt and fetch the recommendation using an external AI service
                 const prompt = (0, generatePrompt_1.default)(data);
                 const getRecommendation = await (0, generateRecommendation_1.default)(prompt);
+                if (typeof getRecommendation != 'string') {
+                    console.error('Error: recommendations is not a valid string.');
+                    return res.status(500).json({
+                        status: 'Failed',
+                        message: 'Invalid response from recommendation service'
+                    });
+                }
                 const result = getRecommendation.replace(/```json|```/g, "").trim();
                 // Create a new recommendation and save it to the database
                 const newRecommendation = new recommendationModel_1.default({
                     destination: destination,
                     budget: budget,
                     totalPerson: totalPeople,
-                    day: day, // Include `day` when saving the recommendation
+                    day: day,
                     details: result,
                     user: req.user._id
                 });
+                // const savedRecommendation = await newRecommendation.save() as IRecommendation & { _id: string };
                 const savedRecommendation = await newRecommendation.save();
                 // Add the new recommendation to the user's recommendation history
                 user.recommendationhistory.push(savedRecommendation._id);
