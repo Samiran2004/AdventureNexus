@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const userModel_1 = __importDefault(require("../../models/userModel")); // Adjust the import path based on your project structure
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
-const joiLoginValidation_1 = __importDefault(require("../../utils/JoiUtils/joiLoginValidation"));
+const joiLoginValidation_1 = require("../../utils/JoiUtils/joiLoginValidation");
 const loginuser = async (req, res) => {
     try {
         // Fetch all user data from req.body
@@ -19,7 +19,7 @@ const loginuser = async (req, res) => {
             });
         }
         // Validate user data using JOI
-        const { error } = joiLoginValidation_1.default.validate(req.body);
+        const { error } = joiLoginValidation_1.userSchemaValidation.validate(req.body);
         if (error) {
             return res.status(400).send({
                 status: 'Failed',
@@ -53,7 +53,7 @@ const loginuser = async (req, res) => {
                 res.cookie('accessToken', accessToken, {
                     httpOnly: true,
                     secure: process.env.NODE_ENV === 'production',
-                    sameSite: 'Strict',
+                    sameSite: 'strict',
                 });
                 return res.status(200).send({
                     status: 'Success',

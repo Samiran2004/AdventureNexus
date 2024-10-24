@@ -2,9 +2,9 @@ import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import User, { IUser } from '../../models/userModel'; // Adjust the import path based on your project structure
 import bcryptjs from 'bcryptjs';
-import userSchemaValidation from '../../utils/JoiUtils/joiLoginValidation';
+import { userSchemaValidation } from '../../utils/JoiUtils/joiLoginValidation';
 
-const loginuser = async (req: Request, res: Response): Promise<Response> => {
+const loginuser = async (req: Request, res: Response) => {
     try {
         // Fetch all user data from req.body
         const { username, email, password } = req.body;
@@ -47,7 +47,7 @@ const loginuser = async (req: Request, res: Response): Promise<Response> => {
                 const accessToken = jwt.sign(userPayload, process.env.JWT_ACCESS_SECRET as string, { expiresIn: '1h' });
                 // Refresh token
                 const refreshToken = jwt.sign(userPayload, process.env.JWT_REFRESH_SECRET as string, { expiresIn: '7d' });
-                
+
                 // Save the refresh token into the database for future use
                 checkUser.refreshtoken = refreshToken;
                 await checkUser.save();
@@ -56,7 +56,7 @@ const loginuser = async (req: Request, res: Response): Promise<Response> => {
                 res.cookie('accessToken', accessToken, {
                     httpOnly: true,
                     secure: process.env.NODE_ENV === 'production',
-                    sameSite: 'Strict',
+                    sameSite: 'strict',
                 });
 
                 return res.status(200).send({

@@ -1,7 +1,7 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
 // Define the validation schema for user registration
-const userSchemaValidation = Joi.object({
+export const userSchemaValidation = Joi.object({
     username: Joi.string()
         .min(3) // Minimum length for username
         .max(30) // Maximum length for username
@@ -17,6 +17,3 @@ const userSchemaValidation = Joi.object({
         .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')) // Allow only alphanumeric characters
         .required() // Password is required
 });
-
-// Export the validation schema
-module.exports = userSchemaValidation;
