@@ -6,12 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const userModel_1 = __importDefault(require("../../models/userModel")); // Adjust the import path based on your project structure
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const currency_codes_1 = __importDefault(require("currency-codes"));
-const joiLoginValidation_1 = __importDefault(require("../../utils/JoiUtils/joiLoginValidation"));
+const joiLoginValidation_1 = require("../../utils/JoiUtils/joiLoginValidation");
 const generateRandomUserName_1 = __importDefault(require("../../utils/generateRandomUserName"));
 const cloudinaryService_1 = __importDefault(require("../../service/cloudinaryService"));
 const mailService_1 = __importDefault(require("../../service/mailService"));
 const fs_1 = __importDefault(require("fs"));
-const emailTemplate_1 = require("../../utils/emailTemplate");
+const emailTemplate_1 = __importDefault(require("../../utils/emailTemplate"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const create_new_user = async (req, res) => {
@@ -25,7 +25,7 @@ const create_new_user = async (req, res) => {
             });
         }
         // Validate input data
-        const { error } = joiLoginValidation_1.default.validate(req.body);
+        const { error } = joiLoginValidation_1.userSchemaValidation.validate(req.body);
         if (error) {
             return res.status(400).send({
                 status: 'failed',
@@ -54,15 +54,30 @@ const create_new_user = async (req, res) => {
             fs_1.default.unlinkSync(req.file.path); // Remove file from local storage
         }
         catch (uploadError) {
-            return res.status(500).send({
-                status: 'failed',
-                message: 'Error uploading profile picture',
-                error: uploadError.message,
-            });
+            if (uploadError instanceof Error) {
+                return res.status(500).send({
+                    status: 'failed',
+                    message: 'Error uploading profile picture',
+                    error: uploadError.message,
+                });
+            }
+            else {
+                return res.status(500).send({
+                    status: 'failed',
+                    message: 'Error uploading profile picture',
+                    error: 'Unknown error',
+                });
+            }
         }
         // Create Currency code
         country = country.toLowerCase();
         const cCode = currency_codes_1.default.country(country);
+        if (!cCode || cCode.length === 0) {
+            return res.status(400).send({
+                status: 'failed',
+                message: 'Currency code not found for the specified country',
+            });
+        }
         // Create the new user
         const newUser = new userModel_1.default({
             fullname: fullname,
@@ -78,7 +93,8 @@ const create_new_user = async (req, res) => {
         });
         await newUser.save();
         // Email data
-        const emailData = (0, emailTemplate_1.registerEmailData)(fullname, email);
+        const { registerEmailData } = emailTemplate_1.default;
+        const emailData = registerEmailData(fullname, email);
         // Send welcome email
         (0, mailService_1.default)(emailData, (mailError, response) => {
             if (mailError) {

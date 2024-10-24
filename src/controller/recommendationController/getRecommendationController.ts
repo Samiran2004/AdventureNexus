@@ -33,9 +33,6 @@ interface promptData {
     prevRecommendation: string;
     preference: string[];
 }
-interface savedRecommendationType {
-    _id: string;
-}
 
 const generateRecommendations = async (req: CustomRequest, res: Response) => {
     try {

@@ -2,17 +2,45 @@ import { Request, Response } from 'express';
 import User, { IUser } from '../../models/userModel'; // Adjust the import path based on your project structure
 import bcrypt from 'bcryptjs';
 import cc from 'currency-codes';
-import userSchemaValidation from '../../utils/JoiUtils/joiLoginValidation';
+import { userSchemaValidation } from '../../utils/JoiUtils/joiLoginValidation';
 import generateRandomUserName from '../../utils/generateRandomUserName';
 import cloudinary from '../../service/cloudinaryService';
 import sendMail from '../../service/mailService';
 import fs from 'fs';
-import { registerEmailData } from '../../utils/emailTemplate';
+import emailTemplates from '../../utils/emailTemplate';
 import dotenv from 'dotenv';
+import { Readable } from 'stream';
+
+interface RequestBody {
+    fullname: string;
+    email: string;
+    password: string;
+    phonenumber: number;
+    gender: string;
+    preference: string[];
+    country: string;
+}
+
+interface MulterFile {
+    fieldname: string;
+    originalname: string;
+    encoding: string;
+    mimetype: string;
+    size: number;
+    destination: string;
+    filename: string;
+    path: string;
+    buffer: Buffer;
+    stream: Readable;
+}
+
+interface CustomRequest<TParams = {}, TQuery = {}, TBody = RequestBody> extends Request<TParams, any, TBody, TQuery> {
+    file: MulterFile;
+}
 
 dotenv.config();
 
-const create_new_user = async (req: Request, res: Response): Promise<Response> => {
+const create_new_user = async (req: CustomRequest, res: Response) => {
     let { fullname, email, password, phonenumber, gender, preference, country } = req.body;
 
     try {
@@ -58,16 +86,30 @@ const create_new_user = async (req: Request, res: Response): Promise<Response> =
             uploadImageUrl = await cloudinary.uploader.upload(req.file.path);
             fs.unlinkSync(req.file.path); // Remove file from local storage
         } catch (uploadError) {
-            return res.status(500).send({
-                status: 'failed',
-                message: 'Error uploading profile picture',
-                error: uploadError.message,
-            });
+            if (uploadError instanceof Error) {
+                return res.status(500).send({
+                    status: 'failed',
+                    message: 'Error uploading profile picture',
+                    error: uploadError.message,
+                });
+            } else {
+                return res.status(500).send({
+                    status: 'failed',
+                    message: 'Error uploading profile picture',
+                    error: 'Unknown error',
+                });
+            }
         }
 
         // Create Currency code
         country = country.toLowerCase();
         const cCode = cc.country(country);
+        if (!cCode || cCode.length === 0) {
+            return res.status(400).send({
+                status: 'failed',
+                message: 'Currency code not found for the specified country',
+            });
+        }
 
         // Create the new user
         const newUser = new User({
@@ -85,6 +127,7 @@ const create_new_user = async (req: Request, res: Response): Promise<Response> =
         await newUser.save();
 
         // Email data
+        const { registerEmailData } = emailTemplates;
         const emailData = registerEmailData(fullname, email);
 
         // Send welcome email
