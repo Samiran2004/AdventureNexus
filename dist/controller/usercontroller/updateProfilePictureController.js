@@ -35,8 +35,21 @@ const updateProfilePicture = async (req, res) => {
         // Delete the previous profile picture from Cloudinary
         if (previousProfilePictureUrl) {
             try {
-                const publicId = previousProfilePictureUrl.split('/').pop().split('.')[0];
-                await cloudinaryService_1.default.uploader.destroy(publicId);
+                // Safeguard by checking if previousProfilePictureUrl has both "/" and "." before proceeding
+                const segments = previousProfilePictureUrl.split('/');
+                const fileName = segments.pop(); // Get the last segment which should be the file name
+                // Ensure fileName exists and contains a dot before trying to split it
+                const publicId = fileName?.split('.')[0];
+                // Proceed with deletion only if publicId is valid
+                if (publicId) {
+                    await cloudinaryService_1.default.uploader.destroy(publicId);
+                }
+                else {
+                    return res.status(500).send({
+                        status: 'Failed',
+                        message: "Profile picture updated but previous image could not be identified for deletion.",
+                    });
+                }
             }
             catch (error) {
                 return res.status(500).send({
