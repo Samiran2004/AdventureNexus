@@ -1,7 +1,13 @@
 import { Request, Response } from 'express';
-import User from '../../models/userModel'; // Adjust the import according to your TypeScript setup
+import User from '../../models/userModel';
 
-async function userProfile(req: Request, res: Response): Promise<Response> {
+interface CustomRequest<TParams = {}, TQuery = {}, TBody = {}> extends Request<TParams, any, TBody, TQuery>{
+    user:{
+        _id: string
+    }
+}
+
+async function userProfile(req: CustomRequest, res: Response): Promise<Response> {
     try {
         const userData = await User.findById(req.user._id);
         
