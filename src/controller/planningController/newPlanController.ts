@@ -65,7 +65,7 @@ export const createPlan = async (req: CustomRequest<{}, {}, CreatePlanRequestBod
 
                 // Return the existing plan and save it into cache
                 if (checkPlan) {
-                    redis.setex(redisKey, 120, JSON.stringify(checkPlan));
+                   await redis.setex(redisKey, 120, JSON.stringify(checkPlan));
                     return res.status(200).json({
                         status: 'Success',
                         message: "Plan Already Created",
@@ -86,8 +86,9 @@ export const createPlan = async (req: CustomRequest<{}, {}, CreatePlanRequestBod
 
                 const flightPrompt = generateFlightPrompt(flightPayload);
                 const generateFlightData = await generateRecommendation(flightPrompt);
+                let flightData;
                 if (typeof generateFlightData == 'string') {
-                    var flightData = JSON.parse(generateFlightData.replace(/```json|```/g, "").trim());
+                    flightData = JSON.parse(generateFlightData.replace(/```json|```/g, "").trim());
                 } else {
                     console.log("generateFlightData is not a string:", generateFlightData);
                 }
