@@ -1,7 +1,8 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import generatePromptForBudget from '../../utils/Gemini Utils/generatePromptForBudget';
 import generateRecommendation from '../../utils/Gemini Utils/generateRecommendation';
 import redis from '../../redis/client';
+import createHttpError from 'http-errors';
 
 interface CustomRequest<TParams = {}, TQuery = {}, TBody = {}> extends Request<TParams, any, TQuery, TBody> {
     user: {
@@ -16,15 +17,12 @@ interface promptData {
     budget: number;
 }
 
-export const getBudgetRecommendations = async (req: CustomRequest<RequestParams>, res: Response) => {
+export const getBudgetRecommendations = async (req: CustomRequest<RequestParams>, res: Response, next: NextFunction) => {
     try {
         // Fetch budget from req.params
         let { budget } = req.params;
         if (!budget) {
-            return res.status(400).json({
-                status: 'Failed',
-                message: 'Budget is required'
-            });
+            return next(createHttpError(400, "Budget is required!"));
         }
 
         // If the budget is a string type, convert it into an integer
@@ -33,10 +31,7 @@ export const getBudgetRecommendations = async (req: CustomRequest<RequestParams>
         }
 
         if (isNaN(budget)) {
-            return res.status(400).json({
-                status: 'Failed',
-                message: 'Invalid budget format'
-            });
+            return next(createHttpError(400, "Invalid budget format!"));
         }
 
         // Redis Key
@@ -45,11 +40,8 @@ export const getBudgetRecommendations = async (req: CustomRequest<RequestParams>
         // Check if recommendation exists in Redis
         redis.get(redisKey, async (err, cacheData) => {
             if (err) {
-                console.error('Redis error:', err);
-                return res.status(500).json({
-                    status: 'Failed',
-                    message: 'Internal Redis error'
-                });
+                // console.error('Redis error:', err); //Log for Debugging
+                return next(createHttpError(500, "Internal Redis Server Error!"));
             }
 
             if (cacheData) {
@@ -69,11 +61,8 @@ export const getBudgetRecommendations = async (req: CustomRequest<RequestParams>
                 // Generate recommendations
                 const recommendations = await generateRecommendation(prompt);
                 if (typeof recommendations != 'string') {
-                    console.error('Error: recommendations is not a valid string.');
-                    return res.status(500).json({
-                        status: 'Failed',
-                        message: 'Invalid response from recommendation service'
-                    });
+                    // console.error('Error: recommendations is not a valid string.'); // Log for Debugging
+                    return next(createHttpError(500, "Invalid response from recommendation service!"));
                 }
                 const result = recommendations.replace(/```json|```/g, "").trim();
 
@@ -89,9 +78,6 @@ export const getBudgetRecommendations = async (req: CustomRequest<RequestParams>
         });
     } catch (error) {
         console.error('Internal Server Error:', error); // Log the error for debugging
-        return res.status(500).json({
-            status: 'Failed',
-            message: 'Internal Server Error.'
-        });
+        return next(createHttpError(500, "Internal Server Error!"));
     }
 };

@@ -4,7 +4,7 @@ import User from '../../models/userModel'; // Adjust the import according to you
 import sendMail from '../../service/mailService';
 import { deleteUserEmailData } from '../../utils/emailTemplate';
 
-const userDelete = async (req: Request, res: Response): Promise<Response> => {
+const userDelete = async (req: Request, res: Response) => {
     try {
         // Check if the user exists
         const checkUser = await User.findById(req.user._id);
@@ -52,7 +52,7 @@ const userDelete = async (req: Request, res: Response): Promise<Response> => {
         return res.status(500).send({
             status: 'Failed',
             message: "Internal server error.",
-            error: error.message // Include error message for debugging
+            error: error.message 
         });
     }
 };

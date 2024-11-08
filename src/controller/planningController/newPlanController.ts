@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import Plan from '../../models/planModel';
 import User from '../../models/userModel';
 import generateFlightPrompt from '../../utils/Gemini Utils/flightPlanPrompt';
@@ -6,6 +6,7 @@ import generateHotelPrompt from '../../utils/Gemini Utils/hotelPlanPrompt';
 import generateRecommendation from '../../utils/Gemini Utils/generateRecommendation';
 import redis from '../../redis/client';
 import { ObjectId } from 'mongoose';
+import createHttpError from 'http-errors';
 
 interface TravelDates {
     start_date: string;
@@ -26,16 +27,13 @@ interface CustomRequest<TParams = {}, TQuery = {}, TBody = {}> extends Request<T
     }
 }
 
-export const createPlan = async (req: CustomRequest<{}, {}, CreatePlanRequestBody>, res: Response) => {
+export const createPlan = async (req: CustomRequest<{}, {}, CreatePlanRequestBody>, res: Response, next: NextFunction) => {
     try {
         const { destination, dispatch_city, travel_dates, budget, total_people } = req.body;
 
         // Check if all required fields are present
         if (!destination || !dispatch_city || !travel_dates || !budget || !total_people) {
-            return res.status(400).json({
-                status: 'Failed',
-                message: "All fields are required."
-            });
+            return next(createHttpError(400, "All fields are required!"));
         }
 
         const lowerDestination = destination.toLowerCase();
@@ -46,12 +44,8 @@ export const createPlan = async (req: CustomRequest<{}, {}, CreatePlanRequestBod
         const redisKey = `${req.user._id}:${lowerDestination}:${lowerDispatchCity}:${total_people}:${lowerBudget}`;
         redis.get(redisKey, async (err, cacheData) => {
             if (err) {
-                console.log("Internal Redis Error...");
-                return res.status(500).json({
-                    status: 'Failed',
-                    message: "Internal Redis Error",
-                    error: err
-                });
+                // console.log("Internal Redis Error...");  //For Debugging
+                return next(createHttpError(500, "Internal Redis Server Error!"));
             }
 
             if (cacheData) {
@@ -191,9 +185,6 @@ export const createPlan = async (req: CustomRequest<{}, {}, CreatePlanRequestBod
             });
         }
         console.error(error); // Log the error for debugging
-        return res.status(500).json({
-            status: 'Failed',
-            message: "Internal Server Error."
-        });
+        return next(createHttpError(500, "Internal Server Error!"));
     }
 };

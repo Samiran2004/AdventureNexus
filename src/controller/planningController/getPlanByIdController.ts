@@ -1,8 +1,9 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import Plan from '../../models/planModel';
 import redis from '../../redis/client';
+import createHttpError from 'http-errors';
 
-export const getPlanById = async (req: Request, res: Response) => {
+export const getPlanById = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
 
@@ -12,10 +13,7 @@ export const getPlanById = async (req: Request, res: Response) => {
         // Check Redis cache
         redis.get(redisKey, async (err, cacheData) => {
             if (err) {
-                return res.status(500).json({
-                    status: 'Failed',
-                    message: "Internal Redis Error."
-                });
+                return next(createHttpError(500, "Internal Redis Server Error!"));
             }
             if (cacheData) {
                 return res.status(200).json({
@@ -35,23 +33,14 @@ export const getPlanById = async (req: Request, res: Response) => {
                         data: plan
                     });
                 }
-                return res.status(404).json({
-                    status: 'Failed',
-                    message: "Plan Not Found or The ID is Invalid."
-                });
+                return next(createHttpError(404, "Plan Not Found or The id is Invalid."));
 
             } catch (error) {
-                return res.status(400).json({
-                    status: 'Failed',
-                    message: "Plan Not Found or The ID is Invalid."
-                });
+                return next(createHttpError(400, "Plan Not Found or The ID is Invalid."));
             }
         });
     } catch (error) {
-        console.error(error); // Log the error for debugging
-        return res.status(500).json({
-            status: 'Failed',
-            message: "Internal Server Error"
-        });
+        // console.error(`Error in getPlanByIdController: ${error}`); // Log the error for debugging
+        return next(createHttpError(500, "Internal Server Error!"));
     }
 };

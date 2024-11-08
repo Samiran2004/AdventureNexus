@@ -1,10 +1,11 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import User from '../../models/userModel';
 import Recommendations, { IRecommendation } from '../../models/recommendationModel';
 import generateRecommendation from '../../utils/Gemini Utils/generateRecommendation';
 import generatePrompt from '../../utils/Gemini Utils/generatePrompt';
 import { recommendationValidation } from '../../utils/JoiUtils/joiRecommendationValidation';
 import redis from '../../redis/client';
+import createHttpError from 'http-errors';
 
 interface RequestBody {
     day: number;
@@ -34,15 +35,12 @@ interface promptData {
     preference: string[];
 }
 
-const generateRecommendations = async (req: CustomRequest, res: Response) => {
+const generateRecommendations = async (req: CustomRequest, res: Response, next: NextFunction) => {
     try {
         // Validate request body
         const { error } = recommendationValidation.validate(req.body);
         if (error) {
-            return res.status(400).json({
-                status: 'Failed',
-                message: error.details[0].message
-            });
+            return next(createHttpError(400, error?.details[0].message));
         }
 
         // Fetch data from req.body
@@ -50,10 +48,7 @@ const generateRecommendations = async (req: CustomRequest, res: Response) => {
 
         // Ensure required fields are present
         if (!budget || !destination || !totalPeople || !day) {
-            return res.status(400).json({
-                status: 'Failed',
-                message: "Budget, Destination, Total People, and Day are required."
-            });
+            return next(createHttpError(400, "Budget, Destination, Total People, and Day are required."));
         }
 
         // Redis key based on destination, budget, totalPeople, and day
@@ -62,11 +57,8 @@ const generateRecommendations = async (req: CustomRequest, res: Response) => {
         // Check if recommendation exists in Redis
         redis.get(redisKey, async (err, cacheData) => {
             if (err) {
-                console.error("Redis error:", err);
-                return res.status(500).json({
-                    status: 'Failed',
-                    message: 'Internal Redis error.'
-                });
+                // console.error("Redis error:", err); // Log for Debugging
+                return next(createHttpError(500, "Internal Redis Server Error!"));
             }
 
             if (cacheData) {
@@ -79,10 +71,7 @@ const generateRecommendations = async (req: CustomRequest, res: Response) => {
                 // Fetch user and populate recommendation history
                 const user = await User.findById(req.user._id).populate('recommendationhistory');
                 if (!user) {
-                    return res.status(404).json({
-                        status: 'Failed',
-                        message: 'User not found.'
-                    });
+                    return next(createHttpError(404, "User not found!"));
                 }
 
                 // Check if recommendation exists in the database (include `day` in the query)
@@ -120,11 +109,8 @@ const generateRecommendations = async (req: CustomRequest, res: Response) => {
                 const prompt = generatePrompt(data);
                 const getRecommendation = await generateRecommendation(prompt);
                 if (typeof getRecommendation != 'string') {
-                    console.error('Error: recommendations is not a valid string.');
-                    return res.status(500).json({
-                        status: 'Failed',
-                        message: 'Invalid response from recommendation service'
-                    });
+                    // console.error('Error: recommendations is not a valid string.'); // Log for Debugging
+                    return next(createHttpError(5000, "Invalid response from recommendation service!"));
                 }
                 const result = getRecommendation.replace(/```json|```/g, "").trim();
 
@@ -157,11 +143,8 @@ const generateRecommendations = async (req: CustomRequest, res: Response) => {
             }
         });
     } catch (error) {
-        console.error("Error generating recommendations:", error);
-        return res.status(500).json({
-            status: 'Failed',
-            message: "Internal Server Error."
-        });
+        // console.error("Error generating recommendations:", error); // Log for Debugging
+        return next(createHttpError(500, "Internal Server Error!"));
     }
 };
 

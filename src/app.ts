@@ -14,6 +14,7 @@ import sanitizeInput from './middlewares/sanitization';
 import redis from './redis/client';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
+import errorHandler from './middlewares/globalErrorHandler';
 
 // Configure env variables...
 dotenv.config();
@@ -99,6 +100,8 @@ app.use('/api/v1/recommendation', recommendationRoute);
 
 // Planning route...
 app.use('/api/v1/planning', planningRoute);
+
+app.use(errorHandler);
 
 // Server connection...
 app.listen(process.env.PORT, (err?: Error) =>

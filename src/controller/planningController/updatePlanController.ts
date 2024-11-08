@@ -1,6 +1,7 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import Plan from '../../models/planModel';
 import User from '../../models/userModel';
+import createHttpError from 'http-errors';
 
 interface UpdatePlanRequestBody {
     destination?: string;
@@ -24,7 +25,7 @@ interface RequestParams {
     id: string;
 }
 
-export const updatePlan = async (req: CustomRequest<RequestParams>, res: Response) => {
+export const updatePlan = async (req: CustomRequest<RequestParams>, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params; // Extracting plan ID from the URL parameters
         const updates = req.body; // Extracting the updates from the request body
@@ -32,18 +33,12 @@ export const updatePlan = async (req: CustomRequest<RequestParams>, res: Respons
         // Find the plan by ID
         const plan = await Plan.findById(id);
         if (!plan) {
-            return res.status(404).json({
-                status: 'Failed',
-                message: 'Plan not found.'
-            });
+            return next(createHttpError(404, "Plan Not Found!"));
         }
 
         // Check if the plan belongs to the user
         if (plan.user.toString() !== req.user._id) {
-            return res.status(403).json({
-                status: 'Failed',
-                message: 'You do not have permission to update this plan.'
-            });
+            return next(createHttpError(403, "You do not permission to update this plan"));
         }
 
         // Update the plan with the provided fields
@@ -57,10 +52,7 @@ export const updatePlan = async (req: CustomRequest<RequestParams>, res: Respons
             data: updatedPlan
         });
     } catch (error) {
-        console.error(error); // Log the error for debugging
-        return res.status(500).json({
-            status: 'Failed',
-            message: 'Internal Server Error.'
-        });
+        // console.error(error); // Log the error for debugging
+        return next(createHttpError(500, "Internal Server Error!"));
     }
 };

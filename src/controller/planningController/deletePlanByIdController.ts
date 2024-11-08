@@ -1,6 +1,7 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import User from '../../models/userModel';
 import Plan from '../../models/planModel';
+import createHttpError from 'http-errors';
 
 interface CustomRequest extends Request {
     user: {
@@ -8,7 +9,7 @@ interface CustomRequest extends Request {
     }
 }
 
-export const deletePlanById = async (req: CustomRequest, res: Response) => {
+export const deletePlanById = async (req: CustomRequest, res: Response, next: NextFunction) => {
     try {
         const id: string = req.params.id; // Plan ID to be deleted
         const userId = req.user._id; // Logged-in user's ID
@@ -16,27 +17,18 @@ export const deletePlanById = async (req: CustomRequest, res: Response) => {
         // Check if the plan exists
         const plan = await Plan.findById(id);
         if (!plan) {
-            return res.status(404).json({
-                status: 'Failed',
-                message: 'Plan not found.'
-            });
+            return next(createHttpError(404, "Plan Not Found!"));
         }
 
         // Check if the user exists
         const user = await User.findById(userId);
         if (!user) {
-            return res.status(404).json({
-                status: 'Failed',
-                message: 'User not found.'
-            });
+            return next(createHttpError(404, "User not found!"));
         }
 
         // Check if the plan belongs to the user
         if (!user.plans.some((planId) => planId.toString() == id)) {
-            return res.status(403).json({
-                status: 'Failed',
-                message: 'This plan does not belong to the user.'
-            });
+            return next(createHttpError(403, "This plan does not belong to the user!"));
         }
 
         // Remove the plan reference from the user's plans array
@@ -54,10 +46,8 @@ export const deletePlanById = async (req: CustomRequest, res: Response) => {
         });
 
     } catch (error) {
-        console.error(error); // Log the error for debugging
-        return res.status(500).json({
-            status: 'Failed',
-            message: 'Internal Server Error.'
-        });
+        // console.log(`Error in deletePlanByIdController: ${error}`);  //For Debugging
+
+        return next(createHttpError(500, "Internal Server Error!"));
     }
 };
