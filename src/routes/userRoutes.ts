@@ -1,9 +1,12 @@
-import express from 'express';
-import createNewUser from '../controller/usercontroller/registerController';
+import express, {Router} from 'express';
+import createNewUser, {
+    CustomRequestRegisterController,
+    RequestBodyRegisterController
+} from '../controller/usercontroller/registerController';
 import upload from '../middlewares/multer';
 import authTokenMiddleware from '../middlewares/authTokenMiddleware';
 
-const route = express.Router();
+const route: Router = express.Router();
 
 /**
  * @swagger
@@ -75,7 +78,9 @@ const route = express.Router();
  */
 
 // Create new user... Path: /api/v1/user/register
-route.post('/register', upload.single("profileimage"), createNewUser);
+route.post('/register', upload.single("profileimage"), (req, res, next) => {
+    createNewUser(req as CustomRequestRegisterController, res, next);
+});
 
 // Login a User... Path: /api/v1/user/login
 route.post('/login', require('../controller/usercontroller/loginController'));

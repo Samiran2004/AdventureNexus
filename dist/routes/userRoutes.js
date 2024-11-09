@@ -76,7 +76,9 @@ const route = express_1.default.Router();
  *         description: Internal server error
  */
 // Create new user... Path: /api/v1/user/register
-route.post('/register', multer_1.default.single("profileimage"), registerController_1.default);
+route.post('/register', multer_1.default.single("profileimage"), (req, res, next) => {
+    (0, registerController_1.default)(req, res, next);
+});
 // Login a User... Path: /api/v1/user/login
 route.post('/login', require('../controller/usercontroller/loginController'));
 // Get user profile details... Path: /api/v1/user/profile

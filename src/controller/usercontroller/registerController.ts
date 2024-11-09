@@ -12,7 +12,7 @@ import dotenv from 'dotenv';
 import { Readable } from 'stream';
 import createHttpError from "http-errors";
 
-interface RequestBody {
+export interface RequestBodyRegisterController {
     fullname: string;
     email: string;
     password: string;
@@ -35,13 +35,16 @@ interface MulterFile {
     stream: Readable;
 }
 
-interface CustomRequest<TParams = {}, TQuery = {}, TBody = RequestBody> extends Request<TParams, any, TBody, TQuery> {
+export interface CustomRequestRegisterController<TParams = {}, TQuery = {}, TBody = RequestBodyRegisterController> extends Request<TParams, any, TBody, TQuery> {
     file: MulterFile;
 }
 
 dotenv.config();
 
-const create_new_user = async (req: CustomRequest, res: Response, next: NextFunction) => {
+const create_new_user = async (
+    req: CustomRequestRegisterController,
+    res: Response,
+    next: NextFunction): Promise<Response | void> => {
     let { fullname, email, password, phonenumber, gender, preference, country } = req.body;
 
     try {
