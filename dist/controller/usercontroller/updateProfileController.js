@@ -3,25 +3,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const userModel_1 = __importDefault(require("../../models/userModel")); // Adjust the import according to your TypeScript setup
+const userModel_1 = __importDefault(require("../../models/userModel"));
 const generateRandomUserName_1 = __importDefault(require("../../utils/generateRandomUserName"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
-const updateProfile = async (req, res) => {
+const http_errors_1 = __importDefault(require("http-errors"));
+const updateProfile = async (req, res, next) => {
     try {
         // Fetch the user using id
         const checkUser = await userModel_1.default.findById(req.user._id);
         if (!checkUser) {
-            return res.status(404).send({
-                status: 'Failed',
-                message: "User not found."
-            });
+            return next((0, http_errors_1.default)(404, "User not found."));
         }
         const { fullname, gender, preference, country, password } = req.body;
         if (!fullname && !gender && !preference && !country && !password) {
-            return res.status(400).send({
-                status: 'Failed',
-                message: "Please provide at least one field to update."
-            });
+            return next((0, http_errors_1.default)(400, "Please provide at least one field to update."));
         }
         if (fullname) {
             checkUser.fullname = fullname;
@@ -30,10 +25,7 @@ const updateProfile = async (req, res) => {
                 checkUser.username = username;
             }
             catch (error) {
-                return res.status(500).send({
-                    status: 'Failed',
-                    message: "Error generating username."
-                });
+                return next((0, http_errors_1.default)(500, "Error generating username."));
             }
         }
         if (gender) {
@@ -47,8 +39,7 @@ const updateProfile = async (req, res) => {
         }
         if (password) {
             const salt = await bcryptjs_1.default.genSalt(10);
-            const newHashedPassword = await bcryptjs_1.default.hash(password, salt);
-            checkUser.password = newHashedPassword;
+            checkUser.password = await bcryptjs_1.default.hash(password, salt);
         }
         // Save the updated data
         await checkUser.save();
@@ -68,11 +59,8 @@ const updateProfile = async (req, res) => {
         });
     }
     catch (error) {
-        console.error("Error updating profile:", error); // Log error for debugging
-        return res.status(500).send({
-            status: 'Failed',
-            message: "Internal server error."
-        });
+        // console.error("Error updating profile:", error); // Log error for debugging
+        return next((0, http_errors_1.default)(500, "Internal Server Error!"));
     }
 };
 exports.default = updateProfile;

@@ -1,5 +1,5 @@
-import { Request, Response } from 'express';
-import User, { IUser } from '../../models/userModel'; // Adjust the import path based on your project structure
+import {NextFunction, Request, Response} from 'express';
+import User, { IUser } from '../../models/userModel';
 import bcrypt from 'bcryptjs';
 import cc from 'currency-codes';
 import { userSchemaValidation } from '../../utils/JoiUtils/joiLoginValidation';
@@ -10,6 +10,7 @@ import fs from 'fs';
 import emailTemplates from '../../utils/emailTemplate';
 import dotenv from 'dotenv';
 import { Readable } from 'stream';
+import createHttpError from "http-errors";
 
 interface RequestBody {
     fullname: string;
@@ -40,25 +41,19 @@ interface CustomRequest<TParams = {}, TQuery = {}, TBody = RequestBody> extends 
 
 dotenv.config();
 
-const create_new_user = async (req: CustomRequest, res: Response) => {
+const create_new_user = async (req: CustomRequest, res: Response, next: NextFunction) => {
     let { fullname, email, password, phonenumber, gender, preference, country } = req.body;
 
     try {
         // Check for required fields
         if (!fullname || !email || !password || !phonenumber || !gender || !country) {
-            return res.status(400).send({
-                status: 'failed',
-                message: 'All fields are required',
-            });
+            return next(createHttpError(400, "All fields are required!"));
         }
 
         // Validate input data
         const { error } = userSchemaValidation.validate(req.body);
         if (error) {
-            return res.status(400).send({
-                status: 'failed',
-                message: error.details[0].message,
-            });
+            return next(createHttpError(400, error?.details[0].message));
         }
 
         // Check if the user already exists
@@ -67,10 +62,7 @@ const create_new_user = async (req: CustomRequest, res: Response) => {
         });
 
         if (checkUserExist) {
-            return res.status(409).send({
-                status: 'failed',
-                message: 'User already exists',
-            });
+            return next(createHttpError(409, "User already exist!"));
         }
 
         // Hash the password
@@ -86,29 +78,27 @@ const create_new_user = async (req: CustomRequest, res: Response) => {
             uploadImageUrl = await cloudinary.uploader.upload(req.file.path);
             fs.unlinkSync(req.file.path); // Remove file from local storage
         } catch (uploadError) {
-            if (uploadError instanceof Error) {
-                return res.status(500).send({
-                    status: 'failed',
-                    message: 'Error uploading profile picture',
-                    error: uploadError.message,
-                });
-            } else {
-                return res.status(500).send({
-                    status: 'failed',
-                    message: 'Error uploading profile picture',
-                    error: 'Unknown error',
-                });
-            }
+            // if (uploadError instanceof Error) {
+            //     return res.status(500).send({
+            //         status: 'failed',
+            //         message: 'Error uploading profile picture',
+            //         error: uploadError.message,
+            //     });
+            // } else {
+            //     return res.status(500).send({
+            //         status: 'failed',
+            //         message: 'Error uploading profile picture',
+            //         error: 'Unknown error',
+            //     });
+            // }
+            return next(createHttpError(500, "Error uploading file!"));
         }
 
         // Create Currency code
         country = country.toLowerCase();
         const cCode = cc.country(country);
         if (!cCode || cCode.length === 0) {
-            return res.status(400).send({
-                status: 'failed',
-                message: 'Currency code not found for the specified country',
-            });
+            return next(createHttpError(400, "Currency code not found for the specified country!"));
         }
 
         // Create the new user
@@ -133,10 +123,7 @@ const create_new_user = async (req: CustomRequest, res: Response) => {
         // Send welcome email
         sendMail(emailData, (mailError: Error | null, response: any) => {
             if (mailError) {
-                return res.status(500).send({
-                    status: 'failed',
-                    message: 'User created, but email sending failed',
-                });
+                return next(createHttpError(500, "User created, but email sending failed!"));
             }
 
             return res.status(201).send({
@@ -156,11 +143,7 @@ const create_new_user = async (req: CustomRequest, res: Response) => {
             });
         });
     } catch (error) {
-        return res.status(500).send({
-            status: 'failed',
-            message: 'Internal Server Error',
-            error: error instanceof Error ? error.message : 'Unknown error', // Type check for error
-        });
+        return next(createHttpError(500, "Internal Server Error!"));
     }
 };
 

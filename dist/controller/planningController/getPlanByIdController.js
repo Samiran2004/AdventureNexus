@@ -6,7 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getPlanById = void 0;
 const planModel_1 = __importDefault(require("../../models/planModel"));
 const client_1 = __importDefault(require("../../redis/client"));
-const getPlanById = async (req, res) => {
+const http_errors_1 = __importDefault(require("http-errors"));
+const getPlanById = async (req, res, next) => {
     try {
         const { id } = req.params;
         // Define Redis key
@@ -14,10 +15,7 @@ const getPlanById = async (req, res) => {
         // Check Redis cache
         client_1.default.get(redisKey, async (err, cacheData) => {
             if (err) {
-                return res.status(500).json({
-                    status: 'Failed',
-                    message: "Internal Redis Error."
-                });
+                return next((0, http_errors_1.default)(500, "Internal Redis Server Error!"));
             }
             if (cacheData) {
                 return res.status(200).json({
@@ -36,25 +34,16 @@ const getPlanById = async (req, res) => {
                         data: plan
                     });
                 }
-                return res.status(404).json({
-                    status: 'Failed',
-                    message: "Plan Not Found or The ID is Invalid."
-                });
+                return next((0, http_errors_1.default)(404, "Plan Not Found or The id is Invalid."));
             }
             catch (error) {
-                return res.status(400).json({
-                    status: 'Failed',
-                    message: "Plan Not Found or The ID is Invalid."
-                });
+                return next((0, http_errors_1.default)(400, "Plan Not Found or The ID is Invalid."));
             }
         });
     }
     catch (error) {
-        console.error(error); // Log the error for debugging
-        return res.status(500).json({
-            status: 'Failed',
-            message: "Internal Server Error"
-        });
+        // console.error(`Error in getPlanByIdController: ${error}`); // Log the error for debugging
+        return next((0, http_errors_1.default)(500, "Internal Server Error!"));
     }
 };
 exports.getPlanById = getPlanById;

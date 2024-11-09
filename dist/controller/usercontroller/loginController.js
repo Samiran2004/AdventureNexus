@@ -4,27 +4,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const userModel_1 = __importDefault(require("../../models/userModel")); // Adjust the import path based on your project structure
+const userModel_1 = __importDefault(require("../../models/userModel"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const joiLoginValidation_1 = require("../../utils/JoiUtils/joiLoginValidation");
-const loginuser = async (req, res) => {
+const http_errors_1 = __importDefault(require("http-errors"));
+const loginuser = async (req, res, next) => {
     try {
         // Fetch all user data from req.body
         const { username, email, password } = req.body;
         // Check if all required fields are provided in the request body
         if (!username || !email || !password) {
-            return res.status(400).send({
-                status: 'Failed',
-                message: 'All fields are required.',
-            });
+            return next((0, http_errors_1.default)(400, "All fields are required"));
         }
         // Validate user data using JOI
         const { error } = joiLoginValidation_1.userSchemaValidation.validate(req.body);
         if (error) {
-            return res.status(400).send({
-                status: 'Failed',
-                message: error.details[0].message,
-            });
+            return next((0, http_errors_1.default)(400, error.details[0].message));
         }
         // Find the user in the database
         const checkUser = await userModel_1.default.findOne({ username, email });
@@ -62,26 +57,16 @@ const loginuser = async (req, res) => {
                 });
             }
             else {
-                return res.status(401).send({
-                    status: 'Failed',
-                    message: 'Incorrect Password.',
-                });
+                return next((0, http_errors_1.default)(401, "Incorrect Password"));
             }
         }
         else {
-            return res.status(404).send({
-                status: 'Failed',
-                message: 'User not found.',
-            });
+            return next((0, http_errors_1.default)(404, "User not found!"));
         }
     }
     catch (error) {
-        console.error('Error during login:', error); // Log the error
-        return res.status(500).send({
-            status: 'Failed',
-            message: 'Internal Server Error...',
-            error,
-        });
+        // console.error('Error during login:', error); // Log for debugging
+        return next((0, http_errors_1.default)(500, "Internal Server Error!"));
     }
 };
 exports.default = loginuser;

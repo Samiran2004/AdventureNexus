@@ -6,32 +6,24 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deletePlanById = void 0;
 const userModel_1 = __importDefault(require("../../models/userModel"));
 const planModel_1 = __importDefault(require("../../models/planModel"));
-const deletePlanById = async (req, res) => {
+const http_errors_1 = __importDefault(require("http-errors"));
+const deletePlanById = async (req, res, next) => {
     try {
         const id = req.params.id; // Plan ID to be deleted
         const userId = req.user._id; // Logged-in user's ID
         // Check if the plan exists
         const plan = await planModel_1.default.findById(id);
         if (!plan) {
-            return res.status(404).json({
-                status: 'Failed',
-                message: 'Plan not found.'
-            });
+            return next((0, http_errors_1.default)(404, "Plan Not Found!"));
         }
         // Check if the user exists
         const user = await userModel_1.default.findById(userId);
         if (!user) {
-            return res.status(404).json({
-                status: 'Failed',
-                message: 'User not found.'
-            });
+            return next((0, http_errors_1.default)(404, "User not found!"));
         }
         // Check if the plan belongs to the user
         if (!user.plans.some((planId) => planId.toString() == id)) {
-            return res.status(403).json({
-                status: 'Failed',
-                message: 'This plan does not belong to the user.'
-            });
+            return next((0, http_errors_1.default)(403, "This plan does not belong to the user!"));
         }
         // Remove the plan reference from the user's plans array
         user.plans = user.plans.filter(planId => planId.toString() !== id);
@@ -45,11 +37,8 @@ const deletePlanById = async (req, res) => {
         });
     }
     catch (error) {
-        console.error(error); // Log the error for debugging
-        return res.status(500).json({
-            status: 'Failed',
-            message: 'Internal Server Error.'
-        });
+        // console.log(`Error in deletePlanByIdController: ${error}`);  //For Debugging
+        return next((0, http_errors_1.default)(500, "Internal Server Error!"));
     }
 };
 exports.deletePlanById = deletePlanById;

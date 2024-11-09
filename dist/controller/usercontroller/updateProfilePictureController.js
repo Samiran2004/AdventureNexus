@@ -3,18 +3,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const userModel_1 = __importDefault(require("../../models/userModel")); // Adjust the import according to your TypeScript setup
+const userModel_1 = __importDefault(require("../../models/userModel"));
 const cloudinaryService_1 = __importDefault(require("../../service/cloudinaryService"));
 const fs_1 = __importDefault(require("fs"));
-const updateProfilePicture = async (req, res) => {
+const http_errors_1 = __importDefault(require("http-errors"));
+const updateProfilePicture = async (req, res, next) => {
     try {
         // Check if the user exists
         const checkUser = await userModel_1.default.findById(req.user._id);
         if (!checkUser) {
-            return res.status(404).send({
-                status: 'Failed',
-                message: "User not found."
-            });
+            return next((0, http_errors_1.default)(404, "User not found."));
         }
         // Upload new profile picture to Cloudinary
         let uploadImageUrl;
@@ -23,10 +21,7 @@ const updateProfilePicture = async (req, res) => {
             fs_1.default.unlinkSync(req.file.path); // Remove from local storage
         }
         catch (error) {
-            return res.status(500).send({
-                status: 'Failed',
-                message: "Profile picture upload failed."
-            });
+            return next((0, http_errors_1.default)(500, "Profile picture upload failed."));
         }
         // Save the new profile picture URL to the user document
         const previousProfilePictureUrl = checkUser.profilepicture;
@@ -45,17 +40,11 @@ const updateProfilePicture = async (req, res) => {
                     await cloudinaryService_1.default.uploader.destroy(publicId);
                 }
                 else {
-                    return res.status(500).send({
-                        status: 'Failed',
-                        message: "Profile picture updated but previous image could not be identified for deletion.",
-                    });
+                    return next((0, http_errors_1.default)(500, "Profile picture update failed."));
                 }
             }
             catch (error) {
-                return res.status(500).send({
-                    status: 'Failed',
-                    message: "Profile picture updated but previous image could not be deleted from Cloudinary."
-                });
+                return next((0, http_errors_1.default)(500, "Profile picture updated but previous image could not be deleted from Cloudinary."));
             }
         }
         // Success response
@@ -66,11 +55,8 @@ const updateProfilePicture = async (req, res) => {
         });
     }
     catch (error) {
-        console.error("Error updating profile picture:", error); // Log error for debugging
-        return res.status(500).send({
-            status: 'Failed',
-            message: "Internal server error."
-        });
+        // console.error("Error updating profile picture:", error); // Log error for debugging
+        return next((0, http_errors_1.default)(500, "Internal Server Error!"));
     }
 };
 exports.default = updateProfilePicture;

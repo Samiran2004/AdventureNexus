@@ -1,5 +1,6 @@
-import { Request, Response } from 'express';
-import User from '../../models/userModel';
+import {NextFunction, Request, Response} from 'express';
+import User, {IUser} from '../../models/userModel';
+import createHttpError from "http-errors";
 
 interface CustomRequest<TParams = {}, TQuery = {}, TBody = {}> extends Request<TParams, any, TBody, TQuery>{
     user:{
@@ -7,15 +8,12 @@ interface CustomRequest<TParams = {}, TQuery = {}, TBody = {}> extends Request<T
     }
 }
 
-async function userProfile(req: CustomRequest, res: Response): Promise<Response> {
+async function userProfile(req: CustomRequest, res: Response, next: NextFunction) {
     try {
-        const userData = await User.findById(req.user._id);
+        const userData: IUser | null= await User.findById(req.user._id);
         
         if (!userData) {
-            return res.status(404).send({
-                status: 'Failed',
-                message: "User not found."
-            });
+            return next(createHttpError(404, "User not found!"));
         } else {
             return res.status(200).send({
                 status: 'Success',
@@ -32,11 +30,8 @@ async function userProfile(req: CustomRequest, res: Response): Promise<Response>
             });
         }
     } catch (error) {
-        console.error("Error fetching user profile:", error); // Log error for debugging
-        return res.status(500).send({
-            status: 'Failed',
-            message: "Internal server error."
-        });
+        // console.error("Error fetching user profile:", error); // Log error for debugging
+        return next(createHttpError(500, "Internal Server Error!"));
     }
 }
 

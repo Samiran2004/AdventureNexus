@@ -55,7 +55,7 @@ const userDelete = async (req, res) => {
         return res.status(500).send({
             status: 'Failed',
             message: "Internal server error.",
-            error: error.message // Include error message for debugging
+            error: error.message
         });
     }
 };

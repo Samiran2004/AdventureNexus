@@ -1,29 +1,24 @@
-import { Request, Response } from 'express';
+import {NextFunction, Request, Response} from 'express';
 import jwt from 'jsonwebtoken';
-import User, { IUser } from '../../models/userModel'; // Adjust the import path based on your project structure
+import User, { IUser } from '../../models/userModel';
 import bcryptjs from 'bcryptjs';
 import { userSchemaValidation } from '../../utils/JoiUtils/joiLoginValidation';
+import createHttpError from "http-errors";
 
-const loginuser = async (req: Request, res: Response) => {
+const loginuser = async (req: Request, res: Response, next: NextFunction) => {
     try {
         // Fetch all user data from req.body
         const { username, email, password } = req.body;
 
         // Check if all required fields are provided in the request body
         if (!username || !email || !password) {
-            return res.status(400).send({
-                status: 'Failed',
-                message: 'All fields are required.',
-            });
+            return next(createHttpError(400, "All fields are required"));
         }
 
         // Validate user data using JOI
         const { error } = userSchemaValidation.validate(req.body);
         if (error) {
-            return res.status(400).send({
-                status: 'Failed',
-                message: error.details[0].message,
-            });
+            return next(createHttpError(400, error.details[0].message));
         }
 
         // Find the user in the database
@@ -65,24 +60,14 @@ const loginuser = async (req: Request, res: Response) => {
                     refreshToken: refreshToken,
                 });
             } else {
-                return res.status(401).send({
-                    status: 'Failed',
-                    message: 'Incorrect Password.',
-                });
+                return next(createHttpError(401, "Incorrect Password"));
             }
         } else {
-            return res.status(404).send({
-                status: 'Failed',
-                message: 'User not found.',
-            });
+            return next(createHttpError(404, "User not found!"));
         }
     } catch (error) {
-        console.error('Error during login:', error); // Log the error
-        return res.status(500).send({
-            status: 'Failed',
-            message: 'Internal Server Error...',
-            error,
-        });
+        // console.error('Error during login:', error); // Log for debugging
+        return next(createHttpError(500, "Internal Server Error!"));
     }
 };
 

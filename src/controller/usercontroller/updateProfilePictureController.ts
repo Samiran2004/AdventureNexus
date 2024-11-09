@@ -1,8 +1,9 @@
-import { Request, Response } from 'express';
-import User from '../../models/userModel'; // Adjust the import according to your TypeScript setup
+import {NextFunction, Request, Response} from 'express';
+import User, {IUser} from '../../models/userModel';
 import cloudinary from '../../service/cloudinaryService';
 import { Readable } from 'stream';
 import fs from 'fs';
+import createHttpError from "http-errors";
 
 interface MulterFile {
     fieldname: string;
@@ -24,15 +25,12 @@ interface CustomRequest<TParams = {}, TQuery = {}, TBody = {}> extends Request<T
     file: MulterFile;
 }
 
-const updateProfilePicture = async (req: CustomRequest, res: Response): Promise<Response> => {
+const updateProfilePicture = async (req: CustomRequest, res: Response, next: NextFunction) => {
     try {
         // Check if the user exists
-        const checkUser = await User.findById(req.user._id);
+        const checkUser: IUser | null = await User.findById(req.user._id);
         if (!checkUser) {
-            return res.status(404).send({
-                status: 'Failed',
-                message: "User not found."
-            });
+            return next(createHttpError(404, "User not found."));
         }
 
         // Upload new profile picture to Cloudinary
@@ -41,10 +39,7 @@ const updateProfilePicture = async (req: CustomRequest, res: Response): Promise<
             uploadImageUrl = await cloudinary.uploader.upload(req.file.path);
             fs.unlinkSync(req.file.path); // Remove from local storage
         } catch (error) {
-            return res.status(500).send({
-                status: 'Failed',
-                message: "Profile picture upload failed."
-            });
+            return next(createHttpError(500, "Profile picture upload failed."));
         }
 
         // Save the new profile picture URL to the user document
@@ -56,26 +51,20 @@ const updateProfilePicture = async (req: CustomRequest, res: Response): Promise<
         if (previousProfilePictureUrl) {
             try {
                 // Safeguard by checking if previousProfilePictureUrl has both "/" and "." before proceeding
-                const segments = previousProfilePictureUrl.split('/');
-                const fileName = segments.pop(); // Get the last segment which should be the file name
+                const segments: string[] = previousProfilePictureUrl.split('/');
+                const fileName: string | undefined = segments.pop(); // Get the last segment which should be the file name
 
                 // Ensure fileName exists and contains a dot before trying to split it
-                const publicId = fileName?.split('.')[0];
+                const publicId: string | undefined = fileName?.split('.')[0];
 
                 // Proceed with deletion only if publicId is valid
                 if (publicId) {
                     await cloudinary.uploader.destroy(publicId);
                 } else {
-                    return res.status(500).send({
-                        status: 'Failed',
-                        message: "Profile picture updated but previous image could not be identified for deletion.",
-                    });
+                    return next(createHttpError(500, "Profile picture update failed."));
                 }
             } catch (error) {
-                return res.status(500).send({
-                    status: 'Failed',
-                    message: "Profile picture updated but previous image could not be deleted from Cloudinary."
-                });
+                return next(createHttpError(500, "Profile picture updated but previous image could not be deleted from Cloudinary."));
             }
         }
 
@@ -87,11 +76,8 @@ const updateProfilePicture = async (req: CustomRequest, res: Response): Promise<
         });
 
     } catch (error) {
-        console.error("Error updating profile picture:", error); // Log error for debugging
-        return res.status(500).send({
-            status: 'Failed',
-            message: "Internal server error."
-        });
+        // console.error("Error updating profile picture:", error); // Log error for debugging
+        return next(createHttpError(500, "Internal Server Error!"));
     }
 };
 

@@ -10,15 +10,13 @@ const flightPlanPrompt_1 = __importDefault(require("../../utils/Gemini Utils/fli
 const hotelPlanPrompt_1 = __importDefault(require("../../utils/Gemini Utils/hotelPlanPrompt"));
 const generateRecommendation_1 = __importDefault(require("../../utils/Gemini Utils/generateRecommendation"));
 const client_1 = __importDefault(require("../../redis/client"));
-const createPlan = async (req, res) => {
+const http_errors_1 = __importDefault(require("http-errors"));
+const createPlan = async (req, res, next) => {
     try {
         const { destination, dispatch_city, travel_dates, budget, total_people } = req.body;
         // Check if all required fields are present
         if (!destination || !dispatch_city || !travel_dates || !budget || !total_people) {
-            return res.status(400).json({
-                status: 'Failed',
-                message: "All fields are required."
-            });
+            return next((0, http_errors_1.default)(400, "All fields are required!"));
         }
         const lowerDestination = destination.toLowerCase();
         const lowerDispatchCity = dispatch_city.toLowerCase();
@@ -27,12 +25,8 @@ const createPlan = async (req, res) => {
         const redisKey = `${req.user._id}:${lowerDestination}:${lowerDispatchCity}:${total_people}:${lowerBudget}`;
         client_1.default.get(redisKey, async (err, cacheData) => {
             if (err) {
-                console.log("Internal Redis Error...");
-                return res.status(500).json({
-                    status: 'Failed',
-                    message: "Internal Redis Error",
-                    error: err
-                });
+                // console.log("Internal Redis Error...");  //For Debugging
+                return next((0, http_errors_1.default)(500, "Internal Redis Server Error!"));
             }
             if (cacheData) {
                 return res.status(200).json({
@@ -51,7 +45,7 @@ const createPlan = async (req, res) => {
                 });
                 // Return the existing plan and save it into cache
                 if (checkPlan) {
-                    client_1.default.setex(redisKey, 120, JSON.stringify(checkPlan));
+                    await client_1.default.setex(redisKey, 120, JSON.stringify(checkPlan));
                     return res.status(200).json({
                         status: 'Success',
                         message: "Plan Already Created",
@@ -70,8 +64,9 @@ const createPlan = async (req, res) => {
                 };
                 const flightPrompt = (0, flightPlanPrompt_1.default)(flightPayload);
                 const generateFlightData = await (0, generateRecommendation_1.default)(flightPrompt);
+                let flightData;
                 if (typeof generateFlightData == 'string') {
-                    var flightData = JSON.parse(generateFlightData.replace(/```json|```/g, "").trim());
+                    flightData = JSON.parse(generateFlightData.replace(/```json|```/g, "").trim());
                 }
                 else {
                     console.log("generateFlightData is not a string:", generateFlightData);
@@ -165,10 +160,7 @@ const createPlan = async (req, res) => {
             });
         }
         console.error(error); // Log the error for debugging
-        return res.status(500).json({
-            status: 'Failed',
-            message: "Internal Server Error."
-        });
+        return next((0, http_errors_1.default)(500, "Internal Server Error!"));
     }
 };
 exports.createPlan = createPlan;
