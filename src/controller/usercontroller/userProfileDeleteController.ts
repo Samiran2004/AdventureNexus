@@ -1,13 +1,12 @@
-import { Request, Response } from 'express';
+import {NextFunction, Request, Response} from 'express';
 import cloudinary from '../../service/cloudinaryService';
-import User from '../../models/userModel'; // Adjust the import according to your TypeScript setup
+import User, {IUser} from '../../models/userModel';
 import sendMail from '../../service/mailService';
-import { deleteUserEmailData } from '../../utils/emailTemplate';
 
-const userDelete = async (req: Request, res: Response) => {
+const userDelete = async (req: Request, res: Response, next: NextFunction) => {
     try {
         // Check if the user exists
-        const checkUser = await User.findById(req.user._id);
+        const checkUser: IUser | null = await User.findById(req.user._id);
         if (!checkUser) {
             return res.status(404).send({
                 status: 'Failed',
