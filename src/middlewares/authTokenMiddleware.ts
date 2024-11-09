@@ -1,6 +1,7 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
-import User from '../src/models/userModel';
+import User, { IUser } from "../models/userModel";
+import { config } from "../config/config";
 
 interface UserPayload extends JwtPayload {
     fullname: string;
@@ -11,11 +12,14 @@ interface UserPayload extends JwtPayload {
     profilepicture: string;
 }
 
+interface CustomRequest extends Request {
+    user?: UserPayload;
+}
+
 const authenticateToken = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const accessToken = req.cookies['accessToken'];
+        const accessToken: string = req.cookies['accessToken'];
 
-        // Check if access token is present
         if (!accessToken) {
             return res.status(401).send({
                 status: 'Unauthorized',
@@ -23,13 +27,11 @@ const authenticateToken = async (req: Request, res: Response, next: NextFunction
             });
         }
 
-        // Verify the access token
-        jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET as string, async (err, user) => {
+        jwt.verify(accessToken, config.JWT_ACCESS_SECRET as string, async (err, user) => {
             if (err) {
-                // If token has expired, handle it
                 if (err.name === 'TokenExpiredError') {
                     try {
-                        const userData = await User.findById((user as UserPayload)._id);
+                        const userData: IUser | null = await User.findById((user as UserPayload)._id);
                         if (!userData || !userData.refreshtoken) {
                             return res.status(403).send({
                                 status: 'Forbidden',
@@ -37,8 +39,7 @@ const authenticateToken = async (req: Request, res: Response, next: NextFunction
                             });
                         }
 
-                        // Verify the refresh token
-                        jwt.verify(userData.refreshtoken, process.env.JWT_REFRESH_SECRET as string, (err, decodedRefreshToken) => {
+                        jwt.verify(userData.refreshtoken, config.JWT_REFRESH_SECRET as string, (err, decodedRefreshToken) => {
                             if (err) {
                                 return res.status(403).send({
                                     status: 'Forbidden',
@@ -46,28 +47,26 @@ const authenticateToken = async (req: Request, res: Response, next: NextFunction
                                 });
                             }
 
-                            // Generate new access token
                             const newUserPayload: UserPayload = {
                                 fullname: userData.fullname,
                                 email: userData.email,
                                 username: userData.username,
                                 gender: userData.gender,
-                                _id: userData._id,
+                                _id: userData._id as string,
                                 profilepicture: userData.profilepicture
                             };
 
-                            const newAccessToken = jwt.sign(newUserPayload, process.env.JWT_ACCESS_SECRET as string, {
+                            const newAccessToken: string = jwt.sign(newUserPayload, config.JWT_ACCESS_SECRET as string, {
                                 expiresIn: '1h'
                             });
 
-                            // Set new access token in cookies
                             res.cookie('accessToken', newAccessToken, {
                                 httpOnly: true,
-                                secure: process.env.NODE_ENV === 'production',
-                                sameSite: 'Strict'
+                                // secure: process.env.NODE_ENV === 'production',
+                                // sameSite: 'Strict'
                             });
 
-                            req.user = decodedRefreshToken; // Proceed with the refresh token
+                            (req as CustomRequest).user = newUserPayload;
                             next();
                         });
                     } catch (error) {
@@ -83,8 +82,7 @@ const authenticateToken = async (req: Request, res: Response, next: NextFunction
                     });
                 }
             } else {
-                // Token is valid, proceed with the user
-                req.user = user;
+                (req as CustomRequest).user = user as UserPayload;
                 next();
             }
         });

@@ -20,6 +20,7 @@ const client_1 = __importDefault(require("./redis/client"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const globalErrorHandler_1 = __importDefault(require("./middlewares/globalErrorHandler"));
+const config_1 = require("./config/config");
 // Configure env variables...
 dotenv_1.default.config();
 // Initialize express app
@@ -83,7 +84,7 @@ app.use('/api/v1/recommendation', recommendationRoutes_1.default);
 app.use('/api/v1/planning', planningRoute_1.default);
 app.use(globalErrorHandler_1.default);
 // Server connection...
-app.listen(process.env.PORT, (err) => err
+app.listen(config_1.config.port, (err) => err
     ? (0, figlet_1.default)(`S e r v e r  c o n n e c t i o n  e r r o r`, (err, data) => {
         err ? console.log("Figlet error") : console.log(data);
     })

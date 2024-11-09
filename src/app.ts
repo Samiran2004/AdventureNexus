@@ -15,6 +15,7 @@ import redis from './redis/client';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import errorHandler from './middlewares/globalErrorHandler';
+import {config} from "./config/config";
 
 // Configure env variables...
 dotenv.config();
@@ -104,7 +105,7 @@ app.use('/api/v1/planning', planningRoute);
 app.use(errorHandler);
 
 // Server connection...
-app.listen(process.env.PORT, (err?: Error) =>
+app.listen(config.port, (err?: Error) =>
     err
         ? figlet(`S e r v e r  c o n n e c t i o n  e r r o r`, (err: Error | null, data: string | undefined) => {
             err ? console.log("Figlet error") : console.log(data);

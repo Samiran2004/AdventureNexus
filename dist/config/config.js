@@ -7,6 +7,9 @@ exports.config = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const _config = {
-    env: process.env.NODE_ENV
+    port: process.env.PORT,
+    env: process.env.NODE_ENV,
+    JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET,
+    JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
 };
 exports.config = Object.freeze(_config);
