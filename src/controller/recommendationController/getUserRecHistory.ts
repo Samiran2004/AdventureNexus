@@ -2,13 +2,16 @@ import { NextFunction, Request, Response } from 'express';
 import User, { IUser } from '../../models/userModel';
 import createHttpError from 'http-errors';
 
-interface CustomRequest<TParams = {}, TQuery = {}, TBody = {}> extends Request<TParams, any, TBody, TQuery> {
+export interface CustomRequest<TParams = {}, TQuery = {}, TBody = {}> extends Request<TParams, any, TBody, TQuery> {
     user: {
         _id: string;
     }
 }
 
-const getUserHistory = async (req: CustomRequest, res: Response, next: NextFunction) => {
+const getUserRecommendationHistory = async (
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction): Promise<Response | void> => {
     try {
         // Fetch the user id from the token
         const userId = req.user._id as string;
@@ -30,4 +33,4 @@ const getUserHistory = async (req: CustomRequest, res: Response, next: NextFunct
     }
 };
 
-export default getUserHistory;
+export default getUserRecommendationHistory;

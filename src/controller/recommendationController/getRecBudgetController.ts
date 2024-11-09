@@ -4,12 +4,19 @@ import generateRecommendation from '../../utils/Gemini Utils/generateRecommendat
 import redis from '../../redis/client';
 import createHttpError from 'http-errors';
 
-interface CustomRequest<TParams = {}, TQuery = {}, TBody = {}> extends Request<TParams, any, TQuery, TBody> {
+export interface CustomRequestGetRecBudget<
+    TParams = { budget: number },
+    ResBody = any,
+    ReqBody = any
+> extends Request<TParams, ResBody, ReqBody> {
     user: {
+        _id: string;
+        currency_code: string;
         country: string
-    }
+    };
 }
-interface RequestParams {
+
+export interface RequestParamsGetRecBudget {
     budget: number | string;
 }
 interface promptData {
@@ -17,25 +24,28 @@ interface promptData {
     budget: number;
 }
 
-export const getBudgetRecommendations = async (req: CustomRequest<RequestParams>, res: Response, next: NextFunction) => {
+export const getBudgetRecommendations = async (
+    req: CustomRequestGetRecBudget<{
+        budget: number;
+    }, {}, {}>,
+    res: Response,
+    next: NextFunction): Promise<Response | void> => {
     try {
         // Fetch budget from req.params
-        let { budget } = req.params;
+        let budget: number = req.params.budget as number;
         if (!budget) {
             return next(createHttpError(400, "Budget is required!"));
         }
 
         // If the budget is a string type, convert it into an integer
-        if (typeof budget === 'string') {
-            budget = parseInt(budget);
-        }
+
 
         if (isNaN(budget)) {
             return next(createHttpError(400, "Invalid budget format!"));
         }
 
         // Redis Key
-        const redisKey = `${budget}:${req.user.country}`;
+        const redisKey = `${budget}:${(req.user.country as string)}`;
 
         // Check if recommendation exists in Redis
         redis.get(redisKey, async (err, cacheData) => {
@@ -56,18 +66,15 @@ export const getBudgetRecommendations = async (req: CustomRequest<RequestParams>
                     budget: budget,
                     country: req.user.country
                 };
-                const prompt = generatePromptForBudget(data);
+                const prompt: string = generatePromptForBudget(data);
 
                 // Generate recommendations
-                const recommendations = await generateRecommendation(prompt);
-                if (typeof recommendations != 'string') {
-                    // console.error('Error: recommendations is not a valid string.'); // Log for Debugging
-                    return next(createHttpError(500, "Invalid response from recommendation service!"));
-                }
-                const result = recommendations.replace(/```json|```/g, "").trim();
+                const recommendations: string = await generateRecommendation(prompt) as string;
+
+                const result: string = recommendations.replace(/```json|```/g, "").trim();
 
                 // Save the new recommendation in Redis (For 5 min)
-                redis.setex(redisKey, 300, JSON.stringify(result));
+                await redis.setex(redisKey, 300, JSON.stringify(result));
 
                 // Return the response
                 return res.status(200).json({
@@ -77,7 +84,7 @@ export const getBudgetRecommendations = async (req: CustomRequest<RequestParams>
             }
         });
     } catch (error) {
-        console.error('Internal Server Error:', error); // Log the error for debugging
+        // console.error('Internal Server Error:', error); // Log the error for debugging
         return next(createHttpError(500, "Internal Server Error!"));
     }
 };

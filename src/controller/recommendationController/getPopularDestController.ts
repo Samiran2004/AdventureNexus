@@ -3,7 +3,7 @@ import generatePromptForPopularDest from '../../utils/Gemini Utils/generatePromp
 import generateRecommendation from '../../utils/Gemini Utils/generateRecommendation';
 import createHttpError from 'http-errors';
 
-interface CustomRequest<TParams = {}, TQuery = {}, TBody = {}> extends Request<TParams, any, TBody, TQuery> {
+export interface CustomRequestGetPopularDest<TParams = {}, TQuery = {}, TBody = {}> extends Request<TParams, any, TBody, TQuery> {
     user: {
         country: string;
         currency: string;
@@ -15,7 +15,10 @@ interface DestinationPromptData {
     currency: string;
 }
 
-export const getPopularDestinations = async (req: CustomRequest, res: Response, next: NextFunction) => {
+export const getPopularDestinations = async (
+    req: CustomRequestGetPopularDest,
+    res: Response,
+    next: NextFunction): Promise<Response | void> => {
     try {
         const { country, currency } = req.user; // Extracting country and currency from the authenticated user's information
 

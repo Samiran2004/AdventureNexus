@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const userModel_1 = __importDefault(require("../../models/userModel"));
 const http_errors_1 = __importDefault(require("http-errors"));
-const getUserHistory = async (req, res, next) => {
+const getUserRecommendationHistory = async (req, res, next) => {
     try {
         // Fetch the user id from the token
         const userId = req.user._id;
@@ -25,4 +25,4 @@ const getUserHistory = async (req, res, next) => {
         return next((0, http_errors_1.default)(500, "Internal Server Error!"));
     }
 };
-exports.default = getUserHistory;
+exports.default = getUserRecommendationHistory;

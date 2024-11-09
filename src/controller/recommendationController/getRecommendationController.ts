@@ -7,7 +7,7 @@ import { recommendationValidation } from '../../utils/JoiUtils/joiRecommendation
 import redis from '../../redis/client';
 import createHttpError from 'http-errors';
 
-interface RequestBody {
+export interface RequestBody {
     day: number;
     budget: number;
     destination: string;
@@ -15,7 +15,7 @@ interface RequestBody {
     totalPeople: number;
 }
 
-interface CustomRequest<TParams = {}, TQuery = {}, TBody = RequestBody> extends Request<TParams, any, TBody, TQuery> {
+export interface CustomRequestRecommendationController<TParams = {}, TQuery = {}, TBody = RequestBody> extends Request<TParams, any, TBody, TQuery> {
     body: TBody;
     user: {
         _id: string;
@@ -35,7 +35,10 @@ interface promptData {
     preference: string[];
 }
 
-const generateRecommendations = async (req: CustomRequest, res: Response, next: NextFunction) => {
+const generateRecommendations = async (
+    req: CustomRequestRecommendationController,
+    res: Response,
+    next: NextFunction): Promise<Response | void> => {
     try {
         // Validate request body
         const { error } = recommendationValidation.validate(req.body);
