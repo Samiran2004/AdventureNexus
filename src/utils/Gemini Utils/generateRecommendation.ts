@@ -8,7 +8,7 @@ const model = genAi.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
 async function generateRecommendation(prompt: string): Promise<string | undefined> {
     try {
-        const result = await model.generateContent(prompt);
+        const result: any = await model.generateContent(prompt);
         return result.response.candidates[0].content.parts[0].text;
     } catch (error) {
         console.error("Error generating recommendation:", error);
