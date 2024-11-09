@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import {config} from "../config/config";
 
 interface MailData {
     to: string;
@@ -6,17 +7,17 @@ interface MailData {
     html: string;
 }
 
-const sendMail = async (data: MailData, callback: (error: Error | null, response?: string) => void) => {
+const sendMail = async (data: MailData, callback: (error: Error | null, response: string | null) => void) => {
     const transporter = nodemailer.createTransport({
         service: 'Gmail',
         auth: {
-            user: process.env.MAIL_ADDRESS,
-            pass: process.env.MAIL_PASSWORD
+            user: config.MAIL_ADDRESS,
+            pass: config.MAIL_PASSWORD
         }
     });
 
     const mailOptions = {
-        from: process.env.MAIL_ADDRESS,
+        from: config.MAIL_ADDRESS,
         to: data.to,
         subject: data.subject,
         html: data.html
