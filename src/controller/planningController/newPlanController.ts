@@ -13,21 +13,25 @@ interface TravelDates {
     end_date: string;
 }
 
-interface CreatePlanRequestBody {
+export interface CreatePlanRequestBody {
     destination: string;
     dispatch_city: string;
     travel_dates: TravelDates;
     budget: string;
     total_people: number;
 }
-interface CustomRequest<TParams = {}, TQuery = {}, TBody = {}> extends Request<TParams, any, TBody, TQuery> {
+export interface CustomRequest<TParams = {}, TQuery = {}, TBody = {}> extends Request<TParams, any, TBody, TQuery> {
     user: {
         _id: string;
         currency_code: string;
     }
 }
 
-export const createPlan = async (req: CustomRequest<{}, {}, CreatePlanRequestBody>, res: Response, next: NextFunction) => {
+export const createPlan = async (
+    req: CustomRequest<{}, {}, CreatePlanRequestBody>,
+    res: Response,
+    next: NextFunction
+): Promise<Response | void> => {
     try {
         const { destination, dispatch_city, travel_dates, budget, total_people } = req.body;
 
@@ -36,9 +40,9 @@ export const createPlan = async (req: CustomRequest<{}, {}, CreatePlanRequestBod
             return next(createHttpError(400, "All fields are required!"));
         }
 
-        const lowerDestination = destination.toLowerCase();
-        const lowerDispatchCity = dispatch_city.toLowerCase();
-        const lowerBudget = budget.toLowerCase();
+        const lowerDestination: string = destination.toLowerCase();
+        const lowerDispatchCity: string = dispatch_city.toLowerCase();
+        const lowerBudget: string = budget.toLowerCase();
 
         // Check plan in Redis
         const redisKey = `${req.user._id}:${lowerDestination}:${lowerDispatchCity}:${total_people}:${lowerBudget}`;
@@ -84,14 +88,10 @@ export const createPlan = async (req: CustomRequest<{}, {}, CreatePlanRequestBod
                     currency_code: req.user.currency_code
                 };
 
-                const flightPrompt = generateFlightPrompt(flightPayload);
-                const generateFlightData = await generateRecommendation(flightPrompt);
+                const flightPrompt: string = generateFlightPrompt(flightPayload);
+                const generateFlightData: string = await generateRecommendation(flightPrompt) as string;
                 let flightData;
-                if (typeof generateFlightData == 'string') {
-                    flightData = JSON.parse(generateFlightData.replace(/```json|```/g, "").trim());
-                } else {
-                    console.log("generateFlightData is not a string:", generateFlightData);
-                }
+                flightData = JSON.parse(generateFlightData.replace(/```json|```/g, "").trim());
 
                 // Generate Hotels Data
                 const hotelPayload = {
@@ -103,13 +103,9 @@ export const createPlan = async (req: CustomRequest<{}, {}, CreatePlanRequestBod
                     currency_code: req.user.currency_code
                 };
 
-                const hotelPrompt = generateHotelPrompt(hotelPayload);
-                const generateHotelData = await generateRecommendation(hotelPrompt);
-                if (typeof generateHotelData == 'string') {
-                    var hotelsData = JSON.parse(generateHotelData.replace(/```json|```/g, "").trim());
-                } else {
-                    console.log("generateHotelData is not a string:", generateHotelData);
-                }
+                const hotelPrompt: string = generateHotelPrompt(hotelPayload);
+                const generateHotelData: string = await generateRecommendation(hotelPrompt) as string;
+                var hotelsData = JSON.parse(generateHotelData.replace(/```json|```/g, "").trim());
 
                 // Save the plan in the database
                 const newPlan = new Plan({

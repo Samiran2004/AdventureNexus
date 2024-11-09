@@ -65,12 +65,7 @@ const createPlan = async (req, res, next) => {
                 const flightPrompt = (0, flightPlanPrompt_1.default)(flightPayload);
                 const generateFlightData = await (0, generateRecommendation_1.default)(flightPrompt);
                 let flightData;
-                if (typeof generateFlightData == 'string') {
-                    flightData = JSON.parse(generateFlightData.replace(/```json|```/g, "").trim());
-                }
-                else {
-                    console.log("generateFlightData is not a string:", generateFlightData);
-                }
+                flightData = JSON.parse(generateFlightData.replace(/```json|```/g, "").trim());
                 // Generate Hotels Data
                 const hotelPayload = {
                     destination: lowerDestination,
@@ -82,12 +77,7 @@ const createPlan = async (req, res, next) => {
                 };
                 const hotelPrompt = (0, hotelPlanPrompt_1.default)(hotelPayload);
                 const generateHotelData = await (0, generateRecommendation_1.default)(hotelPrompt);
-                if (typeof generateHotelData == 'string') {
-                    var hotelsData = JSON.parse(generateHotelData.replace(/```json|```/g, "").trim());
-                }
-                else {
-                    console.log("generateHotelData is not a string:", generateHotelData);
-                }
+                var hotelsData = JSON.parse(generateHotelData.replace(/```json|```/g, "").trim());
                 // Save the plan in the database
                 const newPlan = new planModel_1.default({
                     user: req.user._id,

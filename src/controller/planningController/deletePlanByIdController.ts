@@ -3,13 +3,16 @@ import User from '../../models/userModel';
 import Plan from '../../models/planModel';
 import createHttpError from 'http-errors';
 
-interface CustomRequest extends Request {
+export interface CustomRequestDeletePlan extends Request {
     user: {
         _id: string
     }
 }
 
-export const deletePlanById = async (req: CustomRequest, res: Response, next: NextFunction) => {
+export const deletePlanById = async (
+    req: CustomRequestDeletePlan,
+    res: Response,
+    next: NextFunction): Promise<Response | void> => {
     try {
         const id: string = req.params.id; // Plan ID to be deleted
         const userId = req.user._id; // Logged-in user's ID

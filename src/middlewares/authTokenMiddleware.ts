@@ -16,35 +16,42 @@ interface CustomRequest extends Request {
     user?: UserPayload;
 }
 
-const authenticateToken = async (req: Request, res: Response, next: NextFunction) => {
+export default async function authTokenMiddleware(
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> {
     try {
         const accessToken: string = req.cookies['accessToken'];
 
         if (!accessToken) {
-            return res.status(401).send({
+            res.status(401).send({
                 status: 'Unauthorized',
                 message: "Access token not found."
             });
+            return;
         }
 
         jwt.verify(accessToken, config.JWT_ACCESS_SECRET as string, async (err, user) => {
             if (err) {
                 if (err.name === 'TokenExpiredError') {
                     try {
-                        const userData: IUser | null = await User.findById((user as UserPayload)._id);
+                        const userData: IUser | null = await User.findById((user as UserPayload)?._id);
                         if (!userData || !userData.refreshtoken) {
-                            return res.status(403).send({
+                            res.status(403).send({
                                 status: 'Forbidden',
                                 message: "Refresh token not found, please login again."
                             });
+                            return;
                         }
 
                         jwt.verify(userData.refreshtoken, config.JWT_REFRESH_SECRET as string, (err, decodedRefreshToken) => {
                             if (err) {
-                                return res.status(403).send({
+                                res.status(403).send({
                                     status: 'Forbidden',
                                     message: "Invalid refresh token, please login again."
                                 });
+                                return;
                             }
 
                             const newUserPayload: UserPayload = {
@@ -70,13 +77,13 @@ const authenticateToken = async (req: Request, res: Response, next: NextFunction
                             next();
                         });
                     } catch (error) {
-                        return res.status(500).send({
+                        res.status(500).send({
                             status: 'Error',
                             message: "Error while fetching refresh token."
                         });
                     }
                 } else {
-                    return res.status(403).send({
+                    res.status(403).send({
                         status: 'Forbidden',
                         message: 'Invalid or expired access token.'
                     });
@@ -92,6 +99,4 @@ const authenticateToken = async (req: Request, res: Response, next: NextFunction
             message: "Internal Server Error."
         });
     }
-};
-
-export default authenticateToken;
+}
