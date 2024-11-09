@@ -12,13 +12,16 @@ interface RequestBody {
     password: string;
 }
 
-interface CustomRequest<TParams = {}, TQuery = {}, TBody = RequestBody> extends Request<TParams, any, TBody, TQuery> {
+export interface CustomRequestUpdateProfile<TParams = {}, TQuery = {}, TBody = RequestBody> extends Request<TParams, any, TBody, TQuery> {
     user: {
         _id: string;
     }
 }
 
-const updateProfile = async (req: CustomRequest, res: Response, next: NextFunction) => {
+const updateProfile = async (
+    req: CustomRequestUpdateProfile,
+    res: Response,
+    next: NextFunction): Promise<Response | void> => {
     try {
         // Fetch the user using id
         const checkUser = await User.findById(req.user._id);

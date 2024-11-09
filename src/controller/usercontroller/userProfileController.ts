@@ -2,13 +2,16 @@ import {NextFunction, Request, Response} from 'express';
 import User, {IUser} from '../../models/userModel';
 import createHttpError from "http-errors";
 
-interface CustomRequest<TParams = {}, TQuery = {}, TBody = {}> extends Request<TParams, any, TBody, TQuery>{
+export interface CustomRequestUserProfileController<TParams = {}, TQuery = {}, TBody = {}> extends Request<TParams, any, TBody, TQuery>{
     user:{
         _id: string
     }
 }
 
-async function userProfile(req: CustomRequest, res: Response, next: NextFunction) {
+async function userProfile(
+    req: CustomRequestUserProfileController,
+    res: Response,
+    next: NextFunction): Promise<Response | void> {
     try {
         const userData: IUser | null= await User.findById(req.user._id);
         

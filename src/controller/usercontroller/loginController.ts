@@ -5,7 +5,10 @@ import bcryptjs from 'bcryptjs';
 import { userSchemaValidation } from '../../utils/JoiUtils/joiLoginValidation';
 import createHttpError from "http-errors";
 
-const loginuser = async (req: Request, res: Response, next: NextFunction) => {
+const loginuser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction): Promise<Response | void> => {
     try {
         // Fetch all user data from req.body
         const { username, email, password } = req.body;

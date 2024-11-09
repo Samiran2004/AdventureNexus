@@ -18,14 +18,17 @@ interface MulterFile {
     stream: Readable;
 }
 
-interface CustomRequest<TParams = {}, TQuery = {}, TBody = {}> extends Request<TParams, any, TBody, TQuery> {
+export interface CustomRequestUpdateProfilePicture<TParams = {}, TQuery = {}, TBody = {}> extends Request<TParams, any, TBody, TQuery> {
     user: {
         _id: string;
     }
     file: MulterFile;
 }
 
-const updateProfilePicture = async (req: CustomRequest, res: Response, next: NextFunction) => {
+const updateProfilePicture = async (
+    req: CustomRequestUpdateProfilePicture,
+    res: Response,
+    next: NextFunction): Promise<Response | void> => {
     try {
         // Check if the user exists
         const checkUser: IUser | null = await User.findById(req.user._id);

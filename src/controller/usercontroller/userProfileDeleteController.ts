@@ -11,7 +11,10 @@ interface CustomRequest extends Request{
     }
 }
 
-const userDelete = async (req: Request, res: Response, next: NextFunction) => {
+const userDelete = async (
+    req: Request,
+    res: Response,
+    next: NextFunction): Promise<Response | void> => {
     try {
         // Check if the user exists
         const checkUser: IUser | null = await User.findById((req as CustomRequest).user._id);

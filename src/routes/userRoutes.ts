@@ -5,6 +5,13 @@ import createNewUser, {
 } from '../controller/usercontroller/registerController';
 import upload from '../middlewares/multer';
 import authTokenMiddleware from '../middlewares/authTokenMiddleware';
+import loginuser from "../controller/usercontroller/loginController";
+import userProfile, {CustomRequestUserProfileController} from "../controller/usercontroller/userProfileController";
+import userDelete from "../controller/usercontroller/userProfileDeleteController";
+import updateProfile, {CustomRequestUpdateProfile} from "../controller/usercontroller/updateProfileController";
+import updateProfilePicture, {
+    CustomRequestUpdateProfilePicture
+} from "../controller/usercontroller/updateProfilePictureController";
 
 const route: Router = express.Router();
 
@@ -83,18 +90,28 @@ route.post('/register', upload.single("profileimage"), (req, res, next) => {
 });
 
 // Login a User... Path: /api/v1/user/login
-route.post('/login', require('../controller/usercontroller/loginController'));
+route.post('/login', (req, res, next) => {
+    loginuser(req, res, next);
+});
 
 // Get user profile details... Path: /api/v1/user/profile
-route.get('/profile', authTokenMiddleware, require('../controller/usercontroller/userProfileController'));
+route.get('/profile', authTokenMiddleware, (req, res, next) => {
+    userProfile(req as CustomRequestUserProfileController, res, next);
+});
 
 // Delete user... Path: /api/v1/user/delete
-route.delete('/delete', authTokenMiddleware, require('../controller/usercontroller/userProfileDeleteController'));
+route.delete('/delete', authTokenMiddleware, (req, res, next) => {
+    userDelete(req, res, next);
+});
 
 // Update user... Path: /api/v1/user/update
-route.patch('/update', authTokenMiddleware, upload.single("profileimage"), require('../controller/usercontroller/updateProfileController'));
+route.patch('/update', authTokenMiddleware, upload.single("profileimage"), (req, res, next) => {
+    updateProfile(req as CustomRequestUpdateProfile, res, next);
+});
 
 // Update profile picture... Path: /api/v1/user/update/profilepicture
-route.patch('/update/profilepicture', authTokenMiddleware, upload.single("profileimage"), require('../controller/usercontroller/updateProfilePictureController'));
+route.patch('/update/profilepicture', authTokenMiddleware, upload.single("profileimage"), (req, res, next) => {
+    updateProfilePicture(req as CustomRequestUpdateProfilePicture, res, next);
+});
 
 export default route;
