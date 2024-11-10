@@ -12,6 +12,7 @@ const userProfileController_1 = __importDefault(require("../controller/usercontr
 const userProfileDeleteController_1 = __importDefault(require("../controller/usercontroller/userProfileDeleteController"));
 const updateProfileController_1 = __importDefault(require("../controller/usercontroller/updateProfileController"));
 const updateProfilePictureController_1 = __importDefault(require("../controller/usercontroller/updateProfilePictureController"));
+const rateLimiter_1 = __importDefault(require("../utils/rateLimiter"));
 const route = express_1.default.Router();
 /**
  * @swagger
@@ -81,11 +82,11 @@ const route = express_1.default.Router();
  *         description: Internal server error
  */
 // Create new user... Path: /api/v1/user/register
-route.post('/register', multer_1.default.single("profileimage"), (req, res, next) => {
+route.post('/register', rateLimiter_1.default, multer_1.default.single("profileimage"), (req, res, next) => {
     (0, registerController_1.default)(req, res, next);
 });
 // Login a User... Path: /api/v1/user/login
-route.post('/login', (req, res, next) => {
+route.post('/login', rateLimiter_1.default, (req, res, next) => {
     (0, loginController_1.default)(req, res, next);
 });
 // Get user profile details... Path: /api/v1/user/profile

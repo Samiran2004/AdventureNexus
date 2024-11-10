@@ -12,6 +12,7 @@ import updateProfile, {CustomRequestUpdateProfile} from "../controller/usercontr
 import updateProfilePicture, {
     CustomRequestUpdateProfilePicture
 } from "../controller/usercontroller/updateProfilePictureController";
+import limiter from "../utils/rateLimiter";
 
 const route: Router = express.Router();
 
@@ -85,12 +86,12 @@ const route: Router = express.Router();
  */
 
 // Create new user... Path: /api/v1/user/register
-route.post('/register', upload.single("profileimage"), (req, res, next) => {
+route.post('/register',limiter, upload.single("profileimage"), (req, res, next) => {
     createNewUser(req as CustomRequestRegisterController, res, next);
 });
 
 // Login a User... Path: /api/v1/user/login
-route.post('/login', (req, res, next) => {
+route.post('/login',limiter, (req, res, next) => {
     loginuser(req, res, next);
 });
 
