@@ -45,11 +45,7 @@ const updateProfile = async (req, res, next) => {
         if (req.file?.path) {
             try {
                 uploadImageUrl = await cloudinaryService_1.default.uploader.upload(req.file.path);
-                fs_1.default.unlink(req.file.path, (err) => {
-                    if (err) {
-                        console.error("Error removing file from local storage:", err);
-                    }
-                });
+                fs_1.default.unlinkSync(req.file.path);
                 const previousProfilePictureUrl = checkUser.profilepicture;
                 checkUser.profilepicture = uploadImageUrl.url;
                 // Delete the previous profile picture from Cloudinary if it exists
