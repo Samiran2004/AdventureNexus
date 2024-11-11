@@ -1,7 +1,7 @@
 const Joi = require('joi');
 
 // Define the validation schema for user registration
-const userSchemaValidation = Joi.object({
+export const userSchemaValidation = Joi.object({
     fullname: Joi.string()
         .min(3) // Minimum length of 3 characters
         .max(20) // Maximum length of 20 characters
@@ -37,6 +37,3 @@ const userSchemaValidation = Joi.object({
         .max(30) // Maximum length of 30 characters
         .required() // country is required
 });
-
-// Export the validation schema
-module.exports = userSchemaValidation;

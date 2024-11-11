@@ -1,5 +1,5 @@
 interface DestinationPromptData {
-  currency: string;
+  currency_code: string;
 }
 
 const generatePopularDestinationsPrompt = (data: DestinationPromptData): string => {
@@ -8,7 +8,7 @@ const generatePopularDestinationsPrompt = (data: DestinationPromptData): string 
 
         destination: The name of the city or region.
         description: A brief description of why the destination is popular.
-        estimated_cost: A price range for a typical visit in the ${data.currency} currency and the number of days.
+        estimated_cost: A price range for a typical visit in the ${data.currency_code} currency and the number of days.
         activities: A list of popular activities or attractions in that destination.
         popularity_rank: A rank from 1-10 based on current global trends.
         best_time_to_visit: The recommended season or months to visit."

@@ -17,7 +17,7 @@ const loginuser = async (req, res, next) => {
             return next((0, http_errors_1.default)(400, "All fields are required"));
         }
         // Validate user data using JOI
-        const { error } = joiLoginValidation_1.userSchemaValidation.validate(req.body);
+        const { error } = joiLoginValidation_1.userSchemaValidationLogin.validate(req.body);
         if (error) {
             return next((0, http_errors_1.default)(400, error.details[0].message));
         }

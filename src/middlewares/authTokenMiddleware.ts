@@ -10,6 +10,8 @@ interface UserPayload extends JwtPayload {
     gender: string;
     _id: string;
     profilepicture: string;
+    country: string;
+    currency: string;
 }
 
 interface CustomRequest extends Request {
@@ -60,7 +62,9 @@ export default async function authTokenMiddleware(
                                 username: userData.username,
                                 gender: userData.gender,
                                 _id: userData._id as string,
-                                profilepicture: userData.profilepicture
+                                profilepicture: userData.profilepicture,
+                                country: userData.country as string,
+                                currency: userData.currency_code as string
                             };
 
                             const newAccessToken: string = jwt.sign(newUserPayload, config.JWT_ACCESS_SECRET as string, {

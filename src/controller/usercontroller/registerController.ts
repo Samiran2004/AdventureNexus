@@ -2,7 +2,6 @@ import {NextFunction, Request, Response} from 'express';
 import User, { IUser } from '../../models/userModel';
 import bcrypt from 'bcryptjs';
 import cc from 'currency-codes';
-import { userSchemaValidation } from '../../utils/JoiUtils/joiLoginValidation';
 import generateRandomUserName from '../../utils/generateRandomUserName';
 import cloudinary from '../../service/cloudinaryService';
 import sendMail from '../../service/mailService';
@@ -11,12 +10,13 @@ import emailTemplates from '../../utils/emailTemplate';
 import dotenv from 'dotenv';
 import { Readable } from 'stream';
 import createHttpError from "http-errors";
+import {userSchemaValidation} from "../../utils/JoiUtils/joiValidation";
 
 export interface RequestBodyRegisterController {
     fullname: string;
     email: string;
     password: string;
-    phonenumber: number;
+    phonenumber: string;
     gender: string;
     preference: string[];
     country: string;
@@ -124,7 +124,7 @@ const create_new_user = async (
         const emailData = registerEmailData(fullname, email);
 
         // Send welcome email
-        sendMail(emailData, (mailError: Error | null, response: any) => {
+        await sendMail(emailData, (mailError: Error | null, response: any) => {
             if (mailError) {
                 return next(createHttpError(500, "User created, but email sending failed!"));
             }

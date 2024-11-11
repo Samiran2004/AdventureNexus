@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const userModel_1 = __importDefault(require("../../models/userModel"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const currency_codes_1 = __importDefault(require("currency-codes"));
-const joiLoginValidation_1 = require("../../utils/JoiUtils/joiLoginValidation");
 const generateRandomUserName_1 = __importDefault(require("../../utils/generateRandomUserName"));
 const cloudinaryService_1 = __importDefault(require("../../service/cloudinaryService"));
 const mailService_1 = __importDefault(require("../../service/mailService"));
@@ -14,6 +13,7 @@ const fs_1 = __importDefault(require("fs"));
 const emailTemplate_1 = __importDefault(require("../../utils/emailTemplate"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const http_errors_1 = __importDefault(require("http-errors"));
+const joiValidation_1 = require("../../utils/JoiUtils/joiValidation");
 dotenv_1.default.config();
 const create_new_user = async (req, res, next) => {
     let { fullname, email, password, phonenumber, gender, preference, country } = req.body;
@@ -23,7 +23,7 @@ const create_new_user = async (req, res, next) => {
             return next((0, http_errors_1.default)(400, "All fields are required!"));
         }
         // Validate input data
-        const { error } = joiLoginValidation_1.userSchemaValidation.validate(req.body);
+        const { error } = joiValidation_1.userSchemaValidation.validate(req.body);
         if (error) {
             return next((0, http_errors_1.default)(400, error?.details[0].message));
         }
@@ -85,7 +85,7 @@ const create_new_user = async (req, res, next) => {
         const { registerEmailData } = emailTemplate_1.default;
         const emailData = registerEmailData(fullname, email);
         // Send welcome email
-        (0, mailService_1.default)(emailData, (mailError, response) => {
+        await (0, mailService_1.default)(emailData, (mailError, response) => {
             if (mailError) {
                 return next((0, http_errors_1.default)(500, "User created, but email sending failed!"));
             }

@@ -1,11 +1,7 @@
-import multer, { StorageEngine } from 'multer';
+import multer from "multer";
+import path from "path";
 
-const storage: StorageEngine = multer.diskStorage({
-    filename: function (req, file, cb) {
-        cb(null, file.originalname);
-    }
+export const upload = multer({
+    dest: path.resolve(__dirname, '../../public/data/uploads'),
+    limits: { fileSize: 1e7 }  //30mb:  30*1024*1024
 });
-
-const upload = multer({ storage });
-
-export default upload;

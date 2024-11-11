@@ -43,7 +43,9 @@ async function authTokenMiddleware(req, res, next) {
                                 username: userData.username,
                                 gender: userData.gender,
                                 _id: userData._id,
-                                profilepicture: userData.profilepicture
+                                profilepicture: userData.profilepicture,
+                                country: userData.country,
+                                currency: userData.currency_code
                             };
                             const newAccessToken = jsonwebtoken_1.default.sign(newUserPayload, config_1.config.JWT_ACCESS_SECRET, {
                                 expiresIn: '1h'

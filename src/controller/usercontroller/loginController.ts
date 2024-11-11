@@ -2,7 +2,7 @@ import {NextFunction, Request, Response} from 'express';
 import jwt from 'jsonwebtoken';
 import User, { IUser } from '../../models/userModel';
 import bcryptjs from 'bcryptjs';
-import { userSchemaValidation } from '../../utils/JoiUtils/joiLoginValidation';
+import { userSchemaValidationLogin} from '../../utils/JoiUtils/joiLoginValidation';
 import createHttpError from "http-errors";
 
 const loginuser = async (
@@ -19,7 +19,7 @@ const loginuser = async (
         }
 
         // Validate user data using JOI
-        const { error } = userSchemaValidation.validate(req.body);
+        const { error } = userSchemaValidationLogin.validate(req.body);
         if (error) {
             return next(createHttpError(400, error.details[0].message));
         }

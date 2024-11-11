@@ -1,7 +1,7 @@
 import Joi from 'joi';
 
 // Define the validation schema for user registration
-export const userSchemaValidation = Joi.object({
+export const userSchemaValidationLogin = Joi.object({
     username: Joi.string()
         .min(3) // Minimum length for username
         .max(30) // Maximum length for username

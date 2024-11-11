@@ -3,10 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userSchemaValidation = void 0;
+exports.userSchemaValidationLogin = void 0;
 const joi_1 = __importDefault(require("joi"));
 // Define the validation schema for user registration
-exports.userSchemaValidation = joi_1.default.object({
+exports.userSchemaValidationLogin = joi_1.default.object({
     username: joi_1.default.string()
         .min(3) // Minimum length for username
         .max(30) // Maximum length for username

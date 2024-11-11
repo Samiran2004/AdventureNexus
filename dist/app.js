@@ -88,6 +88,6 @@ app.listen(config_1.config.port, (err) => err
     ? (0, figlet_1.default)(`S e r v e r  c o n n e c t i o n  e r r o r`, (err, data) => {
         err ? console.log("Figlet error") : console.log(data);
     })
-    : (0, figlet_1.default)(`S e r v e r  c o n n e c t e d \n P O R T :  ${process.env.PORT}`, (err, data) => {
+    : (0, figlet_1.default)(`S e r v e r  c o n n e c t e d \n P O R T :  ${config_1.config.port}`, (err, data) => {
         err ? console.log("Figlet error...") : console.log(data);
     }));

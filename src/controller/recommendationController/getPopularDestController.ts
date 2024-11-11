@@ -1,57 +1,74 @@
-import { NextFunction, Request, Response } from 'express';
+import {json, NextFunction, Request, Response} from 'express';
 import generatePromptForPopularDest from '../../utils/Gemini Utils/generatePromptForPopularDest';
 import generateRecommendation from '../../utils/Gemini Utils/generateRecommendation';
 import createHttpError from 'http-errors';
+import redis from "../../redis/client";
 
 export interface CustomRequestGetPopularDest<TParams = {}, TQuery = {}, TBody = {}> extends Request<TParams, any, TBody, TQuery> {
     user: {
         country: string;
-        currency: string;
+        currency_code: string;
     }
 }
 
 interface DestinationPromptData {
     country: string;
-    currency: string;
+    currency_code: string;
 }
 
 export const getPopularDestinations = async (
     req: CustomRequestGetPopularDest,
     res: Response,
-    next: NextFunction): Promise<Response | void> => {
+    next: NextFunction
+): Promise<Response | void> => {
     try {
-        const { country, currency } = req.user; // Extracting country and currency from the authenticated user's information
-
-        if (!country || !currency) {
+        const { country, currency_code } = req.user;
+        if (!country || !currency_code) {
             return next(createHttpError(400, "Country or Currency information is missing from user data!"));
         }
 
-        // Create a valid object for the prompt function
-        const promptData: DestinationPromptData = { country, currency };
+        const redisKey: string = `${country}:${currency_code}`;
 
-        // Generate a prompt and fetch the popular destinations using external AI service
-        const prompt: string = generatePromptForPopularDest(promptData);
-        const generatePopularDest = await generateRecommendation(prompt);
-        if (typeof generatePopularDest !== 'string') {
-            return next(createHttpError(500, "Internal Server Error!"));
-        }
+        redis.get(redisKey, async (err, cacheData) => {
+            if (err) {
+                return next(createHttpError(500, "Internal Redis Server Error!"));
+            }
 
-        let destinations;
-        try {
-            const result: string = generatePopularDest.replace(/```json|```/g, "").trim();
-            destinations = JSON.parse(result);
-        } catch (parseError) {
-            // console.error('Error parsing AI response:', parseError);  //Log for Debugging
-            return next(createHttpError(500, "Error parsing popular destinations response."))
-        }
+            let generatePopularDest: string;
+            if (cacheData) {
+                generatePopularDest = JSON.parse(cacheData);
+            } else {
+                const promptData: DestinationPromptData = { country, currency_code };
+                const prompt: string = generatePromptForPopularDest(promptData);
 
-        // Return successful response with popular destinations
-        return res.status(200).json({
-            status: 'Success',
-            data: destinations
+                try {
+                    generatePopularDest = await generateRecommendation(prompt) as string;
+
+                    await redis.set(redisKey, JSON.stringify(generatePopularDest), 'EX', 86400); // Cache with expiry
+                } catch (error) {
+                    return next(createHttpError(500, "Error generating recommendation data."));
+                }
+            }
+
+            // Clean and parse the response
+            try {
+                const result: string = generatePopularDest.replace(/```json|```/g, "")
+                    .replace(/\n/g, "")
+                    .trim();
+
+                // Return successful response with popular destinations
+                return res.status(200).json({
+                    status: 'Success',
+                    data: JSON.stringify(result)
+                });
+            } catch (parseError) {
+                console.error("Parsing error:", parseError); // Log the exact error
+                // console.error("Response data received:", generatePopularDest); // Log the raw data
+                return next(createHttpError(500, "Error parsing popular destinations response."));
+            }
         });
     } catch (error) {
-        // console.error(error); // Log the error for debugging
+        console.error("Internal Server Error:", error);
         return next(createHttpError(500, "Internal Server Error!"));
     }
 };

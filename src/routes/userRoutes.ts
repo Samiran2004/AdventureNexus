@@ -1,17 +1,13 @@
 import express, {Router} from 'express';
 import createNewUser, {
     CustomRequestRegisterController,
-    RequestBodyRegisterController
 } from '../controller/usercontroller/registerController';
-import upload from '../middlewares/multer';
+import {upload} from '../middlewares/multer';
 import authTokenMiddleware from '../middlewares/authTokenMiddleware';
 import loginuser from "../controller/usercontroller/loginController";
 import userProfile, {CustomRequestUserProfileController} from "../controller/usercontroller/userProfileController";
 import userDelete from "../controller/usercontroller/userProfileDeleteController";
 import updateProfile, {CustomRequestUpdateProfile} from "../controller/usercontroller/updateProfileController";
-import updateProfilePicture, {
-    CustomRequestUpdateProfilePicture
-} from "../controller/usercontroller/updateProfilePictureController";
 import limiter from "../utils/rateLimiter";
 
 const route: Router = express.Router();
@@ -106,13 +102,8 @@ route.delete('/delete', authTokenMiddleware, (req, res, next) => {
 });
 
 // Update user... Path: /api/v1/user/update
-route.patch('/update', authTokenMiddleware, upload.single("profileimage"), (req, res, next) => {
+route.put('/update', authTokenMiddleware, upload.single("profileimage"), (req, res, next) => {
     updateProfile(req as CustomRequestUpdateProfile, res, next);
-});
-
-// Update profile picture... Path: /api/v1/user/update/profilepicture
-route.patch('/update/profilepicture', authTokenMiddleware, upload.single("profileimage"), (req, res, next) => {
-    updateProfilePicture(req as CustomRequestUpdateProfilePicture, res, next);
 });
 
 export default route;

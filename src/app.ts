@@ -110,7 +110,7 @@ app.listen(config.port, (err?: Error) =>
         ? figlet(`S e r v e r  c o n n e c t i o n  e r r o r`, (err: Error | null, data: string | undefined) => {
             err ? console.log("Figlet error") : console.log(data);
         })
-        : figlet(`S e r v e r  c o n n e c t e d \n P O R T :  ${process.env.PORT}`, (err: Error | null, data: string | undefined) => {
+        : figlet(`S e r v e r  c o n n e c t e d \n P O R T :  ${config.port}`, (err: Error | null, data: string | undefined) => {
             err ? console.log("Figlet error...") : console.log(data);
         })
 );

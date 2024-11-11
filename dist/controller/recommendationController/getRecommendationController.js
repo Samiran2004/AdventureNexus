@@ -53,7 +53,7 @@ const generateRecommendations = async (req, res, next) => {
                 });
                 if (existingRecommendation) {
                     // Save the recommendation in Redis (cache it for 24 hours)
-                    client_1.default.setex(redisKey, 86400, JSON.stringify(existingRecommendation.details));
+                    await client_1.default.setex(redisKey, 86400, JSON.stringify(existingRecommendation.details));
                     // Return the recommendation found in the database
                     return res.status(200).json({
                         status: 'Success',
