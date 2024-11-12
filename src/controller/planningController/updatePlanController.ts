@@ -16,16 +16,16 @@ interface UpdatePlanRequestBody {
     hotels?: any; // Replace 'any' with a specific type if available
 }
 
-interface CustomRequest<TParams = {}, TQuery = {}, TBody = {}> extends Request<TParams, any, TBody, TQuery> {
+export interface CustomRequestUpdatePlan<TParams = {}, TQuery = {}, TBody = {}> extends Request<TParams, any, TBody, TQuery> {
     user: {
         _id: string
     }
 }
-interface RequestParams {
+export interface RequestParamsUpdatePlan {
     id: string;
 }
 
-export const updatePlan = async (req: CustomRequest<RequestParams>, res: Response, next: NextFunction) => {
+export const updatePlan = async (req: CustomRequestUpdatePlan<RequestParamsUpdatePlan>, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params; // Extracting plan ID from the URL parameters
         const updates = req.body; // Extracting the updates from the request body
