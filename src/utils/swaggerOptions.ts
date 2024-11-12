@@ -3,9 +3,9 @@ export const swaggerOptions = {
     swaggerDefinition: {
         openapi: '3.0.0',
         info: {
-            title: 'API-Powered Interactive Travel Planner',
+            title: 'AI-Powered Interactive Travel Planner',
             version: '1.0.0',
-            description: 'API for interactive travel planning',
+            description: 'AI for interactive travel planning',
         },
         servers: [
             {
