@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.swaggerOptions = void 0;
-// swaggerOptions.js
+// utils/swaggerOptions.ts
 exports.swaggerOptions = {
     swaggerDefinition: {
         openapi: '3.0.0',
         info: {
             title: 'API-Powered Interactive Travel Planner',
             version: '1.0.0',
-            description: 'API-Powered Interactive Travel Planner API',
+            description: 'API for interactive travel planning',
         },
         servers: [
             {
@@ -16,5 +16,5 @@ exports.swaggerOptions = {
             },
         ],
     },
-    apis: ['./app.ts', './routes/*.ts'], // Adjust paths as needed
+    apis: ['src/routes/*.ts', 'src/app.ts', 'dist/app.js', 'dist/routes/*.js'], // Adjust the paths as necessary
 };

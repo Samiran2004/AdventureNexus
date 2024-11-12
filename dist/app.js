@@ -21,28 +21,21 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const globalErrorHandler_1 = __importDefault(require("./middlewares/globalErrorHandler"));
 const config_1 = require("./config/config");
-// Configure env variables...
 dotenv_1.default.config();
-// Initialize express app
 const app = (0, express_1.default)();
-// Database connection...
 mongoose_1.default.connect(process.env.DB_URI).then(() => {
     (0, figlet_1.default)("D a t a b a s e   c o n n e c t e d", (err, data) => err ? console.log("Figlet error...") : console.log(data));
 }).catch(() => {
     (0, figlet_1.default)("D a t a b a s e  c o n n e c t i o n  e r r o r", (err, data) => err ? console.log("Figlet error") : console.log(data));
 });
-// Redis connection...
 client_1.default.on("connect", () => {
-    console.log("Redis connected...");
+    (0, figlet_1.default)("R e d i s   c o n n e c t e d", (err, data) => err ? console.log("Figlet error...") : console.log(data));
 });
-// CORS...
 app.use((0, cors_1.default)());
-// Express middlewares...
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use((0, cookie_parser_1.default)());
 app.use((0, morgan_1.default)('dev'));
-// Helmet for security headers...
 app.use((0, helmet_1.default)({
     contentSecurityPolicy: {
         directives: {
@@ -58,32 +51,17 @@ app.use((0, helmet_1.default)({
 }));
 const swaggerDocs = (0, swagger_jsdoc_1.default)(swaggerOptions_1.swaggerOptions);
 app.use('/api-docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerDocs));
-// Configure Sanitization...
 app.use(sanitization_1.default);
-// Check if server is working...
-/**
- * @swagger
- * /isWork:
- *   get:
- *     summary: Check if the server is working
- *     responses:
- *       200:
- *         description: Server status check
- */
 app.get('/isWork', (req, res) => {
     res.status(200).send({
         status: 'success',
         isWorking: true,
     });
 });
-// User route...
-app.use('/api/v1/user', userRoutes_1.default);
-// Recommendation route...
+app.use('/api/v1/users', userRoutes_1.default);
 app.use('/api/v1/recommendation', recommendationRoutes_1.default);
-// Planning route...
 app.use('/api/v1/planning', planningRoute_1.default);
 app.use(globalErrorHandler_1.default);
-// Server connection...
 app.listen(config_1.config.port, (err) => err
     ? (0, figlet_1.default)(`S e r v e r  c o n n e c t i o n  e r r o r`, (err, data) => {
         err ? console.log("Figlet error") : console.log(data);

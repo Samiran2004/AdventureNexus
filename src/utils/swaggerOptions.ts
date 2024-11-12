@@ -1,11 +1,11 @@
-// swaggerOptions.js
+// utils/swaggerOptions.ts
 export const swaggerOptions = {
     swaggerDefinition: {
         openapi: '3.0.0',
         info: {
             title: 'API-Powered Interactive Travel Planner',
             version: '1.0.0',
-            description: 'API-Powered Interactive Travel Planner API',
+            description: 'API for interactive travel planning',
         },
         servers: [
             {
@@ -13,5 +13,5 @@ export const swaggerOptions = {
             },
         ],
     },
-    apis: ['./app.ts', './routes/*.ts'], // Adjust paths as needed
+    apis: ['src/routes/*.ts', 'src/app.ts', 'dist/app.js', 'dist/routes/*.js'], // Adjust the paths as necessary
 };
