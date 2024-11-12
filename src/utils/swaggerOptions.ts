@@ -9,8 +9,11 @@ export const swaggerOptions = {
         },
         servers: [
             {
-                url: 'http://localhost:8000',
+                url: 'https://api-powered-interactive-travel-planner.onrender.com/'
             },
+            {
+                url: 'http://localhost:8000/'
+            }
         ],
     },
     apis: ['src/routes/*.ts', 'src/app.ts', 'dist/app.js', 'dist/routes/*.js'], // Adjust the paths as necessary
