@@ -20,7 +20,7 @@ const route = express.Router();
 
 /**
  * @swagger
- * /api/v1/planning/create:
+ * /api/v1/plans/create:
  *   post:
  *     summary: Create a new travel plan
  *     tags: [Planning]
@@ -168,14 +168,14 @@ const route = express.Router();
  */
 
 // Create a new travel plan
-// Path: POST /api/v1/planning/create
+// Path: POST /api/v1/plans/create
 route.post('/create', authTokenMiddleware, (req, res, next) => {
   createPlan(req as CustomRequest<{}, {}, CreatePlanRequestBody>, res, next);
 });
 
 /**
  * @swagger
- * /api/v1/planning/{id}:
+ * /api/v1/plans/{id}:
  *   get:
  *     summary: Get a plan by id
  *     tags: [Planning]
@@ -212,12 +212,12 @@ route.post('/create', authTokenMiddleware, (req, res, next) => {
  */
 
 // Get a plan by id
-// Path: GET /api/v1/planning/:id
+// Path: GET /api/v1/plans/:id
 route.get('/:id', authTokenMiddleware, getPlanById);
 
 /**
  * @swagger
- * /api/v1/planning/{id}:
+ * /api/v1/plans/{id}:
  *   delete:
  *     summary: Delete a plan by id
  *     tags: [Planning]
@@ -257,14 +257,14 @@ route.get('/:id', authTokenMiddleware, getPlanById);
  */
 
 // Delete a plan by id
-// Path: DELETE /api/v1/planning/:id
+// Path: DELETE /api/v1/plans/:id
 route.delete('/:id', authTokenMiddleware, (req, res, next) => {
   deletePlanById(req as CustomRequestDeletePlan, res, next);
 });
 
 /**
  * @swagger
- * /api/v1/planning/{id}:
+ * /api/v1/plans/{id}:
  *   put:
  *     summary: Update a plan by id
  *     tags: [Planning]
@@ -338,7 +338,7 @@ route.delete('/:id', authTokenMiddleware, (req, res, next) => {
  */
 
 // Update a plan by id
-// Path: PUT /api/v1/planning/:id
+// Path: PUT /api/v1/plans/:id
 route.put('/:id', authTokenMiddleware, (req, res, next) => {
   updatePlan(
     req as unknown as CustomRequestUpdatePlan<RequestParamsUpdatePlan, {}, {}>,

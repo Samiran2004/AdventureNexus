@@ -12,7 +12,7 @@ const updatePlanController_1 = require("../controller/planningController/updateP
 const route = express_1.default.Router();
 /**
  * @swagger
- * /api/v1/planning/create:
+ * /api/v1/plans/create:
  *   post:
  *     summary: Create a new travel plan
  *     tags: [Planning]
@@ -159,13 +159,13 @@ const route = express_1.default.Router();
  *         description: Internal server error
  */
 // Create a new travel plan
-// Path: POST /api/v1/planning/create
+// Path: POST /api/v1/plans/create
 route.post('/create', authTokenMiddleware_1.default, (req, res, next) => {
     (0, newPlanController_1.createPlan)(req, res, next);
 });
 /**
  * @swagger
- * /api/v1/planning/{id}:
+ * /api/v1/plans/{id}:
  *   get:
  *     summary: Get a plan by id
  *     tags: [Planning]
@@ -201,11 +201,11 @@ route.post('/create', authTokenMiddleware_1.default, (req, res, next) => {
  *         description: Internal server error
  */
 // Get a plan by id
-// Path: GET /api/v1/planning/:id
+// Path: GET /api/v1/plans/:id
 route.get('/:id', authTokenMiddleware_1.default, getPlanByIdController_1.getPlanById);
 /**
  * @swagger
- * /api/v1/planning/{id}:
+ * /api/v1/plans/{id}:
  *   delete:
  *     summary: Delete a plan by id
  *     tags: [Planning]
@@ -244,13 +244,13 @@ route.get('/:id', authTokenMiddleware_1.default, getPlanByIdController_1.getPlan
  *         description: Internal Server Error
  */
 // Delete a plan by id
-// Path: DELETE /api/v1/planning/:id
+// Path: DELETE /api/v1/plans/:id
 route.delete('/:id', authTokenMiddleware_1.default, (req, res, next) => {
     (0, deletePlanByIdController_1.deletePlanById)(req, res, next);
 });
 /**
  * @swagger
- * /api/v1/planning/{id}:
+ * /api/v1/plans/{id}:
  *   put:
  *     summary: Update a plan by id
  *     tags: [Planning]
@@ -323,7 +323,7 @@ route.delete('/:id', authTokenMiddleware_1.default, (req, res, next) => {
  *         description: Internal Server Error
  */
 // Update a plan by id
-// Path: PUT /api/v1/planning/:id
+// Path: PUT /api/v1/plans/:id
 route.put('/:id', authTokenMiddleware_1.default, (req, res, next) => {
     (0, updatePlanController_1.updatePlan)(req, res, next);
 });
