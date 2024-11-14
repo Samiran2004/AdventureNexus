@@ -6,6 +6,10 @@
 
 ![Logo](/Images/UserRouter%20HLD%20Post.png)
 
+![Logo](/Images/RecommendationRouter%20System%20Architecture.png)
+
+![Logo](/Images/PlanningRouter%20System%20Architecture.png)
+
 Welcome to the AI-Powered Interactive Travel Planner! This project leverages advanced AI to provide personalized travel recommendations, itinerary planning, and more.
 
 ### Features
