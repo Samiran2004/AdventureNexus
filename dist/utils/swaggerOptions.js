@@ -12,11 +12,11 @@ exports.swaggerOptions = {
         },
         servers: [
             {
-                url: 'https://api-powered-interactive-travel-planner.onrender.com/'
+                url: 'https://api-powered-interactive-travel-planner.onrender.com/',
             },
             {
-                url: 'http://localhost:8000/'
-            }
+                url: 'http://localhost:8000/',
+            },
         ],
     },
     apis: ['src/routes/*.ts', 'src/app.ts', 'dist/app.js', 'dist/routes/*.js'], // Adjust the paths as necessary

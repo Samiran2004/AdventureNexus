@@ -16,14 +16,19 @@ const updateProfile = async (req, res, next) => {
         if (!checkUser)
             return next((0, http_errors_1.default)(404, 'User not found.'));
         const { fullname, gender, preference, country, password } = req.body;
-        if (!fullname && !gender && !preference && !country && !password && !req.file?.path) {
+        if (!fullname &&
+            !gender &&
+            !preference &&
+            !country &&
+            !password &&
+            !req.file?.path) {
             return next((0, http_errors_1.default)(400, 'Please provide at least one field to update.'));
         }
         // Update each field if provided
         if (fullname && fullname != checkUser.fullname) {
             checkUser.fullname = fullname;
             try {
-                checkUser.username = await (0, generateRandomUserName_1.default)(fullname);
+                checkUser.username = (await (0, generateRandomUserName_1.default)(fullname));
             }
             catch (error) {
                 return next((0, http_errors_1.default)(500, 'Error generating username.'));
@@ -50,13 +55,16 @@ const updateProfile = async (req, res, next) => {
                 checkUser.profilepicture = uploadImageUrl.url;
                 // Delete the previous profile picture from Cloudinary if it exists
                 if (previousProfilePictureUrl) {
-                    const publicId = previousProfilePictureUrl.split('/').pop()?.split('.')[0];
+                    const publicId = previousProfilePictureUrl
+                        .split('/')
+                        .pop()
+                        ?.split('.')[0];
                     if (publicId) {
                         try {
                             await cloudinaryService_1.default.uploader.destroy(publicId);
                         }
                         catch (error) {
-                            console.error("Error deleting previous profile picture:", error);
+                            console.error('Error deleting previous profile picture:', error);
                             return next((0, http_errors_1.default)(500, 'Profile picture update failed.'));
                         }
                     }
@@ -85,7 +93,7 @@ const updateProfile = async (req, res, next) => {
         });
     }
     catch (error) {
-        console.error("Error updating profile:", error);
+        console.error('Error updating profile:', error);
         return next((0, http_errors_1.default)(500, 'Internal Server Error!'));
     }
 };

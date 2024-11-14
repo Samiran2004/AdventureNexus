@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const userModel_1 = __importDefault(require("../models/userModel")); // Adjust the import based on your project structure
 async function createUserName(fullname) {
     // Convert to lowercase and split the name
-    const splitName = fullname.toLowerCase().split(" ");
+    const splitName = fullname.toLowerCase().split(' ');
     // Generate a random number
     const randomNumber = Math.floor(Math.random() * 9000) + 1000;
     // Create a random username by combining the first name part and random number

@@ -17,7 +17,7 @@ const userSchema = new mongoose_1.Schema({
     username: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
     },
     phonenumber: {
         type: Number,
@@ -25,29 +25,37 @@ const userSchema = new mongoose_1.Schema({
         unique: true,
         minlength: [10, 'Phone number must be 10 digits long'],
         maxlength: [10, 'Phone number must be 10 digits long'],
-        match: [/^\d{10}$/, 'Phone number must contain exactly 10 digits']
+        match: [/^\d{10}$/, 'Phone number must contain exactly 10 digits'],
     },
     gender: {
         type: String,
-        enum: ["male", "female", "other"],
-        required: true
+        enum: ['male', 'female', 'other'],
+        required: true,
     },
     profilepicture: {
         type: String,
         default: function () {
             return this.gender === 'male'
-                ? "https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745"
-                : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSeIUUwf1GuV6YhA08a9haUQBOBRqJinQCJxA&s";
-        }
+                ? 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745'
+                : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSeIUUwf1GuV6YhA08a9haUQBOBRqJinQCJxA&s';
+        },
     },
     preferences: {
         type: [String],
-        enum: ['adventure', 'relaxation', 'culture', 'nature', 'beach', 'mountains', 'urban'],
+        enum: [
+            'adventure',
+            'relaxation',
+            'culture',
+            'nature',
+            'beach',
+            'mountains',
+            'urban',
+        ],
         default: ['relaxation', 'nature', 'beach'],
     },
     country: {
         type: String,
-        default: undefined // Optional
+        default: undefined, // Optional
     },
     createdat: {
         type: Date,
@@ -55,24 +63,24 @@ const userSchema = new mongoose_1.Schema({
     },
     refreshtoken: {
         type: String,
-        default: undefined // Optional
+        default: undefined, // Optional
     },
     currency_code: {
         type: String,
-        default: undefined // Optional
+        default: undefined, // Optional
     },
     recommendationhistory: [
         {
             type: mongoose_1.Schema.Types.ObjectId,
-            ref: 'Recommendations'
-        }
+            ref: 'Recommendations',
+        },
     ],
     plans: [
         {
             type: mongoose_1.Schema.Types.ObjectId,
-            ref: 'Plan'
-        }
-    ]
+            ref: 'Plan',
+        },
+    ],
 });
 const User = (0, mongoose_1.model)('User', userSchema);
 exports.default = User;

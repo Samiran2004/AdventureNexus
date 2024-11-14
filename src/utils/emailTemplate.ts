@@ -1,20 +1,20 @@
 export interface EmailData {
-    to: string;
-    subject: string;
-    html: string;
+  to: string;
+  subject: string;
+  html: string;
 }
 
 interface EmailTemplates {
-    registerEmailData: (fullname: string, email: string) => EmailData;
-    deleteUserEmailData: (fullname: string, email: string) => EmailData;
+  registerEmailData: (fullname: string, email: string) => EmailData;
+  deleteUserEmailData: (fullname: string, email: string) => EmailData;
 }
 
 const emailTemplates: EmailTemplates = {
-    registerEmailData: (fullname: string, email: string): EmailData => {
-        return {
-            to: email,
-            subject: 'Welcome to AI Travel Planner',
-            html: `
+  registerEmailData: (fullname: string, email: string): EmailData => {
+    return {
+      to: email,
+      subject: 'Welcome to AI Travel Planner',
+      html: `
                 <html lang="en">
                     <head>
                         <meta charset="UTF-8">
@@ -48,14 +48,14 @@ const emailTemplates: EmailTemplates = {
                             </div>
                         </div>
                     </body>
-                </html>`
-        };
-    },
-    deleteUserEmailData: (fullname: string, email: string): EmailData => {
-        return {
-            to: email,
-            subject: "Account Deletion Confirmation - AI Travel Planner",
-            html: `
+                </html>`,
+    };
+  },
+  deleteUserEmailData: (fullname: string, email: string): EmailData => {
+    return {
+      to: email,
+      subject: 'Account Deletion Confirmation - AI Travel Planner',
+      html: `
                 <!DOCTYPE html>
                 <html lang="en">
                 <head>
@@ -113,9 +113,9 @@ const emailTemplates: EmailTemplates = {
                         </div>
                     </div>
                 </body>
-                </html>`
-        };
-    }
+                </html>`,
+    };
+  },
 };
 
 export default emailTemplates;

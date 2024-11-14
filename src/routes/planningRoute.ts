@@ -1,13 +1,20 @@
 import express from 'express';
-import authTokenMiddleware from "../middlewares/authTokenMiddleware";
-import {createPlan, CreatePlanRequestBody, CustomRequest} from "../controller/planningController/newPlanController";
-import {getPlanById} from "../controller/planningController/getPlanByIdController";
-import {CustomRequestDeletePlan, deletePlanById} from "../controller/planningController/deletePlanByIdController";
+import authTokenMiddleware from '../middlewares/authTokenMiddleware';
 import {
-    CustomRequestUpdatePlan,
-    RequestParamsUpdatePlan,
-    updatePlan
-} from "../controller/planningController/updatePlanController";
+  createPlan,
+  CreatePlanRequestBody,
+  CustomRequest,
+} from '../controller/planningController/newPlanController';
+import { getPlanById } from '../controller/planningController/getPlanByIdController';
+import {
+  CustomRequestDeletePlan,
+  deletePlanById,
+} from '../controller/planningController/deletePlanByIdController';
+import {
+  CustomRequestUpdatePlan,
+  RequestParamsUpdatePlan,
+  updatePlan,
+} from '../controller/planningController/updatePlanController';
 
 const route = express.Router();
 
@@ -162,8 +169,8 @@ const route = express.Router();
 
 // Create a new travel plan
 // Path: POST /api/v1/planning/create
-route.post('/create', authTokenMiddleware, (req, res, next)=>{
-    createPlan(req as CustomRequest<{}, {}, CreatePlanRequestBody>, res, next)
+route.post('/create', authTokenMiddleware, (req, res, next) => {
+  createPlan(req as CustomRequest<{}, {}, CreatePlanRequestBody>, res, next);
 });
 
 /**
@@ -251,8 +258,8 @@ route.get('/:id', authTokenMiddleware, getPlanById);
 
 // Delete a plan by id
 // Path: DELETE /api/v1/planning/:id
-route.delete('/:id', authTokenMiddleware, (req, res, next)=>{
-    deletePlanById(req as CustomRequestDeletePlan, res, next);
+route.delete('/:id', authTokenMiddleware, (req, res, next) => {
+  deletePlanById(req as CustomRequestDeletePlan, res, next);
 });
 
 /**
@@ -333,7 +340,11 @@ route.delete('/:id', authTokenMiddleware, (req, res, next)=>{
 // Update a plan by id
 // Path: PUT /api/v1/planning/:id
 route.put('/:id', authTokenMiddleware, (req, res, next) => {
-    updatePlan(req as unknown as CustomRequestUpdatePlan<RequestParamsUpdatePlan, {}, {}>, res, next);
+  updatePlan(
+    req as unknown as CustomRequestUpdatePlan<RequestParamsUpdatePlan, {}, {}>,
+    res,
+    next
+  );
 });
 
 export default route;

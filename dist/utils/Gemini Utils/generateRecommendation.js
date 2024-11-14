@@ -14,7 +14,7 @@ async function generateRecommendation(prompt) {
         return result.response.candidates[0].content.parts[0].text;
     }
     catch (error) {
-        console.error("Error generating recommendation:", error);
+        console.error('Error generating recommendation:', error);
     }
 }
 exports.default = generateRecommendation;

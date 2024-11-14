@@ -10,6 +10,6 @@ dotenv_1.default.config();
 const redis = new ioredis_1.Redis({
     host: config_1.config.REDIS_HOST,
     port: Number(config_1.config.REDIS_PORT), // Ensure the port is a number
-    password: config_1.config.REDIS_PASSWORD
+    password: config_1.config.REDIS_PASSWORD,
 });
 exports.default = redis;

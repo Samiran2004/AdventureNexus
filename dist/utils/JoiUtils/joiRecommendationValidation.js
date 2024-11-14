@@ -23,5 +23,5 @@ exports.recommendationValidation = joi_1.default.object({
     totalPeople: joi_1.default.number()
         .integer() // Ensures the number is an integer
         .positive() // Ensures the number is positive
-        .required() // totalPeople is required
+        .required(), // totalPeople is required
 });

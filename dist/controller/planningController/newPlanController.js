@@ -15,8 +15,12 @@ const createPlan = async (req, res, next) => {
     try {
         const { destination, dispatch_city, travel_dates, budget, total_people } = req.body;
         // Check if all required fields are present
-        if (!destination || !dispatch_city || !travel_dates || !budget || !total_people) {
-            return next((0, http_errors_1.default)(400, "All fields are required!"));
+        if (!destination ||
+            !dispatch_city ||
+            !travel_dates ||
+            !budget ||
+            !total_people) {
+            return next((0, http_errors_1.default)(400, 'All fields are required!'));
         }
         const lowerDestination = destination.toLowerCase();
         const lowerDispatchCity = dispatch_city.toLowerCase();
@@ -26,13 +30,13 @@ const createPlan = async (req, res, next) => {
         client_1.default.get(redisKey, async (err, cacheData) => {
             if (err) {
                 // console.log("Internal Redis Error...");  //For Debugging
-                return next((0, http_errors_1.default)(500, "Internal Redis Server Error!"));
+                return next((0, http_errors_1.default)(500, 'Internal Redis Server Error!'));
             }
             if (cacheData) {
                 return res.status(200).json({
                     status: 'Success',
-                    message: "Plan Already Created",
-                    data: JSON.parse(cacheData)
+                    message: 'Plan Already Created',
+                    data: JSON.parse(cacheData),
                 });
             }
             else {
@@ -41,15 +45,15 @@ const createPlan = async (req, res, next) => {
                     destination: lowerDestination,
                     dispatch_city: lowerDispatchCity,
                     total_people,
-                    user: req.user._id
+                    user: req.user._id,
                 });
                 // Return the existing plan and save it into cache
                 if (checkPlan) {
                     await client_1.default.setex(redisKey, 120, JSON.stringify(checkPlan));
                     return res.status(200).json({
                         status: 'Success',
-                        message: "Plan Already Created",
-                        data: checkPlan
+                        message: 'Plan Already Created',
+                        data: checkPlan,
                     });
                 }
                 // Generate Flight Data
@@ -60,12 +64,12 @@ const createPlan = async (req, res, next) => {
                     return_date: travel_dates.end_date,
                     total_people,
                     budget: lowerBudget,
-                    currency_code: req.user.currency_code
+                    currency_code: req.user.currency_code,
                 };
                 const flightPrompt = (0, flightPlanPrompt_1.default)(flightPayload);
-                const generateFlightData = await (0, generateRecommendation_1.default)(flightPrompt);
+                const generateFlightData = (await (0, generateRecommendation_1.default)(flightPrompt));
                 let flightData;
-                flightData = JSON.parse(generateFlightData.replace(/```json|```/g, "").trim());
+                flightData = JSON.parse(generateFlightData.replace(/```json|```/g, '').trim());
                 // Generate Hotels Data
                 const hotelPayload = {
                     destination: lowerDestination,
@@ -73,11 +77,11 @@ const createPlan = async (req, res, next) => {
                     checkOutDate: travel_dates.end_date,
                     total_people,
                     type: lowerBudget,
-                    currency_code: req.user.currency_code
+                    currency_code: req.user.currency_code,
                 };
                 const hotelPrompt = (0, hotelPlanPrompt_1.default)(hotelPayload);
-                const generateHotelData = await (0, generateRecommendation_1.default)(hotelPrompt);
-                var hotelsData = JSON.parse(generateHotelData.replace(/```json|```/g, "").trim());
+                const generateHotelData = (await (0, generateRecommendation_1.default)(hotelPrompt));
+                var hotelsData = JSON.parse(generateHotelData.replace(/```json|```/g, '').trim());
                 // Save the plan in the database
                 const newPlan = new planModel_1.default({
                     user: req.user._id,
@@ -87,10 +91,10 @@ const createPlan = async (req, res, next) => {
                     total_people,
                     travel_dates: {
                         start_date: travel_dates.start_date,
-                        end_date: travel_dates.end_date
+                        end_date: travel_dates.end_date,
                     },
                     flights: flightData,
-                    hotels: hotelsData
+                    hotels: hotelsData,
                 });
                 const planSaveRes = await newPlan.save();
                 // Format the response
@@ -105,7 +109,7 @@ const createPlan = async (req, res, next) => {
                         total_people,
                         travel_dates: {
                             start_date: travel_dates.start_date,
-                            end_date: travel_dates.end_date
+                            end_date: travel_dates.end_date,
                         },
                         flights: flightData.map(flight => ({
                             airline: flight.airline,
@@ -114,7 +118,7 @@ const createPlan = async (req, res, next) => {
                             arrival_time: flight.arrival_time,
                             price: flight.price,
                             class: flight.class,
-                            duration: flight.duration
+                            duration: flight.duration,
                         })),
                         hotels: hotelsData.map(hotel => ({
                             hotel_name: hotel.hotel_name,
@@ -123,8 +127,8 @@ const createPlan = async (req, res, next) => {
                             address: hotel.address,
                             rating: hotel.rating,
                             amenities: hotel.amenities,
-                            distance_to_city_center: hotel.distance_to_city_center
-                        }))
+                            distance_to_city_center: hotel.distance_to_city_center,
+                        })),
                     };
                 }
                 // Save the plan ID into user database
@@ -136,8 +140,8 @@ const createPlan = async (req, res, next) => {
                 // Return success response
                 return res.status(200).json({
                     status: 'Success',
-                    message: "New Plan Created",
-                    data: response
+                    message: 'New Plan Created',
+                    data: response,
                 });
             }
         });
@@ -146,11 +150,11 @@ const createPlan = async (req, res, next) => {
         if (error.name === 'ValidationError') {
             return res.status(400).json({
                 status: 'Failed',
-                message: "Validation Error: " + error.message
+                message: 'Validation Error: ' + error.message,
             });
         }
         console.error(error); // Log the error for debugging
-        return next((0, http_errors_1.default)(500, "Internal Server Error!"));
+        return next((0, http_errors_1.default)(500, 'Internal Server Error!'));
     }
 };
 exports.createPlan = createPlan;

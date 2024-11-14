@@ -23,13 +23,16 @@ const globalErrorHandler_1 = __importDefault(require("./middlewares/globalErrorH
 const config_1 = require("./config/config");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
-mongoose_1.default.connect(process.env.DB_URI).then(() => {
-    (0, figlet_1.default)("D a t a b a s e   c o n n e c t e d", (err, data) => err ? console.log("Figlet error...") : console.log(data));
-}).catch(() => {
-    (0, figlet_1.default)("D a t a b a s e  c o n n e c t i o n  e r r o r", (err, data) => err ? console.log("Figlet error") : console.log(data));
+mongoose_1.default
+    .connect(process.env.DB_URI)
+    .then(() => {
+    (0, figlet_1.default)('D a t a b a s e   c o n n e c t e d', (err, data) => err ? console.log('Figlet error...') : console.log(data));
+})
+    .catch(() => {
+    (0, figlet_1.default)('D a t a b a s e  c o n n e c t i o n  e r r o r', (err, data) => err ? console.log('Figlet error') : console.log(data));
 });
-client_1.default.on("connect", () => {
-    (0, figlet_1.default)("R e d i s   c o n n e c t e d", (err, data) => err ? console.log("Figlet error...") : console.log(data));
+client_1.default.on('connect', () => {
+    (0, figlet_1.default)('R e d i s   c o n n e c t e d', (err, data) => err ? console.log('Figlet error...') : console.log(data));
 });
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
@@ -64,8 +67,8 @@ app.use('/api/v1/plannings', planningRoute_1.default);
 app.use(globalErrorHandler_1.default);
 app.listen(config_1.config.port, (err) => err
     ? (0, figlet_1.default)(`S e r v e r  c o n n e c t i o n  e r r o r`, (err, data) => {
-        err ? console.log("Figlet error") : console.log(data);
+        err ? console.log('Figlet error') : console.log(data);
     })
     : (0, figlet_1.default)(`S e r v e r  c o n n e c t e d \n P O R T :  ${config_1.config.port}`, (err, data) => {
-        err ? console.log("Figlet error...") : console.log(data);
+        err ? console.log('Figlet error...') : console.log(data);
     }));

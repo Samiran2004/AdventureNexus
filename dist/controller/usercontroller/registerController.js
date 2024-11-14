@@ -19,8 +19,13 @@ const create_new_user = async (req, res, next) => {
     let { fullname, email, password, phonenumber, gender, preference, country } = req.body;
     try {
         // Check for required fields
-        if (!fullname || !email || !password || !phonenumber || !gender || !country) {
-            return next((0, http_errors_1.default)(400, "All fields are required!"));
+        if (!fullname ||
+            !email ||
+            !password ||
+            !phonenumber ||
+            !gender ||
+            !country) {
+            return next((0, http_errors_1.default)(400, 'All fields are required!'));
         }
         // Validate input data
         const { error } = joiValidation_1.userSchemaValidation.validate(req.body);
@@ -32,7 +37,7 @@ const create_new_user = async (req, res, next) => {
             $or: [{ email: email }, { phonenumber: phonenumber }],
         });
         if (checkUserExist) {
-            return next((0, http_errors_1.default)(409, "User already exist!"));
+            return next((0, http_errors_1.default)(409, 'User already exist!'));
         }
         // Hash the password
         const salt = await bcryptjs_1.default.genSalt(10);
@@ -59,13 +64,13 @@ const create_new_user = async (req, res, next) => {
             //         error: 'Unknown error',
             //     });
             // }
-            return next((0, http_errors_1.default)(500, "Error uploading file!"));
+            return next((0, http_errors_1.default)(500, 'Error uploading file!'));
         }
         // Create Currency code
         country = country.toLowerCase();
         const cCode = currency_codes_1.default.country(country);
         if (!cCode || cCode.length === 0) {
-            return next((0, http_errors_1.default)(400, "Currency code not found for the specified country!"));
+            return next((0, http_errors_1.default)(400, 'Currency code not found for the specified country!'));
         }
         // Create the new user
         const newUser = new userModel_1.default({
@@ -87,7 +92,7 @@ const create_new_user = async (req, res, next) => {
         // Send welcome email
         await (0, mailService_1.default)(emailData, (mailError, response) => {
             if (mailError) {
-                return next((0, http_errors_1.default)(500, "User created, but email sending failed!"));
+                return next((0, http_errors_1.default)(500, 'User created, but email sending failed!'));
             }
             return res.status(201).send({
                 status: 'success',
@@ -107,7 +112,7 @@ const create_new_user = async (req, res, next) => {
         });
     }
     catch (error) {
-        return next((0, http_errors_1.default)(500, "Internal Server Error!"));
+        return next((0, http_errors_1.default)(500, 'Internal Server Error!'));
     }
 };
 exports.default = create_new_user;

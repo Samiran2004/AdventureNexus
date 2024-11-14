@@ -10,14 +10,14 @@ const sendMail = async (data, callback) => {
         service: 'Gmail',
         auth: {
             user: config_1.config.MAIL_ADDRESS,
-            pass: config_1.config.MAIL_PASSWORD
-        }
+            pass: config_1.config.MAIL_PASSWORD,
+        },
     });
     const mailOptions = {
         from: config_1.config.MAIL_ADDRESS,
         to: data.to,
         subject: data.subject,
-        html: data.html
+        html: data.html,
     };
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {

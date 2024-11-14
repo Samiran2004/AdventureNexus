@@ -30,5 +30,5 @@ exports.userSchemaValidation = Joi.object({
     country: Joi.string()
         .min(3) // Minimum length of 3 characters
         .max(30) // Maximum length of 30 characters
-        .required() // country is required
+        .required(), // country is required
 });

@@ -13,7 +13,7 @@ async function authTokenMiddleware(req, res, next) {
         if (!accessToken) {
             res.status(401).send({
                 status: 'Unauthorized',
-                message: "Access token not found."
+                message: 'Access token not found.',
             });
             return;
         }
@@ -25,7 +25,7 @@ async function authTokenMiddleware(req, res, next) {
                         if (!userData || !userData.refreshtoken) {
                             res.status(403).send({
                                 status: 'Forbidden',
-                                message: "Refresh token not found, please login again."
+                                message: 'Refresh token not found, please login again.',
                             });
                             return;
                         }
@@ -33,7 +33,7 @@ async function authTokenMiddleware(req, res, next) {
                             if (err) {
                                 res.status(403).send({
                                     status: 'Forbidden',
-                                    message: "Invalid refresh token, please login again."
+                                    message: 'Invalid refresh token, please login again.',
                                 });
                                 return;
                             }
@@ -45,10 +45,10 @@ async function authTokenMiddleware(req, res, next) {
                                 _id: userData._id,
                                 profilepicture: userData.profilepicture,
                                 country: userData.country,
-                                currency: userData.currency_code
+                                currency: userData.currency_code,
                             };
                             const newAccessToken = jsonwebtoken_1.default.sign(newUserPayload, config_1.config.JWT_ACCESS_SECRET, {
-                                expiresIn: '1h'
+                                expiresIn: '1h',
                             });
                             res.cookie('accessToken', newAccessToken, {
                                 httpOnly: true,
@@ -62,14 +62,14 @@ async function authTokenMiddleware(req, res, next) {
                     catch (error) {
                         res.status(500).send({
                             status: 'Error',
-                            message: "Error while fetching refresh token."
+                            message: 'Error while fetching refresh token.',
                         });
                     }
                 }
                 else {
                     res.status(403).send({
                         status: 'Forbidden',
-                        message: 'Invalid or expired access token.'
+                        message: 'Invalid or expired access token.',
                     });
                 }
             }
@@ -82,7 +82,7 @@ async function authTokenMiddleware(req, res, next) {
     catch (error) {
         res.status(500).send({
             status: 'Error',
-            message: "Internal Server Error."
+            message: 'Internal Server Error.',
         });
     }
 }

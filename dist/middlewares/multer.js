@@ -8,5 +8,5 @@ const multer_1 = __importDefault(require("multer"));
 const path_1 = __importDefault(require("path"));
 exports.upload = (0, multer_1.default)({
     dest: path_1.default.resolve(__dirname, '../../public/data/uploads'),
-    limits: { fileSize: 1e7 } //30mb:  30*1024*1024
+    limits: { fileSize: 1e7 }, //30mb:  30*1024*1024
 });

@@ -39,13 +39,13 @@ const emailTemplates = {
                             </div>
                         </div>
                     </body>
-                </html>`
+                </html>`,
         };
     },
     deleteUserEmailData: (fullname, email) => {
         return {
             to: email,
-            subject: "Account Deletion Confirmation - AI Travel Planner",
+            subject: 'Account Deletion Confirmation - AI Travel Planner',
             html: `
                 <!DOCTYPE html>
                 <html lang="en">
@@ -104,8 +104,8 @@ const emailTemplates = {
                         </div>
                     </div>
                 </body>
-                </html>`
+                </html>`,
         };
-    }
+    },
 };
 exports.default = emailTemplates;

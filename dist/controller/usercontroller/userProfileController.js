@@ -9,7 +9,7 @@ async function userProfile(req, res, next) {
     try {
         const userData = await userModel_1.default.findById(req.user._id);
         if (!userData) {
-            return next((0, http_errors_1.default)(404, "User not found!"));
+            return next((0, http_errors_1.default)(404, 'User not found!'));
         }
         else {
             return res.status(200).send({
@@ -22,14 +22,14 @@ async function userProfile(req, res, next) {
                     gender: userData.gender,
                     profilepicture: userData.profilepicture,
                     preference: userData.preferences,
-                    country: userData.country
-                }
+                    country: userData.country,
+                },
             });
         }
     }
     catch (error) {
         // console.error("Error fetching user profile:", error); // Log error for debugging
-        return next((0, http_errors_1.default)(500, "Internal Server Error!"));
+        return next((0, http_errors_1.default)(500, 'Internal Server Error!'));
     }
 }
 exports.default = userProfile;

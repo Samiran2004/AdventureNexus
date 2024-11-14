@@ -13,18 +13,21 @@ const userDelete = async (req, res, next) => {
         // Check if the user exists
         const checkUser = await userModel_1.default.findById(req.user._id);
         if (!checkUser) {
-            return next((0, http_errors_1.default)(404, "Not a valid user."));
+            return next((0, http_errors_1.default)(404, 'Not a valid user.'));
         }
         else {
             // Delete profile picture from Cloudinary
             const profilePictureUrl = checkUser.profilepicture;
-            const publicId = profilePictureUrl.split('/').pop()?.split('.')[0]; // Optional chaining
+            const publicId = profilePictureUrl
+                .split('/')
+                .pop()
+                ?.split('.')[0]; // Optional chaining
             if (publicId) {
                 try {
                     await cloudinaryService_1.default.uploader.destroy(publicId);
                 }
                 catch (error) {
-                    return next((0, http_errors_1.default)(500, "Error deleting profile picture from Cloudinary"));
+                    return next((0, http_errors_1.default)(500, 'Error deleting profile picture from Cloudinary'));
                 }
             }
             // Delete user from the database
@@ -33,17 +36,17 @@ const userDelete = async (req, res, next) => {
             const emailData = emailTemplate_1.default.deleteUserEmailData(checkUser.fullname, checkUser.email);
             await (0, mailService_1.default)(emailData, (error) => {
                 if (error) {
-                    return next((0, http_errors_1.default)(500, "User deleted, but email sending failed!"));
+                    return next((0, http_errors_1.default)(500, 'User deleted, but email sending failed!'));
                 }
                 return res.status(200).send({
                     status: 'Success',
-                    message: "User deleted."
+                    message: 'User deleted.',
                 });
             });
         }
     }
     catch (error) {
-        return next((0, http_errors_1.default)(500, "Internal Server Error!"));
+        return next((0, http_errors_1.default)(500, 'Internal Server Error!'));
     }
 };
 exports.default = userDelete;

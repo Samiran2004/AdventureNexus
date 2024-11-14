@@ -18,5 +18,5 @@ exports.userSchemaValidationLogin = joi_1.default.object({
     password: joi_1.default.string()
         .min(6) // Minimum length for password
         .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')) // Allow only alphanumeric characters
-        .required() // Password is required
+        .required(), // Password is required
 });

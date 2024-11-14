@@ -2,7 +2,9 @@ interface DestinationPromptData {
   currency_code: string;
 }
 
-const generatePopularDestinationsPrompt = (data: DestinationPromptData): string => {
+const generatePopularDestinationsPrompt = (
+  data: DestinationPromptData
+): string => {
   return `
         "Generate a JSON object containing currently popular travel destinations around the world. Each destination should include the following details:
 

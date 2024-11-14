@@ -81,7 +81,7 @@ const route = express_1.default.Router();
  *         description: Internal server error
  */
 // Create new user... Path: /api/v1/user/register
-route.post('/register', rateLimiter_1.default, multer_1.upload.single("profileimage"), (req, res, next) => {
+route.post('/register', rateLimiter_1.default, multer_1.upload.single('profileimage'), (req, res, next) => {
     (0, registerController_1.default)(req, res, next);
 });
 // routes/userRoutes.ts
@@ -325,7 +325,7 @@ route.delete('/delete', authTokenMiddleware_1.default, (req, res, next) => {
  *         description: Internal server error
  */
 // Update user... Path: /api/v1/user/update
-route.put('/update', authTokenMiddleware_1.default, multer_1.upload.single("profileimage"), (req, res, next) => {
+route.put('/update', authTokenMiddleware_1.default, multer_1.upload.single('profileimage'), (req, res, next) => {
     (0, updateProfileController_1.default)(req, res, next);
 });
 exports.default = route;

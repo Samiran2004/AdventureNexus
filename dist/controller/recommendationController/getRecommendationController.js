@@ -21,7 +21,7 @@ const generateRecommendations = async (req, res, next) => {
         const { day, budget, destination, date, totalPeople } = req.body;
         // Ensure required fields are present
         if (!budget || !destination || !totalPeople || !day) {
-            return next((0, http_errors_1.default)(400, "Budget, Destination, Total People, and Day are required."));
+            return next((0, http_errors_1.default)(400, 'Budget, Destination, Total People, and Day are required.'));
         }
         // Redis key based on destination, budget, totalPeople, and day
         const redisKey = `${destination}:${budget}:${totalPeople}:${day}`;
@@ -29,27 +29,27 @@ const generateRecommendations = async (req, res, next) => {
         client_1.default.get(redisKey, async (err, cacheData) => {
             if (err) {
                 // console.error("Redis error:", err); // Log for Debugging
-                return next((0, http_errors_1.default)(500, "Internal Redis Server Error!"));
+                return next((0, http_errors_1.default)(500, 'Internal Redis Server Error!'));
             }
             if (cacheData) {
                 // If recommendation is cached, return it
                 return res.status(200).json({
                     status: 'Success',
-                    data: JSON.parse(cacheData) // Parse JSON data
+                    data: JSON.parse(cacheData), // Parse JSON data
                 });
             }
             else {
                 // Fetch user and populate recommendation history
                 const user = await userModel_1.default.findById(req.user._id).populate('recommendationhistory');
                 if (!user) {
-                    return next((0, http_errors_1.default)(404, "User not found!"));
+                    return next((0, http_errors_1.default)(404, 'User not found!'));
                 }
                 // Check if recommendation exists in the database (include `day` in the query)
                 const existingRecommendation = await recommendationModel_1.default.findOne({
                     destination: destination,
                     budget: budget,
                     totalPerson: totalPeople,
-                    day: day
+                    day: day,
                 });
                 if (existingRecommendation) {
                     // Save the recommendation in Redis (cache it for 24 hours)
@@ -57,7 +57,7 @@ const generateRecommendations = async (req, res, next) => {
                     // Return the recommendation found in the database
                     return res.status(200).json({
                         status: 'Success',
-                        data: JSON.parse(existingRecommendation.details)
+                        data: JSON.parse(existingRecommendation.details),
                     });
                 }
                 // Generate a new recommendation if it doesn't exist
@@ -68,17 +68,17 @@ const generateRecommendations = async (req, res, next) => {
                     budget: budget,
                     date: date || new Date().toISOString(),
                     totalPerson: totalPeople,
-                    prevRecommendation: "Not Provided",
-                    preference: user.preferences
+                    prevRecommendation: 'Not Provided',
+                    preference: user.preferences,
                 };
                 // Generate a prompt and fetch the recommendation using an external AI service
                 const prompt = (0, generatePrompt_1.default)(data);
                 const getRecommendation = await (0, generateRecommendation_1.default)(prompt);
                 if (typeof getRecommendation != 'string') {
                     // console.error('Error: recommendations is not a valid string.'); // Log for Debugging
-                    return next((0, http_errors_1.default)(5000, "Invalid response from recommendation service!"));
+                    return next((0, http_errors_1.default)(5000, 'Invalid response from recommendation service!'));
                 }
-                const result = getRecommendation.replace(/```json|```/g, "").trim();
+                const result = getRecommendation.replace(/```json|```/g, '').trim();
                 // Create a new recommendation and save it to the database
                 const newRecommendation = new recommendationModel_1.default({
                     destination: destination,
@@ -86,7 +86,7 @@ const generateRecommendations = async (req, res, next) => {
                     totalPerson: totalPeople,
                     day: day,
                     details: result,
-                    user: req.user._id
+                    user: req.user._id,
                 });
                 // const savedRecommendation = await newRecommendation.save() as IRecommendation & { _id: string };
                 const savedRecommendation = await newRecommendation.save();
@@ -98,14 +98,14 @@ const generateRecommendations = async (req, res, next) => {
                 // Return the new recommendation
                 return res.status(200).json({
                     status: 'Success',
-                    data: JSON.parse(result) // Use parsed result directly
+                    data: JSON.parse(result), // Use parsed result directly
                 });
             }
         });
     }
     catch (error) {
         // console.error("Error generating recommendations:", error); // Log for Debugging
-        return next((0, http_errors_1.default)(500, "Internal Server Error!"));
+        return next((0, http_errors_1.default)(500, 'Internal Server Error!'));
     }
 };
 exports.default = generateRecommendations;

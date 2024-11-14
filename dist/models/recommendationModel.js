@@ -12,20 +12,20 @@ const recommendationSchema = new mongoose_1.Schema({
     },
     budget: {
         type: Number,
-        required: true
+        required: true,
     },
     totalPerson: {
         type: Number,
-        default: 1
+        default: 1,
     },
     recommendationOn: {
         type: Date,
-        default: Date.now
+        default: Date.now,
     },
     user: {
         type: mongoose_1.Schema.Types.ObjectId,
-        ref: 'User'
-    }
+        ref: 'User',
+    },
 });
 const Recommendations = (0, mongoose_1.model)('Recommendations', recommendationSchema);
 exports.default = Recommendations;

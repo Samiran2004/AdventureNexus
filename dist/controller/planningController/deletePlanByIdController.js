@@ -14,16 +14,16 @@ const deletePlanById = async (req, res, next) => {
         // Check if the plan exists
         const plan = await planModel_1.default.findById(id);
         if (!plan) {
-            return next((0, http_errors_1.default)(404, "Plan Not Found!"));
+            return next((0, http_errors_1.default)(404, 'Plan Not Found!'));
         }
         // Check if the user exists
         const user = await userModel_1.default.findById(userId);
         if (!user) {
-            return next((0, http_errors_1.default)(404, "User not found!"));
+            return next((0, http_errors_1.default)(404, 'User not found!'));
         }
         // Check if the plan belongs to the user
-        if (!user.plans.some((planId) => planId.toString() == id)) {
-            return next((0, http_errors_1.default)(403, "This plan does not belong to the user!"));
+        if (!user.plans.some(planId => planId.toString() == id)) {
+            return next((0, http_errors_1.default)(403, 'This plan does not belong to the user!'));
         }
         // Remove the plan reference from the user's plans array
         user.plans = user.plans.filter(planId => planId.toString() !== id);
@@ -33,12 +33,12 @@ const deletePlanById = async (req, res, next) => {
         await planModel_1.default.findByIdAndDelete(id);
         return res.status(200).json({
             status: 'Success',
-            message: 'Plan deleted successfully.'
+            message: 'Plan deleted successfully.',
         });
     }
     catch (error) {
         // console.log(`Error in deletePlanByIdController: ${error}`);  //For Debugging
-        return next((0, http_errors_1.default)(500, "Internal Server Error!"));
+        return next((0, http_errors_1.default)(500, 'Internal Server Error!'));
     }
 };
 exports.deletePlanById = deletePlanById;

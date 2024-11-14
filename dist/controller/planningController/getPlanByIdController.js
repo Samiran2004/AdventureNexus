@@ -15,12 +15,12 @@ const getPlanById = async (req, res, next) => {
         // Check Redis cache
         client_1.default.get(redisKey, async (err, cacheData) => {
             if (err) {
-                return next((0, http_errors_1.default)(500, "Internal Redis Server Error!"));
+                return next((0, http_errors_1.default)(500, 'Internal Redis Server Error!'));
             }
             if (cacheData) {
                 return res.status(200).json({
                     status: 'Success',
-                    data: JSON.parse(cacheData)
+                    data: JSON.parse(cacheData),
                 });
             }
             // Find the plan in the database
@@ -31,19 +31,19 @@ const getPlanById = async (req, res, next) => {
                     client_1.default.setex(redisKey, 60, JSON.stringify(plan));
                     return res.status(200).json({
                         status: 'Success',
-                        data: plan
+                        data: plan,
                     });
                 }
-                return next((0, http_errors_1.default)(404, "Plan Not Found or The id is Invalid."));
+                return next((0, http_errors_1.default)(404, 'Plan Not Found or The id is Invalid.'));
             }
             catch (error) {
-                return next((0, http_errors_1.default)(400, "Plan Not Found or The ID is Invalid."));
+                return next((0, http_errors_1.default)(400, 'Plan Not Found or The ID is Invalid.'));
             }
         });
     }
     catch (error) {
         // console.error(`Error in getPlanByIdController: ${error}`); // Log the error for debugging
-        return next((0, http_errors_1.default)(500, "Internal Server Error!"));
+        return next((0, http_errors_1.default)(500, 'Internal Server Error!'));
     }
 };
 exports.getPlanById = getPlanById;

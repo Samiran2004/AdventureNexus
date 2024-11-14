@@ -13,11 +13,11 @@ const updatePlan = async (req, res, next) => {
         // Find the plan by ID
         const plan = await planModel_1.default.findById(id);
         if (!plan) {
-            return next((0, http_errors_1.default)(404, "Plan Not Found!"));
+            return next((0, http_errors_1.default)(404, 'Plan Not Found!'));
         }
         // Check if the plan belongs to the user
         if (plan.user.toString() !== req.user._id) {
-            return next((0, http_errors_1.default)(403, "You do not permission to update this plan"));
+            return next((0, http_errors_1.default)(403, 'You do not permission to update this plan'));
         }
         // Update the plan with the provided fields
         Object.assign(plan, updates);
@@ -26,12 +26,12 @@ const updatePlan = async (req, res, next) => {
         return res.status(200).json({
             status: 'Success',
             message: 'Plan updated successfully.',
-            data: updatedPlan
+            data: updatedPlan,
         });
     }
     catch (error) {
         // console.error(error); // Log the error for debugging
-        return next((0, http_errors_1.default)(500, "Internal Server Error!"));
+        return next((0, http_errors_1.default)(500, 'Internal Server Error!'));
     }
 };
 exports.updatePlan = updatePlan;

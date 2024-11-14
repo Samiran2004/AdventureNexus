@@ -1,14 +1,14 @@
 interface FlightPromptData {
-    start_destination: string;
-    final_destination: string;
-    start_date: string;
-    return_date: string;
-    total_people: number;
-    currency_code: string;
+  start_destination: string;
+  final_destination: string;
+  start_date: string;
+  return_date: string;
+  total_people: number;
+  currency_code: string;
 }
 
 const generateFlightPrompt = (data: FlightPromptData): string => {
-    return `
+  return `
         Based on the following details, generate a structured flight recommendation in pure JSON format:
 
 - Starting Destination: ${data.start_destination}
@@ -46,6 +46,6 @@ Provide the recommendations in **JSON format only** with the following structure
 Do **not** include markdown, explanations, or any additional text—just the JSON object.
 Provide all possible flight options based on this information.
     `;
-}
+};
 
 export default generateFlightPrompt;

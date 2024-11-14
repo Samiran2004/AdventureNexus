@@ -13,11 +13,11 @@ const getBudgetRecommendations = async (req, res, next) => {
         // Fetch budget from req.params
         let budget = req.params.budget;
         if (!budget) {
-            return next((0, http_errors_1.default)(400, "Budget is required!"));
+            return next((0, http_errors_1.default)(400, 'Budget is required!'));
         }
         // If the budget is a string type, convert it into an integer
         if (isNaN(budget)) {
-            return next((0, http_errors_1.default)(400, "Invalid budget format!"));
+            return next((0, http_errors_1.default)(400, 'Invalid budget format!'));
         }
         // Redis Key
         const redisKey = `${budget}:${req.user.country}`;
@@ -25,38 +25,40 @@ const getBudgetRecommendations = async (req, res, next) => {
         client_1.default.get(redisKey, async (err, cacheData) => {
             if (err) {
                 // console.error('Redis error:', err); //Log for Debugging
-                return next((0, http_errors_1.default)(500, "Internal Redis Server Error!"));
+                return next((0, http_errors_1.default)(500, 'Internal Redis Server Error!'));
             }
             if (cacheData) {
                 // If recommendation is cached, return it
                 return res.status(200).json({
                     status: 'Success',
-                    data: JSON.parse(cacheData)
+                    data: JSON.parse(cacheData),
                 });
             }
             else {
                 // Generate a prompt
                 const data = {
                     budget: budget,
-                    country: req.user.country
+                    country: req.user.country,
                 };
                 const prompt = (0, generatePromptForBudget_1.default)(data);
                 // Generate recommendations
-                const recommendations = await (0, generateRecommendation_1.default)(prompt);
-                const result = recommendations.replace(/```json|```/g, "").trim();
+                const recommendations = (await (0, generateRecommendation_1.default)(prompt));
+                const result = recommendations
+                    .replace(/```json|```/g, '')
+                    .trim();
                 // Save the new recommendation in Redis (For 5 min)
                 await client_1.default.setex(redisKey, 300, JSON.stringify(result));
                 // Return the response
                 return res.status(200).json({
                     status: 'Success',
-                    recommendations: JSON.parse(result)
+                    recommendations: JSON.parse(result),
                 });
             }
         });
     }
     catch (error) {
         // console.error('Internal Server Error:', error); // Log the error for debugging
-        return next((0, http_errors_1.default)(500, "Internal Server Error!"));
+        return next((0, http_errors_1.default)(500, 'Internal Server Error!'));
     }
 };
 exports.getBudgetRecommendations = getBudgetRecommendations;

@@ -14,7 +14,7 @@ const loginuser = async (req, res, next) => {
         const { username, email, password } = req.body;
         // Check if all required fields are provided in the request body
         if (!username || !email || !password) {
-            return next((0, http_errors_1.default)(400, "All fields are required"));
+            return next((0, http_errors_1.default)(400, 'All fields are required'));
         }
         // Validate user data using JOI
         const { error } = joiLoginValidation_1.userSchemaValidationLogin.validate(req.body);
@@ -57,16 +57,16 @@ const loginuser = async (req, res, next) => {
                 });
             }
             else {
-                return next((0, http_errors_1.default)(401, "Incorrect Password"));
+                return next((0, http_errors_1.default)(401, 'Incorrect Password'));
             }
         }
         else {
-            return next((0, http_errors_1.default)(404, "User not found!"));
+            return next((0, http_errors_1.default)(404, 'User not found!'));
         }
     }
     catch (error) {
         // console.error('Error during login:', error); // Log for debugging
-        return next((0, http_errors_1.default)(500, "Internal Server Error!"));
+        return next((0, http_errors_1.default)(500, 'Internal Server Error!'));
     }
 };
 exports.default = loginuser;

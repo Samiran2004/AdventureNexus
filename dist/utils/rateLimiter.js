@@ -5,6 +5,6 @@ const limiter = (0, express_rate_limit_1.rateLimit)({
     windowMs: 15 * 60 * 1000,
     limit: 100,
     standardHeaders: 'draft-7',
-    legacyHeaders: false
+    legacyHeaders: false,
 });
 exports.default = limiter;
