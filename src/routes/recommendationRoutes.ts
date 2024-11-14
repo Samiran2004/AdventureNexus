@@ -69,7 +69,7 @@ const route: Router = express.Router();
  */
 
 // Generate personalized recommendations using Gemini
-// Path: /api/v1/recommendation/generate-recommendations
+// Path: /api/v1/recommendations/generate-recommendations
 route.post('/generate-recommendations', authTokenMiddleware, (req, res, next)=>{
     generateRecommendations(req as CustomRequestRecommendationController<{}, {}, RequestBody>, res, next);
 });

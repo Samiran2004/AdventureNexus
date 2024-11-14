@@ -20,12 +20,13 @@ Welcome to the AI-Powered Interactive Travel Planner! This project leverages adv
 - MongoDB
 - Redis
 - TypeScript
+- JavaScript
 - Cloudinary
 
 ### Installation
 1. Clone the repository
     ```bash
-    git clone https://github.com/yourusername/ai-travel-planner.git
+    git clone https://github.com/Samiran2004/API-Powered-Interactive-Travel-Planner
     ```
 2. Install dependencies
     ```bash
@@ -35,7 +36,10 @@ Welcome to the AI-Powered Interactive Travel Planner! This project leverages adv
 3. Set up environment variables
 4. Start the server
     ```bash
-    npm start
+    npm run start
+   or
+    npx tsc
+    npm run serve
     ```
 
 ### Usage

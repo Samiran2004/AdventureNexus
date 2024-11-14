@@ -75,8 +75,8 @@ app.get('/isWork', (req: Request, res: Response) => {
 });
 
 app.use('/api/v1/users', userRoute);
-app.use('/api/v1/recommendation', recommendationRoute);
-app.use('/api/v1/planning', planningRoute);
+app.use('/api/v1/recommendations', recommendationRoute);
+app.use('/api/v1/plannings', planningRoute);
 
 app.use(errorHandler);
 

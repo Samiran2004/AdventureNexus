@@ -59,8 +59,8 @@ app.get('/isWork', (req, res) => {
     });
 });
 app.use('/api/v1/users', userRoutes_1.default);
-app.use('/api/v1/recommendation', recommendationRoutes_1.default);
-app.use('/api/v1/planning', planningRoute_1.default);
+app.use('/api/v1/recommendations', recommendationRoutes_1.default);
+app.use('/api/v1/plannings', planningRoute_1.default);
 app.use(globalErrorHandler_1.default);
 app.listen(config_1.config.port, (err) => err
     ? (0, figlet_1.default)(`S e r v e r  c o n n e c t i o n  e r r o r`, (err, data) => {

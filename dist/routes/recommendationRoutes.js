@@ -62,7 +62,7 @@ const route = express_1.default.Router();
  *         description: Internal server error
  */
 // Generate personalized recommendations using Gemini
-// Path: /api/v1/recommendation/generate-recommendations
+// Path: /api/v1/recommendations/generate-recommendations
 route.post('/generate-recommendations', authTokenMiddleware_1.default, (req, res, next) => {
     (0, getRecommendationController_1.default)(req, res, next);
 });
