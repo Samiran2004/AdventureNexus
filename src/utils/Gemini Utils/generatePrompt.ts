@@ -1,16 +1,16 @@
 interface TravelPromptData {
-  startingDestination: string;
-  destination: string;
-  day: number;
-  budget: number;
-  date: string;
-  totalPerson: number;
-  prevRecommendation: string;
-  preference: string[];
+    startingDestination: string;
+    destination: string;
+    day: number;
+    budget: number;
+    date: string;
+    totalPerson: number;
+    prevRecommendation: string;
+    preference: string[];
 }
 
 const generatePrompt = (data: TravelPromptData): string => {
-  return `Based on the following details, generate a structured travel recommendation in pure JSON format:
+    return `Based on the following details, generate a structured travel recommendation in pure JSON format:
   
   - Starting Destination: ${data.startingDestination}
   - Final Destination: ${data.destination}

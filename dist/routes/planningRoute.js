@@ -9,6 +9,7 @@ const newPlanController_1 = require("../controller/planningController/newPlanCon
 const getPlanByIdController_1 = require("../controller/planningController/getPlanByIdController");
 const deletePlanByIdController_1 = require("../controller/planningController/deletePlanByIdController");
 const updatePlanController_1 = require("../controller/planningController/updatePlanController");
+const splitCostController_1 = __importDefault(require("../controller/planningController/splitCostController"));
 const route = express_1.default.Router();
 /**
  * @swagger
@@ -326,5 +327,10 @@ route.delete('/:id', authTokenMiddleware_1.default, (req, res, next) => {
 // Path: PUT /api/v1/plans/:id
 route.put('/:id', authTokenMiddleware_1.default, (req, res, next) => {
     (0, updatePlanController_1.updatePlan)(req, res, next);
+});
+// Feature that allows users to split trip expenses with others.
+// Path: POST  /api/v1/plans/split-cost/:id
+route.post('/split-cost/:id', authTokenMiddleware_1.default, (req, res, next) => {
+    (0, splitCostController_1.default)(req, res, next);
 });
 exports.default = route;

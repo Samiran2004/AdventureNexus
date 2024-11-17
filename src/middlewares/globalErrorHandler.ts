@@ -4,18 +4,18 @@ import { config } from '../config/config';
 
 // Global error handler
 const errorHandler: ErrorRequestHandler = (
-  err: HttpError,
-  _req: Request,
-  res: Response,
-  _next: NextFunction
+    err: HttpError,
+    _req: Request,
+    res: Response,
+    _next: NextFunction
 ) => {
-  const statusCode = err.statusCode || 500;
+    const statusCode = err.statusCode || 500;
 
-  res.status(statusCode).json({
-    status: 'Failed',
-    message: err.message,
-    errorStack: config.env === 'development' ? err.stack : '',
-  });
+    res.status(statusCode).json({
+        status: 'Failed',
+        message: err.message,
+        errorStack: config.env === 'development' ? err.stack : '',
+    });
 };
 
 export default errorHandler;

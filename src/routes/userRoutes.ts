@@ -1,16 +1,16 @@
 import express, { Router } from 'express';
 import createNewUser, {
-  CustomRequestRegisterController,
+    CustomRequestRegisterController,
 } from '../controller/usercontroller/registerController';
 import { upload } from '../middlewares/multer';
 import authTokenMiddleware from '../middlewares/authTokenMiddleware';
 import loginuser from '../controller/usercontroller/loginController';
 import userProfile, {
-  CustomRequestUserProfileController,
+    CustomRequestUserProfileController,
 } from '../controller/usercontroller/userProfileController';
 import userDelete from '../controller/usercontroller/userProfileDeleteController';
 import updateProfile, {
-  CustomRequestUpdateProfile,
+    CustomRequestUpdateProfile,
 } from '../controller/usercontroller/updateProfileController';
 import limiter from '../utils/rateLimiter';
 
@@ -87,12 +87,12 @@ const route: Router = express.Router();
 
 // Create new user... Path: /api/v1/user/register
 route.post(
-  '/register',
-  limiter,
-  upload.single('profileimage'),
-  (req, res, next) => {
-    createNewUser(req as CustomRequestRegisterController, res, next);
-  }
+    '/register',
+    limiter,
+    upload.single('profileimage'),
+    (req, res, next) => {
+        createNewUser(req as CustomRequestRegisterController, res, next);
+    }
 );
 
 // routes/userRoutes.ts
@@ -148,7 +148,7 @@ route.post(
 
 // Login a User... Path: /api/v1/user/login
 route.post('/login', limiter, (req, res, next) => {
-  loginuser(req, res, next);
+    loginuser(req, res, next);
 });
 
 /**
@@ -211,7 +211,7 @@ route.post('/login', limiter, (req, res, next) => {
  */
 // Get user profile details... Path: /api/v1/user/profile
 route.get('/profile', authTokenMiddleware, (req, res, next) => {
-  userProfile(req as CustomRequestUserProfileController, res, next);
+    userProfile(req as CustomRequestUserProfileController, res, next);
 });
 
 /**
@@ -249,7 +249,7 @@ route.get('/profile', authTokenMiddleware, (req, res, next) => {
 
 // Delete user... Path: /api/v1/user/delete
 route.delete('/delete', authTokenMiddleware, (req, res, next) => {
-  userDelete(req, res, next);
+    userDelete(req, res, next);
 });
 
 /**
@@ -344,12 +344,12 @@ route.delete('/delete', authTokenMiddleware, (req, res, next) => {
 
 // Update user... Path: /api/v1/user/update
 route.put(
-  '/update',
-  authTokenMiddleware,
-  upload.single('profileimage'),
-  (req, res, next) => {
-    updateProfile(req as CustomRequestUpdateProfile, res, next);
-  }
+    '/update',
+    authTokenMiddleware,
+    upload.single('profileimage'),
+    (req, res, next) => {
+        updateProfile(req as CustomRequestUpdateProfile, res, next);
+    }
 );
 
 export default route;

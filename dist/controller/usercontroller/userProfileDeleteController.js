@@ -30,6 +30,7 @@ const userDelete = async (req, res, next) => {
                     return next((0, http_errors_1.default)(500, 'Error deleting profile picture from Cloudinary'));
                 }
             }
+            // Delete user's plans
             // Delete user from the database
             await userModel_1.default.findByIdAndDelete(req.user._id);
             // Send a mail

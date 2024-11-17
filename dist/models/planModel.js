@@ -56,6 +56,8 @@ const planSchema = new mongoose_1.Schema({
             distance_to_city_center: { type: String },
         },
     ],
+}, {
+    timestamps: true,
 });
 const Plan = (0, mongoose_1.model)('Plan', planSchema);
 exports.default = Plan;

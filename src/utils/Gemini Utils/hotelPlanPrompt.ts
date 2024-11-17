@@ -1,14 +1,14 @@
 interface HotelData {
-  destination: string;
-  checkInDate: string;
-  checkOutDate: string;
-  total_people: number;
-  type: string;
-  currency_code: string;
+    destination: string;
+    checkInDate: string;
+    checkOutDate: string;
+    total_people: number;
+    type: string;
+    currency_code: string;
 }
 
 const generateHotelPrompt = (data: HotelData): string => {
-  return `
+    return `
         Based on the following details, generate a structured hotel recommendation in pure JSON format:
 
 - Destination: ${data.destination}

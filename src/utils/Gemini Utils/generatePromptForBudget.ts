@@ -1,10 +1,10 @@
 interface BudgetPromptData {
-  budget: number;
-  country: string;
+    budget: number;
+    country: string;
 }
 
 const generatePromptForBudget = (data: BudgetPromptData): string => {
-  return `
+    return `
         Generate travel recommendations for a user based on the following inputs:
         - Budget: ${data.budget} ${data.country} currency
         

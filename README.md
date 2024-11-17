@@ -14,40 +14,40 @@ Welcome to the AI-Powered Interactive Travel Planner! This project leverages adv
 
 ### Features
 
-- Personalized travel recommendations
-- Itinerary planning
-- Real-time travel updates
-- Integration with popular travel services
+-   Personalized travel recommendations
+-   Itinerary planning
+-   Real-time travel updates
+-   Integration with popular travel services
 
 ### Technologies Used
 
-- Node.js
-- Express.js
-- MongoDB
-- Redis
-- TypeScript
-- JavaScript
-- Cloudinary
+-   Node.js
+-   Express.js
+-   MongoDB
+-   Redis
+-   TypeScript
+-   JavaScript
+-   Cloudinary
 
 ### Installation
 
 1. Clone the repository
-   ```bash
-   git clone https://github.com/Samiran2004/API-Powered-Interactive-Travel-Planner
-   ```
+    ```bash
+    git clone https://github.com/Samiran2004/API-Powered-Interactive-Travel-Planner
+    ```
 2. Install dependencies
-   ```bash
-   cd ai-travel-planner
-   npm install
-   ```
+    ```bash
+    cd ai-travel-planner
+    npm install
+    ```
 3. Set up environment variables
 4. Start the server
-   ```bash
-   npm run start
-   or
-   npx tsc
-   npm run serve
-   ```
+    ```bash
+    npm run start
+    or
+    npx tsc
+    npm run serve
+    ```
 
 ### Usage
 
