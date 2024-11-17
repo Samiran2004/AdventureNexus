@@ -1,4 +1,4 @@
-# AI TRAVEL PLANNER
+# AdventureNexus
 
 ## Basic System Architecture
 
