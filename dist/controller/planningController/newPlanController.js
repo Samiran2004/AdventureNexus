@@ -13,7 +13,7 @@ const client_1 = __importDefault(require("../../redis/client"));
 const http_errors_1 = __importDefault(require("http-errors"));
 const createPlan = async (req, res, next) => {
     try {
-        const { destination, dispatch_city, travel_dates, budget, total_people } = req.body;
+        const { destination, dispatch_city, travel_dates, budget, total_people, } = req.body;
         // Check if all required fields are present
         if (!destination ||
             !dispatch_city ||

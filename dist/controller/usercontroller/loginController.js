@@ -22,7 +22,10 @@ const loginuser = async (req, res, next) => {
             return next((0, http_errors_1.default)(400, error.details[0].message));
         }
         // Find the user in the database
-        const checkUser = await userModel_1.default.findOne({ username, email });
+        const checkUser = await userModel_1.default.findOne({
+            username,
+            email,
+        });
         if (checkUser) {
             // Match password
             const matchPassword = await bcryptjs_1.default.compare(password, checkUser.password);

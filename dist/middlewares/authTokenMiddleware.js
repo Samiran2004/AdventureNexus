@@ -55,7 +55,8 @@ async function authTokenMiddleware(req, res, next) {
                                 // secure: process.env.NODE_ENV === 'production',
                                 // sameSite: 'Strict'
                             });
-                            req.user = newUserPayload;
+                            req.user =
+                                newUserPayload;
                             next();
                         });
                     }

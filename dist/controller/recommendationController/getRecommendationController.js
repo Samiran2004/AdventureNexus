@@ -78,7 +78,9 @@ const generateRecommendations = async (req, res, next) => {
                     // console.error('Error: recommendations is not a valid string.'); // Log for Debugging
                     return next((0, http_errors_1.default)(5000, 'Invalid response from recommendation service!'));
                 }
-                const result = getRecommendation.replace(/```json|```/g, '').trim();
+                const result = getRecommendation
+                    .replace(/```json|```/g, '')
+                    .trim();
                 // Create a new recommendation and save it to the database
                 const newRecommendation = new recommendationModel_1.default({
                     destination: destination,

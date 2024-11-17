@@ -24,7 +24,10 @@ const getPopularDestinations = async (req, res, next) => {
                 generatePopularDest = JSON.parse(cacheData);
             }
             else {
-                const promptData = { country, currency_code };
+                const promptData = {
+                    country,
+                    currency_code,
+                };
                 const prompt = (0, generatePromptForPopularDest_1.default)(promptData);
                 try {
                     generatePopularDest = (await (0, generateRecommendation_1.default)(prompt));

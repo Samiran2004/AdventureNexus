@@ -16,7 +16,7 @@ const http_errors_1 = __importDefault(require("http-errors"));
 const joiValidation_1 = require("../../utils/JoiUtils/joiValidation");
 dotenv_1.default.config();
 const create_new_user = async (req, res, next) => {
-    let { fullname, email, password, phonenumber, gender, preference, country } = req.body;
+    let { fullname, email, password, phonenumber, gender, preference, country, } = req.body;
     try {
         // Check for required fields
         if (!fullname ||

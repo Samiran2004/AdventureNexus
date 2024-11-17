@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
@@ -16,6 +16,8 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import errorHandler from './middlewares/globalErrorHandler';
 import { config } from './config/config';
+import ejs from 'ejs';
+import path from 'path';
 
 dotenv.config();
 
@@ -47,10 +49,13 @@ redis.on('connect', () => {
 });
 
 app.use(cors());
+app.set('view engine', 'ejs');
+app.set('views', './views');
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(morgan('dev'));
+app.use(express.static(path.resolve('./Public')));
 app.use(
     helmet({
         contentSecurityPolicy: {
@@ -77,6 +82,10 @@ app.get('/isWork', (req: Request, res: Response) => {
         status: 'success',
         isWorking: true,
     });
+});
+
+app.get('/', (req: Request, res: Response, next: NextFunction) => {
+    res.render('Home');
 });
 
 app.use('/api/v1/users', userRoute);
