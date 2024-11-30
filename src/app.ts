@@ -16,7 +16,6 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import errorHandler from './middlewares/globalErrorHandler';
 import { config } from './config/config';
-import ejs from 'ejs';
 import path from 'path';
 
 dotenv.config();
@@ -49,8 +48,6 @@ redis.on('connect', () => {
 });
 
 app.use(cors());
-app.set('view engine', 'ejs');
-app.set('views', './views');
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -82,10 +79,6 @@ app.get('/isWork', (req: Request, res: Response) => {
         status: 'success',
         isWorking: true,
     });
-});
-
-app.get('/', (req: Request, res: Response, next: NextFunction) => {
-    res.render('Home');
 });
 
 app.use('/api/v1/users', userRoute);
