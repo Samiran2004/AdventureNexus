@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import Plan from '../../models/planModel';
-import User from '../../models/userModel';
+import Plan from '../../Database/models/planModel';
+import User from '../../Database/models/userModel';
 import generateFlightPrompt from '../../utils/Gemini Utils/flightPlanPrompt';
 import generateHotelPrompt from '../../utils/Gemini Utils/hotelPlanPrompt';
 import generateRecommendation from '../../utils/Gemini Utils/generateRecommendation';

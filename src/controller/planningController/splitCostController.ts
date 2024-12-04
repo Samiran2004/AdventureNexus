@@ -1,7 +1,7 @@
 import { NextFunction, Response, Request } from 'express';
 import createHttpError from 'http-errors';
 import { config } from '../../config/config';
-import Plan, { IPlan } from '../../models/planModel';
+import Plan, { IPlan } from '../../Database/models/planModel';
 
 export interface CustomRequestSplitCost extends Request {
     planId?: string;

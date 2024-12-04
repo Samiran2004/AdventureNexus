@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import Plan from '../../models/planModel';
+import Plan from '../../Database/models/planModel';
 import redis from '../../redis/client';
 import createHttpError from 'http-errors';
 

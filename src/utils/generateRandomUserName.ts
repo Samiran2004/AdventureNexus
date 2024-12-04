@@ -1,4 +1,4 @@
-import User from '../models/userModel'; // Adjust the import based on your project structure
+import User from '../Database/models/userModel'; // Adjust the import based on your project structure
 
 async function createUserName(fullname: string): Promise<string> {
     // Convert to lowercase and split the name

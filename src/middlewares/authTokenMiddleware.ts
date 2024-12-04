@@ -1,6 +1,6 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
-import User, { IUser } from '../models/userModel';
+import User, { IUser } from '../Database/models/userModel';
 import { config } from '../config/config';
 
 interface UserPayload extends JwtPayload {

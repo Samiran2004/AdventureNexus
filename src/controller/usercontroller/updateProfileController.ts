@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import User from '../../models/userModel';
+import User from '../../Database/models/userModel';
 import generateRandomUserName from '../../utils/generateRandomUserName';
 import bcrypt from 'bcryptjs';
 import createHttpError from 'http-errors';

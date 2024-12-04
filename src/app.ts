@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response } from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
@@ -6,7 +6,6 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
 import { swaggerOptions } from './utils/swaggerOptions';
 import figlet from 'figlet';
-import mongoose from 'mongoose';
 import userRoute from './routes/userRoutes';
 import recommendationRoute from './routes/recommendationRoutes';
 import planningRoute from './routes/planningRoute';
@@ -17,32 +16,20 @@ import dotenv from 'dotenv';
 import errorHandler from './middlewares/globalErrorHandler';
 import { config } from './config/config';
 import path from 'path';
+import connectDb from './Database/connectDb';
 
 dotenv.config();
 
 const app = express();
 
-mongoose
-    .connect(process.env.DB_URI as string)
-    .then(() => {
-        figlet(
-            'D a t a b a s e   c o n n e c t e d',
-            (err: Error | null, data: string | undefined) =>
-                err ? console.log('Figlet error...') : console.log(data)
-        );
-    })
-    .catch(() => {
-        figlet(
-            'D a t a b a s e  c o n n e c t i o n  e r r o r',
-            (err: Error | null, data: string | undefined) =>
-                err ? console.log('Figlet error') : console.log(data)
-        );
-    });
+(async () => {
+    await connectDb(process.env.DB_URI as string);
+})();
 
-redis.on('connect', () => {
+redis.on('connect', (): void => {
     figlet(
         'R e d i s   c o n n e c t e d',
-        (err: Error | null, data: string | undefined) =>
+        (err: Error | null, data: string | undefined): void =>
             err ? console.log('Figlet error...') : console.log(data)
     );
 });
@@ -74,7 +61,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.use(sanitizeInput);
 
-app.get('/isWork', (req: Request, res: Response) => {
+app.get('/isWork', (req: Request, res: Response): void => {
     res.status(200).send({
         status: 'success',
         isWorking: true,
@@ -87,17 +74,19 @@ app.use('/api/v1/plans', planningRoute);
 
 app.use(errorHandler);
 
-app.listen(config.port, (err?: Error) =>
+app.listen(config.port, (err?: Error): void =>
     err
         ? figlet(
               `S e r v e r  c o n n e c t i o n  e r r o r`,
-              (err: Error | null, data: string | undefined) => {
+              (err: Error | null, data: string | undefined): void => {
+                  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                   err ? console.log('Figlet error') : console.log(data);
               }
           )
         : figlet(
               `S e r v e r  c o n n e c t e d \n P O R T :  ${config.port}`,
-              (err: Error | null, data: string | undefined) => {
+              (err: Error | null, data: string | undefined): void => {
+                  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                   err ? console.log('Figlet error...') : console.log(data);
               }
           )

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import User from '../../models/userModel';
-import Plan from '../../models/planModel';
+import User from '../../Database/models/userModel';
+import Plan from '../../Database/models/planModel';
 import createHttpError from 'http-errors';
 
 export interface CustomRequestDeletePlan extends Request {

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import User, { IUser } from '../../models/userModel';
+import User, { IUser } from '../../Database/models/userModel';
 import createHttpError from 'http-errors';
 
 export interface CustomRequest<TParams = {}, TQuery = {}, TBody = {}>

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import cloudinary from '../../service/cloudinaryService';
-import User, { IUser } from '../../models/userModel';
+import User, { IUser } from '../../Database/models/userModel';
 import sendMail from '../../service/mailService';
 import createHttpError from 'http-errors';
 import emailTemplates, { EmailData } from '../../utils/emailTemplate';

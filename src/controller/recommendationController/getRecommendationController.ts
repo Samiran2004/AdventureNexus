@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
-import User from '../../models/userModel';
+import User from '../../Database/models/userModel';
 import Recommendations, {
     IRecommendation,
-} from '../../models/recommendationModel';
+} from '../../Database/models/recommendationModel';
 import generateRecommendation from '../../utils/Gemini Utils/generateRecommendation';
 import generatePrompt from '../../utils/Gemini Utils/generatePrompt';
 import { recommendationValidation } from '../../utils/JoiUtils/joiRecommendationValidation';

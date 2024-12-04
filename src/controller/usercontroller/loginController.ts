@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import User, { IUser } from '../../models/userModel';
+import User, { IUser } from '../../Database/models/userModel';
 import bcryptjs from 'bcryptjs';
 import { userSchemaValidationLogin } from '../../utils/JoiUtils/joiLoginValidation';
 import createHttpError from 'http-errors';

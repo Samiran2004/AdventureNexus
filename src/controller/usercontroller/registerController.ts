@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import User, { IUser } from '../../models/userModel';
+import User, { IUser } from '../../Database/models/userModel';
 import bcrypt from 'bcryptjs';
 import cc from 'currency-codes';
 import generateRandomUserName from '../../utils/generateRandomUserName';
@@ -36,8 +36,8 @@ interface MulterFile {
 }
 
 export interface CustomRequestRegisterController<
-    TParams = {},
-    TQuery = {},
+    TParams = object,
+    TQuery = object,
     TBody = RequestBodyRegisterController,
 > extends Request<TParams, any, TBody, TQuery> {
     file: MulterFile;

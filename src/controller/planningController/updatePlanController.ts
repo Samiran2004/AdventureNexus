@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import Plan from '../../models/planModel';
-import User from '../../models/userModel';
+import Plan from '../../Database/models/planModel';
+import User from '../../Database/models/userModel';
 import createHttpError from 'http-errors';
 
 interface UpdatePlanRequestBody {
