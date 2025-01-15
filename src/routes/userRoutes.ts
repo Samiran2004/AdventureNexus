@@ -1,4 +1,4 @@
-import express, { Router } from 'express';
+import express, { NextFunction, Router } from 'express';
 import createNewUser, {
     CustomRequestRegisterController,
 } from '../controller/usercontroller/registerController';
@@ -90,7 +90,7 @@ route.post(
     '/register',
     limiter,
     upload.single('profileimage'),
-    (req, res, next) => {
+    (req, res, next: NextFunction) => {
         createNewUser(req as CustomRequestRegisterController, res, next);
     }
 );

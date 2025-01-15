@@ -11,7 +11,6 @@ import {
 } from '../controller/recommendationController/getPopularDestController';
 import {
     CustomRequestGetRecBudget,
-    RequestParamsGetRecBudget,
     getBudgetRecommendations,
 } from '../controller/recommendationController/getRecBudgetController';
 
@@ -76,7 +75,7 @@ route.post(
     authTokenMiddleware,
     (req, res, next) => {
         generateRecommendations(
-            req as CustomRequestRecommendationController<{}, {}, RequestBody>,
+            req as CustomRequestRecommendationController,
             res,
             next
         );
@@ -121,7 +120,7 @@ route.post(
 // Path: /api/v1/recommendations/recommendation-history
 route.get('/recommendation-history', authTokenMiddleware, (req, res, next) => {
     getUserRecommendationHistory(
-        req as CustomRequestRecommendationController<{}, {}, {}>,
+        req as CustomRequestRecommendationController<object, object, object>,
         res,
         next
     );
@@ -164,7 +163,7 @@ route.get('/recommendation-history', authTokenMiddleware, (req, res, next) => {
 // Path: /api/v1/recommendations/popular-destinations
 route.get('/popular-destinations', authTokenMiddleware, (req, res, next) => {
     getPopularDestinations(
-        req as CustomRequestGetPopularDest<{}, {}, {}>,
+        req as CustomRequestGetPopularDest,
         res,
         next
     );
