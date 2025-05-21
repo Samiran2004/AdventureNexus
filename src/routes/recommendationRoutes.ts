@@ -162,11 +162,7 @@ route.get('/recommendation-history', authTokenMiddleware, (req, res, next) => {
 // Discover trending travel destinations
 // Path: /api/v1/recommendations/popular-destinations
 route.get('/popular-destinations', authTokenMiddleware, (req, res, next) => {
-    getPopularDestinations(
-        req as CustomRequestGetPopularDest,
-        res,
-        next
-    );
+    getPopularDestinations(req as CustomRequestGetPopularDest, res, next);
 });
 
 /**

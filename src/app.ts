@@ -77,17 +77,17 @@ app.use(errorHandler);
 app.listen(config.port, (err?: Error): void =>
     err
         ? figlet(
-            `S e r v e r  c o n n e c t i o n  e r r o r`,
-            (err: Error | null, data: string | undefined): void => {
-                // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-                err ? console.log('Figlet error') : console.log(data);
-            }
-        )
+              `S e r v e r  c o n n e c t i o n  e r r o r`,
+              (err: Error | null, data: string | undefined): void => {
+                  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+                  err ? console.log('Figlet error') : console.log(data);
+              }
+          )
         : figlet(
-            `S e r v e r  c o n n e c t e d \n P O R T :  ${config.port}`,
-            (err: Error | null, data: string | undefined): void => {
-                // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-                err ? console.log('Figlet error...') : console.log(data);
-            }
-        )
+              `S e r v e r  c o n n e c t e d \n P O R T :  ${config.port}`,
+              (err: Error | null, data: string | undefined): void => {
+                  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+                  err ? console.log('Figlet error...') : console.log(data);
+              }
+          )
 );
