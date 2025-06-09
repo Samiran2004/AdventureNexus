@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = authTokenMiddleware;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const userModel_1 = __importDefault(require("../models/userModel"));
+const userModel_1 = __importDefault(require("../Database/models/userModel"));
 const config_1 = require("../config/config");
 async function authTokenMiddleware(req, res, next) {
     try {

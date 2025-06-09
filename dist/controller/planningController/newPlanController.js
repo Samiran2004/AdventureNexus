@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createPlan = void 0;
-const planModel_1 = __importDefault(require("../../models/planModel"));
-const userModel_1 = __importDefault(require("../../models/userModel"));
+const planModel_1 = __importDefault(require("../../Database/models/planModel"));
+const userModel_1 = __importDefault(require("../../Database/models/userModel"));
 const flightPlanPrompt_1 = __importDefault(require("../../utils/Gemini Utils/flightPlanPrompt"));
 const hotelPlanPrompt_1 = __importDefault(require("../../utils/Gemini Utils/hotelPlanPrompt"));
 const generateRecommendation_1 = __importDefault(require("../../utils/Gemini Utils/generateRecommendation"));

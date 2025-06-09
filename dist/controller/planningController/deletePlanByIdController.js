@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deletePlanById = void 0;
-const userModel_1 = __importDefault(require("../../models/userModel"));
-const planModel_1 = __importDefault(require("../../models/planModel"));
+const userModel_1 = __importDefault(require("../../Database/models/userModel"));
+const planModel_1 = __importDefault(require("../../Database/models/planModel"));
 const http_errors_1 = __importDefault(require("http-errors"));
 const deletePlanById = async (req, res, next) => {
     try {

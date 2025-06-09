@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const userModel_1 = __importDefault(require("../models/userModel")); // Adjust the import based on your project structure
+const userModel_1 = __importDefault(require("../Database/models/userModel")); // Adjust the import based on your project structure
 async function createUserName(fullname) {
     // Convert to lowercase and split the name
     const splitName = fullname.toLowerCase().split(' ');

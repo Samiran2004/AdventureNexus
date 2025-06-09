@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const cloudinaryService_1 = __importDefault(require("../../service/cloudinaryService"));
-const userModel_1 = __importDefault(require("../../models/userModel"));
+const userModel_1 = __importDefault(require("../../Database/models/userModel"));
 const mailService_1 = __importDefault(require("../../service/mailService"));
 const http_errors_1 = __importDefault(require("http-errors"));
 const emailTemplate_1 = __importDefault(require("../../utils/emailTemplate"));

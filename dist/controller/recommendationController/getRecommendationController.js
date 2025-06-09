@@ -3,8 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const userModel_1 = __importDefault(require("../../models/userModel"));
-const recommendationModel_1 = __importDefault(require("../../models/recommendationModel"));
+const userModel_1 = __importDefault(require("../../Database/models/userModel"));
+const recommendationModel_1 = __importDefault(require("../../Database/models/recommendationModel"));
 const generateRecommendation_1 = __importDefault(require("../../utils/Gemini Utils/generateRecommendation"));
 const generatePrompt_1 = __importDefault(require("../../utils/Gemini Utils/generatePrompt"));
 const joiRecommendationValidation_1 = require("../../utils/JoiUtils/joiRecommendationValidation");

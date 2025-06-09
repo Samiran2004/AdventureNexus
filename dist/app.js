@@ -11,7 +11,6 @@ const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
 const swaggerOptions_1 = require("./utils/swaggerOptions");
 const figlet_1 = __importDefault(require("figlet"));
-const mongoose_1 = __importDefault(require("mongoose"));
 const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
 const recommendationRoutes_1 = __importDefault(require("./routes/recommendationRoutes"));
 const planningRoute_1 = __importDefault(require("./routes/planningRoute"));
@@ -22,22 +21,16 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const globalErrorHandler_1 = __importDefault(require("./middlewares/globalErrorHandler"));
 const config_1 = require("./config/config");
 const path_1 = __importDefault(require("path"));
+const connectDb_1 = __importDefault(require("./Database/connectDb"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
-mongoose_1.default
-    .connect(process.env.DB_URI)
-    .then(() => {
-    (0, figlet_1.default)('D a t a b a s e   c o n n e c t e d', (err, data) => err ? console.log('Figlet error...') : console.log(data));
-})
-    .catch(() => {
-    (0, figlet_1.default)('D a t a b a s e  c o n n e c t i o n  e r r o r', (err, data) => err ? console.log('Figlet error') : console.log(data));
-});
+(async () => {
+    await (0, connectDb_1.default)(process.env.DB_URI);
+})();
 client_1.default.on('connect', () => {
     (0, figlet_1.default)('R e d i s   c o n n e c t e d', (err, data) => err ? console.log('Figlet error...') : console.log(data));
 });
 app.use((0, cors_1.default)());
-app.set('view engine', 'ejs');
-app.set('views', './views');
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use((0, cookie_parser_1.default)());
@@ -65,17 +58,16 @@ app.get('/isWork', (req, res) => {
         isWorking: true,
     });
 });
-app.get('/', (req, res, next) => {
-    res.render('Home');
-});
 app.use('/api/v1/users', userRoutes_1.default);
 app.use('/api/v1/recommendations', recommendationRoutes_1.default);
 app.use('/api/v1/plans', planningRoute_1.default);
 app.use(globalErrorHandler_1.default);
 app.listen(config_1.config.port, (err) => err
     ? (0, figlet_1.default)(`S e r v e r  c o n n e c t i o n  e r r o r`, (err, data) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         err ? console.log('Figlet error') : console.log(data);
     })
     : (0, figlet_1.default)(`S e r v e r  c o n n e c t e d \n P O R T :  ${config_1.config.port}`, (err, data) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         err ? console.log('Figlet error...') : console.log(data);
     }));

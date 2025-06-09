@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const userModel_1 = __importDefault(require("../../models/userModel"));
+const userModel_1 = __importDefault(require("../../Database/models/userModel"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const joiLoginValidation_1 = require("../../utils/JoiUtils/joiLoginValidation");
 const http_errors_1 = __importDefault(require("http-errors"));
