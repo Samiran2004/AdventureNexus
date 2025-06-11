@@ -42,13 +42,13 @@ export const getPlanById = async (
                 return next(
                     createHttpError(404, 'Plan Not Found or The id is Invalid.')
                 );
-            } catch (error) {
+            } catch {
                 return next(
                     createHttpError(400, 'Plan Not Found or The ID is Invalid.')
                 );
             }
         });
-    } catch (error) {
+    } catch {
         // console.error(`Error in getPlanByIdController: ${error}`); // Log the error for debugging
         return next(createHttpError(500, 'Internal Server Error!'));
     }

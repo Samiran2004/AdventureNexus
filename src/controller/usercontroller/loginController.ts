@@ -4,6 +4,7 @@ import User, { IUser } from '../../Database/models/userModel';
 import bcryptjs from 'bcryptjs';
 import { userSchemaValidationLogin } from '../../utils/JoiUtils/joiLoginValidation';
 import createHttpError from 'http-errors';
+import { config } from '../../config/config';
 
 const loginuser = async (
     req: Request,
@@ -83,8 +84,10 @@ const loginuser = async (
         } else {
             return next(createHttpError(404, 'User not found!'));
         }
-    } catch (error) {
-        // console.error('Error during login:', error); // Log for debugging
+    } catch(error) {
+        if (config.env === 'development') {
+            console.error('Error during login:', error); // Log for debugging
+        }
         return next(createHttpError(500, 'Internal Server Error!'));
     }
 };

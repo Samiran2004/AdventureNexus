@@ -23,8 +23,6 @@ interface Participant {
 
 function dataFormat(
     req: CustomRequestSplitCost,
-    res: Response,
-    next: NextFunction
 ): void {
     if (typeof req.params.planId !== 'string') {
         req.params.planId = req.body.planId.toString();

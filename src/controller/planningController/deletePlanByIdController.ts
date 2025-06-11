@@ -50,7 +50,7 @@ export const deletePlanById = async (
             status: 'Success',
             message: 'Plan deleted successfully.',
         });
-    } catch (error) {
+    } catch {
         // console.log(`Error in deletePlanByIdController: ${error}`);  //For Debugging
 
         return next(createHttpError(500, 'Internal Server Error!'));
