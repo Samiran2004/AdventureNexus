@@ -173,7 +173,7 @@ const route = express.Router();
 // Create a new travel plan
 // Path: POST /api/v1/plans/create
 route.post('/create', authTokenMiddleware, (req, res, next) => {
-    createPlan(req as CustomRequest<{}, {}, CreatePlanRequestBody>, res, next);
+    createPlan(req as CustomRequest<object, object, CreatePlanRequestBody>, res, next);
 });
 
 /**
@@ -346,8 +346,8 @@ route.put('/:id', authTokenMiddleware, (req, res, next) => {
     updatePlan(
         req as unknown as CustomRequestUpdatePlan<
             RequestParamsUpdatePlan,
-            {},
-            {}
+            object,
+            object
         >,
         res,
         next

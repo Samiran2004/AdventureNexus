@@ -10,9 +10,9 @@ export interface CustomRequestSplitCost extends Request {
     participants: Participant[];
 }
 
-let names: string[] = [];
-let emails: string[] = [];
-let roles: string[] = [];
+const names: string[] = [];
+const emails: string[] = [];
+const roles: string[] = [];
 
 interface Participant {
     name: string;
@@ -47,12 +47,12 @@ const splitCost = async (
     next: NextFunction
 ): Promise<Response | void> => {
     try {
-        const planId: string = req.params.id as string;
+        // const planId: string = req.params.id as string;
 
         //Search the Plan in databse...
-        const plan: IPlan | null = await Plan.findById(planId);
+        // const plan: IPlan | null = await Plan.findById(planId);
 
-        dataFormat(req, res, next);
+        dataFormat(req);
         return res.status(200).send({
             status: 'success',
             data: req.body,
