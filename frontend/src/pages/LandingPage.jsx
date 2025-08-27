@@ -4,8 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import {
-    BookOpen,
-    Users,
+    MapPin,
+    Plane,
+    Hotel,
     Calendar,
     BarChart3,
     Shield,
@@ -18,7 +19,16 @@ import {
     Play,
     Globe,
     Clock,
-    Award
+    Award,
+    Compass,
+    Camera,
+    Users,
+    Bot,
+    Search,
+    Navigation,
+    Mail,
+    Phone,
+    MessageCircle
 } from 'lucide-react';
 
 // GSAP Imports
@@ -176,23 +186,52 @@ const AdventureNexusLanding = () => {
 
     return (
         <div className="min-h-screen bg-white overflow-hidden">
+            {/* Mobile Menu */}
+            {mobileMenuOpen && (
+                <div className="fixed inset-0 bg-white z-50 md:hidden">
+                    <div className="flex justify-between items-center p-4 border-b">
+                        <div className="flex items-center space-x-2">
+                            <div className="bg-gradient-to-br from-blue-600 to-purple-600 text-white p-2 rounded-lg">
+                                <Compass size={20} />
+                            </div>
+                            <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                                AdventureNexus
+                            </span>
+                        </div>
+                        <button onClick={() => setMobileMenuOpen(false)}>
+                            <X size={24} />
+                        </button>
+                    </div>
+                    <div className="flex flex-col space-y-4 p-4">
+                        <a href="#features" className="text-gray-600 hover:text-gray-900 py-2">Features</a>
+                        <a href="#how-it-works" className="text-gray-600 hover:text-gray-900 py-2">How it Works</a>
+                        <a href="#destinations" className="text-gray-600 hover:text-gray-900 py-2">Destinations</a>
+                        <a href="#testimonials" className="text-gray-600 hover:text-gray-900 py-2">Reviews</a>
+                        <Button variant="ghost" className="justify-start">Sign In</Button>
+                        <Button className="bg-gradient-to-r from-blue-600 to-purple-600">Plan My Trip</Button>
+                    </div>
+                </div>
+            )}
+
             {/* Navigation */}
             <nav ref={navRef} className="border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 sticky top-0 z-50">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
                         {/* Logo */}
                         <div className="flex items-center space-x-2">
-                            <div className="bg-blue-600 text-white p-2 rounded-lg">
-                                <BookOpen size={24} />
+                            <div className="bg-gradient-to-br from-blue-600 to-purple-600 text-white p-2 rounded-lg">
+                                <Compass size={24} />
                             </div>
-                            <span className="text-2xl font-bold text-gray-900">AdventureNexus</span>
+                            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                                AdventureNexus
+                            </span>
                         </div>
 
                         {/* Desktop Navigation */}
                         <div className="hidden md:flex items-center space-x-8">
                             <a href="#features" className="text-gray-600 hover:text-gray-900 transition-colors">Features</a>
                             <a href="#how-it-works" className="text-gray-600 hover:text-gray-900 transition-colors">How it Works</a>
-                            <a href="#pricing" className="text-gray-600 hover:text-gray-900 transition-colors">Pricing</a>
+                            <a href="#destinations" className="text-gray-600 hover:text-gray-900 transition-colors">Destinations</a>
                             <a href="#testimonials" className="text-gray-600 hover:text-gray-900 transition-colors">Reviews</a>
                         </div>
 
@@ -200,10 +239,11 @@ const AdventureNexusLanding = () => {
                         <div className="hidden md:flex items-center space-x-4">
                             <Button variant="ghost">Sign In</Button>
                             <Button
+                                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                                 onMouseEnter={handleButtonHover}
                                 onMouseLeave={handleButtonLeave}
                             >
-                                Get Started
+                                Plan My Trip
                             </Button>
                         </div>
 
@@ -219,57 +259,63 @@ const AdventureNexusLanding = () => {
             </nav>
 
             {/* Hero Section */}
-            <section ref={heroRef} className="py-20 bg-gradient-to-br from-blue-50 to-indigo-100 relative overflow-hidden">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <section ref={heroRef} className="py-20 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
+                {/* Background decorative elements */}
+                <div className="absolute inset-0 overflow-hidden">
+                    <div className="absolute -top-10 -right-10 w-80 h-80 bg-blue-100 rounded-full opacity-50"></div>
+                    <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-purple-100 rounded-full opacity-30"></div>
+                </div>
+
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
                     <div className="grid lg:grid-cols-2 gap-12 items-center">
                         <div ref={heroContentRef} className="space-y-8">
                             <div className="space-y-4">
-                                <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">
-                                    🎓 Transform Education Management
+                                <Badge className="bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 hover:bg-blue-100 border-0">
+                                    🤖 AI-Powered Travel Planning
                                 </Badge>
                                 <h1 className="text-4xl md:text-6xl font-bold text-gray-900 leading-tight">
-                                    Complete School Management
-                                    <span className="text-blue-600"> Made Simple</span>
+                                    Your Perfect Trip
+                                    <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> Planned by AI</span>
                                 </h1>
                                 <p className="text-xl text-gray-600 leading-relaxed">
-                                    Streamline student enrollment, teacher management, attendance tracking, and academic reporting in one powerful platform.
+                                    Let our advanced AI create personalized itineraries, find the best flights and hotels, and discover hidden gems tailored to your preferences and budget.
                                 </p>
                             </div>
 
                             <div className="flex flex-col sm:flex-row gap-4">
                                 <Button
                                     size="lg"
-                                    className="text-lg px-8 py-6"
+                                    className="text-lg px-8 py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                                     onMouseEnter={handleButtonHover}
                                     onMouseLeave={handleButtonLeave}
                                 >
-                                    Start Free Trial
+                                    Start Planning Free
                                     <ArrowRight className="ml-2" size={20} />
                                 </Button>
                                 <Button
                                     variant="outline"
                                     size="lg"
-                                    className="text-lg px-8 py-6"
+                                    className="text-lg px-8 py-6 border-2"
                                     onMouseEnter={handleButtonHover}
                                     onMouseLeave={handleButtonLeave}
                                 >
                                     <Play className="mr-2" size={20} />
-                                    Watch Demo
+                                    See How It Works
                                 </Button>
                             </div>
 
                             <div className="flex items-center space-x-6 text-sm text-gray-500">
                                 <div className="flex items-center">
                                     <CheckCircle className="text-green-500 mr-2" size={16} />
-                                    No setup fees
+                                    Free to use
                                 </div>
                                 <div className="flex items-center">
                                     <CheckCircle className="text-green-500 mr-2" size={16} />
-                                    14-day free trial
+                                    Instant results
                                 </div>
                                 <div className="flex items-center">
                                     <CheckCircle className="text-green-500 mr-2" size={16} />
-                                    Cancel anytime
+                                    No credit card required
                                 </div>
                             </div>
                         </div>
@@ -277,43 +323,51 @@ const AdventureNexusLanding = () => {
                         <div ref={heroImageRef} className="relative">
                             <div className="bg-white rounded-2xl shadow-2xl p-8 space-y-6">
                                 <div className="flex items-center justify-between">
-                                    <h3 className="text-lg font-semibold">Dashboard Overview</h3>
-                                    <Badge variant="secondary">Live</Badge>
+                                    <h3 className="text-lg font-semibold">Trip Planner Dashboard</h3>
+                                    <Badge variant="secondary" className="bg-green-100 text-green-800">AI Active</Badge>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <Card>
                                         <CardContent className="p-4 text-center">
-                                            <Users className="text-blue-600 mx-auto mb-2" size={24} />
+                                            <MapPin className="text-blue-600 mx-auto mb-2" size={24} />
                                             <div className="text-2xl font-bold">
                                                 <NumberCounter
-                                                    targetNumber={1247}
+                                                    targetNumber={195}
                                                     duration={3}
                                                     className="text-2xl font-bold"
                                                 />
                                             </div>
-                                            <div className="text-sm text-gray-500">Students</div>
+                                            <div className="text-sm text-gray-500">Countries</div>
                                         </CardContent>
                                     </Card>
                                     <Card>
                                         <CardContent className="p-4 text-center">
-                                            <BookOpen className="text-green-600 mx-auto mb-2" size={24} />
+                                            <Users className="text-green-600 mx-auto mb-2" size={24} />
                                             <div className="text-2xl font-bold">
                                                 <NumberCounter
-                                                    targetNumber={89}
+                                                    targetNumber={50000}
                                                     duration={2.5}
                                                     className="text-2xl font-bold"
                                                 />
+                                                +
                                             </div>
-                                            <div className="text-sm text-gray-500">Teachers</div>
+                                            <div className="text-sm text-gray-500">Happy Travelers</div>
                                         </CardContent>
                                     </Card>
                                 </div>
-                                <div className="h-20 bg-gradient-to-r from-blue-100 to-purple-100 rounded-lg flex items-center justify-center">
-                                    <BarChart3 className="text-blue-600" size={32} />
+                                <div className="space-y-3">
+                                    <div className="flex items-center space-x-3">
+                                        <Bot className="text-purple-600" size={20} />
+                                        <div className="flex-1 bg-gray-100 rounded-lg p-2">
+                                            <div className="text-sm text-gray-600">Planning your 7-day Japan adventure...</div>
+                                        </div>
+                                    </div>
+                                    <div className="h-2 bg-blue-100 rounded-full overflow-hidden">
+                                        <div className="h-full bg-gradient-to-r from-blue-600 to-purple-600 rounded-full w-3/4"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </section>
@@ -323,44 +377,44 @@ const AdventureNexusLanding = () => {
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center space-y-4 mb-16">
                         <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-                            Everything You Need to Manage Your School
+                            Everything You Need for the Perfect Trip
                         </h2>
                         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                            From student enrollment to grade reporting, AdventureNexus provides comprehensive tools for modern educational institutions.
+                            From AI-powered itinerary creation to real-time flight and hotel booking, AdventureNexus handles every aspect of your travel planning.
                         </p>
                     </div>
 
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {[
                             {
-                                icon: Users,
-                                title: "Student Management",
-                                description: "Complete student profiles, enrollment tracking, and parent communication tools."
+                                icon: Bot,
+                                title: "AI Trip Planning",
+                                description: "Get personalized itineraries created by advanced AI based on your preferences, budget, and travel style."
+                            },
+                            {
+                                icon: Plane,
+                                title: "Flight Search",
+                                description: "Find and compare the best flight deals from multiple airlines with real-time pricing and availability."
+                            },
+                            {
+                                icon: Hotel,
+                                title: "Hotel Booking",
+                                description: "Discover and book accommodations that match your style and budget, from luxury resorts to cozy hostels."
+                            },
+                            {
+                                icon: MapPin,
+                                title: "Popular Destinations",
+                                description: "Explore trending destinations and hidden gems with insider tips and local recommendations."
                             },
                             {
                                 icon: Calendar,
-                                title: "Attendance Tracking",
-                                description: "Digital attendance with real-time notifications and automated reporting."
-                            },
-                            {
-                                icon: BarChart3,
-                                title: "Grade Management",
-                                description: "Comprehensive gradebook with customizable grading scales and progress tracking."
-                            },
-                            {
-                                icon: Shield,
-                                title: "Secure & Compliant",
-                                description: "FERPA compliant with enterprise-grade security and data protection."
+                                title: "Smart Scheduling",
+                                description: "AI-optimized daily schedules that maximize your time and minimize travel between locations."
                             },
                             {
                                 icon: Smartphone,
-                                title: "Mobile Access",
-                                description: "Full mobile app for teachers, students, and parents on iOS and Android."
-                            },
-                            {
-                                icon: Globe,
-                                title: "Multi-Language",
-                                description: "Support for multiple languages to serve diverse school communities."
+                                title: "Mobile Companion",
+                                description: "Access your itinerary, bookings, and real-time updates from anywhere with our mobile app."
                             }
                         ].map((feature, index) => (
                             <Card
@@ -384,7 +438,7 @@ const AdventureNexusLanding = () => {
                                 }}
                             >
                                 <CardHeader>
-                                    <div className="bg-blue-100 text-blue-600 p-3 rounded-lg w-fit">
+                                    <div className="bg-gradient-to-br from-blue-100 to-purple-100 text-blue-600 p-3 rounded-lg w-fit">
                                         <feature.icon size={24} />
                                     </div>
                                     <CardTitle className="text-xl">{feature.title}</CardTitle>
@@ -405,10 +459,10 @@ const AdventureNexusLanding = () => {
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center space-y-4 mb-16">
                         <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-                            Get Started in Minutes
+                            Plan Your Dream Trip in 3 Simple Steps
                         </h2>
                         <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                            Simple setup process to get your school management system running quickly.
+                            Our AI makes travel planning effortless and fun. Get started in minutes.
                         </p>
                     </div>
 
@@ -416,23 +470,29 @@ const AdventureNexusLanding = () => {
                         {[
                             {
                                 step: "01",
-                                title: "Create Account",
-                                description: "Sign up and set up your school profile with basic information and preferences."
+                                title: "Tell Us Your Preferences",
+                                description: "Share your destination, dates, budget, interests, and travel style. Our AI learns what makes you happy.",
+                                icon: Search
                             },
                             {
                                 step: "02",
-                                title: "Import Data",
-                                description: "Easily import existing student and teacher data or start fresh with our guided setup."
+                                title: "AI Creates Your Itinerary",
+                                description: "Our advanced AI generates a personalized trip plan with activities, restaurants, and attractions you'll love.",
+                                icon: Bot
                             },
                             {
                                 step: "03",
-                                title: "Start Managing",
-                                description: "Begin using all features immediately with our intuitive interface and helpful onboarding."
+                                title: "Book & Go Adventure",
+                                description: "Review your plan, book flights and hotels directly through our platform, and start your amazing journey.",
+                                icon: Navigation
                             }
                         ].map((step, index) => (
                             <div key={index} className="step-item text-center space-y-4">
-                                <div className="bg-blue-600 text-white text-2xl font-bold w-16 h-16 rounded-full flex items-center justify-center mx-auto">
+                                <div className="bg-gradient-to-br from-blue-600 to-purple-600 text-white text-2xl font-bold w-16 h-16 rounded-full flex items-center justify-center mx-auto">
                                     {step.step}
+                                </div>
+                                <div className="bg-blue-100 text-blue-600 p-3 rounded-lg w-fit mx-auto">
+                                    <step.icon size={24} />
                                 </div>
                                 <h3 className="text-xl font-semibold">{step.title}</h3>
                                 <p className="text-gray-600">{step.description}</p>
@@ -447,32 +507,35 @@ const AdventureNexusLanding = () => {
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center space-y-4 mb-16">
                         <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-                            Trusted by Schools Worldwide
+                            Travelers Love AdventureNexus
                         </h2>
                         <p className="text-xl text-gray-600">
-                            See what educators are saying about AdventureNexus
+                            See what our community of adventurers is saying
                         </p>
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-8">
                         {[
                             {
-                                name: "Sarah Johnson",
-                                role: "Principal, Riverside Elementary",
-                                content: "AdventureNexus has transformed how we manage our school. The attendance tracking alone has saved us hours each week.",
-                                rating: 5
+                                name: "Sarah Mitchell",
+                                role: "Digital Nomad",
+                                content: "AdventureNexus planned my entire Southeast Asia trip in minutes! The AI found hidden gems I would have never discovered on my own.",
+                                rating: 5,
+                                location: "Bangkok, Thailand"
                             },
                             {
-                                name: "Michael Chen",
-                                role: "Teacher, Lincoln High School",
-                                content: "The gradebook feature is intuitive and the parent communication tools have improved our engagement significantly.",
-                                rating: 5
+                                name: "David Chen",
+                                role: "Family Traveler",
+                                content: "Planning a family vacation with kids is usually stressful, but the AI created the perfect kid-friendly itinerary for our Japan trip.",
+                                rating: 5,
+                                location: "Tokyo, Japan"
                             },
                             {
-                                name: "Dr. Emma Rodriguez",
-                                role: "Superintendent, Valley School District",
-                                content: "We've seen a 40% improvement in administrative efficiency since implementing AdventureNexus across our district.",
-                                rating: 5
+                                name: "Maria Rodriguez",
+                                role: "Adventure Seeker",
+                                content: "The personalized recommendations were spot on! Every restaurant and activity was exactly my style. Best trip planning tool ever!",
+                                rating: 5,
+                                location: "Patagonia, Chile"
                             }
                         ].map((testimonial, index) => (
                             <Card key={index} className="testimonial-card border-0 shadow-lg">
@@ -483,9 +546,14 @@ const AdventureNexusLanding = () => {
                                         ))}
                                     </div>
                                     <p className="text-gray-600 italic">"{testimonial.content}"</p>
-                                    <div className="border-t pt-4">
-                                        <div className="font-semibold">{testimonial.name}</div>
-                                        <div className="text-sm text-gray-500">{testimonial.role}</div>
+                                    <div className="border-t pt-4 flex items-center space-x-3">
+                                        <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
+                                            {testimonial.name.split(' ').map(n => n[0]).join('')}
+                                        </div>
+                                        <div>
+                                            <div className="font-semibold">{testimonial.name}</div>
+                                            <div className="text-sm text-gray-500">{testimonial.role} • {testimonial.location}</div>
+                                        </div>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -502,44 +570,48 @@ const AdventureNexusLanding = () => {
                             Simple, Transparent Pricing
                         </h2>
                         <p className="text-xl text-gray-600">
-                            Choose the plan that fits your school's needs
+                            Choose the plan that fits your travel style
                         </p>
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
                         {[
                             {
-                                name: "Starter",
-                                price: "$49",
-                                period: "/month",
-                                description: "Perfect for small schools",
-                                features: ["Up to 100 students", "Basic reporting", "Email support", "Mobile app access"],
-                                popular: false
-                            },
-                            {
-                                name: "Professional",
-                                price: "$99",
-                                period: "/month",
-                                description: "Most popular choice",
-                                features: ["Up to 500 students", "Advanced analytics", "Priority support", "Custom integrations", "Parent portal"],
-                                popular: true
-                            },
-                            {
-                                name: "Enterprise",
-                                price: "Custom",
+                                name: "Explorer",
+                                price: "Free",
                                 period: "",
-                                description: "For large institutions",
-                                features: ["Unlimited students", "Custom features", "Dedicated support", "On-site training", "SLA guarantee"],
-                                popular: false
+                                description: "Perfect for occasional travelers",
+                                features: ["3 AI trip plans per month", "Basic itinerary creation", "Flight price alerts", "Community support"],
+                                popular: false,
+                                buttonText: "Start Free"
+                            },
+                            {
+                                name: "Adventurer",
+                                price: "$9",
+                                period: "/month",
+                                description: "Most popular for frequent travelers",
+                                features: ["Unlimited AI trip plans", "Advanced personalization", "Priority booking support", "Offline access", "Group trip planning"],
+                                popular: true,
+                                buttonText: "Start Free Trial"
+                            },
+                            {
+                                name: "Nomad Pro",
+                                price: "$19",
+                                period: "/month",
+                                description: "For travel professionals",
+                                features: ["Everything in Adventurer", "White-label solutions", "API access", "Custom integrations", "Dedicated support"],
+                                popular: false,
+                                buttonText: "Contact Sales"
                             }
                         ].map((plan, index) => (
                             <Card
                                 key={index}
-                                className={`pricing-card relative hover:scale-105 transition-transform duration-300 ${plan.popular ? 'border-blue-500 shadow-2xl scale-105' : 'border-gray-200'
-                                    }`}
+                                className={`pricing-card relative hover:scale-105 transition-transform duration-300 ${
+                                    plan.popular ? 'border-blue-500 shadow-2xl scale-105' : 'border-gray-200'
+                                }`}
                             >
                                 {plan.popular && (
-                                    <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-600">
+                                    <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-blue-600 to-purple-600">
                                         Most Popular
                                     </Badge>
                                 )}
@@ -563,11 +635,15 @@ const AdventureNexusLanding = () => {
                                         ))}
                                     </ul>
                                     <Button
-                                        className={`w-full ${plan.popular ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
+                                        className={`w-full ${
+                                            plan.popular
+                                                ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700'
+                                                : ''
+                                        }`}
                                         onMouseEnter={handleButtonHover}
                                         onMouseLeave={handleButtonLeave}
                                     >
-                                        {plan.name === 'Enterprise' ? 'Contact Sales' : 'Start Free Trial'}
+                                        {plan.buttonText}
                                     </Button>
                                 </CardContent>
                             </Card>
@@ -577,24 +653,24 @@ const AdventureNexusLanding = () => {
             </section>
 
             {/* Call to Action Section */}
-            <section ref={ctaRef} className="py-20 bg-blue-600 text-white">
+            <section ref={ctaRef} className="py-20 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 text-white">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
                     <div className="max-w-3xl mx-auto space-y-8">
                         <h2 className="text-3xl md:text-4xl font-bold">
-                            Ready to Transform Your School Management?
+                            Ready to Plan Your Next Adventure?
                         </h2>
                         <p className="text-xl opacity-90">
-                            Join thousands of schools already using AdventureNexus to streamline their operations and improve educational outcomes.
+                            Join thousands of travelers who trust our AI to create unforgettable journeys. Start planning your perfect trip today.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Button
                                 size="lg"
                                 variant="secondary"
-                                className="text-lg px-8 py-6"
+                                className="text-lg px-8 py-6 bg-white text-blue-600 hover:bg-gray-50"
                                 onMouseEnter={handleButtonHover}
                                 onMouseLeave={handleButtonLeave}
                             >
-                                Start Your Free Trial
+                                Start Planning Now
                                 <ArrowRight className="ml-2" size={20} />
                             </Button>
                             <Button
@@ -604,17 +680,22 @@ const AdventureNexusLanding = () => {
                                 onMouseEnter={handleButtonHover}
                                 onMouseLeave={handleButtonLeave}
                             >
-                                Schedule Demo
+                                <MessageCircle className="mr-2" size={20} />
+                                Talk to Our AI
                             </Button>
                         </div>
                         <div className="flex items-center justify-center space-x-8 text-sm opacity-75">
                             <div className="flex items-center">
                                 <Award className="mr-2" size={16} />
-                                Award-winning support
+                                AI-powered recommendations
                             </div>
                             <div className="flex items-center">
                                 <Clock className="mr-2" size={16} />
-                                Setup in under 30 minutes
+                                Plans ready in seconds
+                            </div>
+                            <div className="flex items-center">
+                                <Globe className="mr-2" size={16} />
+                                195+ countries covered
                             </div>
                         </div>
                     </div>
@@ -627,33 +708,41 @@ const AdventureNexusLanding = () => {
                     <div className="grid md:grid-cols-4 gap-8">
                         <div className="space-y-4">
                             <div className="flex items-center space-x-2">
-                                <div className="bg-blue-600 text-white p-2 rounded-lg">
-                                    <BookOpen size={24} />
+                                <div className="bg-gradient-to-br from-blue-600 to-purple-600 text-white p-2 rounded-lg">
+                                    <Compass size={24} />
                                 </div>
                                 <span className="text-2xl font-bold">AdventureNexus</span>
                             </div>
                             <p className="text-gray-400">
-                                Empowering educational institutions with comprehensive management solutions.
+                                Empowering travelers with AI-powered trip planning and personalized recommendations for unforgettable adventures.
                             </p>
+                            <div className="flex space-x-4">
+                                <Button variant="outline" size="sm" className="text-gray-400 border-gray-600 hover:text-white hover:border-white">
+                                    <Mail size={16} className="mr-2" />
+                                    Newsletter
+                                </Button>
+                            </div>
                         </div>
 
                         <div>
                             <h3 className="font-semibold mb-4">Product</h3>
                             <ul className="space-y-2 text-gray-400">
-                                <li><a href="#" className="hover:text-white transition-colors">Features</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Pricing</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Integrations</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">API</a></li>
+                                <li><a href="#features" className="hover:text-white transition-colors">AI Trip Planner</a></li>
+                                <li><a href="#" className="hover:text-white transition-colors">Flight Search</a></li>
+                                <li><a href="#" className="hover:text-white transition-colors">Hotel Booking</a></li>
+                                <li><a href="#" className="hover:text-white transition-colors">Destinations</a></li>
+                                <li><a href="#" className="hover:text-white transition-colors">Mobile App</a></li>
                             </ul>
                         </div>
 
                         <div>
                             <h3 className="font-semibold mb-4">Company</h3>
                             <ul className="space-y-2 text-gray-400">
-                                <li><a href="#" className="hover:text-white transition-colors">About</a></li>
+                                <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
                                 <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
+                                <li><a href="#" className="hover:text-white transition-colors">Travel Blog</a></li>
+                                <li><a href="#" className="hover:text-white transition-colors">Press</a></li>
+                                <li><a href="#" className="hover:text-white transition-colors">Partnerships</a></li>
                             </ul>
                         </div>
 
@@ -661,21 +750,22 @@ const AdventureNexusLanding = () => {
                             <h3 className="font-semibold mb-4">Support</h3>
                             <ul className="space-y-2 text-gray-400">
                                 <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Documentation</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Status</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Security</a></li>
+                                <li><a href="#" className="hover:text-white transition-colors">Contact Us</a></li>
+                                <li><a href="#" className="hover:text-white transition-colors">Travel Guides</a></li>
+                                <li><a href="#" className="hover:text-white transition-colors">API Docs</a></li>
+                                <li><a href="#" className="hover:text-white transition-colors">System Status</a></li>
                             </ul>
                         </div>
                     </div>
 
                     <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
                         <p className="text-gray-400 text-sm">
-                            © 2025 AdventureNexus. All rights reserved.
+                            © 2025 AdventureNexus. All rights reserved. Powered by AI for better travel experiences.
                         </p>
                         <div className="flex space-x-6 mt-4 md:mt-0">
-                            <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Privacy</a>
-                            <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Terms</a>
-                            <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Cookies</a>
+                            <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Privacy Policy</a>
+                            <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Terms of Service</a>
+                            <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Cookie Settings</a>
                         </div>
                     </div>
                 </div>
