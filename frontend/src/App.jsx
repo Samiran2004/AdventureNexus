@@ -6,6 +6,7 @@ import TeacherSignup from './pages/auth/SignupTeacher';
 import LoginPage from './pages/Login';
 import PageNotFound from './pages/PageNotFound';
 import AdventureNexusLanding from './pages/LandingPage';
+import CircularText from './components/CircularText';
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -22,8 +23,8 @@ function App() {
     return (
       <div className='h-screen flex justify-center items-center border-8'>
         {/* <LoginPage/> */}
-        <Loader />
-        {/* <CircularText/> */}
+        {/* <Loader /> */}
+        <CircularText text='AdventureNexus'/>
       </div>
     );
   }
