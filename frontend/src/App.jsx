@@ -5,7 +5,7 @@ import StudentSignup from './pages/auth/SignupStudent';
 import TeacherSignup from './pages/auth/SignupTeacher';
 import LoginPage from './pages/Login';
 import PageNotFound from './pages/PageNotFound';
-import SchoolSyncLanding from './pages/LandingPage';
+import AdventureNexusLanding from './pages/LandingPage';
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -52,7 +52,7 @@ function App() {
       {/* <Route path='/' element={<Navigate to="/login" replace />} /> */}
 
       {/* Landing Page:- Redirect to landing page */}
-      <Route path='/' element={<SchoolSyncLanding/>}/>
+      <Route path='/' element={<AdventureNexusLanding />} />
 
       {/* 404 Not Found Page */}
       <Route path='*' element={<PageNotFound />} />

@@ -16,7 +16,7 @@ import '../../css/TeacherSignupPage.css';
 const TeacherSignup = () => {
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
-    
+
     const [formData, setFormData] = useState({
         // Teacher Personal Info
         first_name: '',
@@ -27,7 +27,7 @@ const TeacherSignup = () => {
         confirm_password: '',
         gender: '',
         profile_image_url: '',
-        
+
         // Address Information (will be converted to addressId)
         street: '',
         city: '',
@@ -46,7 +46,7 @@ const TeacherSignup = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        
+
         // Handle phone number - only allow numbers
         if (name === 'phone_number') {
             const numericValue = value.replace(/\D/g, '');
@@ -106,7 +106,7 @@ const TeacherSignup = () => {
             }
 
             setImageFile(file);
-            
+
             // Create preview URL
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -135,31 +135,31 @@ const TeacherSignup = () => {
             // Personal Information Validation
             if (!formData.first_name.trim()) newErrors.first_name = 'First name is required';
             if (!formData.last_name.trim()) newErrors.last_name = 'Last name is required';
-            
+
             if (!formData.email.trim()) {
                 newErrors.email = 'Email is required';
             } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
                 newErrors.email = 'Please enter a valid email address';
             }
-            
+
             if (!formData.phone_number.trim()) {
                 newErrors.phone_number = 'Phone number is required';
             } else if (!/^\d{10}$/.test(formData.phone_number)) {
                 newErrors.phone_number = 'Phone number must be exactly 10 digits';
             }
-            
+
             if (!formData.password) {
                 newErrors.password = 'Password is required';
             } else if (formData.password.length < 6) {
                 newErrors.password = 'Password must be at least 6 characters long';
             }
-            
+
             if (!formData.confirm_password) {
                 newErrors.confirm_password = 'Please confirm your password';
             } else if (formData.password !== formData.confirm_password) {
                 newErrors.confirm_password = 'Passwords do not match';
             }
-            
+
             if (!formData.gender) {
                 newErrors.gender = 'Please select your gender';
             }
@@ -170,13 +170,13 @@ const TeacherSignup = () => {
             if (!formData.street.trim()) newErrors.street = 'Street address is required';
             if (!formData.city.trim()) newErrors.city = 'City is required';
             if (!formData.state.trim()) newErrors.state = 'State is required';
-            
+
             if (!formData.postal_code.trim()) {
                 newErrors.postal_code = 'Postal code is required';
             } else if (!/^\d{6}$/.test(formData.postal_code)) {
                 newErrors.postal_code = 'Postal code must be 6 digits';
             }
-            
+
             if (!formData.country.trim()) newErrors.country = 'Country is required';
         }
 
@@ -255,7 +255,7 @@ const TeacherSignup = () => {
                         <div className="form-group profile-upload">
                             <Label className="form-label">Profile Picture (Optional)</Label>
                             <div className="image-upload-container">
-                                <div 
+                                <div
                                     className="image-upload-area"
                                     onClick={() => fileInputRef.current?.click()}
                                 >
@@ -499,7 +499,7 @@ const TeacherSignup = () => {
                 <div className="signup-header">
                     <div className="school-logo">
                         <div className="logo-icon">👨‍🏫</div>
-                        <h1 className="brand-title">SchoolSync</h1>
+                        <h1 className="brand-title">AdventureNexus</h1>
                         <div className="logo-icon">👩‍🏫</div>
                     </div>
                     <p className="welcome-text">Join our teaching community</p>
@@ -583,7 +583,7 @@ const TeacherSignup = () => {
                 <div className="signup-footer">
                     <p>Already have an account? <Link to="/login" className="signin-link">Sign In</Link></p>
                     <p>Looking for student registration? <Link to="/signup/student" className="student-link">Student Signup</Link></p>
-                    <p className="copyright">© 2025 SchoolSync. All rights reserved.</p>
+                    <p className="copyright">© 2025 AdventureNexus. All rights reserved.</p>
                 </div>
             </div>
         </div>

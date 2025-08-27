@@ -550,7 +550,7 @@ const StudentSignup = () => {
                 <div className="signup-header">
                     <div className="school-logo">
                         <div className="logo-icon">🎓</div>
-                        <h1 className="brand-title">SchoolSync</h1>
+                        <h1 className="brand-title">AdventureNexus</h1>
                         <div className="logo-icon">🎓</div>
                     </div>
                     <p className="welcome-text">Join our digital learning community</p>
@@ -637,7 +637,7 @@ const StudentSignup = () => {
                     <p>Already have an account? <Link to="/login" className="signin-link">Sign In</Link></p>
                     <p>OR</p>
                     <p>Join as a Teacher? <Link to='/signup/teacher' className='signin-link'>Join</Link></p>
-                    <p className="copyright">© 2025 SchoolSync. All rights reserved.</p>
+                    <p className="copyright">© 2025 AdventureNexus. All rights reserved.</p>
                 </div>
             </div>
         </div>

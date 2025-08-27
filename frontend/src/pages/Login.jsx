@@ -55,7 +55,7 @@ const LoginPage = () => {
         <div className="login-header">
           <div className="school-logo">
             <div className="logo-icon">🎓</div>
-            <h1 className="brand-title">SchoolSync</h1>
+            <h1 className="brand-title">AdventureNexus</h1>
             <div className="logo-icon">🎓</div>
           </div>
           <p className="welcome-text">Welcome back to your digital classroom</p>
@@ -136,7 +136,7 @@ const LoginPage = () => {
           <p>Don't have an account? <Link to="/signup/student" className="signup-link">Create Account</Link></p>
           <p>OR</p>
           <p>Join as a Teacher? <Link to='/signup/teacher' className='signup-link'>Join</Link></p>
-          <p className="copyright">© 2025 SchoolSync. All rights reserved.</p>
+          <p className="copyright">© 2025 AdventureNexus. All rights reserved.</p>
         </div>
       </div>
     </div>
