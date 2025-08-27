@@ -1,0 +1,123 @@
+/* Add this to your CSS files */
+.teacher-signup-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    position: relative;
+}
+
+.profile-upload {
+    margin-bottom: 2rem;
+}
+
+.image-upload-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 0.5rem;
+}
+
+.image-upload-area {
+    position: relative;
+    cursor: pointer;
+    border: 2px dashed #cbd5e0;
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.image-upload-area:hover {
+    border-color: #4299e1;
+    background-color: rgba(66, 153, 225, 0.1);
+}
+
+.upload-avatar {
+    width: 100px;
+    height: 100px;
+}
+
+.upload-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: #718096;
+}
+
+.upload-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    color: white;
+}
+
+.image-upload-area:hover .upload-overlay {
+    opacity: 1;
+}
+
+.hidden-file-input {
+    display: none;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-input.error {
+    border-color: #e53e3e;
+}
+
+.error-text {
+    color: #e53e3e;
+    font-size: 0.875rem;
+}
+
+.loading-spinner {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .progress-indicator {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
