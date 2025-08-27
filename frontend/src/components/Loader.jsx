@@ -4,7 +4,7 @@ import styled from 'styled-components';
 const Loader = () => {
   return (
     <StyledWrapper>
-      {/* SchoolSync Animated Loader */}
+      {/* AdventureNexus Animated Loader */}
       <div className="loader">
         <svg height={0} width={0} viewBox="0 0 64 64" className="absolute">
           <defs className="s-xJBuHA073rTt" xmlns="http://www.w3.org/2000/svg">
@@ -27,54 +27,54 @@ const Loader = () => {
             </linearGradient>
           </defs>
         </svg>
-        
+
         {/* S */}
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height={64} width={64} className="inline-block">
           <path strokeLinejoin="round" strokeLinecap="round" strokeWidth={8} stroke="url(#b)" d="M 50,15 C 50,8 44,4 32,4 20,4 14,8 14,15 c 0,6 4,9 12,11 l 16,4 c 8,2 12,6 12,14 0,10 -8,16 -22,16 -14,0 -22,-6 -22,-16" className="dash" pathLength={360} />
         </svg>
-        
+
         {/* c */}
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height={64} width={64} className="inline-block">
           <path strokeLinejoin="round" strokeLinecap="round" strokeWidth={8} stroke="url(#c)" d="M 50,20 C 46,16 40,14 32,14 20,14 12,22 12,32 c 0,10 8,18 20,18 8,0 14,-2 18,-6" className="dash" pathLength={360} />
         </svg>
-        
+
         {/* h */}
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height={64} width={64} className="inline-block">
           <path strokeLinejoin="round" strokeLinecap="round" strokeWidth={8} stroke="url(#d)" d="M 12,4 V 60 M 12,28 C 16,20 24,18 32,18 44,18 52,24 52,32 V 60" className="dash" pathLength={360} />
         </svg>
-        
+
         {/* o */}
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height={64} width={64} className="inline-block">
           <path strokeLinejoin="round" strokeLinecap="round" strokeWidth={8} stroke="url(#e)" d="M 32 32 m 0 -18 a 18 18 0 1 1 0 36 a 18 18 0 1 1 0 -36" className="spin" pathLength={360} />
         </svg>
-        
+
         {/* o */}
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height={64} width={64} className="inline-block">
           <path strokeLinejoin="round" strokeLinecap="round" strokeWidth={8} stroke="url(#b)" d="M 32 32 m 0 -18 a 18 18 0 1 1 0 36 a 18 18 0 1 1 0 -36" className="spin" pathLength={360} />
         </svg>
-        
+
         {/* l */}
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height={64} width={64} className="inline-block">
           <path strokeLinejoin="round" strokeLinecap="round" strokeWidth={8} stroke="url(#c)" d="M 32,4 V 60" className="dash" pathLength={360} />
         </svg>
-        
+
         <div className="w-2" />
-        
+
         {/* S */}
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height={64} width={64} className="inline-block">
           <path strokeLinejoin="round" strokeLinecap="round" strokeWidth={8} stroke="url(#d)" d="M 50,15 C 50,8 44,4 32,4 20,4 14,8 14,15 c 0,6 4,9 12,11 l 16,4 c 8,2 12,6 12,14 0,10 -8,16 -22,16 -14,0 -22,-6 -22,-16" className="dash" pathLength={360} />
         </svg>
-        
+
         {/* y */}
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height={64} width={64} className="inline-block">
           <path strokeLinejoin="round" strokeLinecap="round" strokeWidth={8} stroke="url(#e)" d="M 12,18 L 32,40 L 52,18 M 32,40 L 32,60" className="dash" pathLength={360} />
         </svg>
-        
+
         {/* n */}
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height={64} width={64} className="inline-block">
           <path strokeLinejoin="round" strokeLinecap="round" strokeWidth={8} stroke="url(#b)" d="M 12,18 V 60 M 12,28 C 16,20 24,18 32,18 44,18 52,24 52,32 V 60" className="dash" pathLength={360} />
         </svg>
-        
+
         {/* c */}
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height={64} width={64} className="inline-block">
           <path strokeLinejoin="round" strokeLinecap="round" strokeWidth={8} stroke="url(#c)" d="M 50,24 C 46,20 40,18 32,18 20,18 12,26 12,36 c 0,10 8,18 20,18 8,0 14,-2 18,-6" className="dash" pathLength={360} />

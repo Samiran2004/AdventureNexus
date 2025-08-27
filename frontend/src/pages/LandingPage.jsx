@@ -30,7 +30,7 @@ import NumberCounter from '@/components/NumberCounter';
 // Register GSAP Plugins
 gsap.registerPlugin(ScrollTrigger, TextPlugin);
 
-const SchoolSyncLanding = () => {
+const AdventureNexusLanding = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     // Refs for GSAP animations
@@ -185,7 +185,7 @@ const SchoolSyncLanding = () => {
                             <div className="bg-blue-600 text-white p-2 rounded-lg">
                                 <BookOpen size={24} />
                             </div>
-                            <span className="text-2xl font-bold text-gray-900">SchoolSync</span>
+                            <span className="text-2xl font-bold text-gray-900">AdventureNexus</span>
                         </div>
 
                         {/* Desktop Navigation */}
@@ -326,7 +326,7 @@ const SchoolSyncLanding = () => {
                             Everything You Need to Manage Your School
                         </h2>
                         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                            From student enrollment to grade reporting, SchoolSync provides comprehensive tools for modern educational institutions.
+                            From student enrollment to grade reporting, AdventureNexus provides comprehensive tools for modern educational institutions.
                         </p>
                     </div>
 
@@ -450,7 +450,7 @@ const SchoolSyncLanding = () => {
                             Trusted by Schools Worldwide
                         </h2>
                         <p className="text-xl text-gray-600">
-                            See what educators are saying about SchoolSync
+                            See what educators are saying about AdventureNexus
                         </p>
                     </div>
 
@@ -459,7 +459,7 @@ const SchoolSyncLanding = () => {
                             {
                                 name: "Sarah Johnson",
                                 role: "Principal, Riverside Elementary",
-                                content: "SchoolSync has transformed how we manage our school. The attendance tracking alone has saved us hours each week.",
+                                content: "AdventureNexus has transformed how we manage our school. The attendance tracking alone has saved us hours each week.",
                                 rating: 5
                             },
                             {
@@ -471,7 +471,7 @@ const SchoolSyncLanding = () => {
                             {
                                 name: "Dr. Emma Rodriguez",
                                 role: "Superintendent, Valley School District",
-                                content: "We've seen a 40% improvement in administrative efficiency since implementing SchoolSync across our district.",
+                                content: "We've seen a 40% improvement in administrative efficiency since implementing AdventureNexus across our district.",
                                 rating: 5
                             }
                         ].map((testimonial, index) => (
@@ -584,7 +584,7 @@ const SchoolSyncLanding = () => {
                             Ready to Transform Your School Management?
                         </h2>
                         <p className="text-xl opacity-90">
-                            Join thousands of schools already using SchoolSync to streamline their operations and improve educational outcomes.
+                            Join thousands of schools already using AdventureNexus to streamline their operations and improve educational outcomes.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Button
@@ -630,7 +630,7 @@ const SchoolSyncLanding = () => {
                                 <div className="bg-blue-600 text-white p-2 rounded-lg">
                                     <BookOpen size={24} />
                                 </div>
-                                <span className="text-2xl font-bold">SchoolSync</span>
+                                <span className="text-2xl font-bold">AdventureNexus</span>
                             </div>
                             <p className="text-gray-400">
                                 Empowering educational institutions with comprehensive management solutions.
@@ -670,7 +670,7 @@ const SchoolSyncLanding = () => {
 
                     <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
                         <p className="text-gray-400 text-sm">
-                            © 2025 SchoolSync. All rights reserved.
+                            © 2025 AdventureNexus. All rights reserved.
                         </p>
                         <div className="flex space-x-6 mt-4 md:mt-0">
                             <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Privacy</a>
@@ -684,4 +684,4 @@ const SchoolSyncLanding = () => {
     );
 };
 
-export default SchoolSyncLanding;
+export default AdventureNexusLanding;
