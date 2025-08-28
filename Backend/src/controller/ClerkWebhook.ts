@@ -24,8 +24,7 @@ const cleckWebhook = async (req, res) => {
             _id: data.id,
             email: data.email_addresses?.[0]?.email_address || null,
             username: data.username || null, // Username field
-            firstName: data.first_name || null, // First name
-            lastName: data.last_name || null, // Last name
+            fullname: data.first_name + " " + data.last_name,
             imageUrl: data.image_url || null, // Profile image
         };
 
