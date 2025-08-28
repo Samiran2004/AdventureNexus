@@ -42,14 +42,14 @@ function App() {
     // </div>
 
     <>
-      <header>
+      {/* <header>
         <SignedOut>
           <SignInButton />
         </SignedOut>
         <SignedIn>
           <UserButton />
         </SignedIn>
-      </header>
+      </header> */}
 
       <Routes>
         {/* Public Routes */}
