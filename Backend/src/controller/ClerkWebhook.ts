@@ -35,11 +35,6 @@ const clerkWebhook = async (req: Request, res: Response) => {
                 const user = await User.findOneAndUpdate(
                     { clerkUserId: data.id },
                     userData,
-                    {
-                        upsert: true,  // Create if doesn't exist
-                        new: true,     // Return the updated document
-                        setDefaultsOnInsert: true // Apply defaults when creating
-                    }
                 );
 
                 if (user) {
@@ -55,10 +50,6 @@ const clerkWebhook = async (req: Request, res: Response) => {
                 const updatedUser = await User.findOneAndUpdate(
                     { clerkUserId: data.id },
                     userData,
-                    {
-                        new: true,     // Return the updated document
-                        runValidators: true // Run schema validators
-                    }
                 );
                 console.log('User updated:', updatedUser ? 'Success' : 'Failed');
                 break;
