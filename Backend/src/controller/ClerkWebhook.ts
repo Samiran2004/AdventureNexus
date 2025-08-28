@@ -35,6 +35,9 @@ const clerkWebhook = async (req: Request, res: Response) => {
                 const user = await User.findOneAndUpdate(
                     { clerkUserId: data.id },
                     userData,
+                    {
+                        new: true
+                    }
                 );
 
                 if (user) {
@@ -50,6 +53,9 @@ const clerkWebhook = async (req: Request, res: Response) => {
                 const updatedUser = await User.findOneAndUpdate(
                     { clerkUserId: data.id },
                     userData,
+                    {
+                        new: true
+                    }
                 );
                 console.log('User updated:', updatedUser ? 'Success' : 'Failed');
                 break;
