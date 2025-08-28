@@ -35,12 +35,7 @@ const clerkWebhook = async (req: Request, res: Response) => {
                 // Use upsert to handle duplicates gracefully
                 const user = await User.findOneAndUpdate(
                     { clerkUserId: data.id },
-                    userData,
-                    {
-                        upsert: true,
-                        new: true,
-                        setDefaultsOnInsert: true
-                    }
+                    userData
                 );
                 console.log('User created/updated successfully:', user._id);
                 break;
@@ -50,12 +45,7 @@ const clerkWebhook = async (req: Request, res: Response) => {
                 console.log('Updating user:', data.id);
                 const updatedUser = await User.findOneAndUpdate(
                     { clerkUserId: data.id },
-                    userData,
-                    {
-                        upsert: true,
-                        new: true,
-                        runValidators: true
-                    }
+                    userData
                 );
                 console.log('User updated:', updatedUser ? 'Success' : 'Failed');
                 break;

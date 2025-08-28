@@ -9,7 +9,6 @@ export interface IUser extends Document {
     password?: string;
     username?: string; // Made optional since Clerk might not always provide it
     phonenumber?: number; // Made optional
-    gender?: 'male' | 'female' | 'other';
     profilepicture?: string;
     preferences?: string[];
     country?: string;
@@ -58,7 +57,6 @@ const userSchema = new Schema<IUser>(
             trim: true,
             // Remove unique constraint or use sparse index
             sparse: true, // This allows multiple null values
-            index: true
         },
         phonenumber: {
             type: Number,
