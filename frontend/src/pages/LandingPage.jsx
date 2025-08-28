@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
 import {
     MapPin,
     Plane,
@@ -237,7 +238,16 @@ const AdventureNexusLanding = () => {
 
                         {/* CTA Buttons */}
                         <div className="hidden md:flex items-center space-x-4">
-                            <Button variant="ghost">Sign In</Button>
+                            <Button variant="ghost">
+                                <header>
+                                    <SignedOut>
+                                        <SignInButton />
+                                    </SignedOut>
+                                    <SignedIn>
+                                        <UserButton />
+                                    </SignedIn>
+                                </header>
+                            </Button>
                             <Button
                                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                                 onMouseEnter={handleButtonHover}
@@ -606,9 +616,8 @@ const AdventureNexusLanding = () => {
                         ].map((plan, index) => (
                             <Card
                                 key={index}
-                                className={`pricing-card relative hover:scale-105 transition-transform duration-300 ${
-                                    plan.popular ? 'border-blue-500 shadow-2xl scale-105' : 'border-gray-200'
-                                }`}
+                                className={`pricing-card relative hover:scale-105 transition-transform duration-300 ${plan.popular ? 'border-blue-500 shadow-2xl scale-105' : 'border-gray-200'
+                                    }`}
                             >
                                 {plan.popular && (
                                     <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-blue-600 to-purple-600">
@@ -635,11 +644,10 @@ const AdventureNexusLanding = () => {
                                         ))}
                                     </ul>
                                     <Button
-                                        className={`w-full ${
-                                            plan.popular
+                                        className={`w-full ${plan.popular
                                                 ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700'
                                                 : ''
-                                        }`}
+                                            }`}
                                         onMouseEnter={handleButtonHover}
                                         onMouseLeave={handleButtonLeave}
                                     >
