@@ -74,7 +74,7 @@ const userSchema = new Schema<IUser>(
         gender: {
             type: String,
             enum: ['male', 'female', 'other'],
-            default: null
+            default: "other"
         },
         profilepicture: {
             type: String,
