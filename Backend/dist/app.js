@@ -32,6 +32,7 @@ const config_1 = require("./config/config");
 const path_1 = __importDefault(require("path"));
 const connectDb_1 = __importDefault(require("./Database/connectDb"));
 const express_2 = require("@clerk/express");
+const ClerkWebhook_1 = __importDefault(require("./controller/ClerkWebhook"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 (() => __awaiter(void 0, void 0, void 0, function* () {
@@ -60,6 +61,7 @@ app.use((0, helmet_1.default)({
     noSniff: true,
 }));
 app.use((0, express_2.clerkMiddleware)());
+app.use('/api/clerk', ClerkWebhook_1.default);
 const swaggerDocs = (0, swagger_jsdoc_1.default)(swaggerOptions_1.swaggerOptions);
 app.use('/api-docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerDocs));
 app.use(sanitization_1.default);

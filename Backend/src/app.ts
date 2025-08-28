@@ -17,7 +17,7 @@ import errorHandler from './middlewares/globalErrorHandler';
 import { config } from './config/config';
 import path from 'path';
 import connectDb from './Database/connectDb';
-import { clerkMiddleware } from '@clerk/express'
+import { clerkMiddleware } from '@clerk/express';
 import cleckWebhook from './controller/ClerkWebhook';
 
 dotenv.config();

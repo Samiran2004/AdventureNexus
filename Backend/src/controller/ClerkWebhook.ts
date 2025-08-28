@@ -1,6 +1,6 @@
-import { StatusCodes } from "http-status-codes";
-import User from "../Database/models/userModel";
-import { Webhook } from "svix";
+import { StatusCodes } from 'http-status-codes';
+import User from '../Database/models/userModel';
+import { Webhook } from 'svix';
 
 const cleckWebhook = async (req, res) => {
     try {
@@ -9,16 +9,16 @@ const cleckWebhook = async (req, res) => {
 
         // Getting headers...
         const headers = {
-            "svix-id": req.headers["svix-id"],
-            "svix-timestamp": req.headers["svix-timestamp"],
-            "svix-signature": req.headers["svix-signature"],
-        }
+            'svix-id': req.headers['svix-id'],
+            'svix-timestamp': req.headers['svix-timestamp'],
+            'svix-signature': req.headers['svix-signature'],
+        };
 
         //Verify Headers...
-        await whook.verify(JSON.stringify(req.body), headers)
+        await whook.verify(JSON.stringify(req.body), headers);
 
         // Getting data from request body...
-        const { data, type } = req.body
+        const { data, type } = req.body;
 
         const userData = {
             _id: data.id,
@@ -27,21 +27,21 @@ const cleckWebhook = async (req, res) => {
             firstName: data.first_name || null, // First name
             lastName: data.last_name || null, // Last name
             imageUrl: data.image_url || null, // Profile image
-        }
+        };
 
         // Switch Cases for different Events...
         switch (type) {
-            case "user.created": {
-                await User.create(userData)
+            case 'user.created': {
+                await User.create(userData);
                 break;
             }
 
-            case "user.updated": {
+            case 'user.updated': {
                 await User.findByIdAndUpdate(data.id, userData);
                 break;
             }
 
-            case "user.deleted": {
+            case 'user.deleted': {
                 await User.findByIdAndDelete(data.id);
                 break;
             }
@@ -51,13 +51,13 @@ const cleckWebhook = async (req, res) => {
 
         res.status(StatusCodes.CREATED).json({
             success: true,
-            message: "Webhook Recieved"
+            message: 'Webhook Recieved',
         });
     } catch (error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             success: false,
-            message: error.message
+            message: error.message,
         });
     }
-}
+};
 export default cleckWebhook;

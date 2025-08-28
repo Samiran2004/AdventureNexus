@@ -21,9 +21,7 @@ interface Participant {
     preferredPaymentMethod: string;
 }
 
-function dataFormat(
-    req: CustomRequestSplitCost,
-): void {
+function dataFormat(req: CustomRequestSplitCost): void {
     if (typeof req.params.planId !== 'string') {
         req.params.planId = req.body.planId.toString();
     }
