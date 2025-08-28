@@ -31,6 +31,16 @@ const userSchema = new Schema<IUser>(
             type: String,
             required: true,
         },
+        firstName: {
+            type: String,
+            default: null,
+            trim: true
+        },
+        lastName: {
+            type: String,
+            default: null,
+            trim: true
+        },
         password: {
             type: String,
         },
