@@ -7,6 +7,7 @@ import LoginPage from './pages/Login';
 import PageNotFound from './pages/PageNotFound';
 import AdventureNexusLanding from './pages/LandingPage';
 import CircularText from './components/CircularText';
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -24,7 +25,7 @@ function App() {
       <div className='h-screen flex justify-center items-center border-8'>
         {/* <LoginPage/> */}
         {/* <Loader /> */}
-        <CircularText text='AdventureNexus'/>
+        <CircularText text='AdventureNexus' />
       </div>
     );
   }
@@ -40,24 +41,36 @@ function App() {
     //   </div>
     // </div>
 
-    <Routes>
-      {/* Public Routes */}
-      <Route path='/login' element={<LoginPage />} />
-      <Route path='/signup/student' element={<StudentSignup />} />
-      <Route path='/signup/teacher' element={<TeacherSignup />} />
+    <>
+      <header>
+        <SignedOut>
+          <SignInButton />
+        </SignedOut>
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
+      </header>
 
-      {/* Protected Routes */}
-      {/* <Route path='/student/homepage',/> */}
+      <Routes>
+        {/* Public Routes */}
+        <Route path='/login' element={<LoginPage />} />
+        <Route path='/signup/student' element={<StudentSignup />} />
+        <Route path='/signup/teacher' element={<TeacherSignup />} />
 
-      {/* Default Route:- Redirect to Login page */}
-      {/* <Route path='/' element={<Navigate to="/login" replace />} /> */}
+        {/* Protected Routes */}
+        {/* <Route path='/student/homepage',/> */}
 
-      {/* Landing Page:- Redirect to landing page */}
-      <Route path='/' element={<AdventureNexusLanding />} />
+        {/* Default Route:- Redirect to Login page */}
+        {/* <Route path='/' element={<Navigate to="/login" replace />} /> */}
 
-      {/* 404 Not Found Page */}
-      <Route path='*' element={<PageNotFound />} />
-    </Routes>
+        {/* Landing Page:- Redirect to landing page */}
+        <Route path='/' element={<AdventureNexusLanding />} />
+
+        {/* 404 Not Found Page */}
+        <Route path='*' element={<PageNotFound />} />
+      </Routes>
+    </>
+
   )
 }
 
