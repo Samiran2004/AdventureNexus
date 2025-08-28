@@ -58,9 +58,7 @@ const clerkWebhook = async (req: Request, res: Response) => {
                     { clerkUserId: data.id },
                     userData,
                     {
-                        upsert: true,  // Create if doesn't exist (in case webhook order is mixed)
-                        new: true,     // Return the updated document
-                        runValidators: true // Run schema validations
+                        new: true,
                     }
                 );
                 console.log('User updated:', updatedUser ? 'Success' : 'Failed');
