@@ -31,19 +31,23 @@ const clerkWebhook = async (req: Request, res: Response) => {
             case 'user.created': {
                 console.log('Creating user:', userData);
 
-                // Use upsert and new options to handle creation/update properly
-                const user = await User.findOneAndUpdate(
-                    { clerkUserId: data.id },
-                    userData,
-                    {
-                        new: true
+                try {
+                    // Try to create the user first
+                    const user = await User.create(userData);
+                    console.log('User created successfully:', user._id);
+                } catch (error: any) {
+                    if (error.code === 11000) {
+                        // If duplicate key error, try to update instead
+                        console.log('User exists, updating...');
+                        const user = await User.findOneAndUpdate(
+                            { clerkUserId: data.id },
+                            userData,
+                            { new: true }
+                        );
+                        console.log('User updated successfully:', user?._id);
+                    } else {
+                        throw error; // Re-throw other errors
                     }
-                );
-
-                if (user) {
-                    console.log('User created/updated successfully:', user._id);
-                } else {
-                    console.error('Failed to create/update user');
                 }
                 break;
             }
@@ -54,7 +58,9 @@ const clerkWebhook = async (req: Request, res: Response) => {
                     { clerkUserId: data.id },
                     userData,
                     {
-                        new: true
+                        upsert: true,  // Create if doesn't exist (in case webhook order is mixed)
+                        new: true,     // Return the updated document
+                        runValidators: true // Run schema validations
                     }
                 );
                 console.log('User updated:', updatedUser ? 'Success' : 'Failed');
@@ -79,7 +85,7 @@ const clerkWebhook = async (req: Request, res: Response) => {
             eventType: type,
         });
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('Webhook error:', error);
 
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
