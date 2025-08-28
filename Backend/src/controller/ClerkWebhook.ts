@@ -25,7 +25,7 @@ const clerkWebhook = async (req: Request, res: Response) => {
         console.log(`Webhook received: ${type} for user ${data.id}`);
 
         const userData = {
-            clerkUserId: data.id, // Use clerkUserId instead of _id
+            _id: data.id,
             email: data.email_addresses?.[0]?.email_address || null,
             username: data.username || null,
             firstName: data.first_name || null,
