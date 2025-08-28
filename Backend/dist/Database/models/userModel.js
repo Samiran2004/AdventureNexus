@@ -2,42 +2,63 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
 const userSchema = new mongoose_1.Schema({
-    _id: {
+    clerkUserId: {
         type: String,
         required: true,
+        unique: true,
+        index: true
     },
     fullname: {
         type: String,
+        default: null
     },
     email: {
         type: String,
         required: true,
+        lowercase: true,
+        trim: true
+    },
+    firstName: {
+        type: String,
+        default: null,
+        trim: true
+    },
+    lastName: {
+        type: String,
+        default: null,
+        trim: true
     },
     password: {
         type: String,
+        default: null
     },
     username: {
         type: String,
-        required: true,
-        unique: true,
+        default: null,
+        trim: true,
+        sparse: true,
     },
     phonenumber: {
         type: Number,
-        unique: true,
-        minlength: [10, 'Phone number must be 10 digits long'],
-        maxlength: [10, 'Phone number must be 10 digits long'],
-        match: [/^\d{10}$/, 'Phone number must contain exactly 10 digits'],
-    },
-    gender: {
-        type: String,
-        enum: ['male', 'female', 'other'],
+        default: null,
+        sparse: true,
+        validate: {
+            validator: function (v) {
+                return v == null || /^\d{10}$/.test(v.toString());
+            },
+            message: 'Phone number must be exactly 10 digits'
+        }
     },
     profilepicture: {
         type: String,
         default: function () {
-            return this.gender === 'male'
-                ? 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745'
-                : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSeIUUwf1GuV6YhA08a9haUQBOBRqJinQCJxA&s';
+            if (this.gender === 'male') {
+                return 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745';
+            }
+            else if (this.gender === 'female') {
+                return 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSeIUUwf1GuV6YhA08a9haUQBOBRqJinQCJxA&s';
+            }
+            return null;
         },
     },
     preferences: {
@@ -51,11 +72,11 @@ const userSchema = new mongoose_1.Schema({
             'mountains',
             'urban',
         ],
-        default: ['relaxation', 'nature', 'beach'],
+        default: []
     },
     country: {
         type: String,
-        default: undefined,
+        default: null
     },
     createdat: {
         type: Date,
@@ -63,11 +84,11 @@ const userSchema = new mongoose_1.Schema({
     },
     refreshtoken: {
         type: String,
-        default: undefined,
+        default: null
     },
     currency_code: {
         type: String,
-        default: undefined,
+        default: null
     },
     recommendationhistory: [
         {
@@ -83,6 +104,25 @@ const userSchema = new mongoose_1.Schema({
     ],
 }, {
     timestamps: true,
+});
+userSchema.post('save', function (error, doc, next) {
+    if (error.name === 'MongoServerError' && error.code === 11000) {
+        if (error.keyPattern.clerkUserId) {
+            next(new Error('User with this Clerk ID already exists'));
+        }
+        else if (error.keyPattern.username) {
+            next(new Error('Username already taken'));
+        }
+        else if (error.keyPattern.phonenumber) {
+            next(new Error('Phone number already registered'));
+        }
+        else {
+            next(new Error('Duplicate field error'));
+        }
+    }
+    else {
+        next(error);
+    }
 });
 const User = (0, mongoose_1.model)('User', userSchema);
 exports.default = User;
