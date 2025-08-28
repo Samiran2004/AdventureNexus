@@ -84,7 +84,7 @@ const loginuser = async (
         } else {
             return next(createHttpError(404, 'User not found!'));
         }
-    } catch(error) {
+    } catch (error) {
         if (config.env === 'development') {
             console.error('Error during login:', error); // Log for debugging
         }

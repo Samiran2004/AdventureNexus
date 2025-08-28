@@ -20,9 +20,9 @@ const cleckWebhook = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     try {
         const whook = new svix_1.Webhook(process.env.CLERK_WEBHOOK_KEY);
         const headers = {
-            "svix-id": req.headers["svix-id"],
-            "svix-timestamp": req.headers["svix-timestamp"],
-            "svix-signature": req.headers["svix-signature"],
+            'svix-id': req.headers['svix-id'],
+            'svix-timestamp': req.headers['svix-timestamp'],
+            'svix-signature': req.headers['svix-signature'],
         };
         yield whook.verify(JSON.stringify(req.body), headers);
         const { data, type } = req.body;
@@ -35,15 +35,15 @@ const cleckWebhook = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             imageUrl: data.image_url || null,
         };
         switch (type) {
-            case "user.created": {
+            case 'user.created': {
                 yield userModel_1.default.create(userData);
                 break;
             }
-            case "user.updated": {
+            case 'user.updated': {
                 yield userModel_1.default.findByIdAndUpdate(data.id, userData);
                 break;
             }
-            case "user.deleted": {
+            case 'user.deleted': {
                 yield userModel_1.default.findByIdAndDelete(data.id);
                 break;
             }
@@ -52,13 +52,13 @@ const cleckWebhook = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         }
         res.status(http_status_codes_1.StatusCodes.CREATED).json({
             success: true,
-            message: "Webhook Recieved"
+            message: 'Webhook Recieved',
         });
     }
     catch (error) {
         return res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
             success: false,
-            message: error.message
+            message: error.message,
         });
     }
 });

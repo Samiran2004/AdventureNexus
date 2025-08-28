@@ -22,7 +22,7 @@ const userSchema = new Schema<IUser>(
     {
         _id: {
             type: String,
-            required: true
+            required: true,
         },
         fullname: {
             type: String,
