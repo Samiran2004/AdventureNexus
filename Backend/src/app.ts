@@ -17,6 +17,8 @@ import errorHandler from './middlewares/globalErrorHandler';
 import { config } from './config/config';
 import path from 'path';
 import connectDb from './Database/connectDb';
+import { clerkMiddleware } from '@clerk/express'
+import cleckWebhook from './controller/ClerkWebhook';
 
 dotenv.config();
 
@@ -55,6 +57,11 @@ app.use(
         noSniff: true,
     })
 );
+
+app.use(clerkMiddleware());
+
+// API to listen to clerk Webhooks...
+app.use('/api/clerk', cleckWebhook);
 
 const swaggerDocs = swaggerJSDoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
