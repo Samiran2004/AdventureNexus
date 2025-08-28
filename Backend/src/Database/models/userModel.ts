@@ -71,11 +71,6 @@ const userSchema = new Schema<IUser>(
                 message: 'Phone number must be exactly 10 digits'
             }
         },
-        gender: {
-            type: String,
-            enum: ['male', 'female', 'other'],
-            default: "other"
-        },
         profilepicture: {
             type: String,
             default: function () {
