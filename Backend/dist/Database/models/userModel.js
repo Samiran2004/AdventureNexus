@@ -2,9 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
 const userSchema = new mongoose_1.Schema({
+    _id: {
+        type: String,
+        required: true
+    },
     fullname: {
         type: String,
-        required: true,
     },
     email: {
         type: String,
@@ -12,7 +15,6 @@ const userSchema = new mongoose_1.Schema({
     },
     password: {
         type: String,
-        required: true,
     },
     username: {
         type: String,
@@ -21,7 +23,6 @@ const userSchema = new mongoose_1.Schema({
     },
     phonenumber: {
         type: Number,
-        required: true,
         unique: true,
         minlength: [10, 'Phone number must be 10 digits long'],
         maxlength: [10, 'Phone number must be 10 digits long'],
@@ -30,7 +31,6 @@ const userSchema = new mongoose_1.Schema({
     gender: {
         type: String,
         enum: ['male', 'female', 'other'],
-        required: true,
     },
     profilepicture: {
         type: String,

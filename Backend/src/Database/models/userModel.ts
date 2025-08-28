@@ -1,6 +1,7 @@
 import { Schema, model, Document } from 'mongoose';
 
 export interface IUser extends Document {
+    _id: string;
     fullname: string;
     email: string;
     password: string;
@@ -19,9 +20,12 @@ export interface IUser extends Document {
 
 const userSchema = new Schema<IUser>(
     {
+        _id: {
+            type: String,
+            required: true
+        },
         fullname: {
             type: String,
-            required: true,
         },
         email: {
             type: String,
@@ -29,7 +33,6 @@ const userSchema = new Schema<IUser>(
         },
         password: {
             type: String,
-            required: true,
         },
         username: {
             type: String,
@@ -38,7 +41,6 @@ const userSchema = new Schema<IUser>(
         },
         phonenumber: {
             type: Number,
-            required: true,
             unique: true,
             minlength: [10, 'Phone number must be 10 digits long'],
             maxlength: [10, 'Phone number must be 10 digits long'],
@@ -47,7 +49,6 @@ const userSchema = new Schema<IUser>(
         gender: {
             type: String,
             enum: ['male', 'female', 'other'],
-            required: true,
         },
         profilepicture: {
             type: String,
