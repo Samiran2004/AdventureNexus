@@ -51,15 +51,7 @@ const userSchema = new mongoose_1.Schema({
     },
     profilepicture: {
         type: String,
-        default: function () {
-            if (this.gender === 'male') {
-                return 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745';
-            }
-            else if (this.gender === 'female') {
-                return 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSeIUUwf1GuV6YhA08a9haUQBOBRqJinQCJxA&s';
-            }
-            return null;
-        },
+        default: 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745'
     },
     preferences: {
         type: [String],

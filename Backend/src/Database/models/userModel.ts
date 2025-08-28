@@ -1,14 +1,14 @@
 import { Schema, model, Document } from 'mongoose';
 
 export interface IUser extends Document {
-    clerkUserId: string; // Changed from _id to clerkUserId
+    clerkUserId: string;
     fullname?: string;
     email: string;
     firstName?: string;
     lastName?: string;
     password?: string;
-    username?: string; // Made optional since Clerk might not always provide it
-    phonenumber?: number; // Made optional
+    username?: string;
+    phonenumber?: number;
     profilepicture?: string;
     preferences?: string[];
     country?: string;
@@ -55,13 +55,12 @@ const userSchema = new Schema<IUser>(
             type: String,
             default: null,
             trim: true,
-            // Remove unique constraint or use sparse index
-            sparse: true, // This allows multiple null values
+            sparse: true,
         },
         phonenumber: {
             type: Number,
             default: null,
-            sparse: true, // This allows multiple null values without duplicate key error
+            sparse: true,
             validate: {
                 validator: function(v: number) {
                     return v == null || /^\d{10}$/.test(v.toString());
@@ -71,14 +70,7 @@ const userSchema = new Schema<IUser>(
         },
         profilepicture: {
             type: String,
-            default: function () {
-                if (this.gender === 'male') {
-                    return 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745';
-                } else if (this.gender === 'female') {
-                    return 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSeIUUwf1GuV6YhA08a9haUQBOBRqJinQCJxA&s';
-                }
-                return null;
-            },
+            default: 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745' // Simple static default
         },
         preferences: {
             type: [String],

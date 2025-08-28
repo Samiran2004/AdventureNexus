@@ -25,19 +25,28 @@ const clerkWebhook = async (req: Request, res: Response) => {
             firstName: data.first_name || null,
             lastName: data.last_name || null,
             profilepicture: data.image_url || null,
-            // Don't include phonenumber since Clerk doesn't provide it by default
         };
 
         switch (type) {
             case 'user.created': {
                 console.log('Creating user:', userData);
 
-                // Use upsert to handle duplicates gracefully
+                // Use upsert and new options to handle creation/update properly
                 const user = await User.findOneAndUpdate(
                     { clerkUserId: data.id },
-                    userData
+                    userData,
+                    {
+                        upsert: true,  // Create if doesn't exist
+                        new: true,     // Return the updated document
+                        setDefaultsOnInsert: true // Apply defaults when creating
+                    }
                 );
-                console.log('User created/updated successfully:', user._id);
+
+                if (user) {
+                    console.log('User created/updated successfully:', user._id);
+                } else {
+                    console.error('Failed to create/update user');
+                }
                 break;
             }
 
@@ -45,7 +54,11 @@ const clerkWebhook = async (req: Request, res: Response) => {
                 console.log('Updating user:', data.id);
                 const updatedUser = await User.findOneAndUpdate(
                     { clerkUserId: data.id },
-                    userData
+                    userData,
+                    {
+                        new: true,     // Return the updated document
+                        runValidators: true // Run schema validators
+                    }
                 );
                 console.log('User updated:', updatedUser ? 'Success' : 'Failed');
                 break;
