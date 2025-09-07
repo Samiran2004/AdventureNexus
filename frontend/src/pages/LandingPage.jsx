@@ -190,36 +190,36 @@ const AdventureNexusLanding = () => {
     };
 
     return (
-        <div className="min-h-screen bg-white overflow-hidden">
+        <div className="min-h-screen bg-black overflow-hidden">
             {/* Mobile Menu */}
             {mobileMenuOpen && (
-                <div className="fixed inset-0 bg-white z-50 md:hidden">
-                    <div className="flex justify-between items-center p-4 border-b">
+                <div className="fixed inset-0 bg-black z-50 md:hidden">
+                    <div className="flex justify-between items-center p-4 border-b border-gray-800">
                         <div className="flex items-center space-x-2">
                             <div className="bg-gradient-to-br from-blue-600 to-purple-600 text-white p-2 rounded-lg">
                                 <Compass size={20} />
                             </div>
-                            <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                            <span className="text-lg font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                                 AdventureNexus
                             </span>
                         </div>
                         <button onClick={() => setMobileMenuOpen(false)}>
-                            <X size={24} />
+                            <X size={24} className="text-white" />
                         </button>
                     </div>
                     <div className="flex flex-col space-y-4 p-4">
-                        <a href="#features" className="text-gray-600 hover:text-gray-900 py-2">Features</a>
-                        <a href="#how-it-works" className="text-gray-600 hover:text-gray-900 py-2">How it Works</a>
-                        <a href="#destinations" className="text-gray-600 hover:text-gray-900 py-2">Destinations</a>
-                        <a href="#testimonials" className="text-gray-600 hover:text-gray-900 py-2">Reviews</a>
-                        <Button variant="ghost" className="justify-start">Sign In</Button>
+                        <a href="#features" className="text-gray-400 hover:text-white py-2">Features</a>
+                        <a href="#how-it-works" className="text-gray-400 hover:text-white py-2">How it Works</a>
+                        <a href="#destinations" className="text-gray-400 hover:text-white py-2">Destinations</a>
+                        <a href="#testimonials" className="text-gray-400 hover:text-white py-2">Reviews</a>
+                        <Button variant="ghost" className="justify-start text-white hover:bg-gray-800">Sign In</Button>
                         <Button className="bg-gradient-to-r from-blue-600 to-purple-600">Plan My Trip</Button>
                     </div>
                 </div>
             )}
 
             {/* Navigation */}
-            <nav ref={navRef} className="border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 sticky top-0 z-50">
+            <nav ref={navRef} className="border-b border-gray-800 bg-black/95 backdrop-blur supports-[backdrop-filter]:bg-black/60 sticky top-0 z-50">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
                         {/* Logo */}
@@ -227,22 +227,22 @@ const AdventureNexusLanding = () => {
                             <div className="bg-gradient-to-br from-blue-600 to-purple-600 text-white p-2 rounded-lg">
                                 <Compass size={24} />
                             </div>
-                            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                            <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                                 AdventureNexus
                             </span>
                         </div>
 
                         {/* Desktop Navigation */}
                         <div className="hidden md:flex items-center space-x-8">
-                            <a href="#features" className="text-gray-600 hover:text-gray-900 transition-colors">Features</a>
-                            <a href="#how-it-works" className="text-gray-600 hover:text-gray-900 transition-colors">How it Works</a>
-                            <a href="#destinations" className="text-gray-600 hover:text-gray-900 transition-colors">Destinations</a>
-                            <a href="#testimonials" className="text-gray-600 hover:text-gray-900 transition-colors">Reviews</a>
+                            <a href="#features" className="text-gray-400 hover:text-white transition-colors">Features</a>
+                            <a href="#how-it-works" className="text-gray-400 hover:text-white transition-colors">How it Works</a>
+                            <a href="#destinations" className="text-gray-400 hover:text-white transition-colors">Destinations</a>
+                            <a href="#testimonials" className="text-gray-400 hover:text-white transition-colors">Reviews</a>
                         </div>
 
                         {/* CTA Buttons */}
                         <div className="hidden md:flex items-center space-x-4">
-                            <Button variant="ghost">
+                            <Button variant="ghost" className="text-white hover:bg-gray-800">
                                 <header>
                                     <SignedOut>
                                         <SignInButton />
@@ -263,7 +263,7 @@ const AdventureNexusLanding = () => {
 
                         {/* Mobile menu button */}
                         <button
-                            className="md:hidden"
+                            className="md:hidden text-white"
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                         >
                             {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -273,25 +273,25 @@ const AdventureNexusLanding = () => {
             </nav>
 
             {/* Hero Section */}
-            <section ref={heroRef} className="py-20 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
+            <section ref={heroRef} className="py-20 bg-gradient-to-br from-gray-900 via-black to-gray-900 relative overflow-hidden">
                 {/* Background decorative elements */}
                 <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute -top-10 -right-10 w-80 h-80 bg-blue-100 rounded-full opacity-50"></div>
-                    <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-purple-100 rounded-full opacity-30"></div>
+                    <div className="absolute -top-10 -right-10 w-80 h-80 bg-blue-900/20 rounded-full opacity-50"></div>
+                    <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-purple-900/20 rounded-full opacity-30"></div>
                 </div>
 
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
                     <div className="grid lg:grid-cols-2 gap-12 items-center">
                         <div ref={heroContentRef} className="space-y-8">
                             <div className="space-y-4">
-                                <Badge className="bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 hover:bg-blue-100 border-0">
+                                <Badge className="bg-gradient-to-r from-blue-900/50 to-purple-900/50 text-blue-400 border border-blue-700/30">
                                     🤖 AI-Powered Travel Planning
                                 </Badge>
-                                <h1 className="text-4xl md:text-6xl font-bold text-gray-900 leading-tight">
+                                <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight">
                                     Your Perfect Trip
-                                    <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> Planned by AI</span>
+                                    <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"> Planned by AI</span>
                                 </h1>
-                                <p className="text-xl text-gray-600 leading-relaxed">
+                                <p className="text-xl text-gray-300 leading-relaxed">
                                     Let our advanced AI create personalized itineraries, find the best flights and hotels, and discover hidden gems tailored to your preferences and budget.
                                 </p>
                             </div>
@@ -309,7 +309,7 @@ const AdventureNexusLanding = () => {
                                 <Button
                                     variant="outline"
                                     size="lg"
-                                    className="text-lg px-8 py-6 border-2"
+                                    className="text-lg px-8 py-6 border-2 border-gray-600 text-white hover:bg-gray-800"
                                     onMouseEnter={handleButtonHover}
                                     onMouseLeave={handleButtonLeave}
                                 >
@@ -318,65 +318,65 @@ const AdventureNexusLanding = () => {
                                 </Button>
                             </div>
 
-                            <div className="flex items-center space-x-6 text-sm text-gray-500">
+                            <div className="flex items-center space-x-6 text-sm text-gray-400">
                                 <div className="flex items-center">
-                                    <CheckCircle className="text-green-500 mr-2" size={16} />
+                                    <CheckCircle className="text-green-400 mr-2" size={16} />
                                     Free to use
                                 </div>
                                 <div className="flex items-center">
-                                    <CheckCircle className="text-green-500 mr-2" size={16} />
+                                    <CheckCircle className="text-green-400 mr-2" size={16} />
                                     Instant results
                                 </div>
                                 <div className="flex items-center">
-                                    <CheckCircle className="text-green-500 mr-2" size={16} />
+                                    <CheckCircle className="text-green-400 mr-2" size={16} />
                                     No credit card required
                                 </div>
                             </div>
                         </div>
 
                         <div ref={heroImageRef} className="relative">
-                            <div className="bg-white rounded-2xl shadow-2xl p-8 space-y-6">
+                            <div className="bg-gray-900/80 border border-gray-700 rounded-2xl shadow-2xl p-8 space-y-6 backdrop-blur-sm">
                                 <div className="flex items-center justify-between">
-                                    <h3 className="text-lg font-semibold">Trip Planner Dashboard</h3>
-                                    <Badge variant="secondary" className="bg-green-100 text-green-800">AI Active</Badge>
+                                    <h3 className="text-lg font-semibold text-white">Trip Planner Dashboard</h3>
+                                    <Badge variant="secondary" className="bg-green-900/50 text-green-400 border border-green-700">AI Active</Badge>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
-                                    <Card>
+                                    <Card className="bg-gray-800 border-gray-700">
                                         <CardContent className="p-4 text-center">
-                                            <MapPin className="text-blue-600 mx-auto mb-2" size={24} />
-                                            <div className="text-2xl font-bold">
+                                            <MapPin className="text-blue-400 mx-auto mb-2" size={24} />
+                                            <div className="text-2xl font-bold text-white">
                                                 <NumberCounter
                                                     targetNumber={195}
                                                     duration={3}
-                                                    className="text-2xl font-bold"
+                                                    className="text-2xl font-bold text-white"
                                                 />
                                             </div>
-                                            <div className="text-sm text-gray-500">Countries</div>
+                                            <div className="text-sm text-gray-400">Countries</div>
                                         </CardContent>
                                     </Card>
-                                    <Card>
+                                    <Card className="bg-gray-800 border-gray-700">
                                         <CardContent className="p-4 text-center">
-                                            <Users className="text-green-600 mx-auto mb-2" size={24} />
-                                            <div className="text-2xl font-bold">
+                                            <Users className="text-green-400 mx-auto mb-2" size={24} />
+                                            <div className="text-2xl font-bold text-white">
                                                 <NumberCounter
                                                     targetNumber={50000}
                                                     duration={2.5}
-                                                    className="text-2xl font-bold"
+                                                    className="text-2xl font-bold text-white"
                                                 />
                                                 +
                                             </div>
-                                            <div className="text-sm text-gray-500">Happy Travelers</div>
+                                            <div className="text-sm text-gray-400">Happy Travelers</div>
                                         </CardContent>
                                     </Card>
                                 </div>
                                 <div className="space-y-3">
                                     <div className="flex items-center space-x-3">
-                                        <Bot className="text-purple-600" size={20} />
-                                        <div className="flex-1 bg-gray-100 rounded-lg p-2">
-                                            <div className="text-sm text-gray-600">Planning your 7-day Japan adventure...</div>
+                                        <Bot className="text-purple-400" size={20} />
+                                        <div className="flex-1 bg-gray-800 rounded-lg p-2">
+                                            <div className="text-sm text-gray-300">Planning your 7-day Japan adventure...</div>
                                         </div>
                                     </div>
-                                    <div className="h-2 bg-blue-100 rounded-full overflow-hidden">
+                                    <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
                                         <div className="h-full bg-gradient-to-r from-blue-600 to-purple-600 rounded-full w-3/4"></div>
                                     </div>
                                 </div>
@@ -387,18 +387,9 @@ const AdventureNexusLanding = () => {
             </section>
 
             {/* Features Section */}
-            <section id="features" ref={featuresRef} className="py-10 bg-white">
+            <section id="features" ref={featuresRef} className="py-10 bg-black">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    {/* <div className="text-center space-y-4 mb-16">
-                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-                            Everything You Need for the Perfect Trip
-                        </h2>
-                        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                            From AI-powered itinerary creation to real-time flight and hotel booking, AdventureNexus handles every aspect of your travel planning.
-                        </p>
-                    </div> */}
-
-                    <div>
+                    <div className='m-0'>
                         <Globe2/>
                     </div>
 
@@ -412,62 +403,14 @@ const AdventureNexusLanding = () => {
                 </div>
             </section>
 
-            {/* How It Works Section */}
-            {/* <section id="how-it-works" ref={howItWorksRef} className="py-20 bg-gray-50">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center space-y-4 mb-16">
-                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-                            Plan Your Dream Trip in 3 Simple Steps
-                        </h2>
-                        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                            Our AI makes travel planning effortless and fun. Get started in minutes.
-                        </p>
-                    </div>
-
-                    <div className="grid md:grid-cols-3 gap-8">
-                        {[
-                            {
-                                step: "01",
-                                title: "Tell Us Your Preferences",
-                                description: "Share your destination, dates, budget, interests, and travel style. Our AI learns what makes you happy.",
-                                icon: Search
-                            },
-                            {
-                                step: "02",
-                                title: "AI Creates Your Itinerary",
-                                description: "Our advanced AI generates a personalized trip plan with activities, restaurants, and attractions you'll love.",
-                                icon: Bot
-                            },
-                            {
-                                step: "03",
-                                title: "Book & Go Adventure",
-                                description: "Review your plan, book flights and hotels directly through our platform, and start your amazing journey.",
-                                icon: Navigation
-                            }
-                        ].map((step, index) => (
-                            <div key={index} className="step-item text-center space-y-4">
-                                <div className="bg-gradient-to-br from-blue-600 to-purple-600 text-white text-2xl font-bold w-16 h-16 rounded-full flex items-center justify-center mx-auto">
-                                    {step.step}
-                                </div>
-                                <div className="bg-blue-100 text-blue-600 p-3 rounded-lg w-fit mx-auto">
-                                    <step.icon size={24} />
-                                </div>
-                                <h3 className="text-xl font-semibold">{step.title}</h3>
-                                <p className="text-gray-600">{step.description}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section> */}
-
             {/* Testimonials Section */}
-            <section id="testimonials" ref={testimonialsRef} className="py-20 bg-white">
+            <section id="testimonials" ref={testimonialsRef} className="py-20 bg-black">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center space-y-4 mb-16">
-                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+                        <h2 className="text-3xl md:text-4xl font-bold text-white">
                             Travelers Love AdventureNexus
                         </h2>
-                        <p className="text-xl text-gray-600">
+                        <p className="text-xl text-gray-400">
                             See what our community of adventurers is saying
                         </p>
                     </div>
@@ -496,21 +439,21 @@ const AdventureNexusLanding = () => {
                                 location: "Patagonia, Chile"
                             }
                         ].map((testimonial, index) => (
-                            <Card key={index} className="testimonial-card border-0 shadow-lg">
+                            <Card key={index} className="testimonial-card bg-gray-900 border-gray-700 shadow-lg">
                                 <CardContent className="p-6 space-y-4">
                                     <div className="flex text-yellow-400">
                                         {[...Array(testimonial.rating)].map((_, i) => (
                                             <Star key={i} size={20} fill="currentColor" />
                                         ))}
                                     </div>
-                                    <p className="text-gray-600 italic">"{testimonial.content}"</p>
-                                    <div className="border-t pt-4 flex items-center space-x-3">
+                                    <p className="text-gray-300 italic">"{testimonial.content}"</p>
+                                    <div className="border-t border-gray-700 pt-4 flex items-center space-x-3">
                                         <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
                                             {testimonial.name.split(' ').map(n => n[0]).join('')}
                                         </div>
                                         <div>
-                                            <div className="font-semibold">{testimonial.name}</div>
-                                            <div className="text-sm text-gray-500">{testimonial.role} • {testimonial.location}</div>
+                                            <div className="font-semibold text-white">{testimonial.name}</div>
+                                            <div className="text-sm text-gray-400">{testimonial.role} • {testimonial.location}</div>
                                         </div>
                                     </div>
                                 </CardContent>
@@ -521,13 +464,13 @@ const AdventureNexusLanding = () => {
             </section>
 
             {/* Pricing Section */}
-            <section id="pricing" ref={pricingRef} className="py-20 bg-gray-50">
+            <section id="pricing" ref={pricingRef} className="py-20 bg-gray-900">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center space-y-4 mb-16">
-                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+                        <h2 className="text-3xl md:text-4xl font-bold text-white">
                             Simple, Transparent Pricing
                         </h2>
-                        <p className="text-xl text-gray-600">
+                        <p className="text-xl text-gray-400">
                             Choose the plan that fits your travel style
                         </p>
                     </div>
@@ -564,8 +507,9 @@ const AdventureNexusLanding = () => {
                         ].map((plan, index) => (
                             <Card
                                 key={index}
-                                className={`pricing-card relative hover:scale-105 transition-transform duration-300 ${plan.popular ? 'border-blue-500 shadow-2xl scale-105' : 'border-gray-200'
-                                    }`}
+                                className={`pricing-card relative hover:scale-105 transition-transform duration-300 bg-gray-800 ${
+                                    plan.popular ? 'border-blue-500 shadow-2xl scale-105' : 'border-gray-700'
+                                }`}
                             >
                                 {plan.popular && (
                                     <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-blue-600 to-purple-600">
@@ -573,29 +517,30 @@ const AdventureNexusLanding = () => {
                                     </Badge>
                                 )}
                                 <CardHeader className="text-center">
-                                    <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                                    <CardTitle className="text-2xl text-white">{plan.name}</CardTitle>
                                     <div className="space-y-2">
-                                        <div className="text-4xl font-bold">
+                                        <div className="text-4xl font-bold text-white">
                                             {plan.price}
-                                            <span className="text-lg font-normal text-gray-500">{plan.period}</span>
+                                            <span className="text-lg font-normal text-gray-400">{plan.period}</span>
                                         </div>
-                                        <CardDescription>{plan.description}</CardDescription>
+                                        <CardDescription className="text-gray-400">{plan.description}</CardDescription>
                                     </div>
                                 </CardHeader>
                                 <CardContent className="space-y-6">
                                     <ul className="space-y-3">
                                         {plan.features.map((feature, featureIndex) => (
                                             <li key={featureIndex} className="flex items-center">
-                                                <CheckCircle className="text-green-500 mr-3" size={16} />
-                                                <span className="text-sm">{feature}</span>
+                                                <CheckCircle className="text-green-400 mr-3" size={16} />
+                                                <span className="text-sm text-gray-300">{feature}</span>
                                             </li>
                                         ))}
                                     </ul>
                                     <Button
-                                        className={`w-full ${plan.popular
-                                            ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700'
-                                            : ''
-                                            }`}
+                                        className={`w-full ${
+                                            plan.popular
+                                                ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700'
+                                                : 'bg-gray-700 hover:bg-gray-600 text-white'
+                                        }`}
                                         onMouseEnter={handleButtonHover}
                                         onMouseLeave={handleButtonLeave}
                                     >
@@ -632,11 +577,11 @@ const AdventureNexusLanding = () => {
                             <Button
                                 size="lg"
                                 variant="outline"
-                                className="text-lg px-8 py-6 text-black border-white hover:bg-white hover:text-blue-600"
+                                className="text-lg px-8 py-6 text-white border-white hover:bg-white hover:text-blue-600"
                                 onMouseEnter={handleButtonHover}
                                 onMouseLeave={handleButtonLeave}
                             >
-                                <MessageCircle className="mr-2 text-gray-500" size={20} />
+                                <MessageCircle className="mr-2" size={20} />
                                 Talk to Our AI
                             </Button>
                         </div>
@@ -659,7 +604,7 @@ const AdventureNexusLanding = () => {
             </section>
 
             {/* Footer */}
-            <footer className="bg-gray-900 text-white py-12">
+            <footer className="bg-gray-900 text-white py-12 border-t border-gray-800">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid md:grid-cols-4 gap-8">
                         <div className="space-y-4">
@@ -673,7 +618,7 @@ const AdventureNexusLanding = () => {
                                 Empowering travelers with AI-powered trip planning and personalized recommendations for unforgettable adventures.
                             </p>
                             <div className="flex space-x-4">
-                                <Button variant="outline" size="sm" className="text-gray-400 border-gray-600 hover:text-white hover:border-white">
+                                <Button variant="outline" size="sm" className="text-gray-400 border-gray-600 hover:text-white hover:border-white hover:bg-gray-800">
                                     <Mail size={16} className="mr-2" />
                                     Newsletter
                                 </Button>
@@ -681,7 +626,7 @@ const AdventureNexusLanding = () => {
                         </div>
 
                         <div>
-                            <h3 className="font-semibold mb-4">Product</h3>
+                            <h3 className="font-semibold mb-4 text-white">Product</h3>
                             <ul className="space-y-2 text-gray-400">
                                 <li><a href="#features" className="hover:text-white transition-colors">AI Trip Planner</a></li>
                                 <li><a href="#" className="hover:text-white transition-colors">Flight Search</a></li>
@@ -692,7 +637,7 @@ const AdventureNexusLanding = () => {
                         </div>
 
                         <div>
-                            <h3 className="font-semibold mb-4">Company</h3>
+                            <h3 className="font-semibold mb-4 text-white">Company</h3>
                             <ul className="space-y-2 text-gray-400">
                                 <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
                                 <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
@@ -703,7 +648,7 @@ const AdventureNexusLanding = () => {
                         </div>
 
                         <div>
-                            <h3 className="font-semibold mb-4">Support</h3>
+                            <h3 className="font-semibold mb-4 text-white">Support</h3>
                             <ul className="space-y-2 text-gray-400">
                                 <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
                                 <li><a href="#" className="hover:text-white transition-colors">Contact Us</a></li>
