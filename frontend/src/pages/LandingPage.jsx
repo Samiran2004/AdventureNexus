@@ -627,11 +627,11 @@ const AdventureNexusLanding = () => {
                             <Button
                                 size="lg"
                                 variant="outline"
-                                className="text-lg px-8 py-6 text-white border-white hover:bg-white hover:text-blue-600"
+                                className="text-lg px-8 py-6 text-black border-white hover:bg-white hover:text-blue-600"
                                 onMouseEnter={handleButtonHover}
                                 onMouseLeave={handleButtonLeave}
                             >
-                                <MessageCircle className="mr-2" size={20} />
+                                <MessageCircle className="mr-2 text-gray-500" size={20} />
                                 Talk to Our AI
                             </Button>
                         </div>
