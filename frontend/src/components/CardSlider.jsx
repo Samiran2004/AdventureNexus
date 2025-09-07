@@ -145,9 +145,9 @@ const StyledWrapper = styled.div`
   .card p {
     font-size: 16px;
     font-weight: 600;
-    color: black;
+    color: #FFFFFF;
     margin: 8px 0;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
     z-index: 2;
     position: relative;
     font-family: "Story Script", sans-serif;

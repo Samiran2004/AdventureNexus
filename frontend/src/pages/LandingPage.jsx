@@ -40,6 +40,7 @@ import NumberCounter from '@/components/NumberCounter';
 import CardSlider from '@/components/CardSlider';
 import ScrollBasedVelocityDemo from '@/components/mvpblocks/scrollbasedvelocity-demo';
 import BentoGrid1 from '@/components/mvpblocks/bento-grid-1';
+import Globe2 from '@/components/mvpblocks/globe2';
 
 // Register GSAP Plugins
 gsap.registerPlugin(ScrollTrigger, TextPlugin);
@@ -386,7 +387,7 @@ const AdventureNexusLanding = () => {
             </section>
 
             {/* Features Section */}
-            <section id="features" ref={featuresRef} className="py-20 bg-white">
+            <section id="features" ref={featuresRef} className="py-10 bg-white">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     {/* <div className="text-center space-y-4 mb-16">
                         <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
@@ -396,6 +397,10 @@ const AdventureNexusLanding = () => {
                             From AI-powered itinerary creation to real-time flight and hotel booking, AdventureNexus handles every aspect of your travel planning.
                         </p>
                     </div> */}
+
+                    <div>
+                        <Globe2/>
+                    </div>
 
                     <div className=''>
                         <CardSlider />
@@ -408,7 +413,7 @@ const AdventureNexusLanding = () => {
             </section>
 
             {/* How It Works Section */}
-            <section id="how-it-works" ref={howItWorksRef} className="py-20 bg-gray-50">
+            {/* <section id="how-it-works" ref={howItWorksRef} className="py-20 bg-gray-50">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center space-y-4 mb-16">
                         <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
@@ -453,7 +458,7 @@ const AdventureNexusLanding = () => {
                         ))}
                     </div>
                 </div>
-            </section>
+            </section> */}
 
             {/* Testimonials Section */}
             <section id="testimonials" ref={testimonialsRef} className="py-20 bg-white">
