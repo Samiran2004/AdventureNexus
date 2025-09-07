@@ -37,6 +37,9 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { TextPlugin } from 'gsap/TextPlugin';
 import NumberCounter from '@/components/NumberCounter';
+import CardSlider from '@/components/CardSlider';
+import ScrollBasedVelocityDemo from '@/components/mvpblocks/scrollbasedvelocity-demo';
+import BentoGrid1 from '@/components/mvpblocks/bento-grid-1';
 
 // Register GSAP Plugins
 gsap.registerPlugin(ScrollTrigger, TextPlugin);
@@ -385,81 +388,21 @@ const AdventureNexusLanding = () => {
             {/* Features Section */}
             <section id="features" ref={featuresRef} className="py-20 bg-white">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center space-y-4 mb-16">
+                    {/* <div className="text-center space-y-4 mb-16">
                         <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
                             Everything You Need for the Perfect Trip
                         </h2>
                         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
                             From AI-powered itinerary creation to real-time flight and hotel booking, AdventureNexus handles every aspect of your travel planning.
                         </p>
-                    </div>
+                    </div> */}
 
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {[
-                            {
-                                icon: Bot,
-                                title: "AI Trip Planning",
-                                description: "Get personalized itineraries created by advanced AI based on your preferences, budget, and travel style."
-                            },
-                            {
-                                icon: Plane,
-                                title: "Flight Search",
-                                description: "Find and compare the best flight deals from multiple airlines with real-time pricing and availability."
-                            },
-                            {
-                                icon: Hotel,
-                                title: "Hotel Booking",
-                                description: "Discover and book accommodations that match your style and budget, from luxury resorts to cozy hostels."
-                            },
-                            {
-                                icon: MapPin,
-                                title: "Popular Destinations",
-                                description: "Explore trending destinations and hidden gems with insider tips and local recommendations."
-                            },
-                            {
-                                icon: Calendar,
-                                title: "Smart Scheduling",
-                                description: "AI-optimized daily schedules that maximize your time and minimize travel between locations."
-                            },
-                            {
-                                icon: Smartphone,
-                                title: "Mobile Companion",
-                                description: "Access your itinerary, bookings, and real-time updates from anywhere with our mobile app."
-                            }
-                        ].map((feature, index) => (
-                            <Card
-                                key={index}
-                                className="feature-card border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
-                                onMouseEnter={(e) => {
-                                    gsap.to(e.currentTarget, {
-                                        y: -8,
-                                        scale: 1.02,
-                                        duration: 0.3,
-                                        ease: "power2.out"
-                                    });
-                                }}
-                                onMouseLeave={(e) => {
-                                    gsap.to(e.currentTarget, {
-                                        y: 0,
-                                        scale: 1,
-                                        duration: 0.3,
-                                        ease: "power2.out"
-                                    });
-                                }}
-                            >
-                                <CardHeader>
-                                    <div className="bg-gradient-to-br from-blue-100 to-purple-100 text-blue-600 p-3 rounded-lg w-fit">
-                                        <feature.icon size={24} />
-                                    </div>
-                                    <CardTitle className="text-xl">{feature.title}</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <CardDescription className="text-base">
-                                        {feature.description}
-                                    </CardDescription>
-                                </CardContent>
-                            </Card>
-                        ))}
+                    <div className=''>
+                        <CardSlider />
+                    </div>
+                    <div>
+                        <ScrollBasedVelocityDemo />
+                        <BentoGrid1/>
                     </div>
                 </div>
             </section>
@@ -645,8 +588,8 @@ const AdventureNexusLanding = () => {
                                     </ul>
                                     <Button
                                         className={`w-full ${plan.popular
-                                                ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700'
-                                                : ''
+                                            ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700'
+                                            : ''
                                             }`}
                                         onMouseEnter={handleButtonHover}
                                         onMouseLeave={handleButtonLeave}
@@ -760,7 +703,7 @@ const AdventureNexusLanding = () => {
                                 <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
                                 <li><a href="#" className="hover:text-white transition-colors">Contact Us</a></li>
                                 <li><a href="#" className="hover:text-white transition-colors">Travel Guides</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">API Docs</a></li>
+                                <li><a href="https://adventurenexus.onrender.com/api-docs/" className="hover:text-white transition-colors">API Docs</a></li>
                                 <li><a href="#" className="hover:text-white transition-colors">System Status</a></li>
                             </ul>
                         </div>
