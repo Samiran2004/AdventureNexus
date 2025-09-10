@@ -8,6 +8,8 @@ import PageNotFound from './pages/PageNotFound';
 import AdventureNexusLanding from './pages/LandingPage';
 import CircularText from './components/CircularText';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
+// import { R } from '@clerk/clerk-react/dist/useAuth-BX_k9NPL';
+import SearchPage from './pages/SearchPage';
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -56,6 +58,8 @@ function App() {
         <Route path='/login' element={<LoginPage />} />
         <Route path='/signup/student' element={<StudentSignup />} />
         <Route path='/signup/teacher' element={<TeacherSignup />} />
+
+        <Route path='/search' element={<SearchPage />} />
 
         {/* Protected Routes */}
         {/* <Route path='/student/homepage',/> */}
