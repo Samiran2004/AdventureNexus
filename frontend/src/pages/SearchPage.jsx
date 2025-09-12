@@ -285,7 +285,19 @@ const SearchPage = () => {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="dates" className="text-white text-sm font-medium">When?</Label>
+                                        <Label htmlFor="dates" className="text-white text-sm font-medium">From</Label>
+                                        <div className="relative">
+                                            <Calendar className="absolute left-3 top-3 text-gray-400" size={18} />
+                                            <Input
+                                                id="dates"
+                                                placeholder="Select dates"
+                                                className="pl-10 bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor="dates" className="text-white text-sm font-medium">To</Label>
                                         <div className="relative">
                                             <Calendar className="absolute left-3 top-3 text-gray-400" size={18} />
                                             <Input
