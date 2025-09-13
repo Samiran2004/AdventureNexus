@@ -17,7 +17,7 @@ const http_errors_1 = __importDefault(require("http-errors"));
 function userProfile(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const userData = yield userModel_1.default.findById(req.user._id);
+            const userData = yield userModel_1.default.findOne({ clerkUserId: req.user.clerkUserId });
             if (!userData) {
                 return next((0, http_errors_1.default)(404, 'User not found!'));
             }
@@ -26,6 +26,8 @@ function userProfile(req, res, next) {
                     status: 'Success',
                     userData: {
                         fullname: userData.fullname,
+                        firstname: userData.firstName,
+                        lastname: userData.lastName,
                         email: userData.email,
                         phonenumber: userData.phonenumber,
                         username: userData.username,
@@ -38,6 +40,7 @@ function userProfile(req, res, next) {
             }
         }
         catch (error) {
+            console.error("Error fetching user profile:", error);
             return next((0, http_errors_1.default)(500, 'Internal Server Error!'));
         }
     });
