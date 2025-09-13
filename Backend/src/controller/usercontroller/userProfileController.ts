@@ -3,22 +3,22 @@ import User, { IUser } from '../../Database/models/userModel';
 import createHttpError from 'http-errors';
 
 export interface CustomRequestUserProfileController<
-    TParams = {},
-    TQuery = {},
-    TBody = {},
-> extends Request<TParams, any, TBody, TQuery> {
+    TParams = object,
+    TQuery = object,
+    TBody = object,
+> extends Request<TParams, unknown, TBody, TQuery> {
     user: {
         _id: string;
     };
 }
 
 async function userProfile(
-    req: CustomRequestUserProfileController,
+    req: Request,
     res: Response,
     next: NextFunction
 ): Promise<Response | void> {
     try {
-        const userData: IUser | null = await User.findById(req.user._id);
+        const userData: IUser | null = await User.findOne({ clerkUserId: req.user.clerkUserId });
 
         if (!userData) {
             return next(createHttpError(404, 'User not found!'));
@@ -27,6 +27,8 @@ async function userProfile(
                 status: 'Success',
                 userData: {
                     fullname: userData.fullname,
+                    firstname: userData.firstName,
+                    lastname: userData.lastName,
                     email: userData.email,
                     phonenumber: userData.phonenumber,
                     username: userData.username,
@@ -37,8 +39,8 @@ async function userProfile(
                 },
             });
         }
-    } catch (error) {
-        // console.error("Error fetching user profile:", error); // Log error for debugging
+    } catch (error: unknown) {
+        console.error("Error fetching user profile:", error); // Log error for debugging
         return next(createHttpError(500, 'Internal Server Error!'));
     }
 }

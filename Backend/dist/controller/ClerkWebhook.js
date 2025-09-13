@@ -38,16 +38,19 @@ const clerkWebhook = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         switch (type) {
             case 'user.created': {
                 console.log('Creating user:', userData);
-                const user = yield userModel_1.default.findOneAndUpdate({ clerkUserId: data.id }, userData, {
-                    upsert: true,
-                    new: true,
-                    setDefaultsOnInsert: true
-                });
-                if (user) {
-                    console.log('User created/updated successfully:', user._id);
+                try {
+                    const user = yield userModel_1.default.create(userData);
+                    console.log('User created successfully:', user._id);
                 }
-                else {
-                    console.error('Failed to create/update user');
+                catch (error) {
+                    if (error.code === 11000) {
+                        console.log('User exists, updating...');
+                        const user = yield userModel_1.default.findOneAndUpdate({ clerkUserId: data.id }, userData, { new: true });
+                        console.log('User updated successfully:', user === null || user === void 0 ? void 0 : user._id);
+                    }
+                    else {
+                        throw error;
+                    }
                 }
                 break;
             }
@@ -55,7 +58,6 @@ const clerkWebhook = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 console.log('Updating user:', data.id);
                 const updatedUser = yield userModel_1.default.findOneAndUpdate({ clerkUserId: data.id }, userData, {
                     new: true,
-                    runValidators: true
                 });
                 console.log('User updated:', updatedUser ? 'Success' : 'Failed');
                 break;

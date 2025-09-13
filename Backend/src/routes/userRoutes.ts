@@ -13,6 +13,7 @@ import updateProfile, {
     CustomRequestUpdateProfile,
 } from '../controller/usercontroller/updateProfileController';
 import limiter from '../utils/rateLimiter';
+import { protect } from '../middlewares/authClerkTokenMiddleware';
 
 const route: Router = express.Router();
 
@@ -86,14 +87,14 @@ const route: Router = express.Router();
  */
 
 // Create new user... Path: /api/v1/user/register
-route.post(
-    '/register',
-    limiter,
-    upload.single('profileimage'),
-    (req, res, next: NextFunction) => {
-        createNewUser(req as CustomRequestRegisterController, res, next);
-    }
-);
+// route.post(
+//     '/register',
+//     limiter,
+//     upload.single('profileimage'),
+//     (req, res, next: NextFunction) => {
+//         createNewUser(req as CustomRequestRegisterController, res, next);
+//     }
+// );
 
 // routes/userRoutes.ts
 
@@ -147,9 +148,9 @@ route.post(
  */
 
 // Login a User... Path: /api/v1/user/login
-route.post('/login', limiter, (req, res, next) => {
-    loginuser(req, res, next);
-});
+// route.post('/login', limiter, (req, res, next) => {
+//     loginuser(req, res, next);
+// });
 
 /**
  * @swagger
@@ -209,8 +210,8 @@ route.post('/login', limiter, (req, res, next) => {
  *       500:
  *         description: Internal server error
  */
-// Get user profile details... Path: /api/v1/user/profile
-route.get('/profile', authTokenMiddleware, (req, res, next) => {
+// Get user profile details... Path: /api/v1/users/profile
+route.get('/profile', protect, (req, res, next) => {
     userProfile(req as CustomRequestUserProfileController, res, next);
 });
 
