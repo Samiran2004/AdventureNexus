@@ -1,6 +1,5 @@
-import { useState } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
-import Loader from './components/Loader';
+import { useState, useEffect } from 'react';
+import { Route, Routes } from 'react-router-dom';
 import StudentSignup from './pages/auth/SignupStudent';
 import TeacherSignup from './pages/auth/SignupTeacher';
 import LoginPage from './pages/Login';
@@ -8,13 +7,16 @@ import PageNotFound from './pages/PageNotFound';
 import AdventureNexusLanding from './pages/LandingPage';
 import CircularText from './components/CircularText';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
-// import { R } from '@clerk/clerk-react/dist/useAuth-BX_k9NPL';
 import SearchPage from './pages/SearchPage';
+import ProtectedRoute from './components/ProtectedRoute';
+import { AppProvider, useAppContext } from './context/appContext.jsx';
 
-function App() {
+// App content component that uses the context
+const AppContent = () => {
   const [loading, setLoading] = useState(true);
+  const { isSignedIn, user } = useAppContext(); // Now we can use the context
 
-  useState(() => {
+  useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
     }, 2000);
@@ -24,34 +26,14 @@ function App() {
 
   if (loading) {
     return (
-      <div className='h-screen flex justify-center items-center border-8'>
-        {/* <LoginPage/> */}
-        {/* <Loader /> */}
+      <div className='h-screen flex justify-center items-center border-8 bg-white'>
         <CircularText text='AdventureNexus' />
       </div>
     );
   }
 
   return (
-    // <div className="relative h-screen">
-
-    //   {/* LoginPage as foreground content */}
-    //   <div className="relative z-10">
-    //     {/* <LoginPage /> */}
-    //     {/* <StudentSignup/> */}
-    //     <PageNotFound />
-    //   </div>
-    // </div>
-
     <>
-      {/* <header>
-        <SignedOut>
-          <SignInButton />
-        </SignedOut>
-        <SignedIn>
-          <UserButton />
-        </SignedIn>
-      </header> */}
 
       <Routes>
         {/* Public Routes */}
@@ -59,23 +41,30 @@ function App() {
         <Route path='/signup/student' element={<StudentSignup />} />
         <Route path='/signup/teacher' element={<TeacherSignup />} />
 
-        <Route path='/search' element={<SearchPage />} />
-
         {/* Protected Routes */}
-        {/* <Route path='/student/homepage',/> */}
+        <Route path='/search' element={
+          <ProtectedRoute>
+            <SearchPage />
+          </ProtectedRoute>
+        } />
 
-        {/* Default Route:- Redirect to Login page */}
-        {/* <Route path='/' element={<Navigate to="/login" replace />} /> */}
-
-        {/* Landing Page:- Redirect to landing page */}
+        {/* Landing Page */}
         <Route path='/' element={<AdventureNexusLanding />} />
 
         {/* 404 Not Found Page */}
         <Route path='*' element={<PageNotFound />} />
       </Routes>
     </>
+  );
+};
 
-  )
+// Main App component with provider
+function App() {
+  return (
+    <AppProvider>
+      <AppContent />
+    </AppProvider>
+  );
 }
 
 export default App;
