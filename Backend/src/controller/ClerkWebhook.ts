@@ -2,6 +2,8 @@ import { StatusCodes } from 'http-status-codes';
 import User from '../Database/models/userModel';
 import { Webhook } from 'svix';
 import { Request, Response } from 'express';
+import emailTemplates from '../utils/emailTemplate';
+import sendMail from '../service/mailService';
 
 const clerkWebhook = async (req: Request, res: Response) => {
     try {
@@ -44,6 +46,13 @@ const clerkWebhook = async (req: Request, res: Response) => {
                             userData,
                             { new: true }
                         );
+                        const { registerEmailData } = emailTemplates;
+                        const emailData = registerEmailData(userData.firstName, userData.email);
+                        await sendMail(emailData, (mailError: Error | null) => {
+                            if (mailError) {
+                                console.log("Mail sending error.");
+                            }
+                        });
                         console.log('User updated successfully:', user?._id);
                     } else {
                         throw error; // Re-throw other errors
@@ -69,6 +78,13 @@ const clerkWebhook = async (req: Request, res: Response) => {
                 console.log('Deleting user:', data.id);
                 const deletedUser = await User.findOneAndDelete({ clerkUserId: data.id });
                 console.log('User deleted:', deletedUser ? 'Success' : 'Not found');
+                const { deleteUserEmailData } = emailTemplates;
+                const emailData = deleteUserEmailData(deletedUser.firstName, deletedUser.email);
+                await sendMail(emailData, (mailError: Error | null) => {
+                    if (mailError) {
+                        console.log("Mail sending error...");
+                    }
+                });
                 break;
             }
 
