@@ -23,6 +23,7 @@ async function userProfile(
         if (!userData) {
             return next(createHttpError(404, 'User not found!'));
         } else {
+            console.log(userData);
             return res.status(200).send({
                 status: 'Success',
                 userData: {
