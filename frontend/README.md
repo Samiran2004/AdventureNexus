@@ -97,8 +97,3 @@ import AdventureNexusLanding from './components/AdventureNexusLanding';
 export default function Home() {
   return <AdventureNexusLanding />;
 }
-
-
-
-
-

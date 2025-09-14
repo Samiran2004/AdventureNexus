@@ -36,18 +36,17 @@ const userSchema = new mongoose_1.Schema({
         type: String,
         default: null,
         trim: true,
-        sparse: true,
+        unique: true
     },
     phonenumber: {
         type: Number,
-        default: null,
-        sparse: true,
         validate: {
             validator: function (v) {
                 return v == null || /^\d{10}$/.test(v.toString());
             },
             message: 'Phone number must be exactly 10 digits'
-        }
+        },
+        required: false
     },
     profilepicture: {
         type: String,

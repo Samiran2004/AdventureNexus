@@ -41,6 +41,7 @@ import CardSlider from '@/components/CardSlider';
 import ScrollBasedVelocityDemo from '@/components/mvpblocks/scrollbasedvelocity-demo';
 import BentoGrid1 from '@/components/mvpblocks/bento-grid-1';
 import Globe2 from '@/components/mvpblocks/globe2';
+import { Link } from 'react-router-dom';
 
 // Register GSAP Plugins
 gsap.registerPlugin(ScrollTrigger, TextPlugin);
@@ -208,7 +209,7 @@ const AdventureNexusLanding = () => {
                         </button>
                     </div>
                     <div className="flex flex-col space-y-4 p-4">
-                        <a href="#features" className="text-gray-400 hover:text-white py-2">Features</a>
+                        <Link to="/search" className="text-gray-400 hover:text-white py-2">Search</Link>
                         <a href="#how-it-works" className="text-gray-400 hover:text-white py-2">How it Works</a>
                         <a href="#destinations" className="text-gray-400 hover:text-white py-2">Destinations</a>
                         <a href="#testimonials" className="text-gray-400 hover:text-white py-2">Reviews</a>
@@ -234,7 +235,7 @@ const AdventureNexusLanding = () => {
 
                         {/* Desktop Navigation */}
                         <div className="hidden md:flex items-center space-x-8">
-                            <a href="#features" className="text-gray-400 hover:text-white transition-colors">Features</a>
+                            <Link to="/search" className="text-gray-400 hover:text-white py-2">Search</Link>
                             <a href="#how-it-works" className="text-gray-400 hover:text-white transition-colors">How it Works</a>
                             <a href="#destinations" className="text-gray-400 hover:text-white transition-colors">Destinations</a>
                             <a href="#testimonials" className="text-gray-400 hover:text-white transition-colors">Reviews</a>
