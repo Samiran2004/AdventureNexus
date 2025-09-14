@@ -38,24 +38,28 @@ const AppContent = () => {
   return (
     <>
 
-    <Toaster
-    position='top-right'
-    />
+      <Toaster
+        position='top-right'
+      />
 
-    <NavBar/>
+      {/* <NavBar/> */}
 
       <Routes>
         {/* Public Routes */}
         <Route path='/login' element={<LoginPage />} />
         <Route path='/signup/student' element={<StudentSignup />} />
         <Route path='/signup/teacher' element={<TeacherSignup />} />
-        <Route path='/works' element={<HowItWorks/>}/>
-        <Route path='/review-page' element={<AdventureNexusReviews/>}/>
+        <Route path='/works' element={<HowItWorks />} />
 
         {/* Protected Routes */}
         <Route path='/search' element={
           <ProtectedRoute>
             <SearchPage />
+          </ProtectedRoute>
+        } />
+        <Route path='/review-page' element={
+          <ProtectedRoute>
+            <AdventureNexusReviews />
           </ProtectedRoute>
         } />
 
