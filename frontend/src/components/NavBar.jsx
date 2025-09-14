@@ -213,7 +213,7 @@ function NavBar() {
             </nav>
 
             {/* Spacer to prevent content overlap */}
-            <div className="h-16" />
+            <div className="h-10" />
         </div>
     );
 }

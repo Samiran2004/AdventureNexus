@@ -194,7 +194,7 @@ const AdventureNexusLanding = () => {
     return (
         <div className="min-h-screen bg-black overflow-hidden">
 
-            {/* <NavBar /> */}
+            <NavBar />
 
             {/* Hero Section */}
             <section ref={heroRef} className="py-20 bg-gradient-to-br from-gray-900 via-black to-gray-900 relative overflow-hidden">

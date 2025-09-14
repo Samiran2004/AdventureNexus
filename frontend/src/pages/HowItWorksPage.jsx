@@ -1,23 +1,23 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
-  MapPin,
-  Search,
-  Calendar,
-  Users,
-  CreditCard,
-  CheckCircle,
-  ArrowRight,
-  Sparkles,
-  Bot,
-  Globe,
-  Shield,
-  Clock,
-  Star,
-  PlayCircle
-} from 'lucide-react';
 import FooterNewsletter from '@/components/mvpblocks/footer-newsletter';
 import NavBar from '@/components/NavBar';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+    ArrowRight,
+    Bot,
+    Calendar,
+    CheckCircle,
+    Clock,
+    CreditCard,
+    Globe,
+    MapPin,
+    PlayCircle,
+    Search,
+    Shield,
+    Sparkles,
+    Star,
+    Users
+} from 'lucide-react';
+import { useState } from 'react';
 
 const HowItWorks = () => {
   const [activeStep, setActiveStep] = useState(0);
