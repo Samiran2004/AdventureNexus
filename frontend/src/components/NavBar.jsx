@@ -32,6 +32,7 @@ function NavBar() {
         { name: 'How It Works', path: '/works' },
         { name: 'Destinations', path: '/destinations' },
         { name: 'About', path: '/about' },
+        {name: 'Review', path: '/review-page'}
     ];
 
     // Mobile menu toggle

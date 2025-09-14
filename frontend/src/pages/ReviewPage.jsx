@@ -37,6 +37,7 @@ import {
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Link } from 'react-router-dom';
+import NavBar from '@/components/NavBar';
 
 // Register GSAP Plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -217,76 +218,7 @@ const AdventureNexusReviews = () => {
 
     return (
         <div className="min-h-screen bg-black">
-            {/* Mobile Menu */}
-            {mobileMenuOpen && (
-                <div className="fixed inset-0 bg-black z-50 md:hidden">
-                    <div className="flex justify-between items-center p-4 border-b border-gray-800">
-                        <Link to="/" className="flex items-center space-x-2">
-                            <div className="bg-gradient-to-br from-blue-600 to-purple-600 text-white p-2 rounded-lg">
-                                <Compass size={20} />
-                            </div>
-                            <span className="text-lg font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                                AdventureNexus
-                            </span>
-                        </Link>
-                        <button onClick={() => setMobileMenuOpen(false)}>
-                            <X size={24} className="text-white" />
-                        </button>
-                    </div>
-                    <div className="flex flex-col space-y-4 p-4">
-                        <Link to="/" className="text-gray-400 hover:text-white py-2">Home</Link>
-                        <Link to="/search" className="text-gray-400 hover:text-white py-2">Search</Link>
-                        <Link to="/reviews" className="text-white py-2">Reviews</Link>
-                        <a href="#" className="text-gray-400 hover:text-white py-2">Destinations</a>
-                        <Button variant="ghost" className="justify-start text-white hover:bg-gray-800">Sign In</Button>
-                        <Button className="bg-gradient-to-r from-blue-600 to-purple-600">Plan My Trip</Button>
-                    </div>
-                </div>
-            )}
-
-            {/* Navigation */}
-            <nav className="border-b border-gray-800 bg-black/95 backdrop-blur supports-[backdrop-filter]:bg-black/60 sticky top-0 z-50">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        <Link to="/" className="flex items-center space-x-2">
-                            <div className="bg-gradient-to-br from-blue-600 to-purple-600 text-white p-2 rounded-lg">
-                                <Compass size={24} />
-                            </div>
-                            <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                                AdventureNexus
-                            </span>
-                        </Link>
-
-                        <div className="hidden md:flex items-center space-x-8">
-                            <Link to="/" className="text-gray-400 hover:text-white transition-colors">Home</Link>
-                            <Link to="/search" className="text-gray-400 hover:text-white transition-colors">Search</Link>
-                            <Link to="/reviews" className="text-white">Reviews</Link>
-                            <a href="#" className="text-gray-400 hover:text-white transition-colors">Destinations</a>
-                        </div>
-
-                        <div className="hidden md:flex items-center space-x-4">
-                            <Button variant="ghost" className="text-white hover:bg-gray-800">
-                                <SignedOut>
-                                    <SignInButton />
-                                </SignedOut>
-                                <SignedIn>
-                                    <UserButton />
-                                </SignedIn>
-                            </Button>
-                            <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                                Plan My Trip
-                            </Button>
-                        </div>
-
-                        <button
-                            className="md:hidden text-white"
-                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        >
-                            <Menu size={24} />
-                        </button>
-                    </div>
-                </div>
-            </nav>
+            <NavBar/>
 
             {/* Header Section */}
             <section ref={headerRef} className="py-12 bg-gradient-to-br from-gray-900 via-black to-gray-900">
@@ -369,7 +301,7 @@ const AdventureNexusReviews = () => {
                                     className="pl-10 bg-gray-800 border-gray-700 text-white"
                                 />
                             </div>
-                            
+
                             <Select value={selectedFilter} onValueChange={setSelectedFilter}>
                                 <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
                                     <SelectValue placeholder="Category" />
@@ -449,7 +381,7 @@ const AdventureNexusReviews = () => {
                                         className="bg-gray-700 border-gray-600 text-white"
                                     />
                                 </div>
-                                
+
                                 <div>
                                     <label className="text-white mb-2 block">Your Rating</label>
                                     <div className="flex space-x-1">

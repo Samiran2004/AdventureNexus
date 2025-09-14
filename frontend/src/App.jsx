@@ -12,6 +12,7 @@ import SearchPage from './pages/SearchPage';
 import { Toaster } from 'react-hot-toast';
 import NavBar from './components/NavBar';
 import HowItWorks from './pages/HowItWorksPage';
+import AdventureNexusReviews from './pages/ReviewPage';
 
 // App content component that uses the context
 const AppContent = () => {
@@ -49,6 +50,7 @@ const AppContent = () => {
         <Route path='/signup/student' element={<StudentSignup />} />
         <Route path='/signup/teacher' element={<TeacherSignup />} />
         <Route path='/works' element={<HowItWorks/>}/>
+        <Route path='/review-page' element={<AdventureNexusReviews/>}/>
 
         {/* Protected Routes */}
         <Route path='/search' element={
