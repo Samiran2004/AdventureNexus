@@ -43,6 +43,7 @@ import {
 // GSAP Imports
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import NavBar from '@/components/NavBar';
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -95,8 +96,8 @@ const SearchPage = () => {
     }, []);
 
     const handleActivityToggle = (activity) => {
-        setSelectedActivities(prev => 
-            prev.includes(activity) 
+        setSelectedActivities(prev =>
+            prev.includes(activity)
                 ? prev.filter(a => a !== activity)
                 : [...prev, activity]
         );
@@ -179,82 +180,13 @@ const SearchPage = () => {
     ];
 
     const activities = [
-        "Adventure", "Culture", "Food", "Beach", "Nature", "Photography", 
+        "Adventure", "Culture", "Food", "Beach", "Nature", "Photography",
         "Romance", "Wellness", "Shopping", "Nightlife", "History", "Art"
     ];
 
     return (
         <div className="min-h-screen bg-black">
-            {/* Mobile Menu */}
-            {mobileMenuOpen && (
-                <div className="fixed inset-0 bg-black z-50 md:hidden">
-                    <div className="flex justify-between items-center p-4 border-b border-gray-800">
-                        <div className="flex items-center space-x-2">
-                            <div className="bg-gradient-to-br from-blue-600 to-purple-600 text-white p-2 rounded-lg">
-                                <Compass size={20} />
-                            </div>
-                            <span className="text-lg font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                                AdventureNexus
-                            </span>
-                        </div>
-                        <button onClick={() => setMobileMenuOpen(false)}>
-                            <X size={24} className="text-white" />
-                        </button>
-                    </div>
-                    <div className="flex flex-col space-y-4 p-4">
-                        <a href="/" className="text-gray-400 hover:text-white py-2">Home</a>
-                        <a href="/search" className="text-white py-2 font-semibold">Search</a>
-                        <a href="/destinations" className="text-gray-400 hover:text-white py-2">Destinations</a>
-                        <a href="/my-trips" className="text-gray-400 hover:text-white py-2">My Trips</a>
-                        <Button variant="ghost" className="justify-start text-white hover:bg-gray-800">Sign In</Button>
-                    </div>
-                </div>
-            )}
-
-            {/* Navigation */}
-            <nav ref={navRef} className="border-b border-gray-800 bg-black/95 backdrop-blur supports-[backdrop-filter]:bg-black/60 sticky top-0 z-50">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        {/* Logo */}
-                        <div className="flex items-center space-x-2">
-                            <div className="bg-gradient-to-br from-blue-600 to-purple-600 text-white p-2 rounded-lg">
-                                <Compass size={24} />
-                            </div>
-                            <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                                AdventureNexus
-                            </span>
-                        </div>
-
-                        {/* Desktop Navigation */}
-                        <div className="hidden md:flex items-center space-x-8">
-                            <a href="/" className="text-gray-400 hover:text-white transition-colors">Home</a>
-                            <a href="/search" className="text-white font-semibold">Search</a>
-                            <a href="/destinations" className="text-gray-400 hover:text-white transition-colors">Destinations</a>
-                            <a href="/my-trips" className="text-gray-400 hover:text-white transition-colors">My Trips</a>
-                        </div>
-
-                        {/* CTA Buttons */}
-                        <div className="hidden md:flex items-center space-x-4">
-                            <Button variant="ghost" className="text-white hover:bg-gray-800">
-                                <SignedOut>
-                                    <SignInButton />
-                                </SignedOut>
-                                <SignedIn>
-                                    <UserButton />
-                                </SignedIn>
-                            </Button>
-                        </div>
-
-                        {/* Mobile menu button */}
-                        <button
-                            className="md:hidden text-white"
-                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        >
-                            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                        </button>
-                    </div>
-                </div>
-            </nav>
+           <NavBar/>
 
             {/* Search Header */}
             <section ref={searchBarRef} className="py-8 bg-gradient-to-br from-gray-900 via-black to-gray-900 border-b border-gray-800">
@@ -262,7 +194,7 @@ const SearchPage = () => {
                     <div className="max-w-4xl mx-auto">
                         <div className="text-center mb-8">
                             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                                Find Your Perfect 
+                                Find Your Perfect
                                 <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"> Adventure</span>
                             </h1>
                             <p className="text-lg text-gray-400">Let AI curate personalized travel experiences just for you</p>
@@ -345,7 +277,7 @@ const SearchPage = () => {
                                 </div>
 
                                 <div className="flex flex-col sm:flex-row gap-4 items-center">
-                                    <Button 
+                                    <Button
                                         className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-8"
                                         size="lg"
                                     >
@@ -353,7 +285,7 @@ const SearchPage = () => {
                                         Search with AI
                                         <Sparkles className="ml-2" size={16} />
                                     </Button>
-                                    
+
                                     <Button
                                         variant="outline"
                                         className="border-gray-600 text-white hover:bg-gray-800"
@@ -441,7 +373,7 @@ const SearchPage = () => {
                                 Found 247 personalized adventures • Powered by AI
                             </p>
                         </div>
-                        
+
                         <div className="flex items-center space-x-4 mt-4 sm:mt-0">
                             <Select value={sortBy} onValueChange={setSortBy}>
                                 <SelectTrigger className="w-48 bg-gray-800 border-gray-600 text-white">
@@ -466,13 +398,13 @@ const SearchPage = () => {
                                     <div className="h-48 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-t-lg flex items-center justify-center">
                                         <Camera className="text-gray-400" size={48} />
                                     </div>
-                                    
+
                                     {/* AI Score Badge */}
                                     <Badge className="absolute top-3 left-3 bg-gradient-to-r from-blue-600 to-purple-600">
                                         <Bot className="mr-1" size={12} />
                                         AI Score: {result.aiScore}%
                                     </Badge>
-                                    
+
                                     {/* Action Buttons */}
                                     <div className="absolute top-3 right-3 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <Button size="sm" variant="secondary" className="bg-white/90 hover:bg-white">
@@ -554,8 +486,8 @@ const SearchPage = () => {
 
                     {/* Load More */}
                     <div className="text-center mt-12">
-                        <Button 
-                            variant="outline" 
+                        <Button
+                            variant="outline"
                             className="border-gray-600 text-white hover:bg-gray-800 px-8"
                             size="lg"
                         >
@@ -579,8 +511,8 @@ const SearchPage = () => {
                         <p className="text-lg text-gray-400 mb-8">
                             Chat with our AI travel assistant for personalized recommendations based on your preferences, budget, and travel style.
                         </p>
-                        <Button 
-                            size="lg" 
+                        <Button
+                            size="lg"
                             className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-8"
                         >
                             <Bot className="mr-2" size={20} />

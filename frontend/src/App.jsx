@@ -1,15 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import StudentSignup from './pages/auth/SignupStudent';
-import TeacherSignup from './pages/auth/SignupTeacher';
-import LoginPage from './pages/Login';
-import PageNotFound from './pages/PageNotFound';
-import AdventureNexusLanding from './pages/LandingPage';
 import CircularText from './components/CircularText';
-import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
-import SearchPage from './pages/SearchPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AppProvider, useAppContext } from './context/appContext.jsx';
+import StudentSignup from './pages/auth/SignupStudent';
+import TeacherSignup from './pages/auth/SignupTeacher';
+import AdventureNexusLanding from './pages/LandingPage';
+import LoginPage from './pages/Login';
+import PageNotFound from './pages/PageNotFound';
+import SearchPage from './pages/SearchPage';
+import { Toaster } from 'react-hot-toast';
+import NavBar from './components/NavBar';
+import HowItWorks from './pages/HowItWorksPage';
 
 // App content component that uses the context
 const AppContent = () => {
@@ -35,11 +37,18 @@ const AppContent = () => {
   return (
     <>
 
+    <Toaster
+    position='top-right'
+    />
+
+    <NavBar/>
+
       <Routes>
         {/* Public Routes */}
         <Route path='/login' element={<LoginPage />} />
         <Route path='/signup/student' element={<StudentSignup />} />
         <Route path='/signup/teacher' element={<TeacherSignup />} />
+        <Route path='/works' element={<HowItWorks/>}/>
 
         {/* Protected Routes */}
         <Route path='/search' element={

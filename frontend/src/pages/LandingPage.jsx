@@ -42,12 +42,13 @@ import ScrollBasedVelocityDemo from '@/components/mvpblocks/scrollbasedvelocity-
 import BentoGrid1 from '@/components/mvpblocks/bento-grid-1';
 import Globe2 from '@/components/mvpblocks/globe2';
 import { Link } from 'react-router-dom';
+import NavBar from '@/components/NavBar';
 
 // Register GSAP Plugins
 gsap.registerPlugin(ScrollTrigger, TextPlugin);
 
 const AdventureNexusLanding = () => {
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
 
     // Refs for GSAP animations
     const heroRef = useRef(null);
@@ -192,86 +193,8 @@ const AdventureNexusLanding = () => {
 
     return (
         <div className="min-h-screen bg-black overflow-hidden">
-            {/* Mobile Menu */}
-            {mobileMenuOpen && (
-                <div className="fixed inset-0 bg-black z-50 md:hidden">
-                    <div className="flex justify-between items-center p-4 border-b border-gray-800">
-                        <div className="flex items-center space-x-2">
-                            <div className="bg-gradient-to-br from-blue-600 to-purple-600 text-white p-2 rounded-lg">
-                                <Compass size={20} />
-                            </div>
-                            <span className="text-lg font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                                AdventureNexus
-                            </span>
-                        </div>
-                        <button onClick={() => setMobileMenuOpen(false)}>
-                            <X size={24} className="text-white" />
-                        </button>
-                    </div>
-                    <div className="flex flex-col space-y-4 p-4">
-                        <Link to="/search" className="text-gray-400 hover:text-white py-2">Search</Link>
-                        <a href="#how-it-works" className="text-gray-400 hover:text-white py-2">How it Works</a>
-                        <a href="#destinations" className="text-gray-400 hover:text-white py-2">Destinations</a>
-                        <a href="#testimonials" className="text-gray-400 hover:text-white py-2">Reviews</a>
-                        <Button variant="ghost" className="justify-start text-white hover:bg-gray-800">Sign In</Button>
-                        <Button className="bg-gradient-to-r from-blue-600 to-purple-600">Plan My Trip</Button>
-                    </div>
-                </div>
-            )}
 
-            {/* Navigation */}
-            <nav ref={navRef} className="border-b border-gray-800 bg-black/95 backdrop-blur supports-[backdrop-filter]:bg-black/60 sticky top-0 z-50">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        {/* Logo */}
-                        <div className="flex items-center space-x-2">
-                            <div className="bg-gradient-to-br from-blue-600 to-purple-600 text-white p-2 rounded-lg">
-                                <Compass size={24} />
-                            </div>
-                            <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                                AdventureNexus
-                            </span>
-                        </div>
-
-                        {/* Desktop Navigation */}
-                        <div className="hidden md:flex items-center space-x-8">
-                            <Link to="/search" className="text-gray-400 hover:text-white py-2">Search</Link>
-                            <a href="#how-it-works" className="text-gray-400 hover:text-white transition-colors">How it Works</a>
-                            <a href="#destinations" className="text-gray-400 hover:text-white transition-colors">Destinations</a>
-                            <a href="#testimonials" className="text-gray-400 hover:text-white transition-colors">Reviews</a>
-                        </div>
-
-                        {/* CTA Buttons */}
-                        <div className="hidden md:flex items-center space-x-4">
-                            <Button variant="ghost" className="text-white hover:bg-gray-800">
-                                <header>
-                                    <SignedOut>
-                                        <SignInButton />
-                                    </SignedOut>
-                                    <SignedIn>
-                                        <UserButton />
-                                    </SignedIn>
-                                </header>
-                            </Button>
-                            <Button
-                                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                                onMouseEnter={handleButtonHover}
-                                onMouseLeave={handleButtonLeave}
-                            >
-                                Plan My Trip
-                            </Button>
-                        </div>
-
-                        {/* Mobile menu button */}
-                        <button
-                            className="md:hidden text-white"
-                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        >
-                            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                        </button>
-                    </div>
-                </div>
-            </nav>
+            {/* <NavBar /> */}
 
             {/* Hero Section */}
             <section ref={heroRef} className="py-20 bg-gradient-to-br from-gray-900 via-black to-gray-900 relative overflow-hidden">
@@ -391,7 +314,7 @@ const AdventureNexusLanding = () => {
             <section id="features" ref={featuresRef} className="py-10 bg-black">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className='m-0'>
-                        <Globe2/>
+                        <Globe2 />
                     </div>
 
                     <div className=''>
@@ -399,7 +322,7 @@ const AdventureNexusLanding = () => {
                     </div>
                     <div>
                         <ScrollBasedVelocityDemo />
-                        <BentoGrid1/>
+                        <BentoGrid1 />
                     </div>
                 </div>
             </section>
@@ -508,9 +431,8 @@ const AdventureNexusLanding = () => {
                         ].map((plan, index) => (
                             <Card
                                 key={index}
-                                className={`pricing-card relative hover:scale-105 transition-transform duration-300 bg-gray-800 ${
-                                    plan.popular ? 'border-blue-500 shadow-2xl scale-105' : 'border-gray-700'
-                                }`}
+                                className={`pricing-card relative hover:scale-105 transition-transform duration-300 bg-gray-800 ${plan.popular ? 'border-blue-500 shadow-2xl scale-105' : 'border-gray-700'
+                                    }`}
                             >
                                 {plan.popular && (
                                     <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-blue-600 to-purple-600">
@@ -537,11 +459,10 @@ const AdventureNexusLanding = () => {
                                         ))}
                                     </ul>
                                     <Button
-                                        className={`w-full ${
-                                            plan.popular
+                                        className={`w-full ${plan.popular
                                                 ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700'
                                                 : 'bg-gray-700 hover:bg-gray-600 text-white'
-                                        }`}
+                                            }`}
                                         onMouseEnter={handleButtonHover}
                                         onMouseLeave={handleButtonLeave}
                                     >

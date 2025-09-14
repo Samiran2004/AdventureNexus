@@ -1,160 +1,108 @@
 import { useAuth, useUser } from "@clerk/clerk-react";
 import axios from "axios";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-hot-toast';
 
 // Set base URL for axios
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 
 const AppContext = createContext();
 
-export const AppProvider = ({ children }) => {
+// Make sure this component is properly exported
+function AppProvider({ children }) {
     const currency = import.meta.env.VITE_CURRENCY;
     const navigate = useNavigate();
     const { user } = useUser();
-    const { getToken, isSignedIn } = useAuth();
+    const { getToken, isSignedIn, isLoaded } = useAuth();
 
-    const [loading, setLoading] = useState(false);
     const [userData, setUserData] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-    // Create axios instance with interceptors
-    const apiClient = axios.create({
-        baseURL: import.meta.env.VITE_BACKEND_URL,
-        timeout: 10000,
-    });
+    const fetchUser = useCallback(async () => {
+        if (!isSignedIn || !isLoaded) {
+            console.log("🚫 Cannot fetch: isSignedIn =", isSignedIn, "isLoaded =", isLoaded);
+            return;
+        }
 
-    // Setup axios interceptor to automatically add auth token
+        setLoading(true);
+        setError(null);
+        console.log("🚀 Fetching user data...");
+
+        try {
+            const token = await getToken();
+
+            if (!token) {
+                throw new Error("No authentication token available");
+            }
+
+            console.log("📡 Making authenticated request...");
+            const response = await axios.get('/api/v1/users/profile', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            console.log("📊 Response received:", response.data);
+
+            if (response.data.status === 'Success') {
+                toast.success("User fetched...");
+                setUserData(response.data);
+                console.log("✅ User data updated successfully");
+            } else {
+                throw new Error(`API returned: ${response.data.status}`);
+            }
+
+        } catch (err) {
+            toast.error(err.message);
+            console.error("💥 Fetch user error:", err);
+            setError(err.message);
+            setUserData(null);
+        } finally {
+            setLoading(false);
+        }
+    }, [isSignedIn, isLoaded, getToken]);
+
     useEffect(() => {
-        const requestInterceptor = apiClient.interceptors.request.use(
-            async (config) => {
-                try {
-                    if (isSignedIn && getToken) {
-                        const token = await getToken();
-                        if (token) {
-                            config.headers.Authorization = `Bearer ${token}`;
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error getting auth token:', error);
-                }
-                return config;
-            },
-            (error) => {
-                return Promise.reject(error);
+        console.log("🔄 Auth state changed:", {
+            isLoaded,
+            isSignedIn,
+            userExists: !!user
+        });
+
+        if (isLoaded) {
+            if (isSignedIn) {
+                fetchUser();
+            } else {
+                setUserData(null);
+                setError(null);
             }
-        );
-
-        // Response interceptor for handling auth errors
-        const responseInterceptor = apiClient.interceptors.response.use(
-            (response) => response,
-            (error) => {
-                if (error.response?.status === 401) {
-                    console.log('Authentication failed - redirecting to login');
-                    // Optional: redirect to login or handle auth failure
-                    // navigate('/login');
-                }
-                return Promise.reject(error);
-            }
-        );
-
-        // Cleanup interceptors on unmount
-        return () => {
-            apiClient.interceptors.request.eject(requestInterceptor);
-            apiClient.interceptors.response.eject(responseInterceptor);
-        };
-    }, [isSignedIn, getToken, navigate]);
-
-    // Fetch user profile data
-    const fetchUser = async () => {
-        if (!isSignedIn) {
-            console.log('User not signed in');
-            return null;
         }
+    }, [isLoaded, isSignedIn, fetchUser]);
 
-        setLoading(true);
-        try {
-            const response = await apiClient.get('/api/v1/users/profile');
-
-            console.log('User profile fetched:', response.data);
-            setUserData(response.data.userData);
-            return response.data;
-
-        } catch (error) {
-            console.error('Error fetching user profile:', error);
-
-            // Handle specific error cases
-            if (error.response?.status === 404) {
-                console.log('User profile not found in database');
-            } else if (error.response?.status === 401) {
-                console.log('Authentication failed');
-            }
-
-            throw error;
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Update user profile
-    const updateUser = async (updateData) => {
-        if (!isSignedIn) {
-            throw new Error('User not authenticated');
-        }
-
-        setLoading(true);
-        try {
-            const response = await apiClient.put('/api/v1/users/profile', updateData);
-            setUserData(response.data.userData);
-            return response.data;
-        } catch (error) {
-            console.error('Error updating user profile:', error);
-            throw error;
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Generic API call method
-    const makeAuthenticatedRequest = async (method, url, data = null) => {
-        if (!isSignedIn) {
-            throw new Error('User not authenticated');
-        }
-
-        try {
-            const config = {
-                method,
-                url,
-                ...(data && { data })
-            };
-
-            const response = await apiClient(config);
-            return response.data;
-        } catch (error) {
-            console.error(`Error making ${method.toUpperCase()} request to ${url}:`, error);
-            throw error;
-        }
-    };
+    useEffect(() => {
+        console.log("📊 UserData state changed:", {
+            hasData: !!userData,
+            loading,
+            error,
+            data: userData
+        });
+    }, [userData, loading, error]);
 
     const value = {
-        // Basic info
         currency,
         navigate,
         user,
         isSignedIn,
-
-        // API clients
-        axios: apiClient, // Authenticated axios instance
+        isLoaded,
+        axios,
         getToken,
-
-        // User data management
         userData,
         setUserData,
         loading,
-
-        // API methods
+        error,
         fetchUser,
-        updateUser,
-        makeAuthenticatedRequest,
     };
 
     return (
@@ -162,12 +110,19 @@ export const AppProvider = ({ children }) => {
             {children}
         </AppContext.Provider>
     );
-};
+}
 
-export const useAppContext = () => {
+// Custom hook - make sure it's properly defined
+function useAppContext() {
     const context = useContext(AppContext);
     if (!context) {
         throw new Error('useAppContext must be used within an AppProvider');
     }
     return context;
-};
+}
+
+// ✅ Consistent named exports
+export { AppProvider, useAppContext };
+
+// ✅ Optional: Add default export if needed
+export default AppProvider;

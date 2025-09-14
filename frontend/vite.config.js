@@ -11,11 +11,18 @@ const __dirname = path.dirname(__filename)
 export default defineConfig({
   plugins: [
     tailwindcss(),
-    react()
+    react({
+      // Add this for better fast refresh support
+      fastRefresh: true,
+      // Include JSX files
+      include: "**/*.{jsx,tsx}",
+    })
   ],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-    }
+    },
+
+    extensions: ['.js', '.jsx', '.ts', '.tsx']
   }
 })
