@@ -13,6 +13,7 @@ import AboutPage from './pages/AboutPage';
 import ProfilePage from './pages/ProfilePage';
 import DestinationsPage from './pages/DestinationPage';
 import IndividualDestinationPage from './pages/IndividualDestinationPage';
+import TripInspirationPage from './pages/TripInspirationPage';
 
 // App content component that uses the context
 const AppContent = () => {
@@ -50,6 +51,7 @@ const AppContent = () => {
         <Route path='/about' element={<AboutPage/>}/>
         <Route path="/profile" element={<ProfilePage/>}/>
         <Route path="/destination" element={<DestinationsPage/>}/>
+        <Route path="/inspiration" element={<TripInspirationPage/>}/>
 
          {/* Other routes */}
         <Route path="/destinations/:country/:city" element={<IndividualDestinationPage />} />
