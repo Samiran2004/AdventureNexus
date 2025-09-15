@@ -233,7 +233,7 @@ const AdventureNexusLanding = () => {
                                 <Button
                                     variant="outline"
                                     size="lg"
-                                    className="text-lg px-8 py-6 border-2 border-gray-600 text-white hover:bg-gray-800"
+                                    className="text-lg px-8 py-6 border-2 border-gray-600 text-black hover:bg-gray-800 hover:text-white"
                                     onMouseEnter={handleButtonHover}
                                     onMouseLeave={handleButtonLeave}
                                 >
@@ -499,7 +499,7 @@ const AdventureNexusLanding = () => {
                             <Button
                                 size="lg"
                                 variant="outline"
-                                className="text-lg px-8 py-6 text-white border-white hover:bg-white hover:text-blue-600"
+                                className="text-lg px-8 py-6 text-black border-white hover:bg-white hover:text-blue-600"
                                 onMouseEnter={handleButtonHover}
                                 onMouseLeave={handleButtonLeave}
                             >

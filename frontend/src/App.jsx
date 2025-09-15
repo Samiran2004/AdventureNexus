@@ -1,15 +1,14 @@
 import { useEffect, useState } from 'react';
+import { Toaster } from 'react-hot-toast';
 import { Route, Routes } from 'react-router-dom';
 import CircularText from './components/CircularText';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AppProvider, useAppContext } from './context/appContext.jsx';
+import HowItWorks from './pages/HowItWorksPage';
 import AdventureNexusLanding from './pages/LandingPage';
 import PageNotFound from './pages/PageNotFound';
-import SearchPage from './pages/SearchPage';
-import { Toaster } from 'react-hot-toast';
-import NavBar from './components/NavBar';
-import HowItWorks from './pages/HowItWorksPage';
 import AdventureNexusReviews from './pages/ReviewPage';
+import SearchPage from './pages/SearchPage';
 import AboutPage from './pages/AboutPage';
 
 // App content component that uses the context
