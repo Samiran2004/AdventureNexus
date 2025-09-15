@@ -43,6 +43,7 @@ import BentoGrid1 from '@/components/mvpblocks/bento-grid-1';
 import Globe2 from '@/components/mvpblocks/globe2';
 import { Link } from 'react-router-dom';
 import NavBar from '@/components/NavBar';
+import Footer from '@/components/mvpblocks/footer-newsletter';
 
 // Register GSAP Plugins
 gsap.registerPlugin(ScrollTrigger, TextPlugin);
@@ -526,7 +527,7 @@ const AdventureNexusLanding = () => {
             </section>
 
             {/* Footer */}
-            <footer className="bg-gray-900 text-white py-12 border-t border-gray-800">
+            {/* <footer className="bg-gray-900 text-white py-12 border-t border-gray-800">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid md:grid-cols-4 gap-8">
                         <div className="space-y-4">
@@ -592,7 +593,8 @@ const AdventureNexusLanding = () => {
                         </div>
                     </div>
                 </div>
-            </footer>
+            </footer> */}
+            <Footer/>
         </div>
     );
 };

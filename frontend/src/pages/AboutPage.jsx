@@ -29,6 +29,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import NavBar from '@/components/NavBar';
 import NumberCounter from '@/components/NumberCounter';
+import Footer from '@/components/mvpblocks/footer-newsletter';
 
 // Register GSAP Plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -55,7 +56,7 @@ const AboutPage = () => {
 
             // Section animations with scroll triggers
             const sections = [missionRef, storyRef, valuesRef, teamRef, techRef, statsRef];
-            
+
             sections.forEach((ref) => {
                 gsap.from(ref.current, {
                     scrollTrigger: {
@@ -117,11 +118,11 @@ const AboutPage = () => {
                             🚀 About AdventureNexus
                         </Badge>
                         <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight">
-                            Revolutionizing Travel with 
+                            Revolutionizing Travel with
                             <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"> Artificial Intelligence</span>
                         </h1>
                         <p className="text-xl text-gray-300 leading-relaxed max-w-3xl mx-auto">
-                            We're on a mission to make travel planning effortless, personalized, and accessible to everyone. 
+                            We're on a mission to make travel planning effortless, personalized, and accessible to everyone.
                             Through cutting-edge AI technology, we transform the way people discover, plan, and experience the world.
                         </p>
                     </div>
@@ -135,12 +136,12 @@ const AboutPage = () => {
                         <div className="space-y-6">
                             <h2 className="text-3xl md:text-4xl font-bold text-white">Our Mission</h2>
                             <p className="text-lg text-gray-300 leading-relaxed">
-                                At AdventureNexus, we believe that every journey should be extraordinary. Our mission is to 
-                                democratize travel planning by harnessing the power of artificial intelligence to create 
+                                At AdventureNexus, we believe that every journey should be extraordinary. Our mission is to
+                                democratize travel planning by harnessing the power of artificial intelligence to create
                                 personalized, seamless, and unforgettable travel experiences for adventurers worldwide.
                             </p>
                             <p className="text-lg text-gray-300 leading-relaxed">
-                                We're eliminating the overwhelming complexity of trip planning, making it possible for anyone 
+                                We're eliminating the overwhelming complexity of trip planning, making it possible for anyone
                                 to discover hidden gems, optimize their itineraries, and travel smarter with confidence.
                             </p>
                         </div>
@@ -154,7 +155,7 @@ const AboutPage = () => {
                                         <h3 className="text-xl font-semibold text-white">Our Vision</h3>
                                     </div>
                                     <p className="text-gray-300">
-                                        To become the world's most trusted AI travel companion, empowering every traveler 
+                                        To become the world's most trusted AI travel companion, empowering every traveler
                                         to explore the world with confidence and create memories that last a lifetime.
                                     </p>
                                 </div>
@@ -204,7 +205,7 @@ const AboutPage = () => {
                             <h2 className="text-3xl md:text-4xl font-bold text-white">Our Story</h2>
                             <p className="text-xl text-gray-400">How we started and where we're going</p>
                         </div>
-                        
+
                         <div className="space-y-12">
                             <div className="grid md:grid-cols-3 gap-8">
                                 <Card className="bg-gray-900 border-gray-700">
@@ -214,12 +215,12 @@ const AboutPage = () => {
                                         </div>
                                         <h3 className="text-lg font-semibold text-white mb-2">2023: The Idea</h3>
                                         <p className="text-gray-400 text-sm">
-                                            Founded by travel enthusiasts frustrated with complex trip planning, 
+                                            Founded by travel enthusiasts frustrated with complex trip planning,
                                             we envisioned an AI-powered solution to simplify travel.
                                         </p>
                                     </CardContent>
                                 </Card>
-                                
+
                                 <Card className="bg-gray-900 border-gray-700">
                                     <CardContent className="p-6 text-center">
                                         <div className="bg-purple-600/20 p-3 rounded-lg inline-block mb-4">
@@ -227,12 +228,12 @@ const AboutPage = () => {
                                         </div>
                                         <h3 className="text-lg font-semibold text-white mb-2">2024: AI Development</h3>
                                         <p className="text-gray-400 text-sm">
-                                            Launched our first AI travel planner, processing thousands of data points 
+                                            Launched our first AI travel planner, processing thousands of data points
                                             to create personalized itineraries in seconds.
                                         </p>
                                     </CardContent>
                                 </Card>
-                                
+
                                 <Card className="bg-gray-900 border-gray-700">
                                     <CardContent className="p-6 text-center">
                                         <div className="bg-green-600/20 p-3 rounded-lg inline-block mb-4">
@@ -240,7 +241,7 @@ const AboutPage = () => {
                                         </div>
                                         <h3 className="text-lg font-semibold text-white mb-2">2025: Global Expansion</h3>
                                         <p className="text-gray-400 text-sm">
-                                            Expanded to 195+ countries with advanced AI features, serving travelers 
+                                            Expanded to 195+ countries with advanced AI features, serving travelers
                                             worldwide with localized recommendations.
                                         </p>
                                     </CardContent>
@@ -427,7 +428,7 @@ const AboutPage = () => {
                                 </div>
                             </div>
                         </div>
-                        
+
                         <Card className="bg-gray-800 border-gray-700">
                             <CardContent className="p-6">
                                 <h4 className="text-lg font-semibold text-white mb-4">AI Performance Metrics</h4>
@@ -472,7 +473,7 @@ const AboutPage = () => {
                     <div className="max-w-3xl mx-auto space-y-8">
                         <h2 className="text-3xl md:text-4xl font-bold">Join Our Journey</h2>
                         <p className="text-xl opacity-90">
-                            Be part of the travel revolution. Whether you're a traveler, partner, or team member, 
+                            Be part of the travel revolution. Whether you're a traveler, partner, or team member,
                             there's a place for you in the AdventureNexus family.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -490,7 +491,7 @@ const AboutPage = () => {
             </section>
 
             {/* Footer */}
-            <footer className="bg-gray-900 text-white py-12 border-t border-gray-800">
+            {/* <footer className="bg-gray-900 text-white py-12 border-t border-gray-800">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center space-y-4">
                         <div className="flex items-center justify-center space-x-2">
@@ -509,7 +510,8 @@ const AboutPage = () => {
                         </div>
                     </div>
                 </div>
-            </footer>
+            </footer> */}
+            <Footer/>
         </div>
     );
 };
