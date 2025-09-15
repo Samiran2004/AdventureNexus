@@ -288,7 +288,7 @@ const SearchPage = () => {
 
                                     <Button
                                         variant="outline"
-                                        className="border-gray-600 text-white hover:bg-gray-800"
+                                        className="border-gray-600 text-black hover:bg-gray-800 hover:text-amber-400"
                                         onClick={() => setShowFilters(!showFilters)}
                                     >
                                         <SlidersHorizontal className="mr-2" size={18} />
@@ -473,7 +473,7 @@ const SearchPage = () => {
                                                 <Button className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
                                                     View Details
                                                 </Button>
-                                                <Button variant="outline" className="border-gray-600 text-white hover:bg-gray-800">
+                                                <Button variant="outline" className="border-gray-600 text-black hover:bg-gray-800 hover:text-white">
                                                     <Bot size={16} />
                                                 </Button>
                                             </div>
@@ -488,7 +488,7 @@ const SearchPage = () => {
                     <div className="text-center mt-12">
                         <Button
                             variant="outline"
-                            className="border-gray-600 text-white hover:bg-gray-800 px-8"
+                            className="border-gray-600 text-black hover:bg-gray-800 px-8 hover:text-white"
                             size="lg"
                         >
                             Load More Adventures
