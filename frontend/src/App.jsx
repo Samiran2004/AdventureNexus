@@ -3,10 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import CircularText from './components/CircularText';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AppProvider, useAppContext } from './context/appContext.jsx';
-import StudentSignup from './pages/auth/SignupStudent';
-import TeacherSignup from './pages/auth/SignupTeacher';
 import AdventureNexusLanding from './pages/LandingPage';
-import LoginPage from './pages/Login';
 import PageNotFound from './pages/PageNotFound';
 import SearchPage from './pages/SearchPage';
 import { Toaster } from 'react-hot-toast';
@@ -46,9 +43,6 @@ const AppContent = () => {
 
       <Routes>
         {/* Public Routes */}
-        <Route path='/login' element={<LoginPage />} />
-        <Route path='/signup/student' element={<StudentSignup />} />
-        <Route path='/signup/teacher' element={<TeacherSignup />} />
         <Route path='/works' element={<HowItWorks />} />
 
         {/* Protected Routes */}
