@@ -1,21 +1,21 @@
-import FooterNewsletter from '@/components/mvpblocks/footer-newsletter';
+import Footer from '@/components/mvpblocks/footer-newsletter';
 import NavBar from '@/components/NavBar';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
-    ArrowRight,
-    Bot,
-    Calendar,
-    CheckCircle,
-    Clock,
-    CreditCard,
-    Globe,
-    MapPin,
-    PlayCircle,
-    Search,
-    Shield,
-    Sparkles,
-    Star,
-    Users
+  ArrowRight,
+  Bot,
+  Calendar,
+  CheckCircle,
+  Clock,
+  CreditCard,
+  Globe,
+  MapPin,
+  PlayCircle,
+  Search,
+  Shield,
+  Sparkles,
+  Star,
+  Users
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -426,7 +426,7 @@ const HowItWorks = () => {
           </motion.div>
         </div>
       </motion.section>
-      <FooterNewsletter/>
+      <Footer/>
     </div>
   );
 };

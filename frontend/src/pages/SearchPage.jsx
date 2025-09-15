@@ -44,6 +44,7 @@ import {
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import NavBar from '@/components/NavBar';
+import Footer from '@/components/mvpblocks/footer-newsletter';
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -522,6 +523,7 @@ const SearchPage = () => {
                     </div>
                 </div>
             </section>
+            <Footer/>
         </div>
     );
 };
