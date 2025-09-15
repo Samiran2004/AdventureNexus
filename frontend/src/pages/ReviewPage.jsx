@@ -521,7 +521,7 @@ const AdventureNexusReviews = () => {
 
                     {filteredReviews.length > 0 && (
                         <div className="text-center mt-12">
-                            <Button variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-800">
+                            <Button variant="outline" className="border-gray-600 text- bg-green-600 hover:text-amber-50 hover:bg-gray-800">
                                 Load More Reviews
                             </Button>
                         </div>
