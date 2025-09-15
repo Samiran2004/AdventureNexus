@@ -10,6 +10,7 @@ import PageNotFound from './pages/PageNotFound';
 import AdventureNexusReviews from './pages/ReviewPage';
 import SearchPage from './pages/SearchPage';
 import AboutPage from './pages/AboutPage';
+import ProfilePage from './pages/ProfilePage';
 
 // App content component that uses the context
 const AppContent = () => {
@@ -45,6 +46,7 @@ const AppContent = () => {
         {/* Public Routes */}
         <Route path='/works' element={<HowItWorks />} />
         <Route path='/about' element={<AboutPage/>}/>
+        <Route path="/profile" element={<ProfilePage/>}/>
 
         {/* Protected Routes */}
         <Route path='/search' element={
