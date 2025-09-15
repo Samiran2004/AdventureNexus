@@ -12,6 +12,7 @@ import SearchPage from './pages/SearchPage';
 import AboutPage from './pages/AboutPage';
 import ProfilePage from './pages/ProfilePage';
 import DestinationsPage from './pages/DestinationPage';
+import IndividualDestinationPage from './pages/IndividualDestinationPage';
 
 // App content component that uses the context
 const AppContent = () => {
@@ -49,6 +50,9 @@ const AppContent = () => {
         <Route path='/about' element={<AboutPage/>}/>
         <Route path="/profile" element={<ProfilePage/>}/>
         <Route path="/destination" element={<DestinationsPage/>}/>
+
+         {/* Other routes */}
+        <Route path="/destinations/:country/:city" element={<IndividualDestinationPage />} />
 
         {/* Protected Routes */}
         <Route path='/search' element={
