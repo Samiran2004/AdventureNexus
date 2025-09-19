@@ -50,14 +50,14 @@ const AppContent = () => {
       <Routes>
         {/* Public Routes */}
         <Route path='/works' element={<HowItWorks />} />
-        <Route path='/about' element={<AboutPage/>}/>
-        <Route path="/profile" element={<ProfilePage/>}/>
-        <Route path="/destination" element={<DestinationsPage/>}/>
-        <Route path="/inspiration" element={<TripInspirationPage/>}/>
-        <Route path="/build-trip" element={<TripBuilderPage/>}/>
-        <Route path='/hotels' element={<AccommodationsPage/>}/>
+        <Route path='/about' element={<AboutPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/destination" element={<DestinationsPage />} />
+        <Route path="/inspiration" element={<TripInspirationPage />} />
+        <Route path="/build-trip" element={<TripBuilderPage />} />
+        <Route path='/hotels' element={<AccommodationsPage />} />
 
-         {/* Other routes */}
+        {/* Other routes */}
         <Route path="/destinations/:country/:city" element={<IndividualDestinationPage />} />
 
         {/* Protected Routes */}
