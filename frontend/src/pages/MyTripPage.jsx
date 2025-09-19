@@ -607,11 +607,11 @@ const MyTripsPage = () => {
                 ← Back to Trips
               </Button>
               <div className="flex space-x-2">
-                <Button variant="outline" size="sm" className="border-gray-600">
+                <Button variant="outline" size="sm" className="text- bg-green-500 hover:bg-green-800 hover:text-white border-gray-600">
                   <Heart size={16} className="mr-2" />
                   Save
                 </Button>
-                <Button variant="outline" size="sm" className="border-gray-600">
+                <Button variant="outline" size="sm" className="text- bg-green-500 hover:bg-green-800 hover:text-white border-gray-600">
                   <Settings size={16} className="mr-2" />
                   Settings
                 </Button>
@@ -887,7 +887,7 @@ const MyTripsPage = () => {
                   <div className="flex justify-between items-center">
                     <h3 className="text-xl font-semibold text-white">Travel Documents</h3>
                     <div className="flex space-x-2">
-                      <Button variant="outline" className="border-gray-600">
+                      <Button variant="outline" className=" text-black border-black-300 hover:bg-blue-500">
                         <Scan size={16} className="mr-2" />
                         Scan Document
                       </Button>
