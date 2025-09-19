@@ -595,7 +595,7 @@ const AccommodationsPage = () => {
                             <Button
                                 variant="outline"
                                 onClick={() => setShowFilters(!showFilters)}
-                                className="border-gray-600 text-gray-300 hover:text-white hover:border-white"
+                                className="border-gray-600 text-gray-300 hover:text - to-blue-400 hover: bg-black hover:border-white"
                             >
                                 <SlidersHorizontal className="mr-2" size={16} />
                                 Filters {showFilters && <ChevronDown className="ml-2" size={16} />}
@@ -683,7 +683,7 @@ const AccommodationsPage = () => {
                                             setSearchTerm('');
                                             setLocation('');
                                         }}
-                                        className="border-gray-600 text-gray-300 hover:text-white hover:border-white"
+                                        className="border-gray-600 text-gray-300 hover:text - text-black hover:bg-green-400 hover:border-white"
                                     >
                                         Clear All
                                     </Button>
@@ -824,7 +824,7 @@ const AccommodationsPage = () => {
                                 <Bot className="mr-2" size={20} />
                                 Get AI Recommendations
                             </Button>
-                            <Button size="lg" variant="outline" className="text-lg px-8 py-6 text-white border-white hover:bg-white hover:text-blue-600">
+                            <Button size="lg" variant="outline" className="text-lg px-8 py-6 text - bg text-black hover:bg-black border-white hover:text-white">
                                 <Heart className="mr-2" size={20} />
                                 View Favorites
                             </Button>

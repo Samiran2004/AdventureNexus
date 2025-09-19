@@ -1015,11 +1015,11 @@ const TripInspirationPage = () => {
                             Let our AI create your perfect itinerary based on the inspiration that speaks to you.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Button size="lg" variant="secondary" className="text-lg px-8 py-6 bg-white text-blue-600 hover:bg-gray-50">
+                            <Button size="lg" variant="secondary" className="text-lg px-8 py-6 bg-white text-white hover:text-black bg-black hover:bg-gray-50">
                                 <Bot className="mr-2" size={20} />
                                 Create AI Itinerary
                             </Button>
-                            <Button size="lg" variant="outline" className="text-lg px-8 py-6 text-white border-white hover:bg-white hover:text-blue-600">
+                            <Button size="lg" variant="outline" className="text-lg px-8 py-6 text - bg-green-300 hover:text bg-black border-white hover:bg-white hover:text-blue-600">
                                 <BookmarkPlus className="mr-2" size={20} />
                                 Save Inspiration
                             </Button>

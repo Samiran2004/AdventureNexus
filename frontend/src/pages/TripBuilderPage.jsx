@@ -579,11 +579,11 @@ const TripBuilderPage = () => {
                             <Download className="mr-2" size={20} />
                             Export Itinerary
                         </Button>
-                        <Button size="lg" variant="outline" className="border-gray-600 text-gray-300 hover:text-white hover:border-white">
+                        <Button size="lg" variant="outline" className="border-gray-600 text-blue-400 hover:text-black hover:bg-green-500 hover:border-white">
                             <Bot className="mr-2" size={20} />
                             Optimize with AI
                         </Button>
-                        <Button size="lg" variant="outline" className="border-gray-600 text-gray-300 hover:text-white hover:border-white">
+                        <Button size="lg" variant="outline" className="border-gray-600 text-blue-400 hover:text-black hover:bg-green-500 hover:border-white">
                             <Save className="mr-2" size={20} />
                             Save Trip
                         </Button>
