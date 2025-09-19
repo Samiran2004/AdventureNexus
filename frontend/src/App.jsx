@@ -52,13 +52,13 @@ const AppContent = () => {
         <Route path='/works' element={<HowItWorks />} />
         <Route path='/about' element={<AboutPage />} />
         <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/destination" element={<DestinationsPage />} />
+        <Route path="/destinations" element={<DestinationsPage />} />
         <Route path="/inspiration" element={<TripInspirationPage />} />
         <Route path="/build-trip" element={<TripBuilderPage />} />
         <Route path='/hotels' element={<AccommodationsPage />} />
 
         {/* Other routes */}
-        <Route path="/destinations/:country/:city" element={<IndividualDestinationPage />} />
+        <Route path="/destination/:country/:city" element={<IndividualDestinationPage />} />
 
         {/* Protected Routes */}
         <Route path='/search' element={
