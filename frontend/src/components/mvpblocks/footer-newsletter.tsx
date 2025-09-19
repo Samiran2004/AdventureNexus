@@ -92,7 +92,7 @@ export default function Footer() {
               <div className="relative">
                 <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 absolute inset-0 rotate-6 rounded-xl" />
                 <img
-                  src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=320&h=240&q=80"
+                  src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=1121&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                   alt="Adventure travelers exploring mountains"
                   className="relative w-80 h-60 rounded-xl object-cover shadow-2xl"
                 />
