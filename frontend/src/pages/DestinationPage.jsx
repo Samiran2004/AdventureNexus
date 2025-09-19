@@ -538,7 +538,7 @@ const DestinationsPage = () => {
                             <Button
                                 variant="outline"
                                 onClick={() => setShowFilters(!showFilters)}
-                                className="border-gray-600 text-gray-300 hover:text-white hover:border-white"
+                                className="border-gray-600 text-blue-800 hover:text-black hover:border-white"
                             >
                                 <SlidersHorizontal className="mr-2" size={16} />
                                 Filters {showFilters && <ChevronDown className="ml-2" size={16} />}
@@ -640,7 +640,7 @@ const DestinationsPage = () => {
                                             setPriceRange([0, 5000]);
                                             setSearchTerm('');
                                         }}
-                                        className="border-gray-600 text-gray-300 hover:text-white hover:border-white"
+                                        className="border-gray-600 text-red-500 hover:text-black hover:border-white"
                                     >
                                         Clear All
                                     </Button>
@@ -762,7 +762,7 @@ const DestinationsPage = () => {
                                 <Bot className="mr-2" size={20} />
                                 Get AI Recommendations
                             </Button>
-                            <Button size="lg" variant="outline" className="text-lg px-8 py-6 text-white border-white hover:bg-white hover:text-blue-600">
+                            <Button size="lg" variant="outline" className="text-lg px-8 py-6 text - bg-green-400 border-white hover:bg-white hover:text-green-500">
                                 <Plane className="mr-2" size={20} />
                                 Plan Custom Trip
                             </Button>

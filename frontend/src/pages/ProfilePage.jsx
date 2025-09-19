@@ -233,7 +233,7 @@ const ProfilePage = () => {
                                         variant={isEditing ? "destructive" : "outline"}
                                         size="sm"
                                         onClick={isEditing ? handleCancel : () => setIsEditing(true)}
-                                        className="border-gray-600 text-gray-400 hover:text-white hover:border-white"
+                                        className="border-gray-600 text-blue-600 hover:bg-green-400 hover:text-white hover:border-white"
                                     >
                                         {isEditing ? <X size={16} className="mr-2" /> : <Edit size={16} className="mr-2" />}
                                         {isEditing ? 'Cancel' : 'Edit Profile'}
@@ -602,11 +602,11 @@ const ProfilePage = () => {
                                         <Plane className="mr-2" size={16} />
                                         Plan New Trip
                                     </Button>
-                                    <Button variant="outline" className="w-full justify-start border-gray-600 text-gray-300 hover:text-white hover:border-white">
+                                    <Button variant="outline" className="w-full justify-start border-gray-600 text-blue-500 hover:bg-green-400 hover:text-white hover:border-white">
                                         <History className="mr-2" size={16} />
                                         View Trip History
                                     </Button>
-                                    <Button variant="outline" className="w-full justify-start border-gray-600 text-gray-300 hover:text-white hover:border-white">
+                                    <Button variant="outline" className="w-full justify-start border-gray-600 text-blue-500 hover:bg-green-500 hover:text-white hover:border-white">
                                         <Heart className="mr-2" size={16} />
                                         Saved Destinations
                                     </Button>
