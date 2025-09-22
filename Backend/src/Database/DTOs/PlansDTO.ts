@@ -1,7 +1,9 @@
 import { Document } from "mongoose";
+import { IFlight } from "./FlightsDTO";
+import { IHotel } from "./HotelsDTO";
 
 export interface IPlan extends Document {
-    user: Schema.Types.ObjectId;
+    userId: Schema.Types.ObjectId;
     destination: string;
     dispatch_city: string;
     budget: 'budget' | 'mid-range' | 'luxury';
