@@ -22,6 +22,7 @@ function userProfile(req, res, next) {
                 return next((0, http_errors_1.default)(404, 'User not found!'));
             }
             else {
+                console.log(userData);
                 return res.status(200).send({
                     status: 'Success',
                     userData: {

@@ -79,14 +79,8 @@ const userSchema = new mongoose_1.Schema({
     },
     currency_code: {
         type: String,
-        default: null
+        default: "$"
     },
-    recommendationhistory: [
-        {
-            type: mongoose_1.Schema.Types.ObjectId,
-            ref: 'Recommendations',
-        },
-    ],
     plans: [
         {
             type: mongoose_1.Schema.Types.ObjectId,

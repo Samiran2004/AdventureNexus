@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
 const planSchema = new mongoose_1.Schema({
-    user: {
+    userId: {
         type: mongoose_1.Schema.Types.ObjectId,
         ref: 'User',
         required: true,
@@ -33,29 +33,7 @@ const planSchema = new mongoose_1.Schema({
             type: String,
             required: true,
         },
-    },
-    flights: [
-        {
-            airline: { type: String },
-            flight_number: { type: String },
-            departure_time: { type: String },
-            arrival_time: { type: String },
-            price: { type: String },
-            class: { type: String },
-            duration: { type: String },
-        },
-    ],
-    hotels: [
-        {
-            hotel_name: { type: String },
-            estimated_cost: { type: String },
-            price_per_night: { type: String },
-            address: { type: String },
-            rating: { type: String },
-            amenities: [{ type: String }],
-            distance_to_city_center: { type: String },
-        },
-    ],
+    }
 }, {
     timestamps: true,
 });

@@ -15,7 +15,6 @@ export interface IUser extends Document {
     createdat?: Date;
     refreshtoken?: string;
     currency_code?: string;
-    recommendationhistory?: Schema.Types.ObjectId[];
     plans?: Schema.Types.ObjectId[];
 }
 
@@ -98,14 +97,8 @@ const userSchema = new Schema<IUser>(
         },
         currency_code: {
             type: String,
-            default: null
+            default: "$"
         },
-        recommendationhistory: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: 'Recommendations',
-            },
-        ],
         plans: [
             {
                 type: Schema.Types.ObjectId,
