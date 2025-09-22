@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { ArrowRight, Code, FileText, Layers, Palette, Zap } from 'lucide-react';
 import { MapPin, Plane, Hotel, Calendar, Compass, Camera } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface BentoGridItemProps {
   title: string;
@@ -10,6 +11,7 @@ interface BentoGridItemProps {
   icon: React.ReactNode;
   className?: string;
   size?: 'small' | 'medium' | 'large';
+  web_link: string
 }
 
 const BentoGridItem = ({
@@ -17,6 +19,7 @@ const BentoGridItem = ({
   description,
   icon,
   className,
+  web_link,
   size = 'small',
 }: BentoGridItemProps) => {
   const variants = {
@@ -50,10 +53,12 @@ const BentoGridItem = ({
           <h3 className="mb-2 text-xl font-semibold tracking-tight">{title}</h3>
           <p className="text-muted-foreground text-sm">{description}</p>
         </div>
-        <div className="text-primary mt-4 flex items-center text-sm">
-          <span className="mr-1">Learn more</span>
-          <ArrowRight className="size-4 transition-all duration-500 group-hover:translate-x-2" />
-        </div>
+          <div className="text-primary mt-4 flex items-center text-sm">
+            <Link to={web_link}>
+            <span className="mr-1">Learn more</span>
+            <ArrowRight className="size-4 transition-all duration-500 group-hover:translate-x-2" />
+            </Link>
+          </div>
       </div>
       <div className="from-primary to-primary/30 absolute bottom-0 left-0 h-1 w-full bg-gradient-to-r blur-2xl transition-all duration-500 group-hover:blur-lg" />
     </motion.div>
@@ -66,36 +71,42 @@ const items = [
     description: 'Let our smart AI create personalized itineraries based on your preferences and budget.',
     icon: <Compass className="size-6" />,
     size: 'large' as const,
+    web_link: '/works'
   },
   {
     title: 'Flight Search',
     description: 'Find the best flight deals from multiple airlines with real-time pricing.',
     icon: <Plane className="size-6" />,
     size: 'small' as const,
+    web_link: '/works'
   },
   {
     title: 'Hotel Booking',
     description: 'Discover and book accommodations that match your style and budget.',
     icon: <Hotel className="size-6" />,
     size: 'medium' as const,
+    web_link: '/works'
   },
   {
     title: 'Smart Scheduling',
     description: 'AI-optimized daily schedules that maximize your time and experiences.',
     icon: <Calendar className="size-6" />,
     size: 'medium' as const,
+    web_link: '/works'
   },
   {
     title: 'Popular Destinations',
     description: 'Explore trending locations and hidden gems with insider recommendations.',
     icon: <MapPin className="size-6" />,
     size: 'small' as const,
+    web_link: '/works'
   },
   {
     title: 'Trip Documentation',
     description: 'Capture and organize your travel memories with our integrated tools.',
     icon: <Camera className="size-6" />,
     size: 'large' as const,
+    web_link: '/works'
   },
 ];
 
