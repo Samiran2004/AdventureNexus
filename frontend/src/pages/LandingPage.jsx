@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
+import { useNavigate } from 'react-router-dom';
 import {
     MapPin,
     Plane,
@@ -192,6 +193,8 @@ const AdventureNexusLanding = () => {
         });
     };
 
+    const navigate = useNavigate();
+
     return (
         <div className="min-h-screen bg-black overflow-hidden">
 
@@ -227,6 +230,9 @@ const AdventureNexusLanding = () => {
                                     className="text-lg px-8 py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                                     onMouseEnter={handleButtonHover}
                                     onMouseLeave={handleButtonLeave}
+                                    onClick={()=>{
+                                        navigate('/build-trip')
+                                    }}
                                 >
                                     Start Planning Free
                                     <ArrowRight className="ml-2" size={20} />
@@ -237,6 +243,9 @@ const AdventureNexusLanding = () => {
                                     className="text-lg px-8 py-6 border-2 border-gray-600 text-black hover:bg-gray-800 hover:text-white"
                                     onMouseEnter={handleButtonHover}
                                     onMouseLeave={handleButtonLeave}
+                                    onClick={()=>{
+                                        navigate('/works')
+                                    }}
                                 >
                                     <Play className="mr-2" size={20} />
                                     See How It Works
