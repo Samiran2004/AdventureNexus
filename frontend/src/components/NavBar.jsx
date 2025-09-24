@@ -30,7 +30,7 @@ function NavBar() {
         { name: 'Home', path: '/' },
         { name: 'Search', path: '/search' },
         { name: 'How It Works', path: '/works' },
-        { name: 'Destinations', path: '/destination' },
+        { name: 'Destinations', path: '/destinations' },
         { name: 'About', path: '/about' },
         {name: 'Review', path: '/review-page'}
     ];
