@@ -1,14 +1,14 @@
-import { json, NextFunction, Request, Response } from 'express';
-import generatePromptForPopularDest from '../../utils/Gemini Utils/generatePromptForPopularDest';
-import generateRecommendation from '../../utils/Gemini Utils/generateRecommendation';
+import { NextFunction, Request, Response } from 'express';
 import createHttpError from 'http-errors';
 import redis from '../../redis/client';
+import generatePromptForPopularDest from '../../utils/Gemini Utils/generatePromptForPopularDest';
+import generateRecommendation from '../../utils/Gemini Utils/generateRecommendation';
 
 export interface CustomRequestGetPopularDest<
     TParams = {},
     TQuery = {},
     TBody = {},
-> extends Request<TParams, any, TBody, TQuery> {
+> extends Request<TParams, unknown, TBody, TQuery> {
     user: {
         country: string;
         currency_code: string;
