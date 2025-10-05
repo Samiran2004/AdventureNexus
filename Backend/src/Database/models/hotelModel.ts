@@ -55,12 +55,8 @@ const hotelSchema: IHotel = new Schema<IHotel>({
         }
     },
     contact: {
-        phoneNumber: {
-            type: String
-        },
-        email: {
-            type: String
-        }
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Contact'
     },
     images: [
         {
