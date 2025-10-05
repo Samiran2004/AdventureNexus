@@ -79,46 +79,8 @@ const hotelSchema: IHotel = new Schema<IHotel>({
     },
     rooms: [
         {
-            roomType: {
-                type: String,
-                default: "Standard",
-                enum: ["Standard", "Deluxe", "Suite", "Family", "Penthouse"]
-            },
-            description: {
-                type: String
-            },
-            pricePerNight: {
-                type: Number
-            },
-            capacity: {
-                adults: {
-                    type: Number
-                },
-                children: {
-                    type: Number
-                }
-            },
-            amenities: [String],
-            bookedDates: [
-                {
-                    from: {
-                        type: String
-                    },
-                    to: {
-                        type: String
-                    }
-                }
-            ],
-            images: [
-                {
-                    cloudinaryURL: {
-                        type: String
-                    },
-                    cloudinaryPublicId: {
-                        type: String
-                    }
-                }
-            ]
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Room'
         }
     ],
     reviews: [
