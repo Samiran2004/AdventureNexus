@@ -85,21 +85,8 @@ const hotelSchema: IHotel = new Schema<IHotel>({
     ],
     reviews: [
         {
-            userId: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'User'
-            },
-            userName: {
-                type: String
-            },
-            rating: {
-                type: Number,
-                min: 1,
-                max: 5
-            },
-            comment: {
-                type: String
-            }
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Review'
         }
     ]
 }, {timestamps: true});
