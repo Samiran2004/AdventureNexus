@@ -19,6 +19,7 @@ import path from 'path';
 import connectDb from './Database/connectDb';
 import { clerkMiddleware } from '@clerk/express';
 import cleckWebhook from './controller/ClerkWebhook';
+import hotelsRoute from './routes/hotelsRoute';
 
 dotenv.config();
 
@@ -78,6 +79,7 @@ app.get('/isWork', (req: Request, res: Response): void => {
 app.use('/api/v1/users', userRoute);
 app.use('/api/v1/recommendations', recommendationRoute);
 app.use('/api/v1/plans', planningRoute);
+app.use('/api/v1/hotels', hotelsRoute);
 
 app.use(errorHandler);
 
