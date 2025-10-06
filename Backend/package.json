@@ -17,8 +17,9 @@
     "license": "ISC",
     "description": "",
     "dependencies": {
+        "@ai-sdk/google": "^2.0.17",
         "@clerk/express": "^1.7.26",
-        "@google/generative-ai": "^0.21.0",
+        "@google/generative-ai": "^0.24.1",
         "@types/bcryptjs": "^2.4.6",
         "@types/joi": "^17.2.2",
         "bcryptjs": "^2.4.3",
