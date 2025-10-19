@@ -13,10 +13,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getPopularDestinations = void 0;
-const generatePromptForPopularDest_1 = __importDefault(require("../../utils/Gemini Utils/generatePromptForPopularDest"));
-const generateRecommendation_1 = __importDefault(require("../../utils/Gemini Utils/generateRecommendation"));
 const http_errors_1 = __importDefault(require("http-errors"));
 const client_1 = __importDefault(require("../../redis/client"));
+const generatePromptForPopularDest_1 = __importDefault(require("../../utils/Gemini Utils/generatePromptForPopularDest"));
+const generateRecommendation_1 = __importDefault(require("../../utils/Gemini Utils/generateRecommendation"));
 const getPopularDestinations = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { country, currency_code } = req.user;
