@@ -1,62 +1,44 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-    MapPin,
-    Star,
-    Heart,
-    Share,
-    Calendar,
-    Users,
-    DollarSign,
-    Camera,
-    Mountain,
-    Compass,
-    Clock,
-    ThermometerSun,
-    CloudRain,
-    Sun,
-    Wind,
-    Eye,
+    Bed,
     BookOpen,
-    Navigation,
-    Globe,
-    Plane,
-    ArrowRight,
-    CheckCircle,
-    AlertCircle,
-    TrendingUp,
     Bot,
-    Wifi,
+    Calendar,
+    Camera,
     Car,
-    Utensils,
-    Shield,
-    Award,
+    CheckCircle,
     ChevronLeft,
     ChevronRight,
-    Play,
+    Clock,
+    CloudRain,
+    DollarSign,
     Download,
+    Eye,
+    Globe,
+    Heart,
+    MapPin,
+    Mountain,
     Phone,
-    Mail,
-    Zap,
-    Coffee,
-    Bed,
-    ShoppingBag,
-    Camera as CameraIcon,
-    TreePine,
-    Building,
-    Waves,
-    Sunset
+    Plane,
+    Share,
+    Shield,
+    Star,
+    Sun,
+    ThermometerSun,
+    Users,
+    Utensils,
+    Wind,
+    Zap
 } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 // GSAP Imports
+import NavBar from '@/components/NavBar';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import NavBar from '@/components/NavBar';
-import NumberCounter from '@/components/NumberCounter';
 
 gsap.registerPlugin(ScrollTrigger);
 
