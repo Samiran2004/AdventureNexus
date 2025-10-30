@@ -33,6 +33,7 @@ const path_1 = __importDefault(require("path"));
 const connectDb_1 = __importDefault(require("./Database/connectDb"));
 const express_2 = require("@clerk/express");
 const ClerkWebhook_1 = __importDefault(require("./controller/ClerkWebhook"));
+const hotelsRoute_1 = __importDefault(require("./routes/hotelsRoute"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 (() => __awaiter(void 0, void 0, void 0, function* () {
@@ -74,6 +75,7 @@ app.get('/isWork', (req, res) => {
 app.use('/api/v1/users', userRoutes_1.default);
 app.use('/api/v1/recommendations', recommendationRoutes_1.default);
 app.use('/api/v1/plans', planningRoute_1.default);
+app.use('/api/v1/hotels', hotelsRoute_1.default);
 app.use(globalErrorHandler_1.default);
 app.listen(config_1.config.port, (err) => err
     ? (0, figlet_1.default)(`S e r v e r  c o n n e c t i o n  e r r o r`, (err, data) => {

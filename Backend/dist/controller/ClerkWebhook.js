@@ -15,6 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const http_status_codes_1 = require("http-status-codes");
 const userModel_1 = __importDefault(require("../Database/models/userModel"));
 const svix_1 = require("svix");
+const emailTemplate_1 = __importDefault(require("../utils/emailTemplate"));
+const mailService_1 = __importDefault(require("../service/mailService"));
 const clerkWebhook = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     try {
@@ -46,6 +48,13 @@ const clerkWebhook = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                     if (error.code === 11000) {
                         console.log('User exists, updating...');
                         const user = yield userModel_1.default.findOneAndUpdate({ clerkUserId: data.id }, userData, { new: true });
+                        const { registerEmailData } = emailTemplate_1.default;
+                        const emailData = registerEmailData(userData.firstName, userData.email);
+                        yield (0, mailService_1.default)(emailData, (mailError) => {
+                            if (mailError) {
+                                console.log("Mail sending error.");
+                            }
+                        });
                         console.log('User updated successfully:', user === null || user === void 0 ? void 0 : user._id);
                     }
                     else {
@@ -66,6 +75,13 @@ const clerkWebhook = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 console.log('Deleting user:', data.id);
                 const deletedUser = yield userModel_1.default.findOneAndDelete({ clerkUserId: data.id });
                 console.log('User deleted:', deletedUser ? 'Success' : 'Not found');
+                const { deleteUserEmailData } = emailTemplate_1.default;
+                const emailData = deleteUserEmailData(deletedUser.firstName, deletedUser.email);
+                yield (0, mailService_1.default)(emailData, (mailError) => {
+                    if (mailError) {
+                        console.log("Mail sending error...");
+                    }
+                });
                 break;
             }
             default:
