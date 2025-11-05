@@ -1,11 +1,11 @@
-import { Schema } from "mongoose";
+import { Document, Schema } from "mongoose";
 
-export class UserDto {
+export interface UserDto extends Document {
     clerkUserId: string;
     fullname?: string;
     email?: string;
-    firstname?: string;
-    lastname?: string;
+    firstName?: string;
+    lastName?: string;
     password?: string;
     username?: string;
     phonenumber?: number;
