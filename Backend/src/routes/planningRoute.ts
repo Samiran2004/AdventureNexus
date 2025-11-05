@@ -1,10 +1,5 @@
 import express from 'express';
 import authTokenMiddleware from '../middlewares/authTokenMiddleware';
-import {
-    createPlan,
-    CreatePlanRequestBody,
-    CustomRequest,
-} from '../controller/planningController/newPlanController';
 import { getPlanById } from '../controller/planningController/getPlanByIdController';
 import {
     CustomRequestDeletePlan,
@@ -24,12 +19,8 @@ const route = express.Router();
 
 // Create a new travel plan
 // Path: POST /api/v1/plans/create
-route.post('/create', authTokenMiddleware, (req, res, next) => {
-    createPlan(
-        req as CustomRequest<object, object, CreatePlanRequestBody>,
-        res,
-        next
-    );
+route.post('/trips/create', (req, res, next) => {
+    
 });
 
 
