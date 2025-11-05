@@ -4,10 +4,11 @@ import { Webhook } from 'svix';
 import { Request, Response } from 'express';
 import emailTemplates from '../utils/emailTemplate';
 import sendMail from '../service/mailService';
+import { config } from '../config/config';
 
 const clerkWebhook = async (req: Request, res: Response) => {
     try {
-        const whook = new Webhook(process.env.CLERK_WEBHOOK_KEY!);
+        const whook = new Webhook(config.CLERK_WEBHOOK_KEY!);
 
         const headers = {
             'svix-id': req.headers['svix-id'] as string,
