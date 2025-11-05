@@ -1,9 +1,10 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
+import { config } from '../../config/config';
 
 dotenv.config();
 
-const genAi = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
+const genAi = new GoogleGenerativeAI(config.GEMINI_API_KEY as string);
 
 // After updating your npm package, this will now work correctly.
 const model = genAi.getGenerativeModel({ model: 'gemini-2.0-flash-001' });
