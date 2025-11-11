@@ -7,8 +7,8 @@ import { UserModule } from './user/user.module';
 import { FlightsModule } from './flights/flights.module';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ClerkModule } from './clerk/clerk.module';
 import { EmailModule } from './email/email.module';
+import { AiModule } from './ai/ai.module';
 
 @Module({
   imports: [
@@ -21,8 +21,8 @@ import { EmailModule } from './email/email.module';
     UserModule,
     FlightsModule,
     MongooseModule.forRoot(process.env.DB_URI as string),
-    ClerkModule,
-    EmailModule
+    EmailModule,
+    AiModule
   ],
   controllers: [AppController],
   providers: [AppService],
