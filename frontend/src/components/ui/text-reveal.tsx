@@ -18,7 +18,7 @@ export const TextReveal = ({
   className,
   blur = 10,
   delay = 0.1,
-  duration = 1,
+  duration = 3,
   from = 'bottom',
   split = 'word',
 }: TextRevealProps) => {

@@ -45,6 +45,8 @@ import Globe2 from '@/components/mvpblocks/globe2';
 import { Link } from 'react-router-dom';
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/mvpblocks/footer-newsletter';
+import { TextReveal } from '@/components/ui/text-reveal';
+import TextRevealLetters from '@/components/mvpblocks/text-reveal-1';
 
 // Register GSAP Plugins
 gsap.registerPlugin(ScrollTrigger, TextPlugin);
@@ -331,7 +333,8 @@ const AdventureNexusLanding = () => {
                         <CardSlider />
                     </div>
                     <div>
-                        <ScrollBasedVelocityDemo />
+                        {/* <ScrollBasedVelocityDemo /> */}
+                        <TextRevealLetters/>
                         <BentoGrid1 />
                     </div>
                 </div>
