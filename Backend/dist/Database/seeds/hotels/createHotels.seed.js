@@ -16,6 +16,7 @@ const chalk_1 = __importDefault(require("chalk"));
 const http_status_codes_1 = require("http-status-codes");
 const createHotelsPrompt_1 = require("../../../utils/Gemini Utils/createHotelsPrompt");
 const generateRecommendation_1 = __importDefault(require("../../../utils/Gemini Utils/generateRecommendation"));
+const generateHotelsImagePrompt_1 = require("../../../utils/Gemini Utils/generateHotelsImagePrompt");
 const createHotels = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log("Create Hotels seed...");
@@ -33,9 +34,19 @@ const createHotels = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             budget,
             currency_code
         };
-        const prompt = yield (0, createHotelsPrompt_1.generateHotelSearchPrompt)(dataPayload);
+        let prompt = yield (0, createHotelsPrompt_1.generateHotelSearchPrompt)(dataPayload);
         const generatedData = yield (0, generateRecommendation_1.default)(prompt);
         const data = JSON.parse(generatedData.replace(/```json|```/g, '').trim());
+        const imagePayload = {
+            hotelName: data[0].hotel_name,
+            location: data[0].location_description
+        };
+        prompt = yield (0, generateHotelsImagePrompt_1.generateHotelImage)(imagePayload);
+        const hotelImageData = yield (0, generateRecommendation_1.default)(prompt);
+        const imageData = JSON.parse(hotelImageData.replace(/```json|```/g, '').trim());
+        for (const d of data) {
+            d.image = imageData;
+        }
         return res.status(http_status_codes_1.StatusCodes.OK).json({
             status: 'Ok',
             data: data
