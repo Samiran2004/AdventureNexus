@@ -13,15 +13,14 @@ import {
 import splitCost, {
     CustomRequestSplitCost,
 } from '../controller/planningController/splitCostController';
+import { createPlan } from '../controller/planningController/newPlanController';
 
 const route = express.Router();
 
 
 // Create a new travel plan
 // Path: POST /api/v1/plans/create
-route.post('/trips/create', (req, res, next) => {
-    
-});
+route.post('/trips/create', createPlan);
 
 
 // Get a plan by id
