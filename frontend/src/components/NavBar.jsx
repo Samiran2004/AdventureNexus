@@ -129,7 +129,7 @@ function NavBar() {
                                 </div>
                             </SignedIn>
                             <Link to="/search">
-                                <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                                <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 cursor-pointer">
                                     Plan My Trip
                                 </Button>
                             </Link>
@@ -195,7 +195,7 @@ function NavBar() {
                                 />
                             </SignedIn>
                             <Link to="/search">
-                                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 hover:scale-105 text-white font-semibold px-6 py-2 transition-all duration-300">
+                                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 hover:scale-105 text-white font-semibold px-6 py-2 transition-all duration-300 cursor-pointer">
                                     Plan My Trip
                                 </Button>
                             </Link>

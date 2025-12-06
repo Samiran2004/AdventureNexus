@@ -80,7 +80,7 @@ export default function Footer() {
                   placeholder="Enter your email address"
                   className="bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:outline-none flex-1"
                 />
-                <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg px-6 py-3 font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-blue-500/25">
+                <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg px-6 py-3 font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-blue-500/25 cursor-pointer">
                   Get Travel Tips
                 </button>
               </div>
