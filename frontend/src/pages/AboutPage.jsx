@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -21,7 +21,8 @@ import {
     Mail,
     Linkedin,
     Twitter,
-    Github
+    Github,
+    ArrowLeft
 } from 'lucide-react';
 
 // GSAP Imports
@@ -30,6 +31,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import NavBar from '@/components/NavBar';
 import NumberCounter from '@/components/NumberCounter';
 import Footer from '@/components/mvpblocks/footer-newsletter';
+import ContactUs1 from '@/components/mvpblocks/contact-us-1';
 
 // Register GSAP Plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -43,6 +45,8 @@ const AboutPage = () => {
     const teamRef = useRef(null);
     const techRef = useRef(null);
     const statsRef = useRef(null);
+
+    const [showContact, setShowContact] = useState(false);
 
     useEffect(() => {
         let ctx = gsap.context(() => {
@@ -100,6 +104,31 @@ const AboutPage = () => {
 
         return () => ctx.revert();
     }, []);
+
+    const handleBackClick = () => {
+        setShowContact(false);
+        window.scrollTo(0, 0);
+    };
+
+    if (showContact) {
+        return (
+            <div className="min-h-screen bg-black">
+                <NavBar />
+                <div className="pt-20 px-4">
+                    {/* Added a Back Button so user isn't stuck */}
+                    <Button
+                        onClick={handleBackClick}
+                        variant="ghost"
+                        className="text-white hover:text-blue-400 mb-4 flex items-center gap-2"
+                    >
+                        <ArrowLeft size={30} />
+                    </Button>
+                    <ContactUs1 />
+                </div>
+                <Footer />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-black overflow-hidden">
@@ -439,7 +468,7 @@ const AboutPage = () => {
                                             <span className="text-white">98.5%</span>
                                         </div>
                                         <div className="h-2 bg-gray-700 rounded-full">
-                                            <div className="h-full bg-gradient-to-r from-blue-600 to-green-500 rounded-full" style={{width: '98.5%'}}></div>
+                                            <div className="h-full bg-gradient-to-r from-blue-600 to-green-500 rounded-full" style={{ width: '98.5%' }}></div>
                                         </div>
                                     </div>
                                     <div>
@@ -448,7 +477,7 @@ const AboutPage = () => {
                                             <span className="text-white"> 3 seconds</span>
                                         </div>
                                         <div className="h-2 bg-gray-700 rounded-full">
-                                            <div className="h-full bg-gradient-to-r from-purple-600 to-blue-500 rounded-full" style={{width: '95%'}}></div>
+                                            <div className="h-full bg-gradient-to-r from-purple-600 to-blue-500 rounded-full" style={{ width: '95%' }}></div>
                                         </div>
                                     </div>
                                     <div>
@@ -457,7 +486,7 @@ const AboutPage = () => {
                                             <span className="text-white">97.8%</span>
                                         </div>
                                         <div className="h-2 bg-gray-700 rounded-full">
-                                            <div className="h-full bg-gradient-to-r from-green-600 to-yellow-500 rounded-full" style={{width: '97.8%'}}></div>
+                                            <div className="h-full bg-gradient-to-r from-green-600 to-yellow-500 rounded-full" style={{ width: '97.8%' }}></div>
                                         </div>
                                     </div>
                                 </div>
@@ -481,7 +510,7 @@ const AboutPage = () => {
                                 Start Your Adventure
                                 <ArrowRight className="ml-2" size={20} />
                             </Button>
-                            <Button size="lg" variant="outline" className="text-lg px-8 py-6 text-green-800 border-white hover:bg-white hover:text-blue-600">
+                            <Button size="lg" variant="outline" className="text-lg px-8 py-6 text-green-800 border-white hover:bg-white hover:text-blue-600" onClick={() => setShowContact(true)}>
                                 Contact Us
                                 <Mail className="ml-2" size={20} />
                             </Button>
@@ -511,7 +540,7 @@ const AboutPage = () => {
                     </div>
                 </div>
             </footer> */}
-            <Footer/>
+            <Footer />
         </div>
     );
 };

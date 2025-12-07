@@ -1,7 +1,9 @@
 'use client';
 
 import { Instagram, Linkedin, Twitter, Youtube, Compass, MapPin, Phone, Mail } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { Link, useMatch } from 'react-router-dom';
 
 const footerColumns = [
   {
@@ -52,6 +54,21 @@ const socialIcons = [
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const [userMail, setUserMail] = useState("");
+
+  const onClickSubscribeButton = async () => {
+    console.log(userMail)
+    if (!userMail || userMail === "" || userMail === " " || userMail == undefined) {
+      toast.error("Please enter a valid mail.");
+      return;
+    }
+    try {
+      toast.success(userMail);
+    } catch (error) {
+      console.error("Error on Subscribe...");
+      toast.error("Error in Subscription!");
+    }
+  }
 
   return (
     <footer className="bg-gray-900 text-white relative w-full pt-20 pb-10 border-t border-gray-800">
@@ -78,9 +95,11 @@ export default function Footer() {
                 <input
                   type="email"
                   placeholder="Enter your email address"
+                  value={userMail}
+                  onChange={(e) => setUserMail(e.target.value)}
                   className="bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:outline-none flex-1"
                 />
-                <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg px-6 py-3 font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-blue-500/25 cursor-pointer">
+                <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg px-6 py-3 font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-blue-500/25 cursor-pointer" onClick={onClickSubscribeButton}>
                   Get Travel Tips
                 </button>
               </div>
@@ -92,7 +111,7 @@ export default function Footer() {
               <div className="relative">
                 <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 absolute inset-0 rotate-6 rounded-xl" />
                 <img
-                  src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=1121&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                  src="https://images.unsplash.com/photo-1707343848552-893e05dba6ac?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                   alt="Adventure travelers exploring mountains"
                   className="relative w-80 h-60 rounded-xl object-cover shadow-2xl"
                 />
