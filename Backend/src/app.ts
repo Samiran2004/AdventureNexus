@@ -20,6 +20,7 @@ import connectDb from './Database/connectDb';
 import { clerkMiddleware } from '@clerk/express';
 import cleckWebhook from './controller/ClerkWebhook';
 import hotelsRoute from './routes/hotelsRoute';
+import subscribeDailyMailController from './controller/newsSubscriptionController/subscribeDailyMail.controller';
 
 dotenv.config();
 
@@ -80,6 +81,7 @@ app.use('/api/v1/users', userRoute);
 app.use('/api/v1/recommendations', recommendationRoute);
 app.use('/api/v1/plans', planningRoute);
 app.use('/api/v1/hotels', hotelsRoute);
+app.post('/api/v1/mail/subscribe', subscribeDailyMailController);
 
 app.use(errorHandler);
 
