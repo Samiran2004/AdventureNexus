@@ -50,7 +50,8 @@ const subscribeDailyMailController = async (req, res) => {
 
         return res.status(StatusCodes.OK).json({
             status: "Ok",
-            data: userMail
+            data: userMail,
+            message: "Registered!"
         });
     } catch (error) {
         console.log(chalk.bgRed(getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR)));

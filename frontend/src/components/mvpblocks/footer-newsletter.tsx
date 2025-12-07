@@ -1,9 +1,11 @@
 'use client';
 
+import axios from 'axios';
 import { Instagram, Linkedin, Twitter, Youtube, Compass, MapPin, Phone, Mail } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link, useMatch } from 'react-router-dom';
+const vite_backend_url = import.meta.env.VITE_BACKEND_URL
 
 const footerColumns = [
   {
@@ -57,15 +59,34 @@ export default function Footer() {
   const [userMail, setUserMail] = useState("");
 
   const onClickSubscribeButton = async () => {
-    console.log(userMail)
-    if (!userMail || userMail === "" || userMail === " " || userMail == undefined) {
+    console.log(userMail);
+
+    // Cleaned up validation slightly for better safety
+    if (!userMail || userMail.trim() === "") {
       toast.error("Please enter a valid mail.");
       return;
     }
+
     try {
-      toast.success(userMail);
+      const response = await fetch(`${vite_backend_url}/api/v1/mail/subscribe`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json', // 1. Necessary for backend to understand JSON
+        },
+        body: JSON.stringify({ userMail }), // 2. Convert object to string
+      });
+
+      // 3. Check if the request was successful (status 200-299)
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // 4. Parse the JSON response
+      const data = await response.json();
+      toast.success(data.message || data.data || "Subscribed successfully!");
+
     } catch (error) {
-      console.error("Error on Subscribe...");
+      console.error("Error on Subscribe...", error);
       toast.error("Error in Subscription!");
     }
   }
