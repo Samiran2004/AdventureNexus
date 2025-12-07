@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link, useMatch } from 'react-router-dom';
 const vite_backend_url = import.meta.env.VITE_BACKEND_URL
+// const vite_backend_url = "http://localhost:8000"
 
 const footerColumns = [
   {

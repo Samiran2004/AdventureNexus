@@ -4,6 +4,8 @@ import mongoose from "mongoose";
 import SubscribeMail from "../../Database/models/subscribeMail.model";
 import emailTemplates from "../../utils/emailTemplate";
 import sendMail from "../../service/mailService";
+import { generateDailyTips } from "../../utils/Gemini Utils/generateDailyTips.prompt";
+import generateRecommendation from "../../utils/Gemini Utils/generateRecommendation";
 
 const subscribeDailyMailController = async (req, res) => {
     try {
@@ -36,7 +38,7 @@ const subscribeDailyMailController = async (req, res) => {
         await newSubscribeMail.save();
 
         // Send the mail to the user...
-        const mailData = emailTemplates.subscribeDailyMailEmailData(userMail);
+        let mailData = emailTemplates.subscribeDailyMailEmailData(userMail);
 
         // Send the welcome mail...
         await sendMail(mailData, (mailError: Error | null) => {
@@ -48,10 +50,33 @@ const subscribeDailyMailController = async (req, res) => {
             }
         });
 
+        // Generate first travel tips...
+        const prompt = generateDailyTips();
+        const generateDailyTipsContent = await generateRecommendation(prompt);
+
+        const startIndex = generateDailyTipsContent.indexOf('{');
+        const endIndex = generateDailyTipsContent.lastIndexOf('}');
+        const cleanString = generateDailyTipsContent.substring(startIndex, endIndex + 1);
+
+        const tipDataObject = JSON.parse(cleanString);
+
+        console.log(tipDataObject); // Should now show all fields correctly
+
+        // 3. Pass the OBJECT (not string) to the template
+        mailData = emailTemplates.sendDailyTipEmailData(userMail, tipDataObject);
+
+        await sendMail(mailData, (mailError: Error | null) => {
+            if (mailError) {
+                return res.status(StatusCodes.EXPECTATION_FAILED).json({
+                    status: 'Failed',
+                    message: "Mail sending error!"
+                });
+            }
+        })
+
         return res.status(StatusCodes.OK).json({
             status: "Ok",
-            data: userMail,
-            message: "Registered!"
+            message: "Registered!",
         });
     } catch (error) {
         console.log(chalk.bgRed(getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR)));

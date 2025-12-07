@@ -21,6 +21,7 @@ import { clerkMiddleware } from '@clerk/express';
 import cleckWebhook from './controller/ClerkWebhook';
 import hotelsRoute from './routes/hotelsRoute';
 import subscribeDailyMailController from './controller/newsSubscriptionController/subscribeDailyMail.controller';
+import "./jobs/dailyTips.job";
 
 dotenv.config();
 
