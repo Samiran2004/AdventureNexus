@@ -43,6 +43,6 @@ const sendAutoDailyTipsJob = async () => {
     }
 }
 
-cron.schedule("0 6 * * *", sendAutoDailyTipsJob);
+cron.schedule("0 6 * * *", sendAutoDailyTipsJob, {timezone: "Asia/Kolkata"});
 
 export default sendAutoDailyTipsJob;

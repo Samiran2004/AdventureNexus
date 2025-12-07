@@ -22,6 +22,7 @@ import cleckWebhook from './controller/ClerkWebhook';
 import hotelsRoute from './routes/hotelsRoute';
 import subscribeDailyMailController from './controller/newsSubscriptionController/subscribeDailyMail.controller';
 import "./jobs/dailyTips.job";
+import "./jobs/runner.job";
 
 dotenv.config();
 
