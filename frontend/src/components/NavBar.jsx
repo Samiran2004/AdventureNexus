@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
+import { Compass, Menu, PlaneTakeoff, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { SignedOut, SignedIn, SignInButton, UserButton } from '@clerk/clerk-react';
-import { Compass, Menu, X } from 'lucide-react';
 
 // Button component
 const Button = ({ children, variant = 'default', className = '', ...props }) => {
@@ -82,7 +82,8 @@ function NavBar() {
                     <div className="flex justify-between items-center p-6 border-b border-gray-800">
                         <div className="flex items-center space-x-2">
                             <div className="bg-gradient-to-br from-blue-600 to-purple-600 text-white p-2 rounded-lg">
-                                <Compass size={20} />
+                                {/* <Compass size={20} /> */}
+                                <PlaneTakeoff size={30}/>
                             </div>
                             <span className="text-lg font-bold text-white">
                                 AdventureNexus
@@ -152,7 +153,8 @@ function NavBar() {
                             className="flex items-center space-x-2 hover:scale-105 transition-transform duration-300"
                         >
                             <div className="bg-gradient-to-br from-blue-600 to-purple-600 text-white p-2 rounded-lg">
-                                <Compass size={24} />
+                                {/* <Compass size={24} /> */}
+                                <PlaneTakeoff size={30}/>
                             </div>
                             <span className="text-2xl font-bold text-white">
                                 AdventureNexus

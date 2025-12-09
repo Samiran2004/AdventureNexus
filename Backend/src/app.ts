@@ -80,7 +80,6 @@ app.get('/', (req: Request, res: Response): void => {
 });
 
 app.use('/api/v1/users', userRoute);
-app.use('/api/v1/recommendations', recommendationRoute);
 app.use('/api/v1/plans', planningRoute);
 app.use('/api/v1/hotels', hotelsRoute);
 app.post('/api/v1/mail/subscribe', subscribeDailyMailController);
