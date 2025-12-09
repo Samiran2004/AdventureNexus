@@ -6,6 +6,7 @@ import emailTemplates from "../../utils/emailTemplate";
 import sendMail from "../../service/mailService";
 import { generateDailyTips } from "../../utils/Gemini Utils/generateDailyTips.prompt";
 import generateRecommendation from "../../utils/Gemini Utils/generateRecommendation";
+import { groqGeneratedData } from "../../service/groq.service";
 
 const subscribeDailyMailController = async (req, res) => {
     try {
@@ -52,7 +53,8 @@ const subscribeDailyMailController = async (req, res) => {
 
         // Generate first travel tips...
         const prompt = generateDailyTips();
-        const generateDailyTipsContent = await generateRecommendation(prompt);
+        // const generateDailyTipsContent = await generateRecommendation(prompt);
+        const generateDailyTipsContent = await groqGeneratedData(prompt);
 
         const startIndex = generateDailyTipsContent.indexOf('{');
         const endIndex = generateDailyTipsContent.lastIndexOf('}');
