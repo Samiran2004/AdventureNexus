@@ -86,6 +86,8 @@ export default function Footer() {
       const data = await response.json();
       toast.success(data.message || data.data || "Subscribed successfully!");
 
+      setUserMail("");
+
     } catch (error) {
       console.error("Error on Subscribe...", error);
       toast.error("Error in Subscription!");
