@@ -72,7 +72,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.use(sanitizeInput);
 
-app.get('/isWork', (req: Request, res: Response): void => {
+app.get('/', (req: Request, res: Response): void => {
     res.status(200).send({
         status: 'success',
         isWorking: true,
