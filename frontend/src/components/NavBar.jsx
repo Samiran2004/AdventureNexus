@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
+import { Compass, Menu, PlaneTakeoff, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { SignedOut, SignedIn, SignInButton, UserButton } from '@clerk/clerk-react';
-import { Compass, Menu, X } from 'lucide-react';
 
 // Button component
 const Button = ({ children, variant = 'default', className = '', ...props }) => {
@@ -82,7 +82,8 @@ function NavBar() {
                     <div className="flex justify-between items-center p-6 border-b border-gray-800">
                         <div className="flex items-center space-x-2">
                             <div className="bg-gradient-to-br from-blue-600 to-purple-600 text-white p-2 rounded-lg">
-                                <Compass size={20} />
+                                {/* <Compass size={20} /> */}
+                                <PlaneTakeoff size={30}/>
                             </div>
                             <span className="text-lg font-bold text-white">
                                 AdventureNexus
@@ -129,7 +130,7 @@ function NavBar() {
                                 </div>
                             </SignedIn>
                             <Link to="/search">
-                                <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                                <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 cursor-pointer">
                                     Plan My Trip
                                 </Button>
                             </Link>
@@ -139,10 +140,10 @@ function NavBar() {
             )}
 
             {/* Main Navigation */}
-            <nav className={`border-b border-gray-800 backdrop-blur-md fixed top-0 w-full z-40 transition-all duration-300 ${
+            <nav className={`border-b border-gray-800 backdrop-blur-md fixed top-0 w-full z-40 transition-all duration-300${
                 scrolled
-                    ? 'bg-black/95 shadow-lg'
-                    : 'bg-black/60'
+                    ? 'bg-black/45 shadow-lg'
+                    : 'bg-black/20'
             }`}>
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
@@ -152,7 +153,8 @@ function NavBar() {
                             className="flex items-center space-x-2 hover:scale-105 transition-transform duration-300"
                         >
                             <div className="bg-gradient-to-br from-blue-600 to-purple-600 text-white p-2 rounded-lg">
-                                <Compass size={24} />
+                                {/* <Compass size={24} /> */}
+                                <PlaneTakeoff size={30}/>
                             </div>
                             <span className="text-2xl font-bold text-white">
                                 AdventureNexus
@@ -195,7 +197,7 @@ function NavBar() {
                                 />
                             </SignedIn>
                             <Link to="/search">
-                                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 hover:scale-105 text-white font-semibold px-6 py-2 transition-all duration-300">
+                                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 hover:scale-105 text-white font-semibold px-6 py-2 transition-all duration-300 cursor-pointer">
                                     Plan My Trip
                                 </Button>
                             </Link>

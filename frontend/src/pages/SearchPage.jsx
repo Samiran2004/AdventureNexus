@@ -1,13 +1,10 @@
-import React, { useState, useRef, useEffect } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+  CardContent
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -18,50 +15,29 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  UserButton,
-} from "@clerk/clerk-react";
-import {
+  Bot,
+  Calendar,
+  ChevronDown,
+  Clock,
+  DollarSign,
+  Heart,
   MapPin,
   Search,
-  Calendar,
-  Users,
-  DollarSign,
-  Filter,
-  SlidersHorizontal,
-  Star,
-  Clock,
-  Compass,
-  Menu,
-  X,
-  Heart,
   Share,
-  Navigation,
-  Plane,
-  Hotel,
-  Camera,
-  Utensils,
-  Mountain,
-  Wifi,
-  Car,
-  Shield,
-  ChevronDown,
+  SlidersHorizontal,
   Sparkles,
-  Bot,
+  Star,
   TrendingUp,
-  Globe,
-  CheckCircle,
+  Users
 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 // GSAP Imports
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/mvpblocks/footer-newsletter";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);

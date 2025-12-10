@@ -17,10 +17,11 @@ const userModel_1 = __importDefault(require("../Database/models/userModel"));
 const svix_1 = require("svix");
 const emailTemplate_1 = __importDefault(require("../utils/emailTemplate"));
 const mailService_1 = __importDefault(require("../service/mailService"));
+const config_1 = require("../config/config");
 const clerkWebhook = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     try {
-        const whook = new svix_1.Webhook(process.env.CLERK_WEBHOOK_KEY);
+        const whook = new svix_1.Webhook(config_1.config.CLERK_WEBHOOK_KEY);
         const headers = {
             'svix-id': req.headers['svix-id'],
             'svix-timestamp': req.headers['svix-timestamp'],

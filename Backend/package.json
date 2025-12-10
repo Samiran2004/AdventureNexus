@@ -19,6 +19,7 @@
     "dependencies": {
         "@ai-sdk/google": "^2.0.17",
         "@clerk/express": "^1.7.26",
+        "@google/genai": "^1.31.0",
         "@google/generative-ai": "^0.24.1",
         "@types/bcryptjs": "^2.4.6",
         "@types/joi": "^17.2.2",
@@ -33,6 +34,7 @@
         "express": "^4.21.2",
         "express-rate-limit": "^7.4.1",
         "figlet": "^1.8.0",
+        "groq-sdk": "^0.37.0",
         "helmet": "^8.0.0",
         "http-errors": "^2.0.0",
         "http-status-codes": "^2.3.0",
@@ -41,6 +43,7 @@
         "mongoose": "^8.7.1",
         "morgan": "^1.10.0",
         "multer": "^1.4.5-lts.1",
+        "node-cron": "^4.2.1",
         "nodemailer": "^7.0.10",
         "nodemon": "^3.1.10",
         "redis": "^4.7.0",

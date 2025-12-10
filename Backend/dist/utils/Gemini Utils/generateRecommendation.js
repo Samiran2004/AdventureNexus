@@ -14,15 +14,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const generative_ai_1 = require("@google/generative-ai");
 const dotenv_1 = __importDefault(require("dotenv"));
+const config_1 = require("../../config/config");
+const genai_1 = require("@google/genai");
 dotenv_1.default.config();
-const genAi = new generative_ai_1.GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAi.getGenerativeModel({ model: 'gemini-2.0-flash-001' });
+const genAi = new generative_ai_1.GoogleGenerativeAI(config_1.config.GEMINI_API_KEY);
+const ai = new genai_1.GoogleGenAI({ apiKey: config_1.config.GEMINI_API_KEY });
+const model = genAi.getGenerativeModel({ model: 'gemini-3-pro-preview' });
 function generateRecommendation(prompt) {
     return __awaiter(this, void 0, void 0, function* () {
-        var _a, _b, _c, _d, _e, _f;
         try {
-            const result = yield model.generateContent(prompt);
-            const text = (_f = (_e = (_d = (_c = (_b = (_a = result === null || result === void 0 ? void 0 : result.response) === null || _a === void 0 ? void 0 : _a.candidates) === null || _b === void 0 ? void 0 : _b[0]) === null || _c === void 0 ? void 0 : _c.content) === null || _d === void 0 ? void 0 : _d.parts) === null || _e === void 0 ? void 0 : _e[0]) === null || _f === void 0 ? void 0 : _f.text;
+            const response = yield ai.models.generateContent({
+                model: "gemini-2.5-flash",
+                contents: prompt
+            });
+            const text = response.text;
             if (!text) {
                 console.error("No text found in the response from the AI.");
                 return undefined;
