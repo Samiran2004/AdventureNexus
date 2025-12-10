@@ -295,7 +295,7 @@ const AdventureNexusLanding = () => {
                                             <Users className="text-green-400 mx-auto mb-2" size={24} />
                                             <div className="text-2xl font-bold text-white">
                                                 <NumberCounter
-                                                    targetNumber={50000}
+                                                    targetNumber={5}
                                                     duration={2.5}
                                                     className="text-2xl font-bold text-white"
                                                 />
@@ -355,25 +355,25 @@ const AdventureNexusLanding = () => {
                     <div className="grid md:grid-cols-3 gap-8">
                         {[
                             {
-                                name: "Sarah Mitchell",
-                                role: "Digital Nomad",
-                                content: "AdventureNexus planned my entire Southeast Asia trip in minutes! The AI found hidden gems I would have never discovered on my own.",
+                                name: "Samiran Samanta",
+                                role: "Project Lead",
+                                content: "“Great tool! Very easy to use and gives smart, personalized travel plans. Adding more customization options would make it perfect. Keep it up!”",
                                 rating: 5,
-                                location: "Bangkok, Thailand"
+                                location: "Bangkok, Thailand, Kyoto"
                             },
                             {
-                                name: "David Chen",
+                                name: "Ritam Maity",
                                 role: "Family Traveler",
-                                content: "Planning a family vacation with kids is usually stressful, but the AI created the perfect kid-friendly itinerary for our Japan trip.",
-                                rating: 5,
-                                location: "Tokyo, Japan"
+                                content: "Wow! This AI Adventure Planner is seriously cool! It planned my whole trip in seconds and gave ideas I wouldn’t have thought of. Super easy to use, super fun, and definitely something I’ll use again. Just add a few more customization options and it will be perfect!",
+                                rating: 4,
+                                location: "Tokyo, Japan, Delhi"
                             },
                             {
-                                name: "Maria Rodriguez",
+                                name: "Shounak Santra",
                                 role: "Adventure Seeker",
-                                content: "The personalized recommendations were spot on! Every restaurant and activity was exactly my style. Best trip planning tool ever!",
-                                rating: 5,
-                                location: "Patagonia, Chile"
+                                content: "A really helpful planner with clear itineraries and creative suggestions. The interface is simple and smooth. Adding more filters like budget and travel style would improve accuracy even more. Great experience overall!",
+                                rating: 4,
+                                location: "Argentina, Barcelona, Canada"
                             }
                         ].map((testimonial, index) => (
                             <Card key={index} className="testimonial-card bg-gray-900 border-gray-700 shadow-lg">
@@ -425,19 +425,19 @@ const AdventureNexusLanding = () => {
                             },
                             {
                                 name: "Adventurer",
-                                price: "$9",
-                                period: "/month",
+                                price: "₹999",
+                                period: "/year",
                                 description: "Most popular for frequent travelers",
-                                features: ["Unlimited AI trip plans", "Advanced personalization", "Priority booking support", "Offline access", "Group trip planning"],
+                                features: ["Unlimited AI trip plans", "Price tracking for flights", "Local transport suggestions", "Region-aware recommendations (best visiting hours, crowd levels)"],
                                 popular: true,
                                 buttonText: "Start Free Trial"
                             },
                             {
-                                name: "Nomad Pro",
-                                price: "$19",
-                                period: "/month",
+                                name: "Premium Pro",
+                                price: "₹2999",
+                                period: "/year",
                                 description: "For travel professionals",
-                                features: ["Everything in Adventurer", "White-label solutions", "API access", "Custom integrations", "Dedicated support"],
+                                features: ["Everything in Adventurer", "Unlimited Group Trip Planning", "Custom integrations", "Priority Booking", "Free Russian", "Free Condoms(Unlimited)[Durex]"],
                                 popular: false,
                                 buttonText: "Contact Sales"
                             }
