@@ -140,10 +140,10 @@ function NavBar() {
             )}
 
             {/* Main Navigation */}
-            <nav className={`border-b border-gray-800 backdrop-blur-md fixed top-0 w-full z-40 transition-all duration-300 ${
+            <nav className={`border-b border-gray-800 backdrop-blur-md fixed top-0 w-full z-40 transition-all duration-300${
                 scrolled
-                    ? 'bg-black/95 shadow-lg'
-                    : 'bg-black/60'
+                    ? 'bg-black/45 shadow-lg'
+                    : 'bg-black/20'
             }`}>
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
