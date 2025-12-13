@@ -349,9 +349,8 @@ const SearchPage = () => {
                     <SlidersHorizontal className="mr-2" size={18} />
                     Filters
                     <ChevronDown
-                      className={`ml-2 transition-transform ${
-                        showFilters ? "rotate-180" : ""
-                      }`}
+                      className={`ml-2 transition-transform ${showFilters ? "rotate-180" : ""
+                        }`}
                       size={16}
                     />
                   </Button>
