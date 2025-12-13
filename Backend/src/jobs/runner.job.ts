@@ -3,7 +3,7 @@ import cron from "node-cron";
 
 const runnerCronJob = async () => {
     try {
-        console.log(chalk.bgCyan("Runner is running..."));
+        console.log(chalk.bgCyan(`Runner is running...`));
     } catch (error) {
         console.log(chalk.red("Failed to run runner cron job..."));
     }

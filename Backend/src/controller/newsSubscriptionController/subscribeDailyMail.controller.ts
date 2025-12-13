@@ -62,7 +62,7 @@ const subscribeDailyMailController = async (req, res) => {
 
         const tipDataObject = JSON.parse(cleanString);
 
-        console.log(tipDataObject); // Should now show all fields correctly
+        // console.log(tipDataObject);
 
         // 3. Pass the OBJECT (not string) to the template
         mailData = emailTemplates.sendDailyTipEmailData(userMail, tipDataObject);
