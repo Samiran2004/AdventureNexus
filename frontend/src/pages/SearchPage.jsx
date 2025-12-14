@@ -1,3 +1,5 @@
+import Footer from "@/components/mvpblocks/footer-newsletter";
+import NavBar from "@/components/NavBar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +17,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { Spinner } from "@/components/ui/spinner";
+import axios from "axios";
 import {
   Bot,
   Calendar,
@@ -22,6 +26,7 @@ import {
   Clock,
   DollarSign,
   Heart,
+  IndianRupee,
   MapPin,
   Search,
   Share,
@@ -31,16 +36,9 @@ import {
   TrendingUp,
   Users
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
-// GSAP Imports
-import NavBar from "@/components/NavBar";
-import Footer from "@/components/mvpblocks/footer-newsletter";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-// Register GSAP plugins
-gsap.registerPlugin(ScrollTrigger);
 
 const SearchPage = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -48,46 +46,6 @@ const SearchPage = () => {
   const [budgetRange, setBudgetRange] = useState([1000, 5000]);
   const [selectedActivities, setSelectedActivities] = useState([]);
   const [sortBy, setSortBy] = useState("recommended");
-
-  // Refs for animations
-  const navRef = useRef(null);
-  const searchBarRef = useRef(null);
-  const filtersRef = useRef(null);
-  const resultsRef = useRef(null);
-
-  useEffect(() => {
-    let ctx = gsap.context(() => {
-      // Initial animations
-      gsap.from(navRef.current, {
-        y: -50,
-        opacity: 0,
-        duration: 0.8,
-        ease: "power2.out",
-      });
-
-      gsap.from(searchBarRef.current, {
-        y: 30,
-        opacity: 0,
-        duration: 1,
-        delay: 0.2,
-        ease: "power2.out",
-      });
-
-      gsap.from(".result-card", {
-        scrollTrigger: {
-          trigger: resultsRef.current,
-          start: "top 80%",
-        },
-        y: 50,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.1,
-        ease: "power2.out",
-      });
-    });
-
-    return () => ctx.revert();
-  }, []);
 
   const handleActivityToggle = (activity) => {
     setSelectedActivities((prev) =>
@@ -98,80 +56,114 @@ const SearchPage = () => {
   };
 
   // Sample search results data
-  const searchResults = [
+  const sampleSearchResults = [
     {
       id: 1,
-      destination: "Tokyo, Japan",
-      duration: "7 days",
-      price: "$2,450",
-      rating: 4.9,
-      reviews: 342,
-      image: "https://media.istockphoto.com/id/1390815938/photo/tokyo-city-in-japan.jpg?s=612x612&w=0&k=20&c=VHiC3TlbXkb-Yf6WUYjh825Y0nGMCTkNUa9j8X8rVfY=",
-      highlights: ["Cherry Blossoms", "Modern Culture", "Traditional Temples"],
+      destination: "Bali, Indonesia",
+      duration: "7 Days",
+      price: "$1,200",
+      rating: 4.8,
+      reviews: 124,
       aiScore: 98,
-      activities: ["Culture", "Food", "Photography", "Shopping"],
+      image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=800&q=80",
+      highlights: ["Beach", "Culture", "Wellness"],
+      activities: ["Surfing", "Yoga", "Temples"]
     },
     {
       id: 2,
-      destination: "Santorini, Greece",
-      duration: "5 days",
-      price: "$1,890",
-      rating: 4.8,
-      reviews: 567,
-      image: "https://sothebysrealty.gr/wp-content/uploads/2016/11/Santorini-sunset-at-dawn-Greece-Sothebys-International-Realty.jpg",
-      highlights: ["Sunset Views", "White Architecture", "Wine Tasting"],
-      aiScore: 95,
-      activities: ["Romance", "Photography", "Relaxation"],
+      destination: "Kyoto, Japan",
+      duration: "10 Days",
+      price: "$2,400",
+      rating: 4.9,
+      reviews: 89,
+      aiScore: 96,
+      image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=800&q=80",
+      highlights: ["History", "Nature", "Food"],
+      activities: ["Temples", "Tea Ceremony", "Hiking"]
     },
     {
       id: 3,
-      destination: "Bali, Indonesia",
-      duration: "10 days",
-      price: "$1,650",
+      destination: "Reykjavik, Iceland",
+      duration: "5 Days",
+      price: "$1,800",
       rating: 4.7,
-      reviews: 789,
-      image: "https://tse3.mm.bing.net/th/id/OIP.ShZdQbYWtQHokK39wG-2KgHaEK?rs=1&pid=ImgDetMain&o=7&rm=3",
-      highlights: ["Tropical Beaches", "Ancient Temples", "Wellness Retreats"],
-      aiScore: 92,
-      activities: ["Adventure", "Wellness", "Culture", "Beach"],
+      reviews: 56,
+      aiScore: 94,
+      image: "https://images.unsplash.com/photo-1476610182048-b716b8518aae?auto=format&fit=crop&w=800&q=80",
+      highlights: ["Nature", "Adventure", "Photography"],
+      activities: ["Northern Lights", "Glaciers", "Geysers"]
     },
     {
       id: 4,
-      destination: "Patagonia, Chile",
-      duration: "14 days",
+      destination: "Santorini, Greece",
+      duration: "6 Days",
       price: "$3,200",
       rating: 4.9,
-      reviews: 234,
-      image: "https://images3.alphacoders.com/608/thumb-1920-608948.jpg",
-      highlights: ["Glacier Hiking", "Wildlife Viewing", "Pristine Nature"],
-      aiScore: 96,
-      activities: ["Adventure", "Nature", "Hiking", "Photography"],
+      reviews: 210,
+      aiScore: 92,
+      image: "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=800&q=80",
+      highlights: ["Romance", "Views", "Food"],
+      activities: ["Sunsets", "Wine Tasting", "Boating"]
     },
     {
       id: 5,
-      destination: "Marrakech, Morocco",
-      duration: "6 days",
-      price: "$1,320",
-      rating: 4.6,
-      reviews: 445,
-      image: "https://wallpaperaccess.com/full/1327522.jpg",
-      highlights: ["Vibrant Souks", "Desert Experience", "Rich History"],
-      aiScore: 89,
-      activities: ["Culture", "Adventure", "Food", "Shopping"],
+      destination: "Machu Picchu, Peru",
+      duration: "8 Days",
+      price: "$2,100",
+      rating: 4.8,
+      reviews: 145,
+      aiScore: 91,
+      image: "https://images.unsplash.com/photo-1587595431973-160d0d94add1?auto=format&fit=crop&w=800&q=80",
+      highlights: ["History", "Adventure", "Hiking"],
+      activities: ["Trekking", "Ruins", "Culture"]
     },
     {
       id: 6,
-      destination: "Reykjavik, Iceland",
-      duration: "8 days",
-      price: "$2,890",
-      rating: 4.8,
-      reviews: 312,
-      image: "/api/placeholder/400/250",
-      highlights: ["Northern Lights", "Blue Lagoon", "Volcanic Landscapes"],
-      aiScore: 94,
-      activities: ["Nature", "Photography", "Adventure", "Relaxation"],
-    },
+      destination: "Amalfi Coast, Italy",
+      duration: "7 Days",
+      price: "$2,800",
+      rating: 4.7,
+      reviews: 178,
+      aiScore: 90,
+      image: "https://images.unsplash.com/photo-1633321088355-d0f8c1eaad48?auto=format&fit=crop&w=800&q=80",
+      highlights: ["Coast", "Food", "Luxury"],
+      activities: ["Driving", "Dining", "Boating"]
+    }
   ];
+
+  // Initialize state with sample data to prevent undefined mapping error
+  const [searchResults, setSearchResults] = useState(sampleSearchResults);
+  const [isLoading, setIsLoading] = useState(false);
+  const [toDate, setToDate] = useState("");
+  const [fromDate, setFromDate] = useState("");
+  const [to, setTo] = useState("");
+  const [from, setFrom] = useState("");
+  const [travelers, setTravelers] = useState("2");
+  const [budget, setBudget] = useState("mid");
+
+  const handleSearchResult = async () => {
+    try {
+      // construct payload...
+      setIsLoading(true);
+      const payload = {
+        to: to || "Japan",
+        from: from || "Kolkata",
+        date: fromDate,
+        travelers: travelers || 2,
+        budget: 250000,
+        budget_range: budget,
+      }
+
+      // axios POST request...
+      const response = await axios.post("http://localhost:8000/api/v1/plans/search/destination", payload);
+
+      console.log(response.data.data);
+      setIsLoading(false);
+    } catch (error) {
+      toast.error("Error on initial search");
+      setIsLoading(false);
+    }
+  }
 
   const activities = [
     "Adventure",
@@ -190,13 +182,12 @@ const SearchPage = () => {
 
   return (
     <div className="min-h-screen bg-black">
+      {/* Navbar with padding for fixed positioning */}
       <NavBar />
+      <div className="h-6"></div>
 
       {/* Search Header */}
-      <section
-        ref={searchBarRef}
-        className="py-8 bg-gradient-to-br from-gray-900 via-black to-gray-900 border-b border-gray-800"
-      >
+      <section className="py-8 bg-gradient-to-br from-gray-900 via-black to-gray-900 border-b border-gray-800">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-8">
@@ -216,6 +207,7 @@ const SearchPage = () => {
             <Card className="bg-gray-900/80 border-gray-700 backdrop-blur-sm">
               <CardContent className="p-6">
                 <div className="grid md:grid-cols-4 gap-4 mb-4">
+                  {/* where to */}
                   <div className="space-y-2">
                     <Label
                       htmlFor="destination"
@@ -226,108 +218,136 @@ const SearchPage = () => {
                     <div className="relative">
                       <MapPin
                         className="absolute left-3 top-3 text-gray-400"
+                        size={19}
+                      />
+                      <Input
+                        id="destination"
+                        placeholder="Enter destination"
+                        onChange={(e) => setTo(e.target.value)}
+                        className="pl-10 bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500"
+                      />
+                    </div>
+
+
+                  </div>
+
+                  {/* Where from */}
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="destination"
+                      className="text-white text-sm font-medium"
+                    >
+                      Where from?
+                    </Label>
+                    <div className="relative">
+                      <MapPin
+                        className="absolute left-3 top-3 text-gray-400"
                         size={18}
                       />
                       <Input
                         id="destination"
                         placeholder="Enter destination"
+                        onChange={(e) => setFrom(e.target.value)}
                         className="pl-10 bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500"
                       />
                     </div>
+
+
                   </div>
 
+                  {/* From Date */}
                   <div className="space-y-2">
-                    <Label
-                      htmlFor="dates"
-                      className="text-white text-sm font-medium"
-                    >
+                    <Label htmlFor="dates" className="text-white text-sm font-medium">
                       From
                     </Label>
                     <div className="relative">
-                      <Calendar
-                        className="absolute left-3 top-3 text-gray-400"
-                        size={18}
-                      />
+                      {/* Visual Icon (Optional, browser adds its own on the right usually) */}
+                      <Calendar className="absolute left-3 top-3 text-gray-400 pointer-events-none" size={18} />
+
                       <Input
                         id="dates"
-                        placeholder="Select dates"
-                        className="pl-10 bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500"
+                        type="date" // This enables the native date picker
+                        className="pl-10 bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 [color-scheme:dark]"
+                        value={fromDate}
+                        onChange={(e) => setFromDate(e.target.value)}
+                        min={new Date().toISOString().split("T")[0]} // Disable past dates
                       />
                     </div>
                   </div>
 
+                  {/* To Date */}
                   <div className="space-y-2">
-                    <Label
-                      htmlFor="dates"
-                      className="text-white text-sm font-medium"
-                    >
+                    <Label htmlFor="dates-to" className="text-white text-sm font-medium">
                       To
                     </Label>
                     <div className="relative">
-                      <Calendar
-                        className="absolute left-3 top-3 text-gray-400"
-                        size={18}
-                      />
+                      <Calendar className="absolute left-3 top-3 text-gray-400 pointer-events-none" size={18} />
+
                       <Input
-                        id="dates"
-                        placeholder="Select dates"
-                        className="pl-10 bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500"
+                        id="dates-to"
+                        type="date"
+                        className="pl-10 bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 [color-scheme:dark]"
+                        value={toDate}
+                        onChange={(e) => setToDate(e.target.value)}
+                        min={fromDate} // Ensure 'To' date is after 'From' date
                       />
                     </div>
                   </div>
+                </div>
 
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="travelers"
-                      className="text-white text-sm font-medium"
-                    >
-                      Travelers
-                    </Label>
-                    <div className="relative">
-                      <Users
-                        className="absolute left-3 top-3 text-gray-400"
-                        size={18}
-                      />
-                      <Select>
-                        <SelectTrigger className="pl-10 bg-gray-800 border-gray-600 text-white">
-                          <SelectValue placeholder="2 travelers" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-gray-800 border-gray-600">
-                          <SelectItem value="1">1 traveler</SelectItem>
-                          <SelectItem value="2">2 travelers</SelectItem>
-                          <SelectItem value="3">3 travelers</SelectItem>
-                          <SelectItem value="4">4+ travelers</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                {/* Select total travelers */}
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="travelers"
+                    className="text-white text-sm font-medium"
+                  >
+                    Travelers
+                  </Label>
+                  <div className="relative">
+                    <Users
+                      className="absolute left-3 top-3 text-gray-400"
+                      size={18}
+                    />
+                    <Select onValueChange={(value) => setTravelers(value)}>
+                      <SelectTrigger className="pl-10 bg-gray-800 border-gray-600 text-white">
+                        <SelectValue placeholder="2 travelers"/>
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-600">
+                        <SelectItem value="1">1 traveler</SelectItem>
+                        <SelectItem value="2">2 travelers</SelectItem>
+                        <SelectItem value="3">3 travelers</SelectItem>
+                        <SelectItem value="4">4+ travelers</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
+                </div>
 
-                  <div className="space-y-2">
-                    <Label className="text-white text-sm font-medium">
-                      Budget
-                    </Label>
-                    <div className="relative">
-                      <DollarSign
-                        className="absolute left-3 top-3 text-gray-400"
-                        size={18}
-                      />
-                      <Select>
-                        <SelectTrigger className="pl-10 bg-gray-800 border-gray-600 text-white">
-                          <SelectValue placeholder="Any budget" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-gray-800 border-gray-600">
-                          <SelectItem value="budget">
-                            Budget ($500-$1500)
-                          </SelectItem>
-                          <SelectItem value="mid">
-                            Mid-range ($1500-$3000)
-                          </SelectItem>
-                          <SelectItem value="luxury">
-                            Luxury ($3000+)
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                {/* Select Budget */}
+                <div className="space-y-2 mb-4 mt-2">
+                  <Label className="text-white text-sm font-medium">
+                    Budget Range
+                  </Label>
+                  <div className="relative">
+                    <IndianRupee
+                      className="absolute left-3 top-3 text-gray-400"
+                      size={18}
+                    />
+                    <Select onValueChange={(value) => setBudget(value)}>
+                      <SelectTrigger className="pl-10 bg-gray-800 border-gray-600 text-white">
+                        <SelectValue placeholder="Any budget range" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-600">
+                        <SelectItem value="budget">
+                          Budget ($500-$1500)
+                        </SelectItem>
+                        <SelectItem value="mid">
+                          Mid-range ($1500-$3000)
+                        </SelectItem>
+                        <SelectItem value="luxury">
+                          Luxury ($3000+)
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
 
@@ -335,10 +355,22 @@ const SearchPage = () => {
                   <Button
                     className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-8"
                     size="lg"
+                    onClick={() => handleSearchResult()}
+                    disabled={isLoading} // Prevents multiple clicks
                   >
-                    <Search className="mr-2" size={20} />
-                    Search with AI
-                    <Sparkles className="ml-2" size={16} />
+                    {isLoading ? (
+                      <>
+                        {/* Ensure your Spinner has animate-spin if it's an icon, or uses your custom component */}
+                        <Spinner className="mr-2 size-5 text-white animate-spin" />
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <Search className="mr-2" size={20} />
+                        Search with AI
+                        <Sparkles className="ml-2" size={16} />
+                      </>
+                    )}
                   </Button>
 
                   <Button
@@ -358,10 +390,7 @@ const SearchPage = () => {
 
                 {/* Advanced Filters */}
                 {showFilters && (
-                  <div
-                    ref={filtersRef}
-                    className="mt-6 pt-6 border-t border-gray-700"
-                  >
+                  <div className="mt-6 pt-6 border-t border-gray-700">
                     <div className="grid md:grid-cols-3 gap-6">
                       <div className="space-y-4">
                         <h3 className="text-white font-semibold">
@@ -446,10 +475,10 @@ const SearchPage = () => {
             </Card>
           </div>
         </div>
-      </section>
+      </section >
 
       {/* Results Section */}
-      <section ref={resultsRef} className="py-8 bg-black">
+      < section className="py-8 bg-black" >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           {/* Results Header */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
@@ -480,7 +509,7 @@ const SearchPage = () => {
 
           {/* Search Results Grid */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {searchResults.map((result) => (
+            {searchResults && searchResults.map((result) => (
               <Card
                 key={result.id}
                 className="result-card bg-gray-900 border-gray-700 hover:border-blue-500/50 transition-all duration-300 group"
@@ -522,30 +551,6 @@ const SearchPage = () => {
                         <Share size={16} />
                       </Button>
                     </div>
-                  </div>
-
-                  {/* AI Score Badge */}
-                  <Badge className="absolute top-3 left-3 bg-gradient-to-r from-blue-600 to-purple-600">
-                    <Bot className="mr-1" size={12} />
-                    AI Score: {result.aiScore}%
-                  </Badge>
-
-                  {/* Action Buttons */}
-                  <div className="absolute top-3 right-3 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      className="bg-white/90 hover:bg-white"
-                    >
-                      <Heart size={16} />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      className="bg-white/90 hover:bg-white"
-                    >
-                      <Share size={16} />
-                    </Button>
                   </div>
                 </div>
 
@@ -656,10 +661,10 @@ const SearchPage = () => {
             </Button>
           </div>
         </div>
-      </section>
+      </section >
 
       {/* AI Assistant CTA */}
-      <section className="py-12 bg-gradient-to-r from-blue-600/10 to-purple-600/10 border-y border-gray-800">
+      < section className="py-12 bg-gradient-to-r from-blue-600/10 to-purple-600/10 border-y border-gray-800" >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto">
             <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 rounded-full w-16 h-16 mx-auto mb-6 flex items-center justify-center">
@@ -682,9 +687,9 @@ const SearchPage = () => {
             </Button>
           </div>
         </div>
-      </section>
+      </section >
       <Footer />
-    </div>
+    </div >
   );
 };
 
