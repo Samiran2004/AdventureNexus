@@ -27,28 +27,43 @@ const generateNewSearchDestinationPrompt = (data: SearchNewDestinationPromptData
         - **Travel Style:** ${style}
         - **Interests:** ${activitiesList}
 
-        Generate a strictly formatted **JSON object** containing the following details:
+        Generate a strictly formatted **JSON object**. 
 
-        1. **destination_overview**: A concise summary of the destination vibe and why it fits the user's interests.
-        2. **budget_breakdown**: Estimated costs for "Flights" (from ${data.from}), "Accommodation", "Food", and "Activities" based on the total budget of ${data.budget}.
-        3. **top_attractions**: An array of 3-5 top places to visit that match the user's interests.
-        4. **suggested_itinerary**: An array of "Day" objects (assume a standard 3-5 day trip if duration isn't explicit in the date). Each day should have "morning", "afternoon", and "evening" activities.
-        5. **local_tips**: A list of 2-3 practical tips (safety, transport, or etiquette).
+        **IMPORTANT: IMAGE URL RULE**
+        For the "image_url" field, do NOT try to find a real URL. Instead, construct a dynamic URL using this exact format:
+        "https://image.pollinations.ai/prompt/scenic%20view%20of%20<DESTINATION_NAME>%20travel%20landmark%204k"
+        (Replace <DESTINATION_NAME> with the actual city name, e.g., Tokyo).
+
+        The JSON object must contain the following keys exactly:
+        1. **ai_score**: An estimated match score (e.g., "98%").
+        2. **image_url**: The dynamic URL constructed using the rule above.
+        3. **name**: The destination name (e.g., "Tokyo, Japan").
+        4. **days**: Recommended duration (e.g., 7).
+        5. **cost**: Total estimated cost per person in Indian Rupees (INR).
+        6. **star**: Average rating (e.g., 4.8).
+        7. **total_reviews**: Estimated number of reviews (e.g., 342).
+        8. **destination_overview**: A concise summary of the vibe.
+        9. **perfect_for**: An array of strings describing the trip type (e.g., ["Culture", "Food"]).
+        10. **budget_breakdown**: Object with costs for "flights", "accommodation", "food", "activities".
+        11. **trip_highlights**: Array of objects with "name", "description", and "match_reason".
+        12. **suggested_itinerary**: Array of day objects with "morning", "afternoon", "evening".
+        13. **local_tips**: Array of string tips.
 
         **Rules:**
         - Return **ONLY** the valid JSON object. Do not include markdown formatting (like \`\`\`json) or extra text.
-        - Ensure all prices are realistic estimates.
+        - Ensure all prices are realistic estimates in INR.
 
         **Example Output Format:**
         {
-            "ai score": "The score of ai" e.g.(98%),
-            "name": "Place name" e.g.(Tokyo, Japan),
-            "days": "Days number" e.g.(7, 5, 10),
-            "cost": "total Cost per person in indian rupees" e.g.(2450, 1890),
-            "star": "Review number" e.g.(4.8, 4.9),
-            "total_reviews": "Total reviews number." e.g.(342, 567),
+            "ai_score": "98%",
+            "image_url": "https://image.pollinations.ai/prompt/scenic%20view%20of%20Tokyo%20travel%20landmark%204k",
+            "name": "Tokyo, Japan",
+            "days": 7,
+            "cost": 150000,
+            "star": 4.8,
+            "total_reviews": 567,
             "destination_overview": "Tokyo is a vibrant mix of traditional culture and neon-lit modernity...",
-            "perfect_for": "The trip is for" e.g.("Adventure", "Culture", "Food", "Beach", "Nature", "Photography", "Romance", "Wellness", "Shopping", "Nightlife", "History", "Art"),
+            "perfect_for": ["Culture", "Food", "Shopping"],
             "budget_breakdown": {
                 "flights": "Approx 40% of budget",
                 "accommodation": "Approx 30% of budget",
