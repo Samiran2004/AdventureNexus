@@ -48,7 +48,7 @@ const generateNewSearchDestinationPrompt = (data: SearchNewDestinationPromptData
             "star": "Review number" e.g.(4.8, 4.9),
             "total_reviews": "Total reviews number." e.g.(342, 567),
             "destination_overview": "Tokyo is a vibrant mix of traditional culture and neon-lit modernity...",
-            "perfect_for": "The trip is for" e.g.(culture, food, shoping, photography, relaxation),
+            "perfect_for": "The trip is for" e.g.("Adventure", "Culture", "Food", "Beach", "Nature", "Photography", "Romance", "Wellness", "Shopping", "Nightlife", "History", "Art"),
             "budget_breakdown": {
                 "flights": "Approx 40% of budget",
                 "accommodation": "Approx 30% of budget",

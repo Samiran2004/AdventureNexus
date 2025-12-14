@@ -8,15 +8,18 @@ import { generateDailyTips } from "../../utils/Gemini Utils/generateDailyTips.pr
 import generateRecommendation from "../../utils/Gemini Utils/generateRecommendation";
 import { groqGeneratedData } from "../../service/groq.service";
 import winstonLogger from "../../service/winston.service";
+import getFullURL from "../../service/getFullURL.service";
 
 const subscribeDailyMailController = async (req, res) => {
+    const fullUrl: string = getFullURL(req);
     try {
         const { userMail } = req.body;
 
         // verify the user mail is exist or not...
 
         if (!userMail) {
-            winstonLogger.error("")
+            winstonLogger.error(`URL: ${fullUrl}`);
+            winstonLogger.error(`User mail is not provided.`);
             return res.status(StatusCodes.BAD_REQUEST).json({
                 status: "Failed",
                 message: "Required fields not exist!"
@@ -27,6 +30,7 @@ const subscribeDailyMailController = async (req, res) => {
         const existMail = await SubscribeMail.findOne({ mail: userMail });
 
         if (existMail) {
+            winstonLogger.info(`URL: ${fullUrl}`);
             return res.status(StatusCodes.OK).json({
                 status: 'OK',
                 message: "Already subscribed!"
@@ -45,7 +49,10 @@ const subscribeDailyMailController = async (req, res) => {
 
         // Send the welcome mail...
         await sendMail(mailData, (mailError: Error | null) => {
+            winstonLogger.info(`URL: ${fullUrl}`);
             if (mailError) {
+                winstonLogger.error(`URL: ${fullUrl}`);
+                winstonLogger.debug(`Failed to send welcome mail, Error: ${mailError.message}`);
                 return res.status(StatusCodes.EXPECTATION_FAILED).json({
                     status: 'Failed',
                     message: "Mail sending error!"
@@ -70,19 +77,24 @@ const subscribeDailyMailController = async (req, res) => {
         mailData = emailTemplates.sendDailyTipEmailData(userMail, tipDataObject);
 
         await sendMail(mailData, (mailError: Error | null) => {
+            winstonLogger.info(`URL: ${fullUrl}`);
             if (mailError) {
+                winstonLogger.error(`URL: ${fullUrl}`);
+                winstonLogger.debug(`Failed to send first travel tips mail, Error: ${mailError.message}`);
                 return res.status(StatusCodes.EXPECTATION_FAILED).json({
                     status: 'Failed',
                     message: "Mail sending error!"
                 });
             }
-        })
+        });
 
+        winstonLogger.info(`URL: ${fullUrl}`);
         return res.status(StatusCodes.OK).json({
             status: "Ok",
             message: "Registered!",
         });
     } catch (error) {
+        winstonLogger.error(`URL: ${fullUrl}, error_message: ${error.message}`);
         console.log(chalk.bgRed(getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR)));
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR);
     }
