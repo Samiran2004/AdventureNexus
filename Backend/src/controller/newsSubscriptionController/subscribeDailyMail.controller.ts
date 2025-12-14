@@ -7,6 +7,7 @@ import sendMail from "../../service/mailService";
 import { generateDailyTips } from "../../utils/Gemini Utils/generateDailyTips.prompt";
 import generateRecommendation from "../../utils/Gemini Utils/generateRecommendation";
 import { groqGeneratedData } from "../../service/groq.service";
+import winstonLogger from "../../service/winston.service";
 
 const subscribeDailyMailController = async (req, res) => {
     try {
@@ -15,6 +16,7 @@ const subscribeDailyMailController = async (req, res) => {
         // verify the user mail is exist or not...
 
         if (!userMail) {
+            winstonLogger.error("")
             return res.status(StatusCodes.BAD_REQUEST).json({
                 status: "Failed",
                 message: "Required fields not exist!"

@@ -4,6 +4,7 @@ import { groqGeneratedData } from "../../service/groq.service";
 import { Request, Response } from "express";
 import generateNewSearchDestinationPrompt, { SearchNewDestinationPromptData } from "../../utils/Gemini Utils/generatePromptForSearchNewDestinations";
 import winstonLogger from "../../service/winston.service";
+import getFullURL from "../../service/getFullURL.service";
 
 const searchNewDestination = async (req: Request, res: Response) => {
     try {
@@ -38,8 +39,8 @@ const searchNewDestination = async (req: Request, res: Response) => {
         const response = JSON.parse(cleanString);
 
         // <----------Logger for success---------->
-        const fullUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
-        winstonLogger.info(`Success: ${fullUrl}`);
+        const fullUrl = getFullURL(req);
+        winstonLogger.info(`URL: ${fullUrl}`);
         return res.status(StatusCodes.OK).json({
             status: 'Ok',
             message: "Generated",
