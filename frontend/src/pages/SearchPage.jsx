@@ -7,6 +7,13 @@ import {
   CardContent
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -18,6 +25,7 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Spinner } from "@/components/ui/spinner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import axios from "axios";
 import {
   Bot,
@@ -34,10 +42,19 @@ import {
   Sparkles,
   Star,
   TrendingUp,
-  Users
+  Users,
+  X,
+  MapPinned,
+  CalendarDays,
+  Utensils,
+  Hotel,
+  Plane,
+  Info,
+  Lightbulb
 } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 
 const SearchPage = () => {
@@ -46,6 +63,10 @@ const SearchPage = () => {
   const [budgetRange, setBudgetRange] = useState([1000, 5000]);
   const [selectedActivities, setSelectedActivities] = useState([]);
   const [sortBy, setSortBy] = useState("recommended");
+  const [selectedDestination, setSelectedDestination] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 
   const handleActivityToggle = (activity) => {
     setSelectedActivities((prev) =>
@@ -55,83 +76,120 @@ const SearchPage = () => {
     );
   };
 
-  // Sample search results data
+  const handleViewDetails = (result) => {
+    setSelectedDestination(result);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setTimeout(() => setSelectedDestination(null), 300);
+  };
+
+
+  // Sample search results data - Updated to match API structure
   const sampleSearchResults = [
     {
-      id: 1,
-      destination: "Bali, Indonesia",
-      duration: "7 Days",
-      price: "$1,200",
-      rating: 4.8,
-      reviews: 124,
-      aiScore: 98,
-      image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=800&q=80",
-      highlights: ["Beach", "Culture", "Wellness"],
+      ai_score: "98%",
+      image_url: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=800&q=80",
+      name: "Bali, Indonesia",
+      days: 7,
+      cost: 85000,
+      star: 4.8,
+      total_reviews: 124,
+      destination_overview: "Experience pristine beaches, ancient temples, and vibrant culture in this tropical paradise.",
+      perfect_for: ["Beach", "Culture", "Wellness", "Adventure"],
+      budget_breakdown: {
+        flights: "Approx 60% of budget",
+        accommodation: "Approx 20% of budget",
+        food: "Approx 10% of budget",
+        activities: "Approx 10% of budget"
+      },
+      trip_highlights: [
+        { name: "Surfing", description: "World-class waves at Uluwatu and Canggu", match_reason: "Perfect for adventure seekers" },
+        { name: "Temples", description: "Ancient sacred sites like Tanah Lot", match_reason: "Cultural immersion" },
+        { name: "Yoga", description: "Wellness retreats in Ubud", match_reason: "Relaxation and rejuvenation" }
+      ],
+      suggested_itinerary: [
+        { day: 1, morning: "Arrive in Bali, check-in", afternoon: "Beach relaxation", evening: "Sunset at Tanah Lot" },
+        { day: 2, morning: "Surfing lessons", afternoon: "Temple visit", evening: "Traditional dance show" },
+        { day: 3, morning: "Yoga session", afternoon: "Rice terrace tour", evening: "Spa treatment" }
+      ],
+      local_tips: [
+        "Best time to visit is April-October (dry season)",
+        "Rent a scooter for easy transportation",
+        "Try local warungs for authentic Indonesian food"
+      ],
       activities: ["Surfing", "Yoga", "Temples"]
     },
     {
-      id: 2,
-      destination: "Kyoto, Japan",
-      duration: "10 Days",
-      price: "$2,400",
-      rating: 4.9,
-      reviews: 89,
-      aiScore: 96,
-      image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=800&q=80",
-      highlights: ["History", "Nature", "Food"],
+      ai_score: "96%",
+      image_url: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=800&q=80",
+      name: "Kyoto, Japan",
+      days: 10,
+      cost: 180000,
+      star: 4.9,
+      total_reviews: 89,
+      destination_overview: "Immerse yourself in traditional Japanese culture with stunning temples and gardens.",
+      perfect_for: ["History", "Nature", "Food", "Culture"],
+      budget_breakdown: {
+        flights: "Approx 50% of budget",
+        accommodation: "Approx 25% of budget",
+        food: "Approx 15% of budget",
+        activities: "Approx 10% of budget"
+      },
+      trip_highlights: [
+        { name: "Fushimi Inari", description: "Thousand torii gates", match_reason: "Iconic experience" },
+        { name: "Tea Ceremony", description: "Traditional ritual", match_reason: "Cultural depth" },
+        { name: "Arashiyama Bamboo", description: "Enchanting bamboo grove", match_reason: "Natural beauty" }
+      ],
+      suggested_itinerary: [
+        { day: 1, morning: "Arrive Kyoto", afternoon: "Gion district walk", evening: "Kaiseki dinner" },
+        { day: 2, morning: "Fushimi Inari hike", afternoon: "Nishiki Market", evening: "Pontocho alley" }
+      ],
+      local_tips: [
+        "Purchase a JR Pass before arrival",
+        "Spring (cherry blossoms) and autumn are peak seasons",
+        "Reserve restaurants in advance"
+      ],
       activities: ["Temples", "Tea Ceremony", "Hiking"]
     },
     {
-      id: 3,
-      destination: "Reykjavik, Iceland",
-      duration: "5 Days",
-      price: "$1,800",
-      rating: 4.7,
-      reviews: 56,
-      aiScore: 94,
-      image: "https://images.unsplash.com/photo-1476610182048-b716b8518aae?auto=format&fit=crop&w=800&q=80",
-      highlights: ["Nature", "Adventure", "Photography"],
+      ai_score: "94%",
+      image_url: "https://images.unsplash.com/photo-1476610182048-b716b8518aae?auto=format&fit=crop&w=800&q=80",
+      name: "Reykjavik, Iceland",
+      days: 5,
+      cost: 135000,
+      star: 4.7,
+      total_reviews: 56,
+      destination_overview: "Witness breathtaking natural wonders from northern lights to glaciers.",
+      perfect_for: ["Nature", "Adventure", "Photography"],
+      budget_breakdown: {
+        flights: "Approx 55% of budget",
+        accommodation: "Approx 20% of budget",
+        food: "Approx 15% of budget",
+        activities: "Approx 10% of budget"
+      },
+      trip_highlights: [
+        { name: "Northern Lights", description: "Aurora viewing tours", match_reason: "Once-in-lifetime experience" },
+        { name: "Blue Lagoon", description: "Geothermal spa", match_reason: "Relaxation in nature" },
+        { name: "Golden Circle", description: "Geysers and waterfalls", match_reason: "Scenic road trip" }
+      ],
+      suggested_itinerary: [
+        { day: 1, morning: "Arrive Reykjavik", afternoon: "City tour", evening: "Northern lights hunt" },
+        { day: 2, morning: "Golden Circle tour", afternoon: "Geyser viewing", evening: "Hot spring soak" }
+      ],
+      local_tips: [
+        "September-March best for Northern Lights",
+        "Rent a 4WD vehicle for Ring Road",
+        "Groceries are expensive, stock up in Reykjavik"
+      ],
       activities: ["Northern Lights", "Glaciers", "Geysers"]
-    },
-    {
-      id: 4,
-      destination: "Santorini, Greece",
-      duration: "6 Days",
-      price: "$3,200",
-      rating: 4.9,
-      reviews: 210,
-      aiScore: 92,
-      image: "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=800&q=80",
-      highlights: ["Romance", "Views", "Food"],
-      activities: ["Sunsets", "Wine Tasting", "Boating"]
-    },
-    {
-      id: 5,
-      destination: "Machu Picchu, Peru",
-      duration: "8 Days",
-      price: "$2,100",
-      rating: 4.8,
-      reviews: 145,
-      aiScore: 91,
-      image: "https://images.unsplash.com/photo-1587595431973-160d0d94add1?auto=format&fit=crop&w=800&q=80",
-      highlights: ["History", "Adventure", "Hiking"],
-      activities: ["Trekking", "Ruins", "Culture"]
-    },
-    {
-      id: 6,
-      destination: "Amalfi Coast, Italy",
-      duration: "7 Days",
-      price: "$2,800",
-      rating: 4.7,
-      reviews: 178,
-      aiScore: 90,
-      image: "https://images.unsplash.com/photo-1633321088355-d0f8c1eaad48?auto=format&fit=crop&w=800&q=80",
-      highlights: ["Coast", "Food", "Luxury"],
-      activities: ["Driving", "Dining", "Boating"]
     }
   ];
 
-  // Initialize state with sample data to prevent undefined mapping error
+
+  // Initialize state with sample data - Now as an array
   const [searchResults, setSearchResults] = useState(sampleSearchResults);
   const [isLoading, setIsLoading] = useState(false);
   const [toDate, setToDate] = useState("");
@@ -141,10 +199,11 @@ const SearchPage = () => {
   const [travelers, setTravelers] = useState("2");
   const [budget, setBudget] = useState("mid");
 
+
   const handleSearchResult = async () => {
     try {
-      // construct payload...
       setIsLoading(true);
+      
       const payload = {
         to: to || "Japan",
         from: from || "Kolkata",
@@ -154,16 +213,32 @@ const SearchPage = () => {
         budget_range: budget,
       }
 
-      // axios POST request...
-      const response = await axios.post("http://localhost:8000/api/v1/plans/search/destination", payload);
 
-      console.log(response.data.data);
+      // axios POST request...
+      const response = await axios.post(`${VITE_BACKEND_URL}/api/v1/plans/search/destination`, payload);
+
+
+      console.log("API Response:", response.data.data);
+      
+      // Convert single object to array format for consistent rendering
+      if (response.data.data) {
+        // If API returns single object, wrap it in an array
+        const apiData = Array.isArray(response.data.data) 
+          ? response.data.data 
+          : [response.data.data];
+        
+        setSearchResults(apiData);
+        toast.success(`Found ${apiData.length} result(s)`);
+      }
+      
       setIsLoading(false);
     } catch (error) {
-      toast.error("Error on initial search");
+      console.error("Search error:", error);
+      toast.error("Error searching destinations. Please try again.");
       setIsLoading(false);
     }
   }
+
 
   const activities = [
     "Adventure",
@@ -180,11 +255,13 @@ const SearchPage = () => {
     "Art",
   ];
 
+
   return (
     <div className="min-h-screen bg-black">
       {/* Navbar with padding for fixed positioning */}
       <NavBar />
       <div className="h-6"></div>
+
 
       {/* Search Header */}
       <section className="py-8 bg-gradient-to-br from-gray-900 via-black to-gray-900 border-b border-gray-800">
@@ -202,6 +279,7 @@ const SearchPage = () => {
                 Let AI curate personalized travel experiences just for you
               </p>
             </div>
+
 
             {/* Search Form */}
             <Card className="bg-gray-900/80 border-gray-700 backdrop-blur-sm">
@@ -223,18 +301,18 @@ const SearchPage = () => {
                       <Input
                         id="destination"
                         placeholder="Enter destination"
+                        value={to}
                         onChange={(e) => setTo(e.target.value)}
                         className="pl-10 bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500"
                       />
                     </div>
-
-
                   </div>
+
 
                   {/* Where from */}
                   <div className="space-y-2">
                     <Label
-                      htmlFor="destination"
+                      htmlFor="from-destination"
                       className="text-white text-sm font-medium"
                     >
                       Where from?
@@ -245,15 +323,15 @@ const SearchPage = () => {
                         size={18}
                       />
                       <Input
-                        id="destination"
-                        placeholder="Enter destination"
+                        id="from-destination"
+                        placeholder="Enter origin"
+                        value={from}
                         onChange={(e) => setFrom(e.target.value)}
                         className="pl-10 bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500"
                       />
                     </div>
-
-
                   </div>
+
 
                   {/* From Date */}
                   <div className="space-y-2">
@@ -261,19 +339,18 @@ const SearchPage = () => {
                       From
                     </Label>
                     <div className="relative">
-                      {/* Visual Icon (Optional, browser adds its own on the right usually) */}
                       <Calendar className="absolute left-3 top-3 text-gray-400 pointer-events-none" size={18} />
-
                       <Input
                         id="dates"
-                        type="date" // This enables the native date picker
+                        type="date"
                         className="pl-10 bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 [color-scheme:dark]"
                         value={fromDate}
                         onChange={(e) => setFromDate(e.target.value)}
-                        min={new Date().toISOString().split("T")[0]} // Disable past dates
+                        min={new Date().toISOString().split("T")[0]}
                       />
                     </div>
                   </div>
+
 
                   {/* To Date */}
                   <div className="space-y-2">
@@ -282,21 +359,21 @@ const SearchPage = () => {
                     </Label>
                     <div className="relative">
                       <Calendar className="absolute left-3 top-3 text-gray-400 pointer-events-none" size={18} />
-
                       <Input
                         id="dates-to"
                         type="date"
                         className="pl-10 bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 [color-scheme:dark]"
                         value={toDate}
                         onChange={(e) => setToDate(e.target.value)}
-                        min={fromDate} // Ensure 'To' date is after 'From' date
+                        min={fromDate}
                       />
                     </div>
                   </div>
                 </div>
 
+
                 {/* Select total travelers */}
-                <div className="space-y-2">
+                <div className="space-y-2 mb-4">
                   <Label
                     htmlFor="travelers"
                     className="text-white text-sm font-medium"
@@ -308,7 +385,7 @@ const SearchPage = () => {
                       className="absolute left-3 top-3 text-gray-400"
                       size={18}
                     />
-                    <Select onValueChange={(value) => setTravelers(value)}>
+                    <Select value={travelers} onValueChange={(value) => setTravelers(value)}>
                       <SelectTrigger className="pl-10 bg-gray-800 border-gray-600 text-white">
                         <SelectValue placeholder="2 travelers"/>
                       </SelectTrigger>
@@ -322,8 +399,9 @@ const SearchPage = () => {
                   </div>
                 </div>
 
+
                 {/* Select Budget */}
-                <div className="space-y-2 mb-4 mt-2">
+                <div className="space-y-2 mb-4">
                   <Label className="text-white text-sm font-medium">
                     Budget Range
                   </Label>
@@ -332,7 +410,7 @@ const SearchPage = () => {
                       className="absolute left-3 top-3 text-gray-400"
                       size={18}
                     />
-                    <Select onValueChange={(value) => setBudget(value)}>
+                    <Select value={budget} onValueChange={(value) => setBudget(value)}>
                       <SelectTrigger className="pl-10 bg-gray-800 border-gray-600 text-white">
                         <SelectValue placeholder="Any budget range" />
                       </SelectTrigger>
@@ -351,16 +429,16 @@ const SearchPage = () => {
                   </div>
                 </div>
 
+
                 <div className="flex flex-col sm:flex-row gap-4 items-center">
                   <Button
                     className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-8"
                     size="lg"
                     onClick={() => handleSearchResult()}
-                    disabled={isLoading} // Prevents multiple clicks
+                    disabled={isLoading}
                   >
                     {isLoading ? (
                       <>
-                        {/* Ensure your Spinner has animate-spin if it's an icon, or uses your custom component */}
                         <Spinner className="mr-2 size-5 text-white animate-spin" />
                         Processing...
                       </>
@@ -372,6 +450,7 @@ const SearchPage = () => {
                       </>
                     )}
                   </Button>
+
 
                   <Button
                     variant="outline"
@@ -387,6 +466,7 @@ const SearchPage = () => {
                     />
                   </Button>
                 </div>
+
 
                 {/* Advanced Filters */}
                 {showFilters && (
@@ -411,6 +491,7 @@ const SearchPage = () => {
                           </div>
                         </div>
                       </div>
+
 
                       <div className="space-y-4">
                         <h3 className="text-white font-semibold">Activities</h3>
@@ -438,6 +519,7 @@ const SearchPage = () => {
                           ))}
                         </div>
                       </div>
+
 
                       <div className="space-y-4">
                         <h3 className="text-white font-semibold">
@@ -475,10 +557,11 @@ const SearchPage = () => {
             </Card>
           </div>
         </div>
-      </section >
+      </section>
+
 
       {/* Results Section */}
-      < section className="py-8 bg-black" >
+      <section className="py-8 bg-black">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           {/* Results Header */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
@@ -487,9 +570,10 @@ const SearchPage = () => {
                 AI-Curated Travel Plans
               </h2>
               <p className="text-gray-400">
-                Found 247 personalized adventures • Powered by AI
+                Found {searchResults?.length || 0} personalized adventures • Powered by AI
               </p>
             </div>
+
 
             <div className="flex items-center space-x-4 mt-4 sm:mt-0">
               <Select value={sortBy} onValueChange={setSortBy}>
@@ -507,164 +591,455 @@ const SearchPage = () => {
             </div>
           </div>
 
+
+          {/* Loading State */}
+          {isLoading && (
+            <div className="flex flex-col items-center justify-center py-20">
+              <Spinner className="size-12 text-blue-500 animate-spin mb-4" />
+              <p className="text-gray-400 text-lg">Finding your perfect adventure...</p>
+            </div>
+          )}
+
+
+          {/* Empty State */}
+          {!isLoading && (!searchResults || searchResults.length === 0) && (
+            <div className="text-center py-20">
+              <div className="text-gray-500 mb-4">
+                <Search size={64} className="mx-auto mb-4 opacity-50" />
+                <p className="text-xl">No results found</p>
+                <p className="text-sm mt-2">Try adjusting your search criteria</p>
+              </div>
+            </div>
+          )}
+
+
           {/* Search Results Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {searchResults && searchResults.map((result) => (
-              <Card
-                key={result.id}
-                className="result-card bg-gray-900 border-gray-700 hover:border-blue-500/50 transition-all duration-300 group"
+          {!isLoading && searchResults && searchResults.length > 0 && (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {searchResults.map((result, index) => (
+                <Card
+                  key={index}
+                  className="result-card bg-gray-900 border-gray-700 hover:border-blue-500/50 transition-all duration-300 group"
+                >
+                  <div className="relative">
+                    <div className="relative h-48 overflow-hidden rounded-t-lg">
+                      <img
+                        src={result.image_url}
+                        alt={result.name}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80";
+                        }}
+                        loading="lazy"
+                      />
+
+
+                      {/* AI Score Badge */}
+                      <Badge className="absolute top-3 left-3 bg-gradient-to-r from-blue-600 to-purple-600">
+                        <Bot className="mr-1" size={12} />
+                        AI Score: {result.ai_score}
+                      </Badge>
+
+
+                      {/* Action Buttons */}
+                      <div className="absolute top-3 right-3 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          className="bg-white/90 hover:bg-white"
+                        >
+                          <Heart size={16} />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          className="bg-white/90 hover:bg-white"
+                        >
+                          <Share size={16} />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+
+                  <CardContent className="p-6">
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="text-xl font-bold text-white mb-1">
+                            {result.name}
+                          </h3>
+                          <p className="text-gray-400 text-sm flex items-center">
+                            <Clock className="mr-1" size={14} />
+                            {result.days} {result.days === 1 ? 'Day' : 'Days'}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-2xl font-bold text-white">
+                            ₹{result.cost?.toLocaleString() || 'N/A'}
+                          </div>
+                          <div className="text-sm text-gray-400">per person</div>
+                        </div>
+                      </div>
+
+
+                      <div className="flex items-center space-x-2">
+                        <div className="flex text-yellow-400">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              size={16}
+                              fill={
+                                i < Math.floor(result.star)
+                                  ? "currentColor"
+                                  : "none"
+                              }
+                            />
+                          ))}
+                        </div>
+                        <span className="text-white font-semibold">
+                          {result.star}
+                        </span>
+                        <span className="text-gray-400 text-sm">
+                          ({result.total_reviews} reviews)
+                        </span>
+                      </div>
+
+
+                      {/* Destination Overview */}
+                      {result.destination_overview && (
+                        <p className="text-gray-400 text-sm line-clamp-2">
+                          {result.destination_overview}
+                        </p>
+                      )}
+
+
+                      {/* Trip Highlights */}
+                      {result.trip_highlights && result.trip_highlights.length > 0 && (
+                        <div className="space-y-2">
+                          <h4 className="text-white font-medium text-sm">
+                            Trip Highlights:
+                          </h4>
+                          <div className="flex flex-wrap gap-1">
+                            {result.trip_highlights.slice(0, 3).map((highlight, idx) => (
+                              <Badge
+                                key={idx}
+                                variant="secondary"
+                                className="bg-gray-800 text-gray-300 text-xs"
+                              >
+                                {highlight.name}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+
+                      {/* Perfect For / Activities */}
+                      {(result.perfect_for || result.activities) && (
+                        <div className="space-y-2">
+                          <h4 className="text-white font-medium text-sm">
+                            Perfect for:
+                          </h4>
+                          <div className="flex flex-wrap gap-1">
+                            {(result.perfect_for || result.activities)?.slice(0, 4).map((activity, idx) => (
+                              <Badge
+                                key={idx}
+                                variant="outline"
+                                className="border-blue-600/30 text-blue-400 text-xs"
+                              >
+                                {activity}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+
+                      <div className="pt-4 border-t border-gray-700">
+                        <div className="flex space-x-2">
+                          <Button 
+                            className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                            onClick={() => handleViewDetails(result)}
+                          >
+                            View Details
+                          </Button>
+                          <Button
+                            variant="outline"
+                            className="border-gray-600 text-black hover:bg-gray-800 hover:text-white"
+                          >
+                            <Bot size={16} />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+
+
+          {/* Load More */}
+          {!isLoading && searchResults && searchResults.length > 0 && (
+            <div className="text-center mt-12">
+              <Button
+                variant="outline"
+                className="border-gray-600 text-black hover:bg-gray-800 px-8 hover:text-white"
+                size="lg"
               >
-                <div className="relative">
-                  <div className="relative h-48 overflow-hidden rounded-t-lg">
-                    <img
-                      src={result.image}
-                      alt={result.destination}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src =
-                          "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI1MCIgdmlld0JveD0iMCAwIDQwMCAyNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMjUwIiBmaWxsPSIjMzc0MTUxIi8+CjxwYXRoIGQ9Ik0xNzUgMTAwSDE4NVYxMTBIMTc1VjEwMFoiIGZpbGw9IiM5Q0EzQUYiLz4KPHA+dGggZD0iTTE4NSAxMDBIMTk1VjExMEgxODVWMTAwWiIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNMjA1IDEwMEgyMTVWMTEwSDIwNVYxMDBaIiBmaWxsPSIjOUNBM0FGIi8+CjwvZz4KPC9zdmc+";
-                      }}
-                      loading="lazy"
-                    />
+                Load More Adventures
+                <TrendingUp className="ml-2" size={18} />
+              </Button>
+            </div>
+          )}
+        </div>
+      </section>
 
-                    {/* AI Score Badge - positioned over image */}
-                    <Badge className="absolute top-3 left-3 bg-gradient-to-r from-blue-600 to-purple-600">
-                      <Bot className="mr-1" size={12} />
-                      AI Score: {result.aiScore}%
-                    </Badge>
 
-                    {/* Action Buttons - positioned over image */}
-                    <div className="absolute top-3 right-3 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        className="bg-white/90 hover:bg-white"
-                      >
-                        <Heart size={16} />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        className="bg-white/90 hover:bg-white"
-                      >
-                        <Share size={16} />
-                      </Button>
+      {/* Detailed Modal */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="max-w-5xl max-h-[90vh] bg-gray-900 border-gray-700 text-white p-0 overflow-hidden">
+          {selectedDestination && (
+            <>
+              {/* Modal Header with Image */}
+              <div className="relative h-64 w-full">
+                <img
+                  src={selectedDestination.image_url}
+                  alt={selectedDestination.name}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80";
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/50 to-transparent"></div>
+                
+                {/* Title Overlay */}
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <Badge className="bg-gradient-to-r from-blue-600 to-purple-600 mb-3">
+                        <Bot className="mr-1" size={12} />
+                        AI Score: {selectedDestination.ai_score}
+                      </Badge>
+                      <h2 className="text-3xl font-bold text-white mb-2">
+                        {selectedDestination.name}
+                      </h2>
+                      <div className="flex items-center space-x-4 text-sm text-gray-300">
+                        <span className="flex items-center">
+                          <Clock className="mr-1" size={16} />
+                          {selectedDestination.days} Days
+                        </span>
+                        <span className="flex items-center">
+                          <Star className="mr-1 text-yellow-400" size={16} fill="currentColor" />
+                          {selectedDestination.star} ({selectedDestination.total_reviews} reviews)
+                        </span>
+                        <span className="text-2xl font-bold text-blue-400">
+                          ₹{selectedDestination.cost?.toLocaleString()}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <CardContent className="p-6">
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="text-xl font-bold text-white mb-1">
-                          {result.destination}
-                        </h3>
-                        <p className="text-gray-400 text-sm flex items-center">
-                          <Clock className="mr-1" size={14} />
-                          {result.duration}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-2xl font-bold text-white">
-                          {result.price}
-                        </div>
-                        <div className="text-sm text-gray-400">per person</div>
-                      </div>
-                    </div>
+                {/* Close Button */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white rounded-full"
+                  onClick={handleCloseModal}
+                >
+                  <X size={20} />
+                </Button>
+              </div>
 
-                    <div className="flex items-center space-x-2">
-                      <div className="flex text-yellow-400">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            size={16}
-                            fill={
-                              i < Math.floor(result.rating)
-                                ? "currentColor"
-                                : "none"
-                            }
-                          />
-                        ))}
-                      </div>
-                      <span className="text-white font-semibold">
-                        {result.rating}
-                      </span>
-                      <span className="text-gray-400 text-sm">
-                        ({result.reviews} reviews)
-                      </span>
-                    </div>
-
-                    <div className="space-y-2">
-                      <h4 className="text-white font-medium text-sm">
-                        Trip Highlights:
-                      </h4>
-                      <div className="flex flex-wrap gap-1">
-                        {result.highlights.map((highlight, index) => (
-                          <Badge
-                            key={index}
-                            variant="secondary"
-                            className="bg-gray-800 text-gray-300 text-xs"
-                          >
-                            {highlight}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <h4 className="text-white font-medium text-sm">
-                        Perfect for:
-                      </h4>
-                      <div className="flex flex-wrap gap-1">
-                        {result.activities.map((activity, index) => (
-                          <Badge
-                            key={index}
-                            variant="outline"
-                            className="border-blue-600/30 text-blue-400 text-xs"
-                          >
-                            {activity}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="pt-4 border-t border-gray-700">
-                      <div className="flex space-x-2">
-                        <Button className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                          View Details
-                        </Button>
-                        <Button
-                          variant="outline"
-                          className="border-gray-600 text-black hover:bg-gray-800 hover:text-white"
-                        >
-                          <Bot size={16} />
-                        </Button>
-                      </div>
-                    </div>
+              {/* Scrollable Content */}
+              <ScrollArea className="h-[calc(90vh-16rem)] px-6 pb-6">
+                <div className="space-y-6 mt-6">
+                  {/* Overview */}
+                  <div>
+                    <h3 className="text-xl font-semibold mb-3 flex items-center">
+                      <Info className="mr-2 text-blue-400" size={20} />
+                      Overview
+                    </h3>
+                    <p className="text-gray-300 leading-relaxed">
+                      {selectedDestination.destination_overview}
+                    </p>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
 
-          {/* Load More */}
-          <div className="text-center mt-12">
-            <Button
-              variant="outline"
-              className="border-gray-600 text-black hover:bg-gray-800 px-8 hover:text-white"
-              size="lg"
-            >
-              Load More Adventures
-              <TrendingUp className="ml-2" size={18} />
-            </Button>
-          </div>
-        </div>
-      </section >
+                  {/* Perfect For Tags */}
+                  {selectedDestination.perfect_for && (
+                    <div>
+                      <h3 className="text-xl font-semibold mb-3">Perfect For</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedDestination.perfect_for.map((tag, idx) => (
+                          <Badge
+                            key={idx}
+                            variant="outline"
+                            className="border-blue-600/50 text-blue-400 bg-blue-900/20 px-4 py-2"
+                          >
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Tabs for Detailed Info */}
+                  <Tabs defaultValue="highlights" className="w-full">
+                    <TabsList className="grid w-full grid-cols-4 bg-gray-800 mb-6">
+                      <TabsTrigger value="highlights" className="data-[state=active]:bg-blue-600">
+                        Highlights
+                      </TabsTrigger>
+                      <TabsTrigger value="itinerary" className="data-[state=active]:bg-blue-600">
+                        Itinerary
+                      </TabsTrigger>
+                      <TabsTrigger value="budget" className="data-[state=active]:bg-blue-600">
+                        Budget
+                      </TabsTrigger>
+                      <TabsTrigger value="tips" className="data-[state=active]:bg-blue-600">
+                        Tips
+                      </TabsTrigger>
+                    </TabsList>
+
+                    {/* Highlights Tab */}
+                    <TabsContent value="highlights" className="space-y-4">
+                      {selectedDestination.trip_highlights && selectedDestination.trip_highlights.length > 0 ? (
+                        selectedDestination.trip_highlights.map((highlight, idx) => (
+                          <Card key={idx} className="bg-gray-800/50 border-gray-700">
+                            <CardContent className="p-4">
+                              <div className="flex items-start space-x-4">
+                                <div className="bg-blue-600/20 p-3 rounded-lg">
+                                  <MapPinned className="text-blue-400" size={24} />
+                                </div>
+                                <div className="flex-1">
+                                  <h4 className="font-semibold text-white mb-1">
+                                    {highlight.name}
+                                  </h4>
+                                  <p className="text-gray-400 text-sm mb-2">
+                                    {highlight.description}
+                                  </p>
+                                  <Badge variant="secondary" className="bg-blue-900/30 text-blue-300 text-xs">
+                                    {highlight.match_reason}
+                                  </Badge>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))
+                      ) : (
+                        <p className="text-gray-400">No highlights available</p>
+                      )}
+                    </TabsContent>
+
+                    {/* Itinerary Tab */}
+                    <TabsContent value="itinerary" className="space-y-4">
+                      {selectedDestination.suggested_itinerary && selectedDestination.suggested_itinerary.length > 0 ? (
+                        selectedDestination.suggested_itinerary.map((day, idx) => (
+                          <Card key={idx} className="bg-gray-800/50 border-gray-700">
+                            <CardContent className="p-4">
+                              <div className="flex items-start space-x-4">
+                                <div className="bg-purple-600/20 p-3 rounded-lg flex items-center justify-center min-w-[60px]">
+                                  <div className="text-center">
+                                    <CalendarDays className="text-purple-400 mx-auto mb-1" size={20} />
+                                    <span className="text-purple-300 font-bold text-sm">Day {day.day}</span>
+                                  </div>
+                                </div>
+                                <div className="flex-1 space-y-2">
+                                  <div>
+                                    <span className="text-xs text-gray-500 uppercase font-semibold">Morning</span>
+                                    <p className="text-gray-300 text-sm">{day.morning}</p>
+                                  </div>
+                                  <div>
+                                    <span className="text-xs text-gray-500 uppercase font-semibold">Afternoon</span>
+                                    <p className="text-gray-300 text-sm">{day.afternoon}</p>
+                                  </div>
+                                  <div>
+                                    <span className="text-xs text-gray-500 uppercase font-semibold">Evening</span>
+                                    <p className="text-gray-300 text-sm">{day.evening}</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))
+                      ) : (
+                        <p className="text-gray-400">No itinerary available</p>
+                      )}
+                    </TabsContent>
+
+                    {/* Budget Tab */}
+                    <TabsContent value="budget" className="space-y-4">
+                      {selectedDestination.budget_breakdown ? (
+                        <div className="grid grid-cols-2 gap-4">
+                          {Object.entries(selectedDestination.budget_breakdown).map(([category, amount], idx) => (
+                            <Card key={idx} className="bg-gray-800/50 border-gray-700">
+                              <CardContent className="p-4">
+                                <div className="flex items-center space-x-3">
+                                  <div className="bg-green-600/20 p-2 rounded-lg">
+                                    {category === 'flights' && <Plane className="text-green-400" size={20} />}
+                                    {category === 'accommodation' && <Hotel className="text-green-400" size={20} />}
+                                    {category === 'food' && <Utensils className="text-green-400" size={20} />}
+                                    {category === 'activities' && <MapPinned className="text-green-400" size={20} />}
+                                  </div>
+                                  <div>
+                                    <h4 className="font-semibold text-white capitalize">
+                                      {category}
+                                    </h4>
+                                    <p className="text-gray-400 text-sm">{amount}</p>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-gray-400">No budget breakdown available</p>
+                      )}
+                    </TabsContent>
+
+                    {/* Tips Tab */}
+                    <TabsContent value="tips" className="space-y-3">
+                      {selectedDestination.local_tips && selectedDestination.local_tips.length > 0 ? (
+                        selectedDestination.local_tips.map((tip, idx) => (
+                          <Card key={idx} className="bg-gray-800/50 border-gray-700">
+                            <CardContent className="p-4">
+                              <div className="flex items-start space-x-3">
+                                <Lightbulb className="text-yellow-400 mt-1 flex-shrink-0" size={20} />
+                                <p className="text-gray-300 text-sm">{tip}</p>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))
+                      ) : (
+                        <p className="text-gray-400">No tips available</p>
+                      )}
+                    </TabsContent>
+                  </Tabs>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-3 pt-4 border-t border-gray-700">
+                    <Button className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                      <Heart className="mr-2" size={18} />
+                      Save to Favorites
+                    </Button>
+                    <Button variant="outline" className="flex-1 border-gray-600 text-white hover:bg-gray-800">
+                      <Share className="mr-2" size={18} />
+                      Share Trip
+                    </Button>
+                  </div>
+                </div>
+              </ScrollArea>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
 
       {/* AI Assistant CTA */}
-      < section className="py-12 bg-gradient-to-r from-blue-600/10 to-purple-600/10 border-y border-gray-800" >
+      <section className="py-12 bg-gradient-to-r from-blue-600/10 to-purple-600/10 border-y border-gray-800">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto">
             <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 rounded-full w-16 h-16 mx-auto mb-6 flex items-center justify-center">
@@ -687,10 +1062,11 @@ const SearchPage = () => {
             </Button>
           </div>
         </div>
-      </section >
+      </section>
       <Footer />
-    </div >
+    </div>
   );
 };
+
 
 export default SearchPage;
