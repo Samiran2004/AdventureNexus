@@ -164,15 +164,15 @@ export default function Footer() {
             <div className="space-y-3 mb-6">
               <div className="flex items-center space-x-3 text-gray-300">
                 <MapPin size={16} className="text-blue-400" />
-                <span className="text-sm">Global Travel Solutions</span>
+                <span className="text-sm">AdventureNexus</span>
               </div>
               <div className="flex items-center space-x-3 text-gray-300">
                 <Phone size={16} className="text-blue-400" />
-                <span className="text-sm">+1 (555) 123-TRIP</span>
+                <span className="text-sm">00000 00000</span>
               </div>
               <div className="flex items-center space-x-3 text-gray-300">
                 <Mail size={16} className="text-blue-400" />
-                <span className="text-sm">hello@adventurenexus.com</span>
+                <span className="text-sm">adventurenexus.org@gmail.com</span>
               </div>
             </div>
 
