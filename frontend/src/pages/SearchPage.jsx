@@ -9,13 +9,11 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
+  DialogContent
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -30,12 +28,17 @@ import axios from "axios";
 import {
   Bot,
   Calendar,
+  CalendarDays,
   ChevronDown,
   Clock,
-  DollarSign,
   Heart,
+  Hotel,
   IndianRupee,
+  Info,
+  Lightbulb,
   MapPin,
+  MapPinned,
+  Plane,
   Search,
   Share,
   SlidersHorizontal,
@@ -43,18 +46,11 @@ import {
   Star,
   TrendingUp,
   Users,
-  X,
-  MapPinned,
-  CalendarDays,
   Utensils,
-  Hotel,
-  Plane,
-  Info,
-  Lightbulb
+  X
 } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 
 const SearchPage = () => {
@@ -416,13 +412,13 @@ const SearchPage = () => {
                       </SelectTrigger>
                       <SelectContent className="bg-gray-800 border-gray-600">
                         <SelectItem value="budget">
-                          Budget ($500-$1500)
+                          Budget (₹5000-₹15000)
                         </SelectItem>
                         <SelectItem value="mid">
-                          Mid-range ($1500-$3000)
+                          Mid-range (₹15000-₹30000)
                         </SelectItem>
                         <SelectItem value="luxury">
-                          Luxury ($3000+)
+                          Luxury (₹30000+)
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -836,7 +832,7 @@ const SearchPage = () => {
                           <Star className="mr-1 text-yellow-400" size={16} fill="currentColor" />
                           {selectedDestination.star} ({selectedDestination.total_reviews} reviews)
                         </span>
-                        <span className="text-2xl font-bold text-blue-400">
+                        <span className="text-2xl font-bold text-green-400">
                           ₹{selectedDestination.cost?.toLocaleString()}
                         </span>
                       </div>
@@ -878,7 +874,7 @@ const SearchPage = () => {
                           <Badge
                             key={idx}
                             variant="outline"
-                            className="border-blue-600/50 text-blue-400 bg-blue-900/20 px-4 py-2"
+                            className="border-blue-600/50 text-white-400 bg-blue-900/20 px-4 py-2"
                           >
                             {tag}
                           </Badge>
@@ -890,16 +886,16 @@ const SearchPage = () => {
                   {/* Tabs for Detailed Info */}
                   <Tabs defaultValue="highlights" className="w-full">
                     <TabsList className="grid w-full grid-cols-4 bg-gray-800 mb-6">
-                      <TabsTrigger value="highlights" className="data-[state=active]:bg-blue-600">
+                      <TabsTrigger value="highlights" className="data-[state=active]:bg-blue-600 text-white cursor-pointer">
                         Highlights
                       </TabsTrigger>
-                      <TabsTrigger value="itinerary" className="data-[state=active]:bg-blue-600">
+                      <TabsTrigger value="itinerary" className="data-[state=active]:bg-blue-600 text-white cursor-pointer">
                         Itinerary
                       </TabsTrigger>
-                      <TabsTrigger value="budget" className="data-[state=active]:bg-blue-600">
+                      <TabsTrigger value="budget" className="data-[state=active]:bg-blue-600 text-white cursor-pointer">
                         Budget
                       </TabsTrigger>
-                      <TabsTrigger value="tips" className="data-[state=active]:bg-blue-600">
+                      <TabsTrigger value="tips" className="data-[state=active]:bg-blue-600 text-white cursor-pointer">
                         Tips
                       </TabsTrigger>
                     </TabsList>
