@@ -339,7 +339,7 @@ const SearchPage = () => {
                       <Input
                         id="dates"
                         type="date"
-                        className="pl-10 bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 [color-scheme:dark]"
+                        className="pl-10 bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 [color-scheme:dark] cursor-pointer"
                         value={fromDate}
                         onChange={(e) => setFromDate(e.target.value)}
                         min={new Date().toISOString().split("T")[0]}
@@ -358,7 +358,7 @@ const SearchPage = () => {
                       <Input
                         id="dates-to"
                         type="date"
-                        className="pl-10 bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 [color-scheme:dark]"
+                        className="pl-10 bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 [color-scheme:dark] cursor-pointer"
                         value={toDate}
                         onChange={(e) => setToDate(e.target.value)}
                         min={fromDate}
@@ -382,14 +382,14 @@ const SearchPage = () => {
                       size={18}
                     />
                     <Select value={travelers} onValueChange={(value) => setTravelers(value)}>
-                      <SelectTrigger className="pl-10 bg-gray-800 border-gray-600 text-white">
+                      <SelectTrigger className="pl-10 bg-gray-800 border-gray-600 text-white cursor-pointer">
                         <SelectValue placeholder="2 travelers"/>
                       </SelectTrigger>
-                      <SelectContent className="bg-gray-800 border-gray-600">
-                        <SelectItem value="1">1 traveler</SelectItem>
-                        <SelectItem value="2">2 travelers</SelectItem>
-                        <SelectItem value="3">3 travelers</SelectItem>
-                        <SelectItem value="4">4+ travelers</SelectItem>
+                      <SelectContent className="bg-gray-800 border-gray-600 cursor-pointer">
+                        <SelectItem value="1" className="cursor-pointer">1 traveler</SelectItem>
+                        <SelectItem value="2" className="cursor-pointer">2 travelers</SelectItem>
+                        <SelectItem value="3" className="cursor-pointer">3 travelers</SelectItem>
+                        <SelectItem value="4" className="cursor-pointer">4+ travelers</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -407,17 +407,17 @@ const SearchPage = () => {
                       size={18}
                     />
                     <Select value={budget} onValueChange={(value) => setBudget(value)}>
-                      <SelectTrigger className="pl-10 bg-gray-800 border-gray-600 text-white">
+                      <SelectTrigger className="pl-10 bg-gray-800 border-gray-600 text-white cursor-pointer">
                         <SelectValue placeholder="Any budget range" />
                       </SelectTrigger>
-                      <SelectContent className="bg-gray-800 border-gray-600">
-                        <SelectItem value="budget">
+                      <SelectContent className="bg-gray-800 border-gray-600 cursor-pointer">
+                        <SelectItem value="budget" className="cursor-pointer">
                           Budget (₹5000-₹15000)
                         </SelectItem>
-                        <SelectItem value="mid">
+                        <SelectItem value="mid" className="cursor-pointer">
                           Mid-range (₹15000-₹30000)
                         </SelectItem>
-                        <SelectItem value="luxury">
+                        <SelectItem value="luxury" className="cursor-pointer">
                           Luxury (₹30000+)
                         </SelectItem>
                       </SelectContent>
@@ -428,7 +428,7 @@ const SearchPage = () => {
 
                 <div className="flex flex-col sm:flex-row gap-4 items-center">
                   <Button
-                    className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-8"
+                    className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-8 cursor-pointer"
                     size="lg"
                     onClick={() => handleSearchResult()}
                     disabled={isLoading}
@@ -466,7 +466,7 @@ const SearchPage = () => {
 
                 {/* Advanced Filters */}
                 {showFilters && (
-                  <div className="mt-6 pt-6 border-t border-gray-700">
+                  <div className="mt-6 pt-6 border-t border-gray-700 cursor-pointer">
                     <div className="grid md:grid-cols-3 gap-6">
                       <div className="space-y-4">
                         <h3 className="text-white font-semibold">
@@ -756,7 +756,7 @@ const SearchPage = () => {
                       <div className="pt-4 border-t border-gray-700">
                         <div className="flex space-x-2">
                           <Button 
-                            className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                            className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 cursor-pointer"
                             onClick={() => handleViewDetails(result)}
                           >
                             View Details
