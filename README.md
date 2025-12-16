@@ -26,7 +26,11 @@
 - [📸 Screenshots](#-screenshots)
 - [🛠️ Tech Stack](#️-tech-stack)
 - [🚀 Getting Started](#-getting-started)
-- [▶️ Usage](#️-usage)
+- [▶️ Usage Workflow](#️-usage-workflow)
+- [🔁 Application Workflow Diagram](#-application-workflow-diagram)
+- [📊 Data Flow Diagrams (DFD)](#-data-flow-diagrams-dfd)
+- [🧩 System Architecture](#-system-architecture)
+- [🧠 System Design](#-system-design)
 - [🔌 API Documentation](#-api-documentation)
 - [📁 Project Structure](#-project-structure)
 - [🧭 Roadmap](#-roadmap)
@@ -64,23 +68,20 @@ Traditional travel planning is **time-consuming (10–15 hours per trip)**, frag
 - 🔗 **Share Plans via Link, Email, WhatsApp & Social Media**
 - 📊 **User Dashboard with Saved Plans & Favorites**
 - 🔐 **Secure Authentication with Clerk (JWT-based)**
-- 🛡️ **Rate Limiting, CORS Protection & Caching**
+- 🛡️ **Rate Limiting, CORS Protection & Redis Caching**
 
 ---
 
 ## 📸 Screenshots
 
-> *(UI placeholders – replace with real screenshots)*
 
 | Feature | Preview |
 |------|------|
-| Homepage | ![](https://via.placeholder.com/800x450/0f172a/ffffff?text=Homepage) |
-| Search Page | ![](https://via.placeholder.com/800x450/020617/ffffff?text=Search+Page) |
-| Results | ![](https://via.placeholder.com/800x450/020617/ffffff?text=Results) |
-| Itinerary Modal | ![](https://via.placeholder.com/800x450/020617/ffffff?text=Itinerary) |
-| Budget Breakdown | ![](https://via.placeholder.com/800x450/020617/ffffff?text=Budget+Breakdown) |
-| Flight Search | ![](https://via.placeholder.com/800x450/020617/ffffff?text=Flight+Search) |
-| Hotel Search | ![](https://via.placeholder.com/800x450/020617/ffffff?text=Hotel+Search) |
+| Homepage | ![](ScreenShots/Home_Page.png) |
+| Search Page | ![](ScreenShots/Search_Page.png) |
+| Review Page | ![](ScreenShots/Review_Page.png) |
+| About Page | ![](ScreenShots/About_Page.png) |
+| New Plan Results | ![](ScreenShots/Create_Plan_Result.png) |
 
 ### 📱 Mobile Views
 ![](https://via.placeholder.com/250x500/020617/ffffff?text=Mobile+Home)
