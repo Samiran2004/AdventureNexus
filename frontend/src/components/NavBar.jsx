@@ -28,7 +28,7 @@ function NavBar() {
     // Navigation items
     const navItems = [
         { name: 'Home', path: '/' },
-        { name: 'Search', path: '/search' },
+        { name: 'Plan', path: '/search' },
         { name: 'How It Works', path: '/works' },
         { name: 'Destinations', path: '/destinations' },
         { name: 'About', path: '/about' },
