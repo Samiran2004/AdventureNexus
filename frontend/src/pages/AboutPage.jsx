@@ -335,10 +335,10 @@ const AboutPage = () => {
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
                         {[
                             {
-                                name: "Alex Chen",
-                                role: "CEO & Co-Founder",
+                                name: "Samira Samanta",
+                                role: "Project Member 1",
                                 bio: "Former travel blogger turned tech entrepreneur. Passionate about using AI to democratize travel.",
-                                avatar: "AC",
+                                avatar: "SS",
                                 social: { linkedin: "#", twitter: "#" }
                             },
                             {
@@ -389,22 +389,22 @@ const AboutPage = () => {
                                     <p className="text-gray-400 text-sm">{member.bio}</p>
                                     <div className="flex justify-center space-x-3">
                                         {member.social.linkedin && (
-                                            <Button variant="outline" size="sm" className="border-gray-600 text-gray-400 hover:bg-blue-200 hover:text-blue-700 hover:border-white">
+                                            <Button variant="outline" size="sm" className="border-gray-600 text-gray-400 hover:bg-blue-200 hover:text-blue-700 hover:border-white cursor-pointer">
                                                 <Linkedin size={16} />
                                             </Button>
                                         )}
                                         {member.social.twitter && (
-                                            <Button variant="outline" size="sm" className="border-gray-600 text-gray-400 hover:bg-blue-200 hover:text-blue-500 hover:border-white">
+                                            <Button variant="outline" size="sm" className="border-gray-600 text-gray-400 hover:bg-blue-200 hover:text-blue-500 hover:border-white cursor-pointer">
                                                 <Twitter size={16} />
                                             </Button>
                                         )}
                                         {member.social.github && (
-                                            <Button variant="outline" size="sm" className="border-gray-600 text-gray-400 hover:text-black hover:border-white">
+                                            <Button variant="outline" size="sm" className="border-gray-600 text-gray-400 hover:text-black hover:border-white cursor-pointer">
                                                 <Github size={16} />
                                             </Button>
                                         )}
                                         {member.social.mail && (
-                                            <Button variant="outline" size="sm" className="border-gray-600 text-gray-400 hover:text-red-600 hover:border-white">
+                                            <Button variant="outline" size="sm" className="border-gray-600 text-gray-400 hover:text-red-600 hover:border-white cursor-pointer">
                                                 <Mail size={16} />
                                             </Button>
                                         )}
