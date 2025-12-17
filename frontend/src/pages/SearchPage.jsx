@@ -1016,12 +1016,12 @@ const SearchPage = () => {
                   </Tabs>
 
                   {/* Action Buttons */}
-                  <div className="flex gap-3 pt-4 border-t border-gray-700">
-                    <Button className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                  <div className="flex gap-3 pt-4 border-t border-gray-700 mb-5">
+                    <Button className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 cursor-pointer">
                       <Heart className="mr-2" size={18} />
                       Save to Favorites
                     </Button>
-                    <Button variant="outline" className="flex-1 border-gray-600 text-white hover:bg-gray-800">
+                    <Button variant="outline" className="flex-1 border-gray-600 text-black hover:bg-gray-800 hover:text-white cursor-pointer">
                       <Share className="mr-2" size={18} />
                       Share Trip
                     </Button>
