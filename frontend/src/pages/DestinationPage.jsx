@@ -493,11 +493,11 @@ const DestinationsPage = () => {
                             </div>
                             <div className="flex items-center">
                                 <MapPin className="mr-2" size={16} />
-                                <NumberCounter targetNumber={2500} duration={2.5} />+ Destinations
+                                <NumberCounter targetNumber={5} duration={2.5} />+ Destinations
                             </div>
                             <div className="flex items-center">
                                 <Users className="mr-2" size={16} />
-                                <NumberCounter targetNumber={50000} duration={3} />+ Travelers
+                                <NumberCounter targetNumber={5} duration={3} />+ Travelers
                             </div>
                         </div>
                     </div>
