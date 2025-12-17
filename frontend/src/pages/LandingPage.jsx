@@ -229,7 +229,7 @@ const AdventureNexusLanding = () => {
                             <div className="flex flex-col sm:flex-row gap-4">
                                 <Button
                                     size="lg"
-                                    className="text-lg px-8 py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                                    className="text-lg px-8 py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 cursor-pointer"
                                     onMouseEnter={handleButtonHover}
                                     onMouseLeave={handleButtonLeave}
                                     onClick={()=>{
@@ -242,7 +242,7 @@ const AdventureNexusLanding = () => {
                                 <Button
                                     variant="outline"
                                     size="lg"
-                                    className="text-lg px-8 py-6 border-2 border-gray-600 text-black hover:bg-gray-800 hover:text-white"
+                                    className="text-lg px-8 py-6 border-2 border-gray-600 text-black hover:bg-gray-800 hover:text-white cursor-pointer"
                                     onMouseEnter={handleButtonHover}
                                     onMouseLeave={handleButtonLeave}
                                     onClick={()=>{
