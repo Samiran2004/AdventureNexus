@@ -356,7 +356,7 @@ const AdventureNexusLanding = () => {
                         {[
                             {
                                 name: "Samiran Samanta",
-                                role: "Project Lead",
+                                role: "Journey Lover",
                                 content: "“Great tool! Very easy to use and gives smart, personalized travel plans. Adding more customization options would make it perfect. Keep it up!”",
                                 rating: 5,
                                 location: "Bangkok, Thailand, Kyoto"
@@ -437,9 +437,9 @@ const AdventureNexusLanding = () => {
                                 price: "₹2999",
                                 period: "/year",
                                 description: "For travel professionals",
-                                features: ["Everything in Adventurer", "Unlimited Group Trip Planning", "Custom integrations", "Priority Booking", "Free Russian", "Free Condoms(Unlimited)[Durex]"],
+                                features: ["Everything in Adventurer", "Unlimited Group Trip Planning", "Custom integrations", "Priority Booking", "Guided Planning With AI", "Smart Hotel and Flight Booking Redirection"],
                                 popular: false,
-                                buttonText: "Contact Sales"
+                                buttonText: "Go Premium Pro"
                             }
                         ].map((plan, index) => (
                             <Card
