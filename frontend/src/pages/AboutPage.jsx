@@ -206,13 +206,13 @@ const AboutPage = () => {
                         </div>
                         <div className="text-center">
                             <div className="text-3xl md:text-4xl font-bold text-white mb-2">
-                                <NumberCounter targetNumber={50000} duration={2.5} />+
+                                <NumberCounter targetNumber={5} duration={2.5} />+
                             </div>
                             <div className="text-gray-400">Happy Travelers</div>
                         </div>
                         <div className="text-center">
                             <div className="text-3xl md:text-4xl font-bold text-white mb-2">
-                                <NumberCounter targetNumber={1000000} duration={3} />+
+                                <NumberCounter targetNumber={10} duration={3} />+
                             </div>
                             <div className="text-gray-400">Trips Planned</div>
                         </div>
