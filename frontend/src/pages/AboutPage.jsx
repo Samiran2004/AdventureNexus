@@ -336,46 +336,47 @@ const AboutPage = () => {
                         {[
                             {
                                 name: "Samira Samanta",
-                                role: "Project Member 1",
-                                bio: "Former travel blogger turned tech entrepreneur. Passionate about using AI to democratize travel.",
+                                role: "Growth & Community Strategist",
+                                bio: "Leads user growth and community engagement, blending storytelling with data-driven strategies to expand global reach.",
                                 avatar: "SS",
                                 social: { linkedin: "#", twitter: "#" }
                             },
                             {
-                                name: "Sarah Martinez",
-                                role: "CTO & Co-Founder",
-                                bio: "AI researcher with 10+ years in machine learning. Loves building intelligent systems.",
+                                name: "Atarthi Paria",
+                                role: "Chief Technology Officer",
+                                bio: "Architect of the platform’s core technology, responsible for scalable AI infrastructure and long-term technical vision.",
                                 avatar: "SM",
                                 social: { linkedin: "#", github: "#" }
                             },
                             {
-                                name: "David Kumar",
-                                role: "Head of Product",
-                                bio: "UX design expert focused on creating intuitive travel experiences for millions of users.",
+                                name: "Ritam Maity",
+                                role: "Product Strategy Lead",
+                                bio: "Bridges user needs and business goals by shaping product direction, roadmap, and feature prioritization.",
                                 avatar: "DK",
                                 social: { linkedin: "#", twitter: "#" }
                             },
                             {
-                                name: "Emma Thompson",
-                                role: "Lead AI Engineer",
-                                bio: "PhD in Computer Science specializing in recommendation systems and natural language processing.",
+                                name: "Shounak Santra",
+                                role: "Principal AI Architect",
+                                bio: "Designs and optimizes advanced AI models powering personalization, recommendations, and intelligent automation.",
                                 avatar: "ET",
                                 social: { linkedin: "#", github: "#" }
                             },
                             {
-                                name: "Marco Rodriguez",
-                                role: "Head of Partnerships",
-                                bio: "Travel industry veteran with extensive network of global travel suppliers and destinations.",
+                                name: "Sudesna Sasmal",
+                                role: "Strategic Alliances Director",
+                                bio: "Builds and manages high-impact partnerships with travel providers, platforms, and global stakeholders.",
                                 avatar: "MR",
                                 social: { linkedin: "#", twitter: "#" }
                             },
                             {
-                                name: "Lisa Wong",
-                                role: "Customer Success Lead",
-                                bio: "Dedicated to ensuring every traveler has an amazing experience with our platform.",
+                                name: "Arijit Chattaraj",
+                                role: "User Experience & Support Manager",
+                                bio: "Oversees customer satisfaction, feedback loops, and service quality to ensure trust and long-term retention.",
                                 avatar: "LW",
                                 social: { linkedin: "#", mail: "#" }
                             }
+
                         ].map((member, index) => (
                             <Card key={index} className="team-card bg-gray-900 border-gray-700 hover:scale-105 transition-transform duration-300">
                                 <CardContent className="p-6 text-center space-y-4">
