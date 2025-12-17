@@ -335,45 +335,45 @@ const AboutPage = () => {
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
                         {[
                             {
-                                name: "Samira Samanta",
-                                role: "Growth & Community Strategist",
-                                bio: "Leads user growth and community engagement, blending storytelling with data-driven strategies to expand global reach.",
+                                name: "SAMIRAN SAMANTA",
+                                role: "Technology Lead",
+                                bio: "Responsible for managing the technical structure of the system. Handles system architecture, backend logic, and ensures smooth performance of the application.",
                                 avatar: "SS",
                                 social: { linkedin: "#", twitter: "#" }
                             },
                             {
-                                name: "Atarthi Paria",
-                                role: "Chief Technology Officer",
-                                bio: "Architect of the platform’s core technology, responsible for scalable AI infrastructure and long-term technical vision.",
-                                avatar: "SM",
+                                name: "ATARTHI PARIA",
+                                role: "Design & Market Research Lead",
+                                bio: "Oversees visual design direction while researching market trends, user behavior, and emerging statistics to drive creative, data-informed design decisions.",
+                                avatar: "AP",
                                 social: { linkedin: "#", github: "#" }
                             },
                             {
-                                name: "Ritam Maity",
-                                role: "Product Strategy Lead",
-                                bio: "Bridges user needs and business goals by shaping product direction, roadmap, and feature prioritization.",
-                                avatar: "DK",
+                                name: "SHOUNAK SANTRA",
+                                role: "UI/UX DESIGNER",
+                                bio: "Owns the frontend architecture and user interface implementation, ensuring seamless user experience, visual consistency, and performance across the platform.",
+                                avatar: "SS",
                                 social: { linkedin: "#", twitter: "#" }
                             },
                             {
-                                name: "Shounak Santra",
-                                role: "Principal AI Architect",
-                                bio: "Designs and optimizes advanced AI models powering personalization, recommendations, and intelligent automation.",
-                                avatar: "ET",
+                                name: "RITAM MAITY",
+                                role: "UI/UX DESIGNER",
+                                bio: "Codes interactive intefaces and design systems, focusing on usability, accessibility, and smooth user interactions.",
+                                avatar: "RM",
                                 social: { linkedin: "#", github: "#" }
                             },
                             {
-                                name: "Sudesna Sasmal",
+                                name: "",
                                 role: "Strategic Alliances Director",
                                 bio: "Builds and manages high-impact partnerships with travel providers, platforms, and global stakeholders.",
-                                avatar: "MR",
+                                avatar: "SS",
                                 social: { linkedin: "#", twitter: "#" }
                             },
                             {
                                 name: "Arijit Chattaraj",
-                                role: "User Experience & Support Manager",
-                                bio: "Oversees customer satisfaction, feedback loops, and service quality to ensure trust and long-term retention.",
-                                avatar: "LW",
+                                role: "Project Mentor",
+                                bio: "Advises the team on methodology, technical direction, and best practices while ensuring the project meets academic and professional standards",
+                                avatar: "AC",
                                 social: { linkedin: "#", mail: "#" }
                             }
 
