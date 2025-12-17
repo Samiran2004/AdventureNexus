@@ -51,6 +51,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { useAuth } from "@clerk/clerk-react"
 
 
 const SearchPage = () => {
@@ -194,46 +195,50 @@ const SearchPage = () => {
   const [from, setFrom] = useState("");
   const [travelers, setTravelers] = useState("2");
   const [budget, setBudget] = useState("mid");
+  const { getToken } = useAuth();
+
 
 
   const handleSearchResult = async () => {
+    if (!to || !from || !fromDate) {
+      toast.error("Please fill all required fields");
+      return;
+    }
+
     try {
       setIsLoading(true);
-      
+
+      const token = await getToken();
+
       const payload = {
-        to: to || "Japan",
-        from: from || "Kolkata",
+        to,
+        from,
         date: fromDate,
-        travelers: travelers || 2,
+        travelers: Number(travelers),
         budget: 250000,
         budget_range: budget,
-      }
+      };
 
+      const response = await axios.post(
+        `${VITE_BACKEND_URL}/api/v1/plans/search/destination`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      // axios POST request...
-      const response = await axios.post(`${VITE_BACKEND_URL}/api/v1/plans/search/destination`, payload);
-
-
-      console.log("API Response:", response.data.data);
-      
-      // Convert single object to array format for consistent rendering
-      if (response.data.data) {
-        // If API returns single object, wrap it in an array
-        const apiData = Array.isArray(response.data.data) 
-          ? response.data.data 
-          : [response.data.data];
-        
-        setSearchResults(apiData);
-        toast.success(`Found ${apiData.length} result(s)`);
-      }
-      
+      setSearchResults([response.data.data]);
+      toast.success("Plan generated successfully");
       setIsLoading(false);
     } catch (error) {
       console.error("Search error:", error);
-      toast.error("Error searching destinations. Please try again.");
+      toast.error("Failed to generate plan");
       setIsLoading(false);
     }
-  }
+  };
+
 
 
   const activities = [
@@ -383,7 +388,7 @@ const SearchPage = () => {
                     />
                     <Select value={travelers} onValueChange={(value) => setTravelers(value)}>
                       <SelectTrigger className="pl-10 bg-gray-800 border-gray-600 text-white cursor-pointer">
-                        <SelectValue placeholder="2 travelers"/>
+                        <SelectValue placeholder="2 travelers" />
                       </SelectTrigger>
                       <SelectContent className="bg-gray-800 border-gray-600 cursor-pointer">
                         <SelectItem value="1" className="cursor-pointer">1 traveler</SelectItem>
@@ -755,7 +760,7 @@ const SearchPage = () => {
 
                       <div className="pt-4 border-t border-gray-700">
                         <div className="flex space-x-2">
-                          <Button 
+                          <Button
                             className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 cursor-pointer"
                             onClick={() => handleViewDetails(result)}
                           >
@@ -811,7 +816,7 @@ const SearchPage = () => {
                   }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/50 to-transparent"></div>
-                
+
                 {/* Title Overlay */}
                 <div className="absolute bottom-0 left-0 right-0 p-6">
                   <div className="flex items-start justify-between">
