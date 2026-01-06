@@ -18,7 +18,7 @@
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=flat-square)](https://github.com/yourusername/adventurenexus/graphs/commit-activity)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-[Live Demo](https://adventurenexus.vercel.app) • [Report Bug](https://github.com/yourusername/adventurenexus/issues) • [Request Feature](https://github.com/yourusername/adventurenexus/issues)
+[Live Demo](https://adventurenexus.vercel.app) • [Report Bug](https://github.com/Samiran2004/AdventureNexus/issues) • [Request Feature](https://github.com/Samiran2004/AdventureNexus/issues)
 
 ---
 

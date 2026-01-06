@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+pydantic
+python-dotenv
+httpx
+motor
+beanie
+passlib[bcrypt]
+pyjwt
+cloudinary
+groq
+aiosmtplib
+google-generativeai
+svix
+pycountry
+python-multipart

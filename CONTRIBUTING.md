@@ -47,7 +47,7 @@ AdventureNexus is an AI-powered travel planning application built with:
 
 ```
 # Clone the repository
-git clone https://github.com/yourusername/AdventureNexus.git
+git clone https://github.com/Samiran2004/AdventureNexus.git
 cd AdventureNexus/frontend
 
 # Install dependencies
@@ -102,7 +102,7 @@ NODE_ENV=development
 
 ### 1. Find an Issue
 
-- Check our [Issues](https://github.com/yourusername/AdventureNexus/issues) page
+- Check our [Issues](https://github.com/Samiran2004/AdventureNexus/issues) page
 - Look for issues labeled `good first issue` for beginners
 - Issues labeled `help wanted` are great for experienced contributors
 
