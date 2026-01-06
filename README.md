@@ -1,12 +1,9 @@
-
-<div align="center">
-
 # 🌍 A d v e n t u r e  N e x u s
 ### *Transform your travel planning experience with AI-powered personalized itineraries*
 
-[![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=600&size=24&pause=1000&color=3B82F6&center=true&vCenter=true&width=600&lines=AI-Powered+Travel+Planning;Personalized+Itineraries;Smart+Budgeting;Real-time+Bookings;Explore+the+World+Smartly)](https://git.io/typing-svg)
+[![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=600&size=24&pause=1000&color=3B82F6&center=false&vCenter=true&width=600&lines=AI-Powered+Travel+Planning;Personalized+Itineraries;Smart+Budgeting;Real-time+Bookings;Explore+the+World+Smartly)](https://git.io/typing-svg)
 
-<br/>
+---
 
 <!-- Tech Stack Badges -->
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
@@ -17,15 +14,11 @@
 [![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?&style=for-the-badge&logo=redis&logoColor=white)](https://redis.io/)
 [![Clerk](https://img.shields.io/badge/Clerk-6C47FF?style=for-the-badge&logo=clerk&logoColor=white)](https://clerk.com/)
 
-<br/>
-
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=flat-square)](https://github.com/yourusername/adventurenexus/graphs/commit-activity)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
 [Live Demo](https://adventurenexus.vercel.app) • [Report Bug](https://github.com/yourusername/adventurenexus/issues) • [Request Feature](https://github.com/yourusername/adventurenexus/issues)
-
-</div>
 
 ---
 
@@ -73,42 +66,23 @@
 
 ## 📸 Screenshots
 
-<div align="center">
-  <h3>🖥️ Desktop Experience</h3>
-  <table>
-    <tr>
-      <td align="center">
-        <b>Landing Page</b><br/>
-        <img src="ScreenShots/Home_Page.png" width="400" alt="Home Page">
-      </td>
-      <td align="center">
-        <b>Smart Search</b><br/>
-        <img src="ScreenShots/Search_Page.png" width="400" alt="Search Page">
-      </td>
-    </tr>
-    <tr>
-      <td align="center">
-        <b>Plan Review</b><br/>
-        <img src="ScreenShots/Review_Page.png" width="400" alt="Review Page">
-      </td>
-      <td align="center">
-        <b>Generated Results</b><br/>
-        <img src="ScreenShots/Create_Plan_Result.png" width="400" alt="Results Page">
-      </td>
-    </tr>
-  </table>
+### 🖥️ Desktop Experience
 
-  <br/>
+**Landing Page**  
+![Home Page](ScreenShots/Home_Page.png)
 
-  <h3>📱 Mobile Responsiveness</h3>
-  <table>
-    <tr>
-      <td align="center"><img src="https://via.placeholder.com/200x400/0F172A/FFFFFF?text=Mobile+Home" width="200" alt="Mobile Home"></td>
-      <td align="center"><img src="https://via.placeholder.com/200x400/0F172A/FFFFFF?text=Mobile+Plan" width="200" alt="Mobile Plan"></td>
-      <td align="center"><img src="https://via.placeholder.com/200x400/0F172A/FFFFFF?text=Mobile+Result" width="200" alt="Mobile Result"></td>
-    </tr>
-  </table>
-</div>
+**Smart Search**  
+![Search Page](ScreenShots/Search_Page.png)
+
+**Plan Review**  
+![Review Page](ScreenShots/Review_Page.png)
+
+**Generated Results**  
+![Results Page](ScreenShots/Create_Plan_Result.png)
+
+### 📱 Mobile Responsiveness
+
+![Mobile Home](https://via.placeholder.com/200x400/0F172A/FFFFFF?text=Mobile+Home)  ![Mobile Plan](https://via.placeholder.com/200x400/0F172A/FFFFFF?text=Mobile+Plan)  ![Mobile Result](https://via.placeholder.com/200x400/0F172A/FFFFFF?text=Mobile+Result)
 
 ---
 
@@ -217,9 +191,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## 📞 Contact
 
-**Project Link**: [https://github.com/yourusername/adventurenexus](https://github.com/yourusername/adventurenexus)
+**Project Link**: [https://github.com/Samiran2004/adventurenexus](https://github.com/Samiran2004/adventurenexus)
 
-<div align="center">
-  <br/>
-  Made with ❤️ by the <b>AdventureNexus Team</b>
-</div>
+Made with ❤️ by the **AdventureNexus Team**
