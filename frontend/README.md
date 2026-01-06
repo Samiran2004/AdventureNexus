@@ -1,99 +1,144 @@
-# AdventureNexus — AI Travel Planner
+# 🎨 AdventureNexus Frontend
 
-A modern, animated, and responsive for an AI-powered travel planning app, featuring GSAP motion, Clerk authentication, Tailwind UI, and reusable UI blocks.
+[![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=600&size=24&pause=1000&color=F43F5E&center=false&vCenter=true&width=600&lines=Modern+React+18+UI;GSAP+Powered+Animations;Responsive+Design;Interactive+Globe+Visualization;Component+Rich+Architecture)](https://git.io/typing-svg)
 
-# Features
- 
-    AI-focused hero with animated counters, dual CTAs, and a floating dashboard mockup.
+---
 
-    Scroll-triggered animations for features, testimonials, pricing, and CTA sections.
+<!-- Tech Stack Badges -->
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Shadcn/UI](https://img.shields.io/badge/Shadcn%2FUI-000000?style=for-the-badge&logo=shadcnui&logoColor=white)](https://ui.shadcn.com/)
+[![GSAP](https://img.shields.io/badge/GSAP-88CE02?style=for-the-badge&logo=greensock&logoColor=white)](https://greensock.com/)
+[![Framer Motion](https://img.shields.io/badge/Framer_Motion-0055FF?style=for-the-badge&logo=framer&logoColor=white)](https://www.framer.com/motion/)
+[![Clerk](https://img.shields.io/badge/Clerk-6C47FF?style=for-the-badge&logo=clerk&logoColor=white)](https://clerk.com/)
 
-    Auth-ready header with Clerk SignIn and User menus.
+The **AdventureNexus Client** is a cutting-edge web interface designed to immerse users in the travel planning process. It combines the speed of **Vite**, the utility of **Tailwind CSS**, and the motion of **GSAP** to create a fluid, app-like experience.
 
-    Responsive design with a mobile menu and desktop navigation.
+---
 
-    Reusable UI blocks: Bento Grid, Card Slider, Globe visual, and a velocity-based scroll demo.
+## ✨ Advanced UI Features
 
-# Tech Stack
-    React 18 with Hooks and functional components.
+| Component | Description | Tech Stack |
+| :--- | :--- | :--- |
+| **Bento Grid** | A modern, grid-based layout for displaying features and travel stats. | `CSS Grid`, `Framer Motion` |
+| **Interactive Globe** | A stunning 3D globe visualization that users can rotate. | `cobe`, `React Spring` |
+| **Velocity Scroll** | Text and elements that react to scroll speed for a dynamic feel. | `ScrollTrigger`, `GSAP` |
+| **Card Sliders** | Smooth, gesture-friendly carousels for destinations. | `Embla Carousel` |
+| **Smart Forms** | Auto-completing fields for budgets, dates, and preferences. | `React Hook Form`, `Zod` |
 
-     CSS with shadcn/ui components.
+---
 
-    GSAP with ScrollTrigger and TextPlugin.
+## 📂 Comprehensive Project Structure
 
-    Clerk React for authentication.
+```text
+frontend/src
+├── assets/             # Static Assets (Images, Icons)
+├── components/         # Reusable UI Blocks
+│   ├── ui/             # Shadcn Primitive Components (Button, Input, etc.)
+│   ├── demo/           # Feature-specific demos (Globe, Charts)
+│   └── ...             # Layout Components (Hero, Navbar)
+├── context/            # Global State Logic
+│   └── useTheme.js     # Dark/Light mode context
+├── hooks/              # Custom React Hooks
+│   ├── use-toast.js    # Toast notification logic
+│   └── ...
+├── lib/                # Utilities & Helpers
+│   ├── utils.js        # Tailwind class merger (cn)
+│   └── api.js          # Axios instance configuration
+├── pages/              # Application Routes
+│   ├── Home/           # Landing Page
+│   ├── Search/         # Smart Search Logic
+│   └── Dashboard/      # User Plan Management
+├── store/              # Zustand State Store
+│   └── usePlanStore.js # Global state for current travel plan
+└── App.jsx             # Root Component with Routes
+```
 
-    lucide-react for icons.
+---
 
-# Screens
+## 🚀 Detailed Getting Started
 
-    Hero: AI pitch, dual CTA, animated stat cards, floating hero motion.
+### Prerequisites
+- **Node.js**: v18.0.0 or higher is required.
+- **Package Manager**: We recommend `npm` or `pnpm`.
 
-    Features: Globe visual, card slider, scroll velocity demo, and bento grid.
+### Environment Configuration
+Create a `.env` file in the `frontend` directory. This file is **ignored by git** for security.
 
-    Testimonials: Three-card grid with star ratings and user initials.
+```env
+# Clerk Authentication (Required)
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_... 
 
-    Pricing: Three-tier cards with “Most Popular” emphasis and motion on scroll.
+# Backend API URL (Required)
+VITE_BACKEND_URL=http://localhost:3000
 
-    CTA: Gradient background with dual CTA and supporting benefits.
+# Optional Analytics
+VITE_VERCEL_ANALYTICS_ID=...
+```
 
-    Footer: Product, Company, Support links with newsletter action and legal.
+### Script Reference
 
-# Prerequisites
-    Node.js 18+ and a package manager like pnpm, npm, or yarn.
+- `npm run dev`: Starts the Vite development server at `http://localhost:5173`.
+- `npm run build`: Compiles the app for production to the `dist` folder.
+- `npm run lint`: Runs ESLint to check for code quality issues.
+- `npm run preview`: Locally previews the production build.
 
-    CSS configured in the project.
+---
 
-    Shadcn/ui installed with Button, Card, Badge, and Input primitives.
+## 🛠️ Development Patterns
 
-    Clerk project with a publishable key for client-side auth.
+### State Management (Zustand)
+We use **Zustand** for global state to avoid prop drilling.
+```javascript
+import { create } from 'zustand';
 
-    GSAP installed with ScrollTrigger and TextPlugin plugins.
+export const usePlanStore = create((set) => ({
+  destination: '',
+  setDestination: (dest) => set({ destination: dest }),
+  reset: () => set({ destination: '' }),
+}));
+```
 
+### Authentication Flow (Clerk)
+Protected routes are handled via Clerk wrapper components.
+```jsx
+import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react";
 
-# Installation
-# using pnpm
-        pnpm install
-
-# or npm
-        npm install
-
-# or yarn
-        yarn
-
-# Environment Variables
-## Public client key for Clerk:
-# Vite
-    VITE_CLERK_PUBLISHABLE_KEY=pk_test_...
-
-# CRA or similar
-    REACT_APP_CLERK_PUBLISHABLE_KEY=pk_test_...
-## Server-side secret key if a backend exists:
-    CLERK_SECRET_KEY=sk_test_...
-
-# App Provider Setup
-## Wrap the application with ClerkProvider and ensure Tailwind styles are imported
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { ClerkProvider } from '@clerk/clerk-react';
-import App from './App';
-import './styles/tailwind.css';
-
-const pubKey =
-  import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ||
-  process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
-
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <ClerkProvider publishableKey={pubKey}>
-    <App />
-  </ClerkProvider>
-);
-
-# Usage
-## Import and render the landing page component.
-
-import AdventureNexusLanding from './components/AdventureNexusLanding';
-
-export default function Home() {
-  return <AdventureNexusLanding />;
+function Dashboard() {
+    return (
+        <>
+            <SignedIn>
+                <DashboardContent />
+            </SignedIn>
+            <SignedOut>
+                <RedirectToSignIn />
+            </SignedOut>
+        </>
+    );
 }
+```
+
+### Styling & Theming
+- **Tailwind CSS v4**: We use the latest v4 alpha for performance.
+- **Shadcn/UI**: Components are copy-pasted into `src/components/ui`. Customizable via `tailwind.config.js` (if strictly required, though v4 is config-free).
+
+---
+
+## 🐛 Troubleshooting
+
+| Issue | Solution |
+| :--- | :--- |
+| `VITE_CLERK_PUBLISHABLE_KEY is missing` | Ensure your `.env` file exists and restart the dev server. |
+| `Module not found: @/lib/utils` | Check `tsconfig.json` paths configuration. |
+| `GSAP ScrollTrigger not working` | Ensure `gsap.registerPlugin(ScrollTrigger)` is called in `useEffect`. |
+
+---
+
+## 🤝 Contributing
+
+1. **Linting**: Please run `npm run lint` before committing.
+2. **Commits**: Use conventional commits (e.g., `feat: add new globe animation`).
+3. **PRs**: Open a PR to the `dev` branch.
+
+Made with 🎨 and React.
