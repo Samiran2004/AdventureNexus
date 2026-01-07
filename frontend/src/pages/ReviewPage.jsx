@@ -213,29 +213,33 @@ const AdventureNexusReviews = () => {
             <Star
                 key={i}
                 size={16}
-                className={`${i < rating ? 'text-yellow-400 fill-current' : 'text-gray-400'}`}
+                className={`${i < rating ? 'text-yellow-400 fill-current' : 'text-muted-foreground'}`}
             />
         ));
     };
 
     return (
-        <div className="min-h-screen bg-black">
+        <div className="min-h-screen bg-background">
             <NavBar />
 
             {/* Header Section */}
-            <section ref={headerRef} className="py-12 bg-gradient-to-br from-gray-900 via-black to-gray-900">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <section ref={headerRef} className="py-12 bg-background relative overflow-hidden">
+                <div className="absolute inset-0 overflow-hidden">
+                    <div className="absolute -top-10 -right-10 w-80 h-80 bg-primary/20 rounded-full opacity-50 blur-3xl"></div>
+                    <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-secondary/20 rounded-full opacity-30 blur-3xl"></div>
+                </div>
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
                     <div className="text-center space-y-6">
                         <div className="flex items-center justify-center space-x-2 mb-4">
-                            <Link to="/" className="text-gray-400 hover:text-white flex items-center">
+                            <Link to="/" className="text-muted-foreground hover:text-foreground flex items-center transition-colors">
                                 <ArrowLeft size={20} className="mr-2" />
                                 Back to Home
                             </Link>
                         </div>
-                        <h1 className="text-4xl md:text-5xl font-bold text-white">
+                        <h1 className="text-4xl md:text-5xl font-bold text-foreground">
                             Traveler Reviews
                         </h1>
-                        <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                        <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
                             Real experiences from our community of adventurers. See why travelers trust AdventureNexus to plan their perfect trips.
                         </p>
                     </div>
@@ -243,43 +247,43 @@ const AdventureNexusReviews = () => {
             </section>
 
             {/* Stats Section */}
-            <section ref={statsRef} className="py-12 bg-black">
+            <section ref={statsRef} className="py-12 bg-muted/20">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-                        <Card className="stat-card bg-gray-900 border-gray-700 text-center">
+                        <Card className="stat-card bg-card border-border text-center">
                             <CardContent className="p-6">
-                                <div className="text-3xl font-bold text-blue-400 mb-2">4.9</div>
-                                <div className="text-sm text-gray-400">Average Rating</div>
+                                <div className="text-3xl font-bold text-primary mb-2">4.9</div>
+                                <div className="text-sm text-muted-foreground">Average Rating</div>
                                 <div className="flex justify-center mt-2">
                                     {renderStars(5)}
                                 </div>
                             </CardContent>
                         </Card>
-                        <Card className="stat-card bg-gray-900 border-gray-700 text-center">
+                        <Card className="stat-card bg-card border-border text-center">
                             <CardContent className="p-6">
-                                <div className="text-3xl font-bold text-green-400 mb-2">12.5K</div>
-                                <div className="text-sm text-gray-400">Total Reviews</div>
-                                <div className="flex items-center justify-center mt-2 text-green-400">
+                                <div className="text-3xl font-bold text-green-500 mb-2">12.5K</div>
+                                <div className="text-sm text-muted-foreground">Total Reviews</div>
+                                <div className="flex items-center justify-center mt-2 text-green-500">
                                     <TrendingUp size={16} className="mr-1" />
                                     <span className="text-sm">+28% this month</span>
                                 </div>
                             </CardContent>
                         </Card>
-                        <Card className="stat-card bg-gray-900 border-gray-700 text-center">
+                        <Card className="stat-card bg-card border-border text-center">
                             <CardContent className="p-6">
-                                <div className="text-3xl font-bold text-purple-400 mb-2">195</div>
-                                <div className="text-sm text-gray-400">Countries Reviewed</div>
-                                <div className="flex items-center justify-center mt-2 text-purple-400">
+                                <div className="text-3xl font-bold text-purple-500 mb-2">195</div>
+                                <div className="text-sm text-muted-foreground">Countries Reviewed</div>
+                                <div className="flex items-center justify-center mt-2 text-purple-500">
                                     <Globe size={16} className="mr-1" />
                                     <span className="text-sm">Worldwide</span>
                                 </div>
                             </CardContent>
                         </Card>
-                        <Card className="stat-card bg-gray-900 border-gray-700 text-center">
+                        <Card className="stat-card bg-card border-border text-center">
                             <CardContent className="p-6">
-                                <div className="text-3xl font-bold text-yellow-400 mb-2">98%</div>
-                                <div className="text-sm text-gray-400">Would Recommend</div>
-                                <div className="flex items-center justify-center mt-2 text-yellow-400">
+                                <div className="text-3xl font-bold text-yellow-500 mb-2">98%</div>
+                                <div className="text-sm text-muted-foreground">Would Recommend</div>
+                                <div className="flex items-center justify-center mt-2 text-yellow-500">
                                     <Award size={16} className="mr-1" />
                                     <span className="text-sm">Excellence</span>
                                 </div>
@@ -290,22 +294,22 @@ const AdventureNexusReviews = () => {
             </section>
 
             {/* Filters and Search */}
-            <section className="py-8 bg-gray-900">
+            <section className="py-8 bg-background border-y border-border">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
                         <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
                             <div className="relative">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
                                 <Input
                                     placeholder="Search reviews..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="pl-10 bg-gray-800 border-gray-700 text-white"
+                                    className="pl-10 bg-background border-input text-foreground"
                                 />
                             </div>
 
                             <Select value={selectedFilter} onValueChange={setSelectedFilter}>
-                                <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                                <SelectTrigger className="bg-background border-input text-foreground">
                                     <SelectValue placeholder="Category" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -321,7 +325,7 @@ const AdventureNexusReviews = () => {
                             </Select>
 
                             <Select value={selectedRating} onValueChange={setSelectedRating}>
-                                <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                                <SelectTrigger className="bg-background border-input text-foreground">
                                     <SelectValue placeholder="Rating" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -335,7 +339,7 @@ const AdventureNexusReviews = () => {
 
                         <div className="flex gap-4">
                             <Select value={sortBy} onValueChange={setSortBy}>
-                                <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                                <SelectTrigger className="bg-background border-input text-foreground">
                                     <SelectValue placeholder="Sort by" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -348,7 +352,7 @@ const AdventureNexusReviews = () => {
 
                             <Button
                                 onClick={() => setShowWriteReview(!showWriteReview)}
-                                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                                className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground"
                             >
                                 <Edit3 size={16} className="mr-2" />
                                 Write Review
@@ -360,15 +364,15 @@ const AdventureNexusReviews = () => {
 
             {/* Write Review Section */}
             {showWriteReview && (
-                <section ref={writeReviewRef} className="py-8 bg-gray-900 border-b border-gray-800">
+                <section ref={writeReviewRef} className="py-8 bg-muted/20 border-b border-border">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                        <Card className="bg-gray-800 border-gray-700">
+                        <Card className="bg-card border-border">
                             <CardHeader>
-                                <CardTitle className="text-white flex items-center">
+                                <CardTitle className="text-foreground flex items-center">
                                     <Edit3 className="mr-2" size={20} />
                                     Share Your Adventure
                                 </CardTitle>
-                                <CardDescription className="text-gray-400">
+                                <CardDescription className="text-muted-foreground">
                                     Help fellow travelers by sharing your experience with AdventureNexus
                                 </CardDescription>
                             </CardHeader>
@@ -376,22 +380,22 @@ const AdventureNexusReviews = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <Input
                                         placeholder="Trip destination"
-                                        className="bg-gray-700 border-gray-600 text-white"
+                                        className="bg-input border-input text-foreground"
                                     />
                                     <Input
                                         placeholder="Trip duration"
-                                        className="bg-gray-700 border-gray-600 text-white"
+                                        className="bg-input border-input text-foreground"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="text-white mb-2 block">Your Rating</label>
+                                    <label className="text-foreground mb-2 block">Your Rating</label>
                                     <div className="flex space-x-1">
                                         {[...Array(5)].map((_, i) => (
                                             <Star
                                                 key={i}
                                                 size={24}
-                                                className="text-gray-400 hover:text-yellow-400 cursor-pointer"
+                                                className="text-muted-foreground hover:text-yellow-400 cursor-pointer transition-colors"
                                             />
                                         ))}
                                     </div>
@@ -399,11 +403,11 @@ const AdventureNexusReviews = () => {
 
                                 <Textarea
                                     placeholder="Tell us about your experience with AdventureNexus. How did our AI recommendations work out? What made your trip special?"
-                                    className="bg-gray-700 border-gray-600 text-white min-h-[120px]"
+                                    className="bg-input border-input text-foreground min-h-[120px]"
                                 />
 
                                 <div className="flex justify-between items-center">
-                                    <Button variant="outline" className="border-gray-600 text-gray-400 hover:bg-gray-700">
+                                    <Button variant="outline" className="border-input text-muted-foreground hover:bg-muted hover:text-foreground">
                                         <ImageIcon size={16} className="mr-2" />
                                         Add Photos
                                     </Button>
@@ -411,11 +415,11 @@ const AdventureNexusReviews = () => {
                                         <Button
                                             variant="ghost"
                                             onClick={() => setShowWriteReview(false)}
-                                            className="text-gray-400 hover:bg-gray-700"
+                                            className="text-muted-foreground hover:text-foreground"
                                         >
                                             Cancel
                                         </Button>
-                                        <Button className="bg-gradient-to-r from-blue-600 to-purple-600">
+                                        <Button className="bg-gradient-to-r from-primary to-secondary text-primary-foreground">
                                             <Send size={16} className="mr-2" />
                                             Submit Review
                                         </Button>
@@ -428,28 +432,28 @@ const AdventureNexusReviews = () => {
             )}
 
             {/* Reviews Section */}
-            <section ref={reviewsRef} className="py-12 bg-black">
+            <section ref={reviewsRef} className="py-12 bg-background">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="space-y-6">
                         {filteredReviews.map((review, index) => (
-                            <Card key={review.id} className="review-card bg-gray-900 border-gray-700 hover:border-gray-600 transition-all duration-300">
+                            <Card key={review.id} className="review-card bg-card border-border hover:border-primary/50 transition-all duration-300">
                                 <CardContent className="p-6">
                                     <div className="flex justify-between items-start mb-4">
                                         <div className="flex items-start space-x-4">
-                                            <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
+                                            <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-primary-foreground font-bold">
                                                 {review.avatar}
                                             </div>
                                             <div>
                                                 <div className="flex items-center space-x-2">
-                                                    <h3 className="font-semibold text-white">{review.user}</h3>
+                                                    <h3 className="font-semibold text-foreground">{review.user}</h3>
                                                     {review.verified && (
-                                                        <Badge className="bg-green-900/50 text-green-400 border border-green-700/50">
+                                                        <Badge className="bg-green-500/10 text-green-500 border-green-500/20">
                                                             <CheckCircle size={12} className="mr-1" />
                                                             Verified
                                                         </Badge>
                                                     )}
                                                 </div>
-                                                <div className="flex items-center space-x-4 text-sm text-gray-400 mt-1">
+                                                <div className="flex items-center space-x-4 text-sm text-muted-foreground mt-1">
                                                     <span className="flex items-center">
                                                         <MapPin size={14} className="mr-1" />
                                                         {review.location}
@@ -467,18 +471,18 @@ const AdventureNexusReviews = () => {
                                     </div>
 
                                     <div className="mb-4">
-                                        <h4 className="font-semibold text-white mb-2">{review.trip}</h4>
+                                        <h4 className="font-semibold text-foreground mb-2">{review.trip}</h4>
                                         <div className="flex flex-wrap gap-2 mb-3">
-                                            <Badge variant="secondary" className="bg-gray-800 text-gray-300">
+                                            <Badge variant="secondary" className="bg-muted text-muted-foreground">
                                                 <Calendar size={12} className="mr-1" />
                                                 {review.duration}
                                             </Badge>
-                                            <Badge variant="secondary" className="bg-gray-800 text-gray-300">
+                                            <Badge variant="secondary" className="bg-muted text-muted-foreground">
                                                 <Users size={12} className="mr-1" />
                                                 {review.travelers}
                                             </Badge>
                                             {review.images > 0 && (
-                                                <Badge variant="secondary" className="bg-gray-800 text-gray-300">
+                                                <Badge variant="secondary" className="bg-muted text-muted-foreground">
                                                     <Camera size={12} className="mr-1" />
                                                     {review.images} photos
                                                 </Badge>
@@ -486,21 +490,21 @@ const AdventureNexusReviews = () => {
                                         </div>
                                     </div>
 
-                                    <p className="text-gray-300 leading-relaxed mb-4">
+                                    <p className="text-muted-foreground leading-relaxed mb-4">
                                         {review.content}
                                     </p>
 
-                                    <div className="flex justify-between items-center pt-4 border-t border-gray-700">
+                                    <div className="flex justify-between items-center pt-4 border-t border-border">
                                         <div className="flex space-x-4">
-                                            <button className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors">
+                                            <button className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors">
                                                 <ThumbsUp size={16} />
                                                 <span className="text-sm">Helpful ({review.helpful})</span>
                                             </button>
-                                            <button className="flex items-center space-x-2 text-gray-400 hover:text-red-400 transition-colors">
+                                            <button className="flex items-center space-x-2 text-muted-foreground hover:text-red-500 transition-colors">
                                                 <Heart size={16} />
                                                 <span className="text-sm">Save</span>
                                             </button>
-                                            <button className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors">
+                                            <button className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors">
                                                 <Share2 size={16} />
                                                 <span className="text-sm">Share</span>
                                             </button>
@@ -513,9 +517,9 @@ const AdventureNexusReviews = () => {
 
                     {filteredReviews.length === 0 && (
                         <div className="text-center py-12">
-                            <div className="text-gray-400 mb-4">
+                            <div className="text-muted-foreground mb-4">
                                 <Search size={48} className="mx-auto mb-4" />
-                                <h3 className="text-xl font-semibold text-white mb-2">No reviews found</h3>
+                                <h3 className="text-xl font-semibold text-foreground mb-2">No reviews found</h3>
                                 <p>Try adjusting your filters or search terms</p>
                             </div>
                         </div>
@@ -523,7 +527,7 @@ const AdventureNexusReviews = () => {
 
                     {filteredReviews.length > 0 && (
                         <div className="text-center mt-12">
-                            <Button variant="outline" className="border-gray-600 text- bg-green-600 hover:text-amber-50 hover:bg-gray-800">
+                            <Button variant="outline" className="border-input text-foreground hover:bg-muted">
                                 Load More Reviews
                             </Button>
                         </div>
@@ -531,64 +535,6 @@ const AdventureNexusReviews = () => {
                 </div>
             </section>
 
-            {/* Footer */}
-            {/* <footer className="bg-gray-900 text-white py-12 border-t border-gray-800">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid md:grid-cols-4 gap-8">
-                        <div className="space-y-4">
-                            <div className="flex items-center space-x-2">
-                                <div className="bg-gradient-to-br from-blue-600 to-purple-600 text-white p-2 rounded-lg">
-                                    <Compass size={24} />
-                                </div>
-                                <span className="text-2xl font-bold">AdventureNexus</span>
-                            </div>
-                            <p className="text-gray-400">
-                                Empowering travelers with AI-powered trip planning and personalized recommendations for unforgettable adventures.
-                            </p>
-                        </div>
-
-                        <div>
-                            <h3 className="font-semibold mb-4 text-white">Product</h3>
-                            <ul className="space-y-2 text-gray-400">
-                                <li><a href="#" className="hover:text-white transition-colors">AI Trip Planner</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Flight Search</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Hotel Booking</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Destinations</a></li>
-                            </ul>
-                        </div>
-
-                        <div>
-                            <h3 className="font-semibold mb-4 text-white">Company</h3>
-                            <ul className="space-y-2 text-gray-400">
-                                <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Travel Blog</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Press</a></li>
-                            </ul>
-                        </div>
-
-                        <div>
-                            <h3 className="font-semibold mb-4 text-white">Support</h3>
-                            <ul className="space-y-2 text-gray-400">
-                                <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Contact Us</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Travel Guides</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">System Status</a></li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-                        <p className="text-gray-400 text-sm">
-                            © 2025 AdventureNexus. All rights reserved.
-                        </p>
-                        <div className="flex space-x-6 mt-4 md:mt-0">
-                            <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Privacy Policy</a>
-                            <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Terms of Service</a>
-                        </div>
-                    </div>
-                </div>
-            </footer> */}
             <Footer />
         </div>
     );

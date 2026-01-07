@@ -1,11 +1,12 @@
 'use client';
 
 import axios from 'axios';
-import { Instagram, Linkedin, Twitter, Youtube, Compass, MapPin, Phone, Mail } from 'lucide-react';
+import { Instagram, Linkedin, Twitter, Youtube, MapPin, Phone, Mail } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link, useMatch } from 'react-router-dom';
-const vite_backend_url = import.meta.env.VITE_BACKEND_URL
+import AnimatedLogo from '../AnimatedLogo';
+const vite_backend_url = import.meta.env.VITE_BACKEND_URL;
 // const vite_backend_url = "http://localhost:8000"
 
 // Footer navigation columns data
@@ -100,23 +101,23 @@ export default function Footer() {
   }
 
   return (
-    <footer className="bg-gray-900 text-white relative w-full pt-20 pb-10 border-t border-gray-800">
+    <footer className="bg-background text-foreground relative w-full pt-20 pb-10 border-t border-border">
       {/* Background Effects */}
       <div className="pointer-events-none absolute top-0 left-0 z-0 h-full w-full overflow-hidden">
-        <div className="bg-blue-600 absolute top-1/3 left-1/4 h-64 w-64 rounded-full opacity-5 blur-3xl" />
-        <div className="bg-purple-600 absolute right-1/4 bottom-1/4 h-80 w-80 rounded-full opacity-5 blur-3xl" />
-        <div className="bg-gradient-to-r from-blue-600/10 to-purple-600/10 absolute inset-0" />
+        <div className="bg-primary/20 absolute top-1/3 left-1/4 h-64 w-64 rounded-full opacity-5 blur-3xl" />
+        <div className="bg-secondary/20 absolute right-1/4 bottom-1/4 h-80 w-80 rounded-full opacity-5 blur-3xl" />
+        <div className="bg-gradient-to-r from-primary/5 to-secondary/5 absolute inset-0" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Newsletter Section */}
-        <div className="bg-gray-800/50 backdrop-blur-lg border border-gray-700 mb-16 rounded-2xl p-8 md:p-12">
+        <div className="bg-card/80 backdrop-blur-lg border border-border mb-16 rounded-2xl p-8 md:p-12">
           <div className="grid items-center gap-8 md:grid-cols-2">
             <div>
-              <h3 className="mb-4 text-2xl font-bold md:text-3xl bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+              <h3 className="mb-4 text-2xl font-bold md:text-3xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 Start Your Next Adventure
               </h3>
-              <p className="text-gray-300 mb-6">
+              <p className="text-muted-foreground mb-6">
                 Join thousands of adventurers who trust AdventureNexus for unforgettable travel experiences.
                 Get personalized trip recommendations and exclusive travel deals.
               </p>
@@ -126,19 +127,19 @@ export default function Footer() {
                   placeholder="Enter your email address"
                   value={userMail}
                   onChange={(e) => setUserMail(e.target.value)}
-                  className="bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:outline-none flex-1"
+                  className="bg-input border border-input text-foreground placeholder-muted-foreground rounded-lg px-4 py-3 focus:ring-2 focus:ring-ring focus:border-transparent focus:outline-none flex-1"
                 />
-                <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg px-6 py-3 font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-blue-500/25 cursor-pointer" onClick={onClickSubscribeButton}>
+                <button className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground rounded-lg px-6 py-3 font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-primary/25 cursor-pointer" onClick={onClickSubscribeButton}>
                   Get Travel Tips
                 </button>
               </div>
-              <p className="text-gray-400 text-sm mt-3">
+              <p className="text-muted-foreground text-sm mt-3">
                 No spam, unsubscribe anytime. We respect your privacy.
               </p>
             </div>
             <div className="hidden justify-end md:flex">
               <div className="relative">
-                <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 absolute inset-0 rotate-6 rounded-xl" />
+                <div className="bg-gradient-to-r from-primary/20 to-secondary/20 absolute inset-0 rotate-6 rounded-xl" />
                 <img
                   src="https://images.unsplash.com/photo-1707343848552-893e05dba6ac?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                   alt="Adventure travelers exploring mountains"
@@ -155,28 +156,26 @@ export default function Footer() {
           {/* Brand Section */}
           <div className="col-span-1 lg:col-span-2">
             <Link to="/" className="mb-6 flex items-center space-x-2 hover:scale-105 transition-transform duration-300">
-              <div className="bg-gradient-to-br from-blue-600 to-purple-600 text-white p-2 rounded-lg">
-                <Compass size={24} />
-              </div>
-              <span className="text-2xl font-bold text-white">AdventureNexus</span>
+              <AnimatedLogo size={48} />
+              <span className="text-2xl font-bold text-foreground">AdventureNexus</span>
             </Link>
-            <p className="text-gray-300 mb-6 max-w-md">
+            <p className="text-muted-foreground mb-6 max-w-md">
               AI-powered travel planning platform that creates personalized itineraries
               for unforgettable adventures. Discover, plan, and explore the world with confidence.
             </p>
 
             {/* Contact Info */}
             <div className="space-y-3 mb-6">
-              <div className="flex items-center space-x-3 text-gray-300">
-                <MapPin size={16} className="text-blue-400" />
+              <div className="flex items-center space-x-3 text-muted-foreground">
+                <MapPin size={16} className="text-primary" />
                 <span className="text-sm">AdventureNexus</span>
               </div>
-              <div className="flex items-center space-x-3 text-gray-300">
-                <Phone size={16} className="text-blue-400" />
+              <div className="flex items-center space-x-3 text-muted-foreground">
+                <Phone size={16} className="text-primary" />
                 <span className="text-sm">00000 00000</span>
               </div>
-              <div className="flex items-center space-x-3 text-gray-300">
-                <Mail size={16} className="text-blue-400" />
+              <div className="flex items-center space-x-3 text-muted-foreground">
+                <Mail size={16} className="text-primary" />
                 <span className="text-sm">adventurenexus.org@gmail.com</span>
               </div>
             </div>
@@ -188,7 +187,7 @@ export default function Footer() {
                   key={i}
                   href={item.href}
                   aria-label={item.label}
-                  className="bg-gray-800/50 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 border border-gray-700 hover:border-transparent flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 hover:scale-110"
+                  className="bg-accent/50 hover:bg-gradient-to-r hover:from-primary hover:to-secondary border border-border hover:border-transparent flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 hover:scale-110 text-foreground"
                 >
                   {item.icon}
                 </a>
@@ -199,13 +198,13 @@ export default function Footer() {
           {/* Footer Columns */}
           {footerColumns.map((col) => (
             <div key={col.title} className="col-span-1">
-              <h4 className="mb-4 text-lg font-semibold text-white">{col.title}</h4>
+              <h4 className="mb-4 text-lg font-semibold text-foreground">{col.title}</h4>
               <ul className="space-y-3">
                 {col.links.map((link) => (
                   <li key={link.name}>
                     <Link
                       to={link.href}
-                      className="text-gray-300 hover:text-white hover:text-blue-400 transition-colors duration-300 text-sm"
+                      className="text-muted-foreground hover:text-primary transition-colors duration-300 text-sm"
                     >
                       {link.name}
                     </Link>
@@ -217,12 +216,12 @@ export default function Footer() {
         </div>
 
         {/* Bottom Section */}
-        <div className="border-t border-gray-700 flex flex-col items-center justify-between pt-8 md:flex-row">
+        <div className="border-t border-border flex flex-col items-center justify-between pt-8 md:flex-row">
           <div className="mb-4 md:mb-0">
-            <p className="text-gray-400 text-sm">
+            <p className="text-muted-foreground text-sm">
               © {currentYear} AdventureNexus. All rights reserved.
             </p>
-            <p className="text-gray-500 text-xs mt-1">
+            <p className="text-muted-foreground text-xs mt-1">
               Made with ❤️ for adventurous souls worldwide
             </p>
           </div>
@@ -231,7 +230,7 @@ export default function Footer() {
               <Link
                 key={link.name}
                 to={link.href}
-                className="text-gray-400 hover:text-white text-sm transition-colors duration-300"
+                className="text-muted-foreground hover:text-foreground text-sm transition-colors duration-300"
               >
                 {link.name}
               </Link>
@@ -240,18 +239,18 @@ export default function Footer() {
         </div>
 
         {/* Trust Badges */}
-        <div className="mt-8 pt-8 border-t border-gray-800">
+        <div className="mt-8 pt-8 border-t border-border">
           <div className="flex flex-wrap justify-center items-center gap-8 opacity-60">
-            <div className="text-gray-500 text-xs text-center">
+            <div className="text-muted-foreground text-xs text-center">
               <div className="font-semibold">✈️ 50K+ Trips Planned</div>
             </div>
-            <div className="text-gray-500 text-xs text-center">
+            <div className="text-muted-foreground text-xs text-center">
               <div className="font-semibold">🌍 200+ Destinations</div>
             </div>
-            <div className="text-gray-500 text-xs text-center">
+            <div className="text-muted-foreground text-xs text-center">
               <div className="font-semibold">⭐ 4.9/5 User Rating</div>
             </div>
-            <div className="text-gray-500 text-xs text-center">
+            <div className="text-muted-foreground text-xs text-center">
               <div className="font-semibold">🔒 Secure & Trusted</div>
             </div>
           </div>
