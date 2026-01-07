@@ -1,15 +1,17 @@
 'use client';
 
-import { motion } from 'motion/react';
+import { motion } from 'motion/react'; // Animation library
 
+// Props for GradientBars component
 interface GradientBarsProps {
-  bars?: number;
-  colors?: string[];
+  bars?: number; // Number of bars to render
+  colors?: string[]; // Array of colors for the gradient
 }
 
+// Background component with animated gradient bars
 export const GradientBars = ({
-  bars = 20,
-  colors = ['#e60a64', 'transparent'],
+  bars = 20, // Default to 20 bars
+  colors = ['#e60a64', 'transparent'], // Default pink to transparent gradient
 }: GradientBarsProps) => {
   const gradientStyle = `linear-gradient(to top, ${colors.join(', ')})`;
   return (

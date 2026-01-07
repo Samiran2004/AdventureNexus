@@ -1,14 +1,17 @@
-import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
-import { Compass, Menu, PlaneTakeoff, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react'; // Clerk components for auth UI
+import { Compass, Menu, PlaneTakeoff, X } from 'lucide-react'; // Icons
+import { useEffect, useState } from 'react'; // React hooks
+import { Link } from 'react-router-dom'; // Navigation link
 
-// Button component
+// Reusable Button component with variant support
 const Button = ({ children, variant = 'default', className = '', ...props }) => {
+    // Base styles common to all buttons
     const baseClasses = 'px-4 py-2 rounded-lg font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500';
+
+    // Styles specific to different variants
     const variantClasses = {
-        default: 'bg-blue-600 text-white hover:bg-blue-700',
-        ghost: 'bg-transparent text-white hover:bg-gray-800',
+        default: 'bg-blue-600 text-white hover:bg-blue-700', // Primary blue button
+        ghost: 'bg-transparent text-white hover:bg-gray-800', // Transparent button with hover effect
     };
 
     return (
@@ -32,7 +35,7 @@ function NavBar() {
         { name: 'How It Works', path: '/works' },
         { name: 'Destinations', path: '/destinations' },
         { name: 'About', path: '/about' },
-        {name: 'Review', path: '/review-page'}
+        { name: 'Review', path: '/review-page' }
     ];
 
     // Mobile menu toggle
@@ -83,7 +86,7 @@ function NavBar() {
                         <div className="flex items-center space-x-2">
                             <div className="bg-gradient-to-br from-blue-600 to-purple-600 text-white p-2 rounded-lg">
                                 {/* <Compass size={20} /> */}
-                                <PlaneTakeoff size={30}/>
+                                <PlaneTakeoff size={30} />
                             </div>
                             <span className="text-lg font-bold text-white">
                                 AdventureNexus
@@ -140,11 +143,10 @@ function NavBar() {
             )}
 
             {/* Main Navigation */}
-            <nav className={`border-b border-gray-800 backdrop-blur-md fixed top-0 w-full z-40 transition-all duration-300${
-                scrolled
+            <nav className={`border-b border-gray-800 backdrop-blur-md fixed top-0 w-full z-40 transition-all duration-300${scrolled
                     ? 'bg-black/45 shadow-lg'
                     : 'bg-black/20'
-            }`}>
+                }`}>
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
                         {/* Logo */}
@@ -154,7 +156,7 @@ function NavBar() {
                         >
                             <div className="bg-gradient-to-br from-blue-600 to-purple-600 text-white p-2 rounded-lg">
                                 {/* <Compass size={24} /> */}
-                                <PlaneTakeoff size={30}/>
+                                <PlaneTakeoff size={30} />
                             </div>
                             <span className="text-2xl font-bold text-white">
                                 AdventureNexus

@@ -1,5 +1,6 @@
 import { VelocityScroll } from '@/components/ui/scrollbasedvelocity';
 
+// ScrollBasedVelocityDemo component demonstrates the velocity scroll effect
 export default function ScrollBasedVelocityDemo() {
   return (
     <VelocityScroll

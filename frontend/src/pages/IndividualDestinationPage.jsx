@@ -42,9 +42,10 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// IndividualDestinationPage component displays detailed information about a specific travel destination
 const IndividualDestinationPage = () => {
     const { country, city } = useParams();
-    
+
     // Sample destination data - in real app, fetch based on country/city params
     const [destinationData, setDestinationData] = useState({
         id: 1,
@@ -432,7 +433,7 @@ const IndividualDestinationPage = () => {
                         UV {weather.current.uvIndex}
                     </div>
                 </div>
-                
+
                 {/* 7-Day Forecast */}
                 <div className="mt-6">
                     <h4 className="text-white font-medium mb-3">7-Day Forecast</h4>
@@ -540,9 +541,8 @@ const IndividualDestinationPage = () => {
                         <button
                             key={index}
                             onClick={() => setCurrentImageIndex(index)}
-                            className={`w-3 h-3 rounded-full transition-all ${
-                                index === currentImageIndex ? 'bg-white' : 'bg-white/50'
-                            }`}
+                            className={`w-3 h-3 rounded-full transition-all ${index === currentImageIndex ? 'bg-white' : 'bg-white/50'
+                                }`}
                         />
                     ))}
                 </div>
@@ -562,7 +562,7 @@ const IndividualDestinationPage = () => {
                                     <span className="text-gray-300 ml-1">({destinationData.reviews} reviews)</span>
                                 </div>
                             </div>
-                            
+
                             <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
                                 {destinationData.name}
                             </h1>
@@ -573,17 +573,17 @@ const IndividualDestinationPage = () => {
                             <p className="text-lg text-gray-300 mb-8 max-w-2xl leading-relaxed">
                                 {destinationData.description}
                             </p>
-                            
+
                             <div className="flex flex-wrap gap-4">
-                                <Button 
+                                <Button
                                     size="lg"
                                     className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                                 >
                                     <Plane className="mr-2" size={20} />
                                     Plan Your Trip
                                 </Button>
-                                <Button 
-                                    variant="outline" 
+                                <Button
+                                    variant="outline"
                                     size="lg"
                                     className="border-white text-white hover:bg-white hover:text-black"
                                     onClick={() => setIsFavorite(!isFavorite)}
@@ -591,8 +591,8 @@ const IndividualDestinationPage = () => {
                                     <Heart className={`mr-2 ${isFavorite ? 'fill-current text-red-500' : ''}`} size={20} />
                                     {isFavorite ? 'Saved' : 'Save'}
                                 </Button>
-                                <Button 
-                                    variant="outline" 
+                                <Button
+                                    variant="outline"
                                     size="lg"
                                     className="border-white text-white hover:bg-white hover:text-black"
                                 >
@@ -611,7 +611,7 @@ const IndividualDestinationPage = () => {
                     <div className="grid lg:grid-cols-3 gap-8">
                         {/* Main Content */}
                         <div className="lg:col-span-2 space-y-8">
-                            
+
                             {/* Overview */}
                             <div className="content-section">
                                 <Card className="bg-gray-900 border-gray-700">
@@ -625,7 +625,7 @@ const IndividualDestinationPage = () => {
                                                 {destinationData.description}
                                             </p>
                                         </div>
-                                        
+
                                         <div>
                                             <h4 className="text-md font-semibold text-white mb-3">Top Highlights</h4>
                                             <div className="grid md:grid-cols-2 gap-2">
@@ -664,7 +664,7 @@ const IndividualDestinationPage = () => {
                                                         </Badge>
                                                     </div>
                                                     <p className="text-gray-300 text-sm">{data.description}</p>
-                                                    
+
                                                     <div className="grid grid-cols-3 gap-4 text-xs">
                                                         <div>
                                                             <span className="text-gray-400">Temperature</span>
@@ -679,7 +679,7 @@ const IndividualDestinationPage = () => {
                                                             <p className="text-white font-medium">{data.crowdLevel}</p>
                                                         </div>
                                                     </div>
-                                                    
+
                                                     <div className="space-y-2">
                                                         <div>
                                                             <span className="text-green-400 text-xs font-medium">Pros:</span>
@@ -721,8 +721,8 @@ const IndividualDestinationPage = () => {
                                         <div className="grid md:grid-cols-2 gap-6">
                                             {destinationData.hiddenGems.map((gem, index) => (
                                                 <div key={index} className="space-y-3">
-                                                    <img 
-                                                        src={gem.image} 
+                                                    <img
+                                                        src={gem.image}
                                                         alt={gem.name}
                                                         className="w-full h-32 object-cover rounded-lg"
                                                     />
@@ -734,7 +734,7 @@ const IndividualDestinationPage = () => {
                                                             </Badge>
                                                         </div>
                                                         <p className="text-gray-300 text-sm mb-3">{gem.description}</p>
-                                                        
+
                                                         <div className="grid grid-cols-2 gap-4 text-xs mb-3">
                                                             <div>
                                                                 <span className="text-gray-400">Location:</span>
@@ -753,7 +753,7 @@ const IndividualDestinationPage = () => {
                                                                 <p className="text-white">{gem.difficulty}</p>
                                                             </div>
                                                         </div>
-                                                        
+
                                                         <div>
                                                             <span className="text-yellow-400 text-xs font-medium">Local Tips:</span>
                                                             <ul className="text-xs text-gray-300 mt-1">
@@ -792,11 +792,10 @@ const IndividualDestinationPage = () => {
                                                 <button
                                                     key={index}
                                                     onClick={() => setSelectedItinerary(index)}
-                                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                                                        selectedItinerary === index
+                                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedItinerary === index
                                                             ? 'bg-blue-600 text-white'
                                                             : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                                                    }`}
+                                                        }`}
                                                 >
                                                     {itinerary.title}
                                                 </button>

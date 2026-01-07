@@ -69,8 +69,9 @@ import NumberCounter from '@/components/NumberCounter';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// TripInspirationPage displays curated travel stories, seasonal guides, and travel tips
 const TripInspirationPage = () => {
-    // Sample data for different inspiration categories
+    // Sample data for different inspiration categories including stories, guides, and tips
     const [inspirationData] = useState({
         featuredStories: [
             {
@@ -298,7 +299,7 @@ const TripInspirationPage = () => {
                 icon: <Mountain className="text-red-400" size={32} />,
                 color: "red",
                 activities: [
-                    "Mountain climbing", "Skydiving", "White water rafting", 
+                    "Mountain climbing", "Skydiving", "White water rafting",
                     "Bungee jumping", "Rock climbing", "Paragliding"
                 ],
                 destinations: [
@@ -320,7 +321,7 @@ const TripInspirationPage = () => {
                 icon: <Waves className="text-blue-400" size={32} />,
                 color: "blue",
                 activities: [
-                    "Spa treatments", "Beach lounging", "Yoga retreats", 
+                    "Spa treatments", "Beach lounging", "Yoga retreats",
                     "Meditation", "Scenic walks", "Luxury resorts"
                 ],
                 destinations: [
@@ -344,7 +345,7 @@ const TripInspirationPage = () => {
                 description: "Discover yourself while discovering the world",
                 benefits: [
                     "Complete freedom and flexibility",
-                    "Personal growth and confidence building", 
+                    "Personal growth and confidence building",
                     "Authentic cultural connections",
                     "Self-discovery and independence"
                 ],
@@ -451,13 +452,13 @@ const TripInspirationPage = () => {
     const StoryCard = ({ story, size = "normal" }) => (
         <Card className={`inspiration-card group cursor-pointer hover:scale-105 transition-all duration-300 bg-gray-900 border-gray-700 overflow-hidden ${size === 'featured' ? 'md:col-span-2' : ''}`}>
             <div className="relative">
-                <img 
-                    src={story.image} 
+                <img
+                    src={story.image}
                     alt={story.title}
                     className={`w-full ${size === 'featured' ? 'h-64' : 'h-48'} object-cover group-hover:scale-110 transition-transform duration-500`}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                
+
                 {story.featured && (
                     <Badge className="absolute top-3 left-3 bg-yellow-600 text-white">
                         <Star size={12} className="mr-1" />
@@ -484,21 +485,21 @@ const TripInspirationPage = () => {
                 <h3 className={`${size === 'featured' ? 'text-xl' : 'text-lg'} font-semibold text-white mb-2 group-hover:text-blue-400 transition-colors line-clamp-2`}>
                     {story.title}
                 </h3>
-                
+
                 <p className="text-gray-300 text-sm mb-3 line-clamp-3">
                     {story.excerpt}
                 </p>
 
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                        <img 
-                            src={story.authorImage} 
+                        <img
+                            src={story.authorImage}
                             alt={story.author}
                             className="w-6 h-6 rounded-full"
                         />
                         <span className="text-gray-400 text-sm">{story.author}</span>
                     </div>
-                    
+
                     <div className="flex items-center space-x-3 text-gray-400 text-sm">
                         <div className="flex items-center">
                             <ThumbsUp size={14} className="mr-1" />
@@ -573,7 +574,7 @@ const TripInspirationPage = () => {
             {/* Main Content */}
             <section ref={contentRef} className="py-16 bg-black">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    
+
                     {/* Navigation Tabs */}
                     <div className="flex flex-wrap gap-2 mb-12 justify-center">
                         {[
@@ -586,11 +587,10 @@ const TripInspirationPage = () => {
                             <button
                                 key={tab.id}
                                 onClick={() => setSelectedCategory(tab.id)}
-                                className={`flex items-center px-6 py-3 rounded-full transition-all ${
-                                    selectedCategory === tab.id 
-                                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white' 
-                                    : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700'
-                                }`}
+                                className={`flex items-center px-6 py-3 rounded-full transition-all ${selectedCategory === tab.id
+                                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
+                                        : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700'
+                                    }`}
                             >
                                 <tab.icon size={16} className="mr-2" />
                                 {tab.label}
@@ -612,10 +612,10 @@ const TripInspirationPage = () => {
 
                             <div className="grid md:grid-cols-3 gap-8">
                                 {inspirationData.featuredStories.map((story, index) => (
-                                    <StoryCard 
-                                        key={story.id} 
-                                        story={story} 
-                                        size={index === 0 ? 'featured' : 'normal'} 
+                                    <StoryCard
+                                        key={story.id}
+                                        story={story}
+                                        size={index === 0 ? 'featured' : 'normal'}
                                     />
                                 ))}
                             </div>
@@ -630,9 +630,9 @@ const TripInspirationPage = () => {
                                             </div>
                                             <h3 className="text-lg font-semibold text-white mb-2">{category}</h3>
                                             <p className="text-gray-400 text-sm mb-4">
-                                                {index === 0 ? 'Thrilling adventures and outdoor experiences' : 
-                                                 index === 1 ? 'Deep cultural connections and local experiences' :
-                                                 'Culinary journeys and food discoveries'}
+                                                {index === 0 ? 'Thrilling adventures and outdoor experiences' :
+                                                    index === 1 ? 'Deep cultural connections and local experiences' :
+                                                        'Culinary journeys and food discoveries'}
                                             </p>
                                             <Button variant="outline" size="sm" className="border-blue-600 text-blue-400 hover:bg-blue-600 hover:text-white">
                                                 Explore Stories
@@ -663,11 +663,10 @@ const TripInspirationPage = () => {
                                     <button
                                         key={season.season.toLowerCase()}
                                         onClick={() => setSelectedSeason(season.season.toLowerCase())}
-                                        className={`flex items-center px-6 py-3 rounded-lg transition-all ${
-                                            selectedSeason === season.season.toLowerCase()
+                                        className={`flex items-center px-6 py-3 rounded-lg transition-all ${selectedSeason === season.season.toLowerCase()
                                                 ? `bg-${season.color}-600 text-white`
                                                 : 'bg-gray-800 text-gray-400 hover:text-white'
-                                        }`}
+                                            }`}
                                     >
                                         {season.icon}
                                         <span className="ml-2 font-medium">{season.season}</span>
@@ -682,8 +681,8 @@ const TripInspirationPage = () => {
                                         {season.destinations.map((destination, index) => (
                                             <Card key={index} className="inspiration-card bg-gray-900 border-gray-700 overflow-hidden hover:scale-105 transition-transform">
                                                 <div className="relative">
-                                                    <img 
-                                                        src={destination.image} 
+                                                    <img
+                                                        src={destination.image}
                                                         alt={destination.name}
                                                         className="w-full h-48 object-cover"
                                                     />
@@ -823,8 +822,8 @@ const TripInspirationPage = () => {
                                                 <div className="space-y-3">
                                                     {style.destinations.map((dest, index) => (
                                                         <div key={index} className="flex items-center space-x-3 p-3 bg-gray-800 rounded-lg">
-                                                            <img 
-                                                                src={dest.image} 
+                                                            <img
+                                                                src={dest.image}
                                                                 alt={dest.name}
                                                                 className="w-12 h-12 rounded-lg object-cover"
                                                             />
@@ -839,11 +838,10 @@ const TripInspirationPage = () => {
                                                 </div>
                                             </div>
 
-                                            <Button className={`w-full bg-gradient-to-r ${
-                                                key === 'adventure' 
-                                                    ? 'from-red-600 to-orange-600' 
+                                            <Button className={`w-full bg-gradient-to-r ${key === 'adventure'
+                                                    ? 'from-red-600 to-orange-600'
                                                     : 'from-blue-600 to-teal-600'
-                                            }`}>
+                                                }`}>
                                                 <Compass className="mr-2" size={16} />
                                                 Explore {style.title}
                                             </Button>
@@ -886,11 +884,10 @@ const TripInspirationPage = () => {
                                     <button
                                         key={type}
                                         onClick={() => setSelectedTravelType(type)}
-                                        className={`px-6 py-3 rounded-lg capitalize transition-all ${
-                                            selectedTravelType === type
+                                        className={`px-6 py-3 rounded-lg capitalize transition-all ${selectedTravelType === type
                                                 ? 'bg-blue-600 text-white'
                                                 : 'bg-gray-800 text-gray-400 hover:text-white'
-                                        }`}
+                                            }`}
                                     >
                                         {type} Travel
                                     </button>

@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import gsap from 'gsap'; // Animation library
+import { ScrollTrigger } from 'gsap/ScrollTrigger'; // Plugin for scroll-based animations
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger); // Register the plugin
 
+// Component that animates a number counting up when scrolled into view
 const NumberCounter = ({
-  targetNumber,
-  duration = 2.5,
-  suffix = '',
-  className = ''
+  targetNumber, // The final number to count to
+  duration = 2.5, // Duration of the animation in seconds
+  suffix = '', // Optional suffix (e.g., "+", "%")
+  className = '' // Optional CSS class
 }) => {
   const [count, setCount] = useState(0);
   const elementRef = useRef(null);
@@ -31,7 +32,7 @@ const NumberCounter = ({
             val: targetNumber,
             duration: duration,
             ease: "power2.out",
-            onUpdate: function() {
+            onUpdate: function () {
               setCount(Math.round(obj.val));
             }
           });

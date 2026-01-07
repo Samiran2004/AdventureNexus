@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
+// PageNotFound component displays a custom 404 error page with a TV animation
 const PageNotFound = () => {
   return (
     <StyledWrapper>

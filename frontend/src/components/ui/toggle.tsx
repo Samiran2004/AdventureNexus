@@ -26,6 +26,7 @@ const toggleVariants = cva(
   }
 )
 
+// Toggle component built on Radix UI Toggle
 function Toggle({
   className,
   variant,

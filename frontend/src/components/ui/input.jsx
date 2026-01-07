@@ -1,5 +1,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
+
+// Input component for text and other types of input
 function Input({ className, type, ...props }) {
   return (
     <input

@@ -50,6 +50,7 @@ import Footer from '@/components/mvpblocks/footer-newsletter';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// MyTripsPage component manages and displays the user's trips
 const MyTripsPage = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [selectedTrip, setSelectedTrip] = useState(null);
@@ -58,7 +59,7 @@ const MyTripsPage = () => {
   const [editingItem, setEditingItem] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
 
-  // Enhanced document states
+  // Enhanced document states for file uploads and management
   const [uploadingDocument, setUploadingDocument] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -276,7 +277,7 @@ const MyTripsPage = () => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       handleFileSelect(e.dataTransfer.files[0]);
     }
@@ -287,15 +288,15 @@ const MyTripsPage = () => {
       alert('File size must be less than 10MB');
       return;
     }
-    
+
     setSelectedFile(file);
-    
+
     // Create preview for images
     if (file.type.startsWith('image/')) {
       const reader = new FileReader();
       reader.onload = (e) => setDocumentPreview(e.target.result);
       reader.readAsDataURL(file);
-      
+
       // Simulate OCR processing
       setProcessingOCR(true);
       setTimeout(() => {
@@ -309,9 +310,9 @@ const MyTripsPage = () => {
 
   const handleUpload = async () => {
     if (!selectedFile) return;
-    
+
     setUploadingDocument(true);
-    
+
     // Simulate upload process
     setTimeout(() => {
       const newDocument = {
@@ -330,10 +331,10 @@ const MyTripsPage = () => {
         fileType: selectedFile.type,
         fileName: selectedFile.name
       };
-      
+
       // Add to documents array
       setDocuments(prev => [...prev, newDocument]);
-      
+
       // Reset form
       setSelectedFile(null);
       setDocumentPreview(null);
@@ -348,7 +349,7 @@ const MyTripsPage = () => {
       });
       setOcrText('');
       setUploadingDocument(false);
-      
+
       alert('Document uploaded successfully!');
     }, 1500);
   };
@@ -385,7 +386,7 @@ const MyTripsPage = () => {
 
   const filteredTrips = trips.filter(trip => {
     const matchesSearch = trip.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         trip.destination.toLowerCase().includes(searchQuery.toLowerCase());
+      trip.destination.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesFilter = filterStatus === 'all' || trip.status === filterStatus;
     return matchesSearch && matchesFilter;
   });
@@ -426,7 +427,7 @@ const MyTripsPage = () => {
   return (
     <div className="min-h-screen bg-black text-white" ref={containerRef}>
       {/* Header */}
-      <NavBar/>
+      <NavBar />
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {!selectedTrip ? (
@@ -551,7 +552,7 @@ const MyTripsPage = () => {
                         </h3>
                         <p className="text-gray-400">{trip.destination}</p>
                       </div>
-                      
+
                       <div className="flex items-center space-x-4 text-sm text-gray-400">
                         <div className="flex items-center">
                           <Calendar size={14} className="mr-1" />
@@ -637,7 +638,7 @@ const MyTripsPage = () => {
                         {selectedTrip.status}
                       </Badge>
                     </div>
-                    
+
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div>
                         <p className="text-sm text-gray-400">Start Date</p>
@@ -691,11 +692,10 @@ const MyTripsPage = () => {
                   <button
                     key={tab.key}
                     onClick={() => setActiveTab(tab.key)}
-                    className={`flex items-center space-x-2 py-4 px-2 border-b-2 transition-colors ${
-                      activeTab === tab.key
+                    className={`flex items-center space-x-2 py-4 px-2 border-b-2 transition-colors ${activeTab === tab.key
                         ? 'border-blue-500 text-blue-400'
                         : 'border-transparent text-gray-400 hover:text-white'
-                    }`}
+                      }`}
                   >
                     {tab.icon}
                     <span>{tab.label}</span>
@@ -718,8 +718,8 @@ const MyTripsPage = () => {
                       </CardHeader>
                       <CardContent className="space-y-4">
                         <div className="text-gray-300">
-                          Your {selectedTrip.totalDays}-day adventure through {selectedTrip.destination} has been 
-                          carefully crafted by AI to maximize your experience. This itinerary balances cultural 
+                          Your {selectedTrip.totalDays}-day adventure through {selectedTrip.destination} has been
+                          carefully crafted by AI to maximize your experience. This itinerary balances cultural
                           exploration, culinary delights, and memorable activities.
                         </div>
                         <div className="grid grid-cols-2 gap-4">
@@ -762,8 +762,8 @@ const MyTripsPage = () => {
                           <div className="w-full bg-gray-800 rounded-full h-2">
                             <div
                               className="bg-blue-600 h-2 rounded-full"
-                              style={{ 
-                                width: `${(selectedTrip.spent / selectedTrip.budget) * 100}%` 
+                              style={{
+                                width: `${(selectedTrip.spent / selectedTrip.budget) * 100}%`
                               }}
                             />
                           </div>
@@ -857,8 +857,8 @@ const MyTripsPage = () => {
                                     <div className="flex items-center space-x-2">
                                       <Badge className={
                                         item.status === 'confirmed' ? 'bg-green-900/50 text-green-400' :
-                                        item.status === 'completed' ? 'bg-gray-900/50 text-gray-400' :
-                                        'bg-yellow-900/50 text-yellow-400'
+                                          item.status === 'completed' ? 'bg-gray-900/50 text-gray-400' :
+                                            'bg-yellow-900/50 text-yellow-400'
                                       }>
                                         {item.status}
                                       </Badge>
@@ -916,9 +916,8 @@ const MyTripsPage = () => {
                   <Card className="bg-gray-900 border-gray-700">
                     <CardContent className="p-6">
                       <div
-                        className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                          dragActive ? 'border-blue-500 bg-blue-500/10' : 'border-gray-600'
-                        }`}
+                        className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${dragActive ? 'border-blue-500 bg-blue-500/10' : 'border-gray-600'
+                          }`}
                         onDragEnter={handleDrag}
                         onDragLeave={handleDrag}
                         onDragOver={handleDrag}
@@ -941,8 +940,8 @@ const MyTripsPage = () => {
                               accept="image/*,.pdf,.doc,.docx"
                               onChange={(e) => e.target.files[0] && handleFileSelect(e.target.files[0])}
                             />
-                            <Button 
-                              variant="outline" 
+                            <Button
+                              variant="outline"
                               className="border-gray-600"
                               onClick={() => document.getElementById('file-upload').click()}
                             >
@@ -975,7 +974,7 @@ const MyTripsPage = () => {
                                 <XCircle size={16} />
                               </Button>
                             </div>
-                            
+
                             {/* Document Preview */}
                             {documentPreview && (
                               <div className="max-w-md mx-auto">
@@ -986,7 +985,7 @@ const MyTripsPage = () => {
                                 />
                               </div>
                             )}
-                            
+
                             {/* OCR Processing/Results */}
                             {processingOCR ? (
                               <div className="flex items-center justify-center space-x-2 text-blue-400">
@@ -1004,7 +1003,7 @@ const MyTripsPage = () => {
                                 <pre className="text-xs text-gray-400 whitespace-pre-wrap">{ocrText}</pre>
                               </div>
                             )}
-                            
+
                             {/* Document Form */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
                               <div>
@@ -1018,7 +1017,7 @@ const MyTripsPage = () => {
                                   className="bg-gray-800 border-gray-600"
                                 />
                               </div>
-                              
+
                               <div>
                                 <label className="block text-sm font-medium text-gray-300 mb-1">
                                   Document Type
@@ -1037,7 +1036,7 @@ const MyTripsPage = () => {
                                   )}
                                 </select>
                               </div>
-                              
+
                               <div>
                                 <label className="block text-sm font-medium text-gray-300 mb-1">
                                   Category
@@ -1052,7 +1051,7 @@ const MyTripsPage = () => {
                                   ))}
                                 </select>
                               </div>
-                              
+
                               <div>
                                 <label className="block text-sm font-medium text-gray-300 mb-1">
                                   Expiry Date (Optional)
@@ -1064,7 +1063,7 @@ const MyTripsPage = () => {
                                   className="bg-gray-800 border-gray-600"
                                 />
                               </div>
-                              
+
                               <div className="md:col-span-2">
                                 <label className="block text-sm font-medium text-gray-300 mb-1">
                                   Notes (Optional)
@@ -1076,7 +1075,7 @@ const MyTripsPage = () => {
                                   className="w-full bg-gray-800 border border-gray-600 rounded-md px-3 py-2 text-white min-h-20"
                                 />
                               </div>
-                              
+
                               <div className="md:col-span-2">
                                 <div className="flex items-center justify-between">
                                   <div className="flex items-center space-x-2">
@@ -1092,7 +1091,7 @@ const MyTripsPage = () => {
                                       Mark as private (requires password to view)
                                     </label>
                                   </div>
-                                  
+
                                   {documentForm.isPrivate && (
                                     <Input
                                       type="password"
@@ -1105,7 +1104,7 @@ const MyTripsPage = () => {
                                 </div>
                               </div>
                             </div>
-                            
+
                             <div className="flex space-x-4">
                               <Button
                                 onClick={handleUpload}
@@ -1124,7 +1123,7 @@ const MyTripsPage = () => {
                                   </>
                                 )}
                               </Button>
-                              
+
                               <Button
                                 variant="outline"
                                 onClick={() => {
@@ -1155,25 +1154,25 @@ const MyTripsPage = () => {
                   {/* Enhanced Document Grid by Category */}
                   <div className="space-y-6">
                     {Object.entries(documentCategories).map(([categoryKey, category]) => {
-                      const categoryDocs = documents.filter(doc => 
+                      const categoryDocs = documents.filter(doc =>
                         doc.category === categoryKey && doc.tripId === selectedTrip.id
                       );
-                      
+
                       if (categoryDocs.length === 0) return null;
-                      
+
                       return (
                         <div key={categoryKey}>
                           <h4 className="text-lg font-semibold text-white mb-4 flex items-center">
                             {category.label}
                             <Badge className="ml-2 bg-gray-700">{categoryDocs.length}</Badge>
                           </h4>
-                          
+
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             {categoryDocs.map((doc) => {
                               const docType = Object.values(documentCategories)
                                 .flatMap(cat => cat.types)
                                 .find(type => type.value === doc.type);
-                              
+
                               return (
                                 <Card key={doc.id} className="bg-gray-900 border-gray-700 group hover:border-blue-500 transition-colors">
                                   <CardContent className="p-4">
@@ -1197,20 +1196,20 @@ const MyTripsPage = () => {
                                         <MoreVertical size={14} />
                                       </Button>
                                     </div>
-                                    
+
                                     <div className="space-y-2">
                                       <Badge className={getDocumentTypeColor(doc.type)}>
                                         {docType?.label || doc.type}
                                       </Badge>
-                                      
+
                                       <div className="text-xs text-gray-400">
                                         <div>Uploaded: {new Date(doc.uploadDate).toLocaleDateString()}</div>
                                         {doc.expiryDate && (
                                           <div className={
-                                            new Date(doc.expiryDate) < new Date(Date.now() + 30*24*60*60*1000) 
+                                            new Date(doc.expiryDate) < new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
                                               ? 'text-red-400 flex items-center' : 'text-gray-400'
                                           }>
-                                            {new Date(doc.expiryDate) < new Date(Date.now() + 30*24*60*60*1000) && (
+                                            {new Date(doc.expiryDate) < new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) && (
                                               <AlertTriangle size={12} className="mr-1" />
                                             )}
                                             Expires: {new Date(doc.expiryDate).toLocaleDateString()}
@@ -1222,7 +1221,7 @@ const MyTripsPage = () => {
                                           </div>
                                         )}
                                       </div>
-                                      
+
                                       <div className="flex space-x-2 pt-2">
                                         <Button variant="outline" size="sm" className="flex-1 border-gray-600">
                                           <Eye size={12} className="mr-1" />
@@ -1255,7 +1254,7 @@ const MyTripsPage = () => {
                         <div>
                           <h4 className="text-blue-300 font-semibold mb-1">Secure Document Storage</h4>
                           <p className="text-blue-200/80 text-sm">
-                            Your documents are encrypted and stored securely. Private documents require password verification before viewing. 
+                            Your documents are encrypted and stored securely. Private documents require password verification before viewing.
                             We recommend enabling two-factor authentication for additional security.
                           </p>
                         </div>
@@ -1268,7 +1267,7 @@ const MyTripsPage = () => {
           </div>
         )}
       </div>
-      <Footer/>
+      <Footer />
     </div>
   );
 };

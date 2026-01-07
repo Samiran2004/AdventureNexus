@@ -6,6 +6,7 @@ import { MapPin, Plane, Hotel, Calendar, Compass, Camera } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@clerk/clerk-react';
 
+// BentoGridItemProps interface defines the shape of the data for each grid item
 interface BentoGridItemProps {
   title: string;
   description: string;
@@ -16,6 +17,8 @@ interface BentoGridItemProps {
   requireAuth?: boolean; // Optional: require authentication
 }
 
+// BentoGridItem component renders a single card in the grid
+// It handles navigation and optional authentication checks
 const BentoGridItem = ({
   title,
   description,
@@ -28,6 +31,7 @@ const BentoGridItem = ({
   const navigate = useNavigate();
   const { isSignedIn } = useAuth();
 
+  // Animation variants for framer-motion
   const variants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -37,6 +41,7 @@ const BentoGridItem = ({
     },
   };
 
+  // Handles click events on the card
   const handleCardClick = () => {
     // Check authentication if required
     if (requireAuth && !isSignedIn) {
@@ -86,6 +91,7 @@ const BentoGridItem = ({
   );
 };
 
+// Data for the grid items
 const items = [
   {
     title: 'AI Trip Planning',

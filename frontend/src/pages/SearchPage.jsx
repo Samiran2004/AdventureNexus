@@ -54,6 +54,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "@clerk/clerk-react"
 
 
+// SearchPage component allows users to search for trips using AI-powered criteria
 const SearchPage = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showFilters, setShowFilters] = useState(false);

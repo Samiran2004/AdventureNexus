@@ -2,6 +2,7 @@
 import React, { useEffect, useRef } from "react";
 import createGlobe from "cobe";
 import { cn } from "@/lib/utils";
+// Earth component renders an interactive 3D globe using cobe
 const Earth = ({
   className,
   theta = 0.25,

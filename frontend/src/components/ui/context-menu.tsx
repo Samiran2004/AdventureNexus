@@ -6,6 +6,7 @@ import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+// ContextMenu component built on Radix UI Context Menu
 function ContextMenu({
   ...props
 }: React.ComponentProps<typeof ContextMenuPrimitive.Root>) {

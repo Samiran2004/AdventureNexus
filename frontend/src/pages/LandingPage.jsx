@@ -51,10 +51,11 @@ import TextRevealLetters from '@/components/mvpblocks/text-reveal-1';
 // Register GSAP Plugins
 gsap.registerPlugin(ScrollTrigger, TextPlugin);
 
+// AdventureNexusLanding is the main landing page component of the application
 const AdventureNexusLanding = () => {
 
 
-    // Refs for GSAP animations
+    // Refs for GSAP animations for various sections of the page
     const heroRef = useRef(null);
     const featuresRef = useRef(null);
     const howItWorksRef = useRef(null);
@@ -232,7 +233,7 @@ const AdventureNexusLanding = () => {
                                     className="text-lg px-8 py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 cursor-pointer"
                                     onMouseEnter={handleButtonHover}
                                     onMouseLeave={handleButtonLeave}
-                                    onClick={()=>{
+                                    onClick={() => {
                                         navigate('/build-trip')
                                     }}
                                 >
@@ -245,7 +246,7 @@ const AdventureNexusLanding = () => {
                                     className="text-lg px-8 py-6 border-2 border-gray-600 text-black hover:bg-gray-800 hover:text-white cursor-pointer"
                                     onMouseEnter={handleButtonHover}
                                     onMouseLeave={handleButtonLeave}
-                                    onClick={()=>{
+                                    onClick={() => {
                                         navigate('/works')
                                     }}
                                 >
@@ -334,7 +335,7 @@ const AdventureNexusLanding = () => {
                     </div>
                     <div>
                         {/* <ScrollBasedVelocityDemo /> */}
-                        <TextRevealLetters/>
+                        <TextRevealLetters />
                         <BentoGrid1 />
                     </div>
                 </div>
@@ -473,8 +474,8 @@ const AdventureNexusLanding = () => {
                                     </ul>
                                     <Button
                                         className={`w-full ${plan.popular
-                                                ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700'
-                                                : 'bg-gray-700 hover:bg-gray-600 text-white'
+                                            ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700'
+                                            : 'bg-gray-700 hover:bg-gray-600 text-white'
                                             }`}
                                         onMouseEnter={handleButtonHover}
                                         onMouseLeave={handleButtonLeave}
@@ -606,7 +607,7 @@ const AdventureNexusLanding = () => {
                     </div>
                 </div>
             </footer> */}
-            <Footer/>
+            <Footer />
         </div>
     );
 };

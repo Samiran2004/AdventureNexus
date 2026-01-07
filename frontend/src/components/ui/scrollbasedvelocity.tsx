@@ -29,6 +29,7 @@ export const wrap = (min: number, max: number, v: number) => {
   return ((((v - min) % rangeSize) + rangeSize) % rangeSize) + min;
 };
 
+// VelocityScroll component animates text based on scroll velocity
 export const VelocityScroll: React.FC<VelocityScrollProps> = ({
   text,
   default_velocity = 5,

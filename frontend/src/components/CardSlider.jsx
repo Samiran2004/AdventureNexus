@@ -1,121 +1,122 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components'; // Library for styling components with CSS-in-JS
 
+// Component displaying a 3D infinite slider of cards
 const CardSlider = () => {
-    return (
-        <StyledWrapper>
-            <div
-                className="slider"
-                style={{
-                    '--width': '300px',
-                    '--height': '300px',
-                    '--quantity': 9,
-                    // 'marginBottom': 20
-                }}
-            >
-                <div className="list">
-                    <div className="item" style={{ '--position': 1 }}>
-                        <div className="card" style={{
-                            backgroundImage: 'linear-gradient(rgba(255, 126, 95, 0.7), rgba(254, 180, 123, 0.7)), url(https://images.unsplash.com/photo-1431274172761-fca41d930114?w=400&h=400&fit=crop)',
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center'
-                        }}>
-                            <p>Paris, France</p>
-                            <p>City of Love & Lights</p>
-                        </div>
-                    </div>
-
-                    <div className="item" style={{ '--position': 2 }}>
-                        <div className="card" style={{
-                            backgroundImage: 'linear-gradient(rgba(106, 17, 203, 0.7), rgba(37, 117, 252, 0.7)), url(https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=400&h=400&fit=crop)',
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center'
-                        }}>
-                            <p>Tokyo, Japan</p>
-                            <p>Modern Meets Traditional</p>
-                        </div>
-                    </div>
-
-                    <div className="item" style={{ '--position': 3 }}>
-                        <div className="card" style={{
-                            backgroundImage: 'linear-gradient(rgba(102, 126, 234, 0.7), rgba(118, 75, 162, 0.7)), url(https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?w=400&h=400&fit=crop)',
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center'
-                        }}>
-                            <p>Bali, Indonesia</p>
-                            <p>Tropical Paradise</p>
-                        </div>
-                    </div>
-
-                    <div className="item" style={{ '--position': 4 }}>
-                        <div className="card" style={{
-                            backgroundImage: 'linear-gradient(rgba(255, 81, 47, 0.7), rgba(221, 36, 118, 0.7)), url(https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=400&h=400&fit=crop)',
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center'
-                        }}>
-                            <p>London, UK</p>
-                            <p>Historic Royal Capital</p>
-                        </div>
-                    </div>
-
-                    <div className="item" style={{ '--position': 5 }}>
-                        <div className="card" style={{
-                            backgroundImage: 'linear-gradient(rgba(255, 182, 193, 0.7), rgba(255, 105, 180, 0.7)), url(https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=400&h=400&fit=crop)',
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center'
-                        }}>
-                            <p>Santorini, Greece</p>
-                            <p>Blue Domes & Sunsets</p>
-                        </div>
-                    </div>
-
-                    <div className="item" style={{ '--position': 6 }}>
-                        <div className="card" style={{
-                            backgroundImage: 'linear-gradient(rgba(255, 154, 139, 0.7), rgba(255, 195, 160, 0.7)), url(https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=400&h=400&fit=crop)',
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center'
-                        }}>
-                            <p>Dubai, UAE</p>
-                            <p>Luxury & Innovation</p>
-                        </div>
-                    </div>
-
-                    <div className="item" style={{ '--position': 7 }}>
-                        <div className="card" style={{
-                            backgroundImage: 'linear-gradient(rgba(161, 196, 253, 0.7), rgba(194, 233, 251, 0.7)), url(https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop)',
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center'
-                        }}>
-                            <p>Swiss Alps</p>
-                            <p>Mountain Adventures</p>
-                        </div>
-                    </div>
-
-                    <div className="item" style={{ '--position': 8 }}>
-                        <div className="card" style={{
-                            backgroundImage: 'linear-gradient(rgba(251, 194, 235, 0.7), rgba(161, 140, 209, 0.7)), url(https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop)',
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center'
-                        }}>
-                            <p>Maldives</p>
-                            <p>Crystal Clear Waters</p>
-                        </div>
-                    </div>
-
-                    <div className="item" style={{ '--position': 9 }}>
-                        <div className="card" style={{
-                            backgroundImage: 'linear-gradient(rgba(132, 250, 176, 0.7), rgba(143, 211, 244, 0.7)), url(https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=400&h=400&fit=crop)',
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center'
-                        }}>
-                            <p>Morocco</p>
-                            <p>Desert & Culture</p>
-                        </div>
-                    </div>
-                </div>
+  return (
+    <StyledWrapper>
+      <div
+        className="slider"
+        style={{
+          '--width': '300px',
+          '--height': '300px',
+          '--quantity': 9,
+          // 'marginBottom': 20
+        }}
+      >
+        <div className="list">
+          <div className="item" style={{ '--position': 1 }}>
+            <div className="card" style={{
+              backgroundImage: 'linear-gradient(rgba(255, 126, 95, 0.7), rgba(254, 180, 123, 0.7)), url(https://images.unsplash.com/photo-1431274172761-fca41d930114?w=400&h=400&fit=crop)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }}>
+              <p>Paris, France</p>
+              <p>City of Love & Lights</p>
             </div>
-        </StyledWrapper>
-    );
+          </div>
+
+          <div className="item" style={{ '--position': 2 }}>
+            <div className="card" style={{
+              backgroundImage: 'linear-gradient(rgba(106, 17, 203, 0.7), rgba(37, 117, 252, 0.7)), url(https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=400&h=400&fit=crop)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }}>
+              <p>Tokyo, Japan</p>
+              <p>Modern Meets Traditional</p>
+            </div>
+          </div>
+
+          <div className="item" style={{ '--position': 3 }}>
+            <div className="card" style={{
+              backgroundImage: 'linear-gradient(rgba(102, 126, 234, 0.7), rgba(118, 75, 162, 0.7)), url(https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?w=400&h=400&fit=crop)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }}>
+              <p>Bali, Indonesia</p>
+              <p>Tropical Paradise</p>
+            </div>
+          </div>
+
+          <div className="item" style={{ '--position': 4 }}>
+            <div className="card" style={{
+              backgroundImage: 'linear-gradient(rgba(255, 81, 47, 0.7), rgba(221, 36, 118, 0.7)), url(https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=400&h=400&fit=crop)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }}>
+              <p>London, UK</p>
+              <p>Historic Royal Capital</p>
+            </div>
+          </div>
+
+          <div className="item" style={{ '--position': 5 }}>
+            <div className="card" style={{
+              backgroundImage: 'linear-gradient(rgba(255, 182, 193, 0.7), rgba(255, 105, 180, 0.7)), url(https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=400&h=400&fit=crop)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }}>
+              <p>Santorini, Greece</p>
+              <p>Blue Domes & Sunsets</p>
+            </div>
+          </div>
+
+          <div className="item" style={{ '--position': 6 }}>
+            <div className="card" style={{
+              backgroundImage: 'linear-gradient(rgba(255, 154, 139, 0.7), rgba(255, 195, 160, 0.7)), url(https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=400&h=400&fit=crop)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }}>
+              <p>Dubai, UAE</p>
+              <p>Luxury & Innovation</p>
+            </div>
+          </div>
+
+          <div className="item" style={{ '--position': 7 }}>
+            <div className="card" style={{
+              backgroundImage: 'linear-gradient(rgba(161, 196, 253, 0.7), rgba(194, 233, 251, 0.7)), url(https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }}>
+              <p>Swiss Alps</p>
+              <p>Mountain Adventures</p>
+            </div>
+          </div>
+
+          <div className="item" style={{ '--position': 8 }}>
+            <div className="card" style={{
+              backgroundImage: 'linear-gradient(rgba(251, 194, 235, 0.7), rgba(161, 140, 209, 0.7)), url(https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }}>
+              <p>Maldives</p>
+              <p>Crystal Clear Waters</p>
+            </div>
+          </div>
+
+          <div className="item" style={{ '--position': 9 }}>
+            <div className="card" style={{
+              backgroundImage: 'linear-gradient(rgba(132, 250, 176, 0.7), rgba(143, 211, 244, 0.7)), url(https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=400&h=400&fit=crop)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }}>
+              <p>Morocco</p>
+              <p>Desert & Culture</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </StyledWrapper>
+  );
 }
 
 const StyledWrapper = styled.div`

@@ -42,6 +42,7 @@ import NavBar from '@/components/NavBar';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// ProfilePage component displays and manages the user's profile information
 const ProfilePage = () => {
     // Sample user data - replace with actual user data from your auth system
     const [userData, setUserData] = useState({
@@ -77,7 +78,7 @@ const ProfilePage = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [editData, setEditData] = useState({ ...userData });
     const [activeTab, setActiveTab] = useState('profile');
-    
+
     // Refs for animations
     const headerRef = useRef(null);
     const contentRef = useRef(null);
@@ -127,7 +128,7 @@ const ProfilePage = () => {
     const getProfileColor = (name) => {
         const colors = [
             'from-blue-600 to-purple-600',
-            'from-green-600 to-teal-600', 
+            'from-green-600 to-teal-600',
             'from-pink-600 to-rose-600',
             'from-orange-600 to-red-600',
             'from-indigo-600 to-blue-600',
@@ -161,7 +162,7 @@ const ProfilePage = () => {
             ...prev,
             [parent]: {
                 ...prev[parent],
-                [child]: isChecked 
+                [child]: isChecked
                     ? [...prev[parent][child], value]
                     : prev[parent][child].filter(item => item !== value)
             }
@@ -181,9 +182,9 @@ const ProfilePage = () => {
     const ProfilePicture = ({ size = "w-24 h-24", textSize = "text-2xl" }) => (
         <div className={`${size} rounded-full bg-gradient-to-r ${getProfileColor(userData.firstName + userData.lastName)} flex items-center justify-center ${textSize} font-bold text-white relative group cursor-pointer`}>
             {userData.profilePicture ? (
-                <img 
-                    src={userData.profilePicture} 
-                    alt="Profile" 
+                <img
+                    src={userData.profilePicture}
+                    alt="Profile"
                     className={`${size} rounded-full object-cover`}
                 />
             ) : (
@@ -198,7 +199,7 @@ const ProfilePage = () => {
     return (
         <div className="min-h-screen bg-black text-white">
             <NavBar />
-            
+
             {/* Profile Header */}
             <section ref={headerRef} className="bg-gradient-to-br from-gray-900 via-black to-gray-900 py-20 relative overflow-hidden">
                 <div className="absolute inset-0 overflow-hidden">
@@ -209,7 +210,7 @@ const ProfilePage = () => {
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
                     <div className="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
                         <ProfilePicture size="w-32 h-32" textSize="text-4xl" />
-                        
+
                         <div className="flex-1 text-center md:text-left">
                             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
                                 <div>
@@ -250,7 +251,7 @@ const ProfilePage = () => {
                                     )}
                                 </div>
                             </div>
-                            
+
                             <p className="text-gray-300 max-w-2xl">
                                 {userData.bio}
                             </p>
@@ -308,11 +309,10 @@ const ProfilePage = () => {
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
-                                className={`flex items-center px-4 py-2 rounded-md transition-all ${
-                                    activeTab === tab.id 
-                                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white' 
-                                    : 'text-gray-400 hover:text-white'
-                                }`}
+                                className={`flex items-center px-4 py-2 rounded-md transition-all ${activeTab === tab.id
+                                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
+                                        : 'text-gray-400 hover:text-white'
+                                    }`}
                             >
                                 <tab.icon size={16} className="mr-2" />
                                 {tab.label}

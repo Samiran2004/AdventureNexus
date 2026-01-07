@@ -7,6 +7,7 @@ interface GradientBarsProps {
   colors?: string[];
 }
 
+// GradientBars component renders animated bars with a gradient
 export const GradientBars = ({
   bars = 20,
   colors = ['#e60a64', 'transparent'],

@@ -6,6 +6,7 @@ import { CheckIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+// Checkbox component based on Radix UI Checkbox
 function Checkbox({
   className,
   ...props

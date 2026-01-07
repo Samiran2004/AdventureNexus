@@ -1,6 +1,8 @@
+/* Import Tailwind CSS framework */
 @import "tailwindcss";
-@import "tw-animate-css";
+@import "tw-animate-css"; /* Import animations */
 
+/* Define custom variant for dark mode */
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

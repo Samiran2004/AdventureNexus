@@ -5,16 +5,18 @@ import {
   Transition,
   useAnimation,
   useMotionValue,
-} from 'framer-motion';
+} from 'framer-motion'; // Animation library
 import { useEffect } from 'react';
 
+// Props for the CircularText component
 type CircularTextProps = {
-  text: string;
-  spinDuration?: number;
-  onHover?: 'slowDown' | 'speedUp' | 'pause' | 'goBonkers';
-  className?: string;
+  text: string; // The text to display in a circle
+  spinDuration?: number; // Duration of one full rotation in seconds
+  onHover?: 'slowDown' | 'speedUp' | 'pause' | 'goBonkers'; // Behavior on hover
+  className?: string; // Optional CSS class
 };
 
+// Helper function to create rotation transition configuration
 const getRotationTransition = (
   duration: number,
   from: number,
@@ -25,9 +27,10 @@ const getRotationTransition = (
   ease: 'linear' as const,
   duration,
   type: 'tween' as const,
-  repeat: loop ? Infinity : 0,
+  repeat: loop ? Infinity : 0, // Infinite loop if enabled
 });
 
+// Helper function to combine rotation and scale transitions
 const getTransition = (duration: number, from: number) => ({
   rotate: getRotationTransition(duration, from),
   scale: {
@@ -38,9 +41,9 @@ const getTransition = (duration: number, from: number) => ({
 });
 
 export function CircularText({
-  text = 'Circular Text Animation • ',
-  spinDuration = 20,
-  onHover = 'speedUp',
+  text = 'Circular Text Animation • ', // Default text
+  spinDuration = 20, // Default rotation speed
+  onHover = 'speedUp', // Default hover effect
   className = '',
 }: Readonly<CircularTextProps>) {
   const letters = Array.from(text);

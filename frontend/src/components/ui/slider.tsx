@@ -5,6 +5,7 @@ import * as SliderPrimitive from "@radix-ui/react-slider"
 
 import { cn } from "@/lib/utils"
 
+// Slider component built on Radix UI Slider
 function Slider({
   className,
   defaultValue,

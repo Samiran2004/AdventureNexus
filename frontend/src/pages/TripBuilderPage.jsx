@@ -62,8 +62,9 @@ import NavBar from '@/components/NavBar';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// TripBuilderPage component allows users to interactively build and customize their trip itinerary
 const TripBuilderPage = () => {
-    // Generate unique IDs
+    // Generate unique IDs for drag and drop items
     const generateId = () => '_' + Math.random().toString(36).substr(2, 9);
 
     // Sample activities database
@@ -127,7 +128,7 @@ const TripBuilderPage = () => {
         const start = new Date(tripData.startDate);
         const end = new Date(tripData.endDate);
         const totalDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
-        
+
         for (let i = 0; i < totalDays; i++) {
             const date = new Date(start);
             date.setDate(start.getDate() + i);
@@ -203,7 +204,7 @@ const TripBuilderPage = () => {
     // Filter activities
     const filteredActivities = activityDatabase.filter(activity => {
         const matchesSearch = activity.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            activity.description.toLowerCase().includes(searchTerm.toLowerCase());
+            activity.description.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesCategory = selectedCategory === 'all' || activity.category.toLowerCase() === selectedCategory.toLowerCase();
         return matchesSearch && matchesCategory;
     });
@@ -220,7 +221,7 @@ const TripBuilderPage = () => {
             const dayIndex = parseInt(destinationDroppableId.split('-')[11]);
             const activityIndex = result.source.index;
             const activity = filteredActivities[activityIndex];
-            
+
             const newActivity = {
                 ...activity,
                 id: generateId(),
@@ -238,7 +239,7 @@ const TripBuilderPage = () => {
         // Handle reordering within same day
         if (sourceDroppableId === destinationDroppableId && sourceDroppableId.startsWith('day-')) {
             const dayIndex = parseInt(sourceDroppableId.split('-')[11]);
-            
+
             setItinerary(prev => {
                 const newItinerary = [...prev];
                 const dayActivities = [...newItinerary[dayIndex].activities];
@@ -259,10 +260,10 @@ const TripBuilderPage = () => {
                 const newItinerary = [...prev];
                 const sourceActivities = [...newItinerary[sourceDayIndex].activities];
                 const destActivities = [...newItinerary[destDayIndex].activities];
-                
+
                 const [movedItem] = sourceActivities.splice(result.source.index, 1);
                 destActivities.splice(result.destination.index, 0, movedItem);
-                
+
                 newItinerary[sourceDayIndex].activities = sourceActivities;
                 newItinerary[destDayIndex].activities = destActivities;
                 return newItinerary;
@@ -286,14 +287,13 @@ const TripBuilderPage = () => {
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
-                    className={`bg-gray-800 border-gray-700 cursor-move transition-all duration-200 ${
-                        snapshot.isDragging ? 'scale-105 shadow-2xl' : 'hover:scale-102'
-                    }`}
+                    className={`bg-gray-800 border-gray-700 cursor-move transition-all duration-200 ${snapshot.isDragging ? 'scale-105 shadow-2xl' : 'hover:scale-102'
+                        }`}
                 >
                     <CardContent className="p-4">
                         <div className="flex items-start space-x-3">
-                            <img 
-                                src={activity.image} 
+                            <img
+                                src={activity.image}
                                 alt={activity.name}
                                 className="w-12 h-12 rounded-lg object-cover"
                             />
@@ -339,7 +339,7 @@ const TripBuilderPage = () => {
                             <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"> Itinerary</span>
                         </h1>
                         <p className="text-xl text-gray-300 leading-relaxed">
-                            Plan every detail of your trip with our interactive itinerary builder, 
+                            Plan every detail of your trip with our interactive itinerary builder,
                             budget tracker, and collaborative planning tools.
                         </p>
 
@@ -370,11 +370,10 @@ const TripBuilderPage = () => {
                         <div className="flex space-x-1 bg-gray-900 p-1 rounded-lg">
                             <button
                                 onClick={() => setActiveTab('planner')}
-                                className={`flex items-center px-6 py-3 rounded-md transition-all ${
-                                    activeTab === 'planner' 
-                                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white' 
-                                    : 'text-gray-400 hover:text-white'
-                                }`}
+                                className={`flex items-center px-6 py-3 rounded-md transition-all ${activeTab === 'planner'
+                                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
+                                        : 'text-gray-400 hover:text-white'
+                                    }`}
                             >
                                 <Calendar size={16} className="mr-2" />
                                 Itinerary Planner
@@ -447,17 +446,16 @@ const TripBuilderPage = () => {
                                             <button
                                                 key={index}
                                                 onClick={() => setSelectedDay(index)}
-                                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                                                    selectedDay === index
+                                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedDay === index
                                                         ? 'bg-blue-600 text-white'
                                                         : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700'
-                                                }`}
+                                                    }`}
                                             >
                                                 Day {day.dayNumber}
                                                 <div className="text-xs opacity-75">
-                                                    {new Date(day.date).toLocaleDateString('en-US', { 
-                                                        month: 'short', 
-                                                        day: 'numeric' 
+                                                    {new Date(day.date).toLocaleDateString('en-US', {
+                                                        month: 'short',
+                                                        day: 'numeric'
                                                     })}
                                                 </div>
                                             </button>
@@ -474,7 +472,7 @@ const TripBuilderPage = () => {
                                                             Day {itinerary[selectedDay].dayNumber} Schedule
                                                         </CardTitle>
                                                         <CardDescription className="text-gray-400">
-                                                            {new Date(itinerary[selectedDay].date).toLocaleDateString('en-US', { 
+                                                            {new Date(itinerary[selectedDay].date).toLocaleDateString('en-US', {
                                                                 weekday: 'long',
                                                                 year: 'numeric',
                                                                 month: 'long',
@@ -499,11 +497,10 @@ const TripBuilderPage = () => {
                                                         <div
                                                             {...provided.droppableProps}
                                                             ref={provided.innerRef}
-                                                            className={`min-h-[300px] rounded-lg border-2 border-dashed transition-colors ${
-                                                                snapshot.isDraggingOver
+                                                            className={`min-h-[300px] rounded-lg border-2 border-dashed transition-colors ${snapshot.isDraggingOver
                                                                     ? 'border-blue-500 bg-blue-500/10'
                                                                     : 'border-gray-600'
-                                                            }`}
+                                                                }`}
                                                         >
                                                             {itinerary[selectedDay].activities.length === 0 ? (
                                                                 <div className="flex flex-col items-center justify-center h-48 text-gray-400">
@@ -530,8 +527,8 @@ const TripBuilderPage = () => {
                                                                                             <div className="flex items-start justify-between">
                                                                                                 <div className="flex items-start space-x-3 flex-1">
                                                                                                     <GripVertical className="text-gray-400 cursor-move" size={16} />
-                                                                                                    <img 
-                                                                                                        src={activity.image} 
+                                                                                                    <img
+                                                                                                        src={activity.image}
                                                                                                         alt={activity.name}
                                                                                                         className="w-10 h-10 rounded-lg object-cover"
                                                                                                     />

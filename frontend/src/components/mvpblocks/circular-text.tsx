@@ -8,6 +8,7 @@ import {
 } from 'framer-motion';
 import { useEffect } from 'react';
 
+// CircularTextProps interface
 type CircularTextProps = {
   text: string;
   spinDuration?: number;
@@ -15,6 +16,7 @@ type CircularTextProps = {
   className?: string;
 };
 
+// Helper to create rotation transition configuration
 const getRotationTransition = (
   duration: number,
   from: number,
@@ -28,6 +30,7 @@ const getRotationTransition = (
   repeat: loop ? Infinity : 0,
 });
 
+// Helper to create overall transition configuration
 const getTransition = (duration: number, from: number) => ({
   rotate: getRotationTransition(duration, from),
   scale: {
@@ -37,6 +40,7 @@ const getTransition = (duration: number, from: number) => ({
   },
 });
 
+// CircularText component creates a rotating circular text animation
 export function CircularText({
   text = 'Circular Text Animation • ',
   spinDuration = 20,
@@ -47,6 +51,7 @@ export function CircularText({
   const controls = useAnimation();
   const rotation: MotionValue<number> = useMotionValue(0);
 
+  // Initialize animation loop
   useEffect(() => {
     const start = rotation.get();
     controls.start({
@@ -56,6 +61,7 @@ export function CircularText({
     });
   }, [spinDuration, text, onHover, controls]);
 
+  // Handle mouse enter for hover effects
   const handleHoverStart = () => {
     const start = rotation.get();
 
@@ -92,6 +98,7 @@ export function CircularText({
     });
   };
 
+  // Handle mouse leave to return to normal state
   const handleHoverEnd = () => {
     const start = rotation.get();
     controls.start({

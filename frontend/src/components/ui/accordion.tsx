@@ -4,6 +4,8 @@ import { ChevronDownIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+// Accordion component built on Radix UI's accordion primitive
+// Displays a vertically stacked set of interactive headings that each reveal a section of content.
 function Accordion({
   ...props
 }: React.ComponentProps<typeof AccordionPrimitive.Root>) {

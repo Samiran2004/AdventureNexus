@@ -6,6 +6,7 @@ import { CircleIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+// RadioGroup component built on Radix UI Radio Group
 function RadioGroup({
   className,
   ...props

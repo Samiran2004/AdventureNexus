@@ -5,6 +5,7 @@ import { ChevronDownIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+// NavigationMenu component built on Radix UI Navigation Menu
 function NavigationMenu({
   className,
   children,

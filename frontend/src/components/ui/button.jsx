@@ -32,6 +32,7 @@ const buttonVariants = cva(
     },
   },
 );
+// Button component with variants for styling
 function Button({ className, variant, size, asChild = false, ...props }) {
   const Comp = asChild ? Slot : "button";
   return (

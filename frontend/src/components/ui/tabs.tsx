@@ -5,6 +5,7 @@ import * as TabsPrimitive from "@radix-ui/react-tabs"
 
 import { cn } from "@/lib/utils"
 
+// Tabs component built on Radix UI Tabs
 function Tabs({
   className,
   ...props
