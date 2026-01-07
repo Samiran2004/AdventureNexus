@@ -1,22 +1,31 @@
-import User from '../Database/models/userModel'; // Adjust the import based on your project structure
+import User from '../Database/models/userModel';
 
+/**
+ * Generates a unique username based on the user's full name.
+ * Format: Firstname + Random 4-digit number.
+ * Recursively checks the database to ensure uniqueness.
+ *
+ * @param fullname - The user's full name
+ * @returns A promise that resolves to a unique username string
+ */
 async function createUserName(fullname: string): Promise<string> {
-    // Convert to lowercase and split the name
+    // 1. Extract first name and convert to lowercase
     const splitName: string[] = fullname.toLowerCase().split(' ');
 
-    // Generate a random number
+    // 2. Generate a random 4-digit number (1000 - 9999)
     const randomNumber: number = Math.floor(Math.random() * 9000) + 1000;
 
-    // Create a random username by combining the first name part and random number
+    // 3. Construct candidate username
     const randomUserName: string = `${splitName[0]}${randomNumber}`;
 
-    // Check if the username already exists in the database
+    // 4. Check uniqueness in Database
     const checkUserName = await User.findOne({ username: randomUserName });
 
     if (checkUserName) {
-        // Recursively generate a new username if it already exists
+        // 5. Recursion: If exists, try again
         return await createUserName(fullname);
     } else {
+        // 6. Return unique username
         return randomUserName;
     }
 }

@@ -9,6 +9,14 @@ export interface CustomRequestDeletePlan extends Request {
     };
 }
 
+/**
+ * Controller to delete a Travel Plan by ID.
+ * Ensures that plans can only be deleted by the user who owns them.
+ *
+ * @param req - Custom Request includes authenticated user ID and Plan ID params
+ * @param res - Express Response object
+ * @param next - Express Next function
+ */
 export const deletePlanById = async (
     req: CustomRequestDeletePlan,
     res: Response,
@@ -18,32 +26,33 @@ export const deletePlanById = async (
         const id: string = req.params.id; // Plan ID to be deleted
         const userId = req.user._id; // Logged-in user's ID
 
-        // Check if the plan exists
+        // 1. Check if the plan exists
         const plan = await Plan.findById(id);
         if (!plan) {
             return next(createHttpError(404, 'Plan Not Found!'));
         }
 
-        // Check if the user exists
+        // 2. Check if the user exists
         const user = await User.findById(userId);
         if (!user) {
             return next(createHttpError(404, 'User not found!'));
         }
 
-        // Check if the plan belongs to the user
+        // 3. Verify Ownership: Check if the plan belongs to the user
+        // Note: Can also check plan.userId === userId directly
         if (!user.plans.some(planId => planId.toString() == id)) {
             return next(
                 createHttpError(403, 'This plan does not belong to the user!')
             );
         }
 
-        // Remove the plan reference from the user's plans array
+        // 4. Update User's Plan List (Remove reference)
         user.plans = user.plans.filter(planId => planId.toString() !== id);
 
-        // Save the updated user document
+        // 5. Save the updated user document
         await user.save();
 
-        // Delete the plan from the Plan collection
+        // 6. Delete the plan from the Plan collection
         await Plan.findByIdAndDelete(id);
 
         return res.status(200).json({

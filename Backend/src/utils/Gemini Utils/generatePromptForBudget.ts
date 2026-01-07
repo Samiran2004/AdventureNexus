@@ -1,10 +1,14 @@
 interface BudgetPromptData {
-    budget: number;
-    country: string;
+  budget: number;
+  country: string;
 }
 
+/**
+ * Generates an AI prompt to recommend destinations based strictly on a Budget Constraint.
+ * @param data - Budget amount and Country (currency context).
+ */
 const generatePromptForBudget = (data: BudgetPromptData): string => {
-    return `
+  return `
         Generate travel recommendations for a user based on the following inputs:
         - Budget: ${data.budget} ${data.country} currency
         

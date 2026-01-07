@@ -1,3 +1,7 @@
+/**
+ * Interface representing Flight data structure.
+ * Used for storing or transferring flight details.
+ */
 export interface IFlight {
     airline: string;
     flight_number: string;

@@ -45,6 +45,10 @@ export interface CustomRequestRegisterController<
 
 dotenv.config();
 
+/**
+ * Controller for User Registration.
+ * Handles new user creation, validation, password hashing, file upload, and welcome email.
+ */
 const create_new_user = async (
     req: CustomRequestRegisterController,
     res: Response,
@@ -61,7 +65,7 @@ const create_new_user = async (
     } = req.body;
 
     try {
-        // Check for required fields
+        // 1. Check for required fields
         if (
             !fullname ||
             !email ||
@@ -73,13 +77,13 @@ const create_new_user = async (
             return next(createHttpError(400, 'All fields are required!'));
         }
 
-        // Validate input data
+        // 2. Validate input data using Joi
         const { error } = userSchemaValidation.validate(req.body);
         if (error) {
             return next(createHttpError(400, error?.details[0].message));
         }
 
-        // Check if the user already exists
+        // 3. Check if the user already exists (by email or phone)
         const checkUserExist: IUser | null = await User.findOne({
             $or: [{ email: email }, { phonenumber: phonenumber }],
         });
@@ -88,36 +92,23 @@ const create_new_user = async (
             return next(createHttpError(409, 'User already exist!'));
         }
 
-        // Hash the password
+        // 4. Hash the password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        // Generate a random username
+        // 5. Generate a random username
         const username = await generateRandomUserName(fullname);
 
-        // Upload profile image to Cloudinary
+        // 6. Upload profile image to Cloudinary
         let uploadImageUrl;
         try {
             uploadImageUrl = await cloudinary.uploader.upload(req.file.path);
             fs.unlinkSync(req.file.path); // Remove file from local storage
         } catch {
-            // if (uploadError instanceof Error) {
-            //     return res.status(500).send({
-            //         status: 'failed',
-            //         message: 'Error uploading profile picture',
-            //         error: uploadError.message,
-            //     });
-            // } else {
-            //     return res.status(500).send({
-            //         status: 'failed',
-            //         message: 'Error uploading profile picture',
-            //         error: 'Unknown error',
-            //     });
-            // }
             return next(createHttpError(500, 'Error uploading file!'));
         }
 
-        // Create Currency code
+        // 7. Create Currency code
         const countryLower = country.toLowerCase();
         const cCode = cc.country(countryLower);
         if (!cCode || cCode.length === 0) {
@@ -129,7 +120,7 @@ const create_new_user = async (
             );
         }
 
-        // Create the new user
+        // 8. Create the new user object
         const newUser = new User({
             fullname: fullname,
             email: email,
@@ -142,13 +133,14 @@ const create_new_user = async (
             profilepicture: uploadImageUrl.url,
             currency_code: cCode[0].code,
         });
+
+        // 9. Save to Database
         await newUser.save();
 
-        // Email data
+        // 10. Send welcome email
         const { registerEmailData } = emailTemplates;
         const emailData = registerEmailData(fullname, email);
 
-        // Send welcome email
         await sendMail(emailData, (mailError: Error | null) => {
             if (mailError) {
                 return next(
@@ -159,6 +151,7 @@ const create_new_user = async (
                 );
             }
 
+            // 11. Return Success Response
             return res.status(201).send({
                 status: 'success',
                 message: 'User created successfully',
@@ -171,7 +164,7 @@ const create_new_user = async (
                     preference: newUser.preferences,
                     country: newUser.country,
                     profilepicture: newUser.profilepicture,
-                    currency_code: newUser.currency_code, // Adjusted this line
+                    currency_code: newUser.currency_code,
                 },
             });
         });

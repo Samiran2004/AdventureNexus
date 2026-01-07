@@ -1,23 +1,29 @@
 // Connect with mongoDb
 
-import mongoose from 'mongoose';
-import figlet from 'figlet';
+import mongoose from 'mongoose'; // Mongoose ODM for MongoDB
 
-const connectDb = async (mongoURI: string): Promise<void> => {
+/**
+ * Establishes a connection to the MongoDB database.
+ * @param url - The MongoDB connection string
+ */
+const connectDb = async (url: string) => {
+    // Event listener for successful connection
+    mongoose.connection.on('connected', () => {
+        console.log("Connected to database successfully");
+    });
+
+    // Event listener for connection errors
+    mongoose.connection.on('error', (err) => {
+        console.log("Error connecting to database", err);
+    });
+
     try {
-        await mongoose.connect(mongoURI);
-        figlet(
-            'D a t a b a s e   c o n n e c t e d',
-            (err: Error | null, data: string | undefined): void =>
-                err ? console.log('Figlet error...') : console.log(data)
-        );
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (err) {
-        figlet(
-            'D a t a b a s e  c o n n e c t i o n  e r r o r',
-            (err: Error | null, data: string | undefined): void =>
-                err ? console.log('Figlet error') : console.log(data)
-        );
+        // Attempt to connect to MongoDB
+        await mongoose.connect(url as string);
+    } catch (error) {
+        // Log critical connection failures
+        console.error("Failed to connect to database:", error);
+        process.exit(1); // Exit process on DB failure
     }
 };
 

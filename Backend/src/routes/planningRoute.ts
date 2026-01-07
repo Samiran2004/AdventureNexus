@@ -4,14 +4,11 @@ import protect from '../middlewares/authClerkTokenMiddleware';
 
 const route = express.Router();
 
-// route.post("/search/destination", protect, searchNewDestination);
 /**
- * @swagger
- * tags:
- *   name: Plans
- *   description: Travel plan generation and management
+ * @route POST /api/v1/plans/search/destination
+ * @desc Generate travel plan recommendations based on user input.
+ * @access Public (Currently not using 'protect' middleware in line 15, but logic inside controller might check auth)
  */
-
 route.post("/search/destination", searchNewDestination);
 
 export default route;

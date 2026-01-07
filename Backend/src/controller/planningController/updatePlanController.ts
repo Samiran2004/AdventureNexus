@@ -26,6 +26,10 @@ export interface RequestParamsUpdatePlan {
     id: string;
 }
 
+/**
+ * Controller to Update an existing Travel Plan.
+ * Only allows updates if the requestor is the owner of the plan.
+ */
 export const updatePlan = async (
     req: CustomRequestUpdatePlan<RequestParamsUpdatePlan>,
     res: Response,
@@ -35,13 +39,13 @@ export const updatePlan = async (
         const { id } = req.params; // Extracting plan ID from the URL parameters
         const updates = req.body; // Extracting the updates from the request body
 
-        // Find the plan by ID
+        // 1. Find the plan by ID
         const plan = await Plan.findById(id);
         if (!plan) {
             return next(createHttpError(404, 'Plan Not Found!'));
         }
 
-        // Check if the plan belongs to the user
+        // 2. Authorization: Check if the plan belongs to the user
         if (plan.user.toString() !== req.user._id) {
             return next(
                 createHttpError(
@@ -51,11 +55,13 @@ export const updatePlan = async (
             );
         }
 
-        // Update the plan with the provided fields
+        // 3. Apply Updates: Merge new data into existing plan document
         Object.assign(plan, updates);
+
+        // 4. Save Changes
         const updatedPlan = await plan.save();
 
-        // Return the updated plan
+        // 5. Return the updated plan
         return res.status(200).json({
             status: 'Success',
             message: 'Plan updated successfully.',

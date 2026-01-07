@@ -1,14 +1,20 @@
 interface FlightPromptData {
-    start_destination: string;
-    final_destination: string;
-    start_date: string;
-    return_date: string;
-    total_people: number;
-    currency_code: string;
+  start_destination: string;
+  final_destination: string;
+  start_date: string;
+  return_date: string;
+  total_people: number;
+  currency_code: string;
 }
 
+/**
+ * Generates an AI Prompt to search for recommended flights.
+ * Requests a JSON list of flights based on trip details.
+ * @param data - Flight details like departure, arrival, dates, cost preference.
+ * @returns Formalized prompt string.
+ */
 const generateFlightPrompt = (data: FlightPromptData): string => {
-    return `
+  return `
         Based on the following details, generate a structured flight recommendation in pure JSON format:
 
 - Starting Destination: ${data.start_destination}

@@ -1,3 +1,7 @@
+/**
+ * Generates an AI Prompt to create daily travel tips.
+ * Simulates a real-time travel monitor providing news, safety, or advice for a random location.
+ */
 export const generateDailyTips = () => {
     return `
     Act as a real-time travel monitor. Your task is to provide a "Daily Travel Briefing" for the location specified below, focusing on news, safety, or timely advice for *today*.

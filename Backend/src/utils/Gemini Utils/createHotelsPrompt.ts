@@ -1,5 +1,11 @@
+/**
+ * Generates an AI Prompt to search for recommended hotels.
+ * Instructs the AI to act as a travel expert and return a strictly formatted JSON array.
+ * @param data - Object containing destination, duration, budget, and currency.
+ * @returns A string containing the detailed prompt for the AI.
+ */
 export const generateHotelSearchPrompt = (data): string => {
-    return `
+  return `
         Act as a travel expert. Generate a JSON array of 5 recommended hotels in ${data.destination}.
         The recommendations should be tailored for a ${data.duration} trip with a ${data.budget} budget,
         focusing on interests.

@@ -6,21 +6,30 @@ import emailTemplates from '../utils/emailTemplate';
 import sendMail from '../service/mailService';
 import { config } from '../config/config';
 
+/**
+ * Controller to handle Clerk Webhooks.
+ * Syncs user data from Clerk (Create, Update, Delete) to local MongoDB.
+ */
 const clerkWebhook = async (req: Request, res: Response) => {
     try {
+        // 1. Initialize Svix Webhook with Secret
         const whook = new Webhook(config.CLERK_WEBHOOK_KEY!);
 
+        // 2. Extract Svix Headers for Verification
         const headers = {
             'svix-id': req.headers['svix-id'] as string,
             'svix-timestamp': req.headers['svix-timestamp'] as string,
             'svix-signature': req.headers['svix-signature'] as string,
         };
 
+        // 3. Verify Webhook Signature (Throws error if invalid)
         await whook.verify(JSON.stringify(req.body), headers);
 
+        // 4. Extract Data and Event Type
         const { data, type } = req.body;
         console.log(`Webhook received: ${type} for user ${data.id}`);
 
+        // 5. Prepare User Data Object
         const userData = {
             clerkUserId: data.id,
             email: data.email_addresses?.[0]?.email_address || null,
@@ -30,6 +39,7 @@ const clerkWebhook = async (req: Request, res: Response) => {
             profilepicture: data.image_url || null,
         };
 
+        // 6. Handle Specific Event Types
         switch (type) {
             case 'user.created': {
                 console.log('Creating user:', userData);
@@ -40,13 +50,14 @@ const clerkWebhook = async (req: Request, res: Response) => {
                     console.log('User created successfully:', user._id);
                 } catch (error: any) {
                     if (error.code === 11000) {
-                        // If duplicate key error, try to update instead
+                        // If duplicate key error, try to update instead (Idempotency)
                         console.log('User exists, updating...');
                         const user = await User.findOneAndUpdate(
                             { clerkUserId: data.id },
                             userData,
                             { new: true }
                         );
+                        // Send Welcome Email for new/updated user registration via Webhook
                         const { registerEmailData } = emailTemplates;
                         const emailData = registerEmailData(userData.firstName, userData.email);
                         await sendMail(emailData, (mailError: Error | null) => {
@@ -79,13 +90,17 @@ const clerkWebhook = async (req: Request, res: Response) => {
                 console.log('Deleting user:', data.id);
                 const deletedUser = await User.findOneAndDelete({ clerkUserId: data.id });
                 console.log('User deleted:', deletedUser ? 'Success' : 'Not found');
-                const { deleteUserEmailData } = emailTemplates;
-                const emailData = deleteUserEmailData(deletedUser.firstName, deletedUser.email);
-                await sendMail(emailData, (mailError: Error | null) => {
-                    if (mailError) {
-                        console.log("Mail sending error...");
-                    }
-                });
+
+                // Send Account Deletion Email
+                if (deletedUser) {
+                    const { deleteUserEmailData } = emailTemplates;
+                    const emailData = deleteUserEmailData(deletedUser.firstName, deletedUser.email);
+                    await sendMail(emailData, (mailError: Error | null) => {
+                        if (mailError) {
+                            console.log("Mail sending error...");
+                        }
+                    });
+                }
                 break;
             }
 
@@ -94,6 +109,7 @@ const clerkWebhook = async (req: Request, res: Response) => {
                 break;
         }
 
+        // 7. Return Success Response to Clerk
         return res.status(StatusCodes.OK).json({
             success: true,
             message: 'Webhook processed successfully',

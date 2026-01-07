@@ -3,22 +3,26 @@ import JWT from "jsonwebtoken";
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
 import User, { IUser } from "../Database/models/userModel";
 
-
+// Interface for Clerk JWT Payload
 interface ClerkJWTPayload {
-  sub: string; // This is the actual Clerk user ID
-  exp: number;
-  iat: number;
-  iss: string;
-  azp: string;
-  sid: string;
-  [key: string]: any;
+    sub: string; // Subject (Clerk User ID)
+    exp: number; // Expiration time
+    iat: number; // Issued at time
+    iss: string; // Issuer
+    azp: string; // Authorized party
+    sid: string; // Session ID
+    [key: string]: any;
 }
 
+/**
+ * Middleware to protect routes using Clerk Authentication.
+ * Verifies the Bearer token and attaches the user object to the request.
+ */
 export const protect = async (req: Request, res: Response, next: NextFunction): Promise<void | Response> => {
     console.log("🔐 Auth Middleware: Request received");
 
     try {
-        // Check authorization header
+        // 1. Check for Authorization Header
         if (!req.headers?.authorization) {
             console.log("❌ No authorization header");
             return res.status(StatusCodes.UNAUTHORIZED).json({
@@ -29,6 +33,7 @@ export const protect = async (req: Request, res: Response, next: NextFunction): 
 
         const authHeader = req.headers.authorization;
 
+        // 2. Validate Token Format (Bearer <token>)
         if (!authHeader.startsWith("Bearer ")) {
             console.log("❌ Invalid token format");
             return res.status(StatusCodes.UNAUTHORIZED).json({
@@ -37,14 +42,13 @@ export const protect = async (req: Request, res: Response, next: NextFunction): 
             });
         }
 
-        // Extract token
+        // 3. Extract Token
         const token = authHeader.split(" ")[1];
         console.log("🎫 Token received:", token.substring(0, 20) + "...");
 
-        // Decode JWT token WITHOUT verification (Clerk handles verification)
+        // 4. Decode Token (Verification handled by Clerk Middleware at app level, this manual decode extracts ID)
         let clerkUserId: string;
         try {
-            // Decode the JWT token to get the payload
             const decoded = JWT.decode(token) as ClerkJWTPayload;
             console.log("📋 Decoded token payload:", {
                 sub: decoded?.sub,
@@ -71,7 +75,8 @@ export const protect = async (req: Request, res: Response, next: NextFunction): 
             });
         }
 
-        // Find user in database using the actual Clerk user ID
+        // 5. Sync with Local Database
+        // Find user by Clerk ID
         console.log("🔍 Searching for user with clerkUserId:", clerkUserId);
         const user: IUser | null = await User.findOne({ clerkUserId });
 
@@ -85,17 +90,17 @@ export const protect = async (req: Request, res: Response, next: NextFunction): 
 
         console.log("✅ User found:", user.email || user.username);
 
-        // Set user in request object
+        // 6. Attach User to Request Object for downstream use
         req.user = {
             _id: user._id.toString(),
-            clerkUserId: user.clerkUserId, // Use the stored clerkUserId
+            clerkUserId: user.clerkUserId,
             role: user.role || "user",
             email: user.email,
             username: user.username,
         };
 
         console.log("✅ Auth Middleware: User authenticated successfully");
-        next();
+        next(); // Proceed to controller
 
     } catch (error) {
         console.error("💥 Auth Middleware Error:", error);

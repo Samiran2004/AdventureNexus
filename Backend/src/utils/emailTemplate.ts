@@ -1,18 +1,35 @@
+/**
+ * Interface representing the structure of email data to be sent.
+ */
 export interface EmailData {
-    to: string;
-    subject: string;
-    html: string;
+    to: string;       // Recipient's email address
+    subject: string;  // Email subject line
+    html: string;     // HTML content of the email
 }
 
+/**
+ * Interface defining the contract for the emailTemplates object.
+ * Each method returns an EmailData object ready for sending.
+ */
 interface EmailTemplates {
     registerEmailData: (fullname: string, email: string) => EmailData;
     deleteUserEmailData: (fullname: string, email: string) => EmailData;
     subscribeDailyMailEmailData: (email: string) => EmailData;
-    sendDailyTipEmailData: (email: string, tipData: string) => EmailData;
+    sendDailyTipEmailData: (email: string, tipData: string) => EmailData; // tipData is currently 'any' or specific type
 }
 
+/**
+ * Object containing various HTML email templates for the application.
+ */
 const emailTemplates: EmailTemplates = {
-    // Email template for register user...
+    // ... Methods implemented below
+    /**
+     * Generates email data for user registration.
+     * Contains a welcome message and a link to start planning.
+     * @param fullname - Full name of the user.
+     * @param email - Email address of the user.
+     * @returns EmailData object.
+     */
     registerEmailData: (fullname: string, email: string): EmailData => {
         return {
             to: email,
@@ -55,7 +72,13 @@ const emailTemplates: EmailTemplates = {
         };
     },
 
-    // Email template for delete user...
+    /**
+     * Generates email data for user account deletion.
+     * Confirms the action and offers support if it was a mistake.
+     * @param fullname - Full name of the user.
+     * @param email - Email address of the user.
+     * @returns EmailData object.
+     */
     deleteUserEmailData: (fullname: string, email: string): EmailData => {
         return {
             to: email,
@@ -122,7 +145,11 @@ const emailTemplates: EmailTemplates = {
         };
     },
 
-    // Email template for subscribe daily tips mail...
+    /**
+     * Generates email data for confirming a subscription to the daily newsletter.
+     * @param email - Subscriber's email address.
+     * @returns EmailData object.
+     */
     subscribeDailyMailEmailData: (email: string) => {
         return {
             to: email,
@@ -195,7 +222,13 @@ const emailTemplates: EmailTemplates = {
         };
     },
 
-    // Email template for daily tips mail...
+    /**
+     * Generates email data for the daily travel tip.
+     * Uses dynamic colors and content based on the tip category.
+     * @param email - Recipient's email.
+     * @param tipData - Object containing headline, category, advice, location, etc.
+     * @returns EmailData object.
+     */
     sendDailyTipEmailData: (email, tipData) => {
         // Get current date for the header
         const date = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });

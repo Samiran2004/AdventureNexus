@@ -21,6 +21,10 @@ interface Participant {
     preferredPaymentMethod: string;
 }
 
+/**
+ * Helper function to format request data.
+ * Parses string inputs into correct types (numbers, string arrays).
+ */
 function dataFormat(req: CustomRequestSplitCost): void {
     if (typeof req.params.planId !== 'string') {
         req.params.planId = req.body.planId.toString();
@@ -39,6 +43,11 @@ function dataFormat(req: CustomRequestSplitCost): void {
     });
 }
 
+/**
+ * Controller to Split Costs among participants.
+ * Takes total expense and participants list and returns formatted data.
+ * NOTE: This seems to be a calculation/utility endpoint, doesn't persist to DB currently.
+ */
 const splitCost = async (
     req: CustomRequestSplitCost,
     res: Response,
@@ -46,11 +55,12 @@ const splitCost = async (
 ): Promise<Response | void> => {
     try {
         // const planId: string = req.params.id as string;
-
-        //Search the Plan in databse...
         // const plan: IPlan | null = await Plan.findById(planId);
 
+        // 1. Parse and Format Input Data
         dataFormat(req);
+
+        // 2. Return processed data (Calculation logic seems handled by frontend or simple echo here?)
         return res.status(200).send({
             status: 'success',
             data: req.body,

@@ -1,124 +1,96 @@
-import { Schema, model, Document } from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose'; // Mongoose for MongoDB modeling
 
+// User Interface Definition
 export interface IUser extends Document {
-    clerkUserId: string;
-    fullname?: string;
-    email: string;
-    firstName?: string;
-    lastName?: string;
-    password?: string;
-    username?: string;
-    phonenumber?: number;
-    profilepicture?: string;
-    preferences?: string[];
-    country?: string;
-    createdat?: Date;
-    refreshtoken?: string;
-    currency_code?: string;
-    plans?: Schema.Types.ObjectId[];
+    clerkUserId: string; // ID from Clerk Authentication
+    email: string;      // User's email address
+    firstName?: string; // Optional first name
+    lastName?: string;  // Optional last name
+    username?: string;  // Unique username
+    profilepicture?: string; // URL to profile picture
+    phonenumber?: number; // Contact number
+    fullname?: string;    // Full name (derived or stored)
+    role: string;         // User role (e.g., user, admin)
+    gender?: string;      // Gender
+    country?: string;     // User's country
+    preferences?: string[]; // Travel preferences (e.g., 'adventure', 'luxury')
+    plans?: string[];       // Array of Plan IDs created by the user
+    createdAt: Date;        // Timestamp
+    updatedAt: Date;        // Timestamp
 }
 
+// Enum for Gender
+enum Gender {
+    Male = 'male',
+    Female = 'female',
+    Other = 'other'
+}
+
+// User Schema Definition
 const userSchema = new Schema<IUser>(
     {
         clerkUserId: {
             type: String,
             required: true,
-            unique: true,
+            unique: true, // Ensures one account per Clerk ID
             index: true
-        },
-        fullname: {
-            type: String,
-            default: null
         },
         email: {
             type: String,
             required: true,
+            unique: true, // Ensures email uniqueness
             lowercase: true,
             trim: true
         },
-        firstName: {
-            type: String,
-            default: null,
-            trim: true
-        },
-        lastName: {
-            type: String,
-            default: null,
-            trim: true
-        },
-        password: {
-            type: String,
-            default: null
-        },
-        username: {
-            type: String,
-            default: null,
-            trim: true,
-            unique: true
-        },
+        firstName: { type: String, trim: true },
+        lastName: { type: String, trim: true },
+        username: { type: String, unique: true, sparse: true, trim: true }, // Sparse allows nulls to be unique-ish (ignored)
+        profilepicture: { type: String, default: "" },
         phonenumber: {
             type: Number,
             validate: {
-                validator: function(v: number) {
+                validator: function (v: number) {
+                    // Check if value is null OR exactly 10 digits
                     return v == null || /^\d{10}$/.test(v.toString());
                 },
                 message: 'Phone number must be exactly 10 digits'
             },
-            required: false
+            default: null
         },
-        profilepicture: {
+        fullname: { type: String, default: "" },
+        role: {
             type: String,
-            default: 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745' // Simple static default
+            enum: ['user', 'admin'], // Restrict to specific roles
+            default: 'user',
         },
+        gender: {
+            type: String,
+            enum: Object.values(Gender),
+        },
+        country: { type: String, default: "" },
         preferences: {
             type: [String],
-            enum: [
-                'adventure',
-                'relaxation',
-                'culture',
-                'nature',
-                'beach',
-                'mountains',
-                'urban',
-            ],
-            default: []
-        },
-        country: {
-            type: String,
-            default: null
-        },
-        createdat: {
-            type: Date,
-            default: Date.now,
-        },
-        refreshtoken: {
-            type: String,
-            default: null
-        },
-        currency_code: {
-            type: String,
-            default: "$"
+            default: [],
         },
         plans: [
             {
-                type: Schema.Types.ObjectId,
+                type: mongoose.Schema.Types.ObjectId, // Reference to 'Plan' model
                 ref: 'Plan',
             },
         ],
     },
     {
-        timestamps: true,
+        timestamps: true, // Automatically manage createdAt and updatedAt
     }
 );
 
-// Handle duplicate key errors
-userSchema.post('save', function(error, doc, next) {
+// Middleware: Handle Duplicate Key Errors (e.g., Email or Username already exists)
+userSchema.post('save', function (error: any, doc: any, next: any) {
     if (error.name === 'MongoServerError' && error.code === 11000) {
         if (error.keyPattern.clerkUserId) {
             next(new Error('User with this Clerk ID already exists'));
         } else if (error.keyPattern.username) {
             next(new Error('Username already taken'));
-        } else if (error.keyPattern.phonenumber) {
             next(new Error('Phone number already registered'));
         } else {
             next(new Error('Duplicate field error'));
