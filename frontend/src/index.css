@@ -223,4 +223,42 @@
     background-size: 200% 200%;
     animation: gradient 3s ease infinite;
   }
+
+  /* 3D Logo Text Effect */
+  .logo-3d {
+    text-shadow:
+      0 1px 0 hsl(var(--primary)),
+      0 2px 0 hsl(var(--primary)),
+      0 3px 0 hsl(var(--secondary)),
+      0 4px 0 hsl(var(--secondary)),
+      0 5px 10px rgba(0, 0, 0, 0.3),
+      0 10px 20px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+  }
+
+  /* Shimmer Animation */
+  @keyframes shimmer {
+    0% {
+      background-position: -200% center;
+    }
+
+    100% {
+      background-position: 200% center;
+    }
+  }
+
+  .logo-shimmer {
+    background: linear-gradient(90deg,
+        #0ea5e9 0%,
+        #8b5cf6 25%,
+        #ffffff 50%,
+        #8b5cf6 75%,
+        #0ea5e9 100%);
+    background-size: 200% auto;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 3s linear infinite;
+    color: #0ea5e9;
+  }
 }
