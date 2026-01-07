@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from 'mongoose'; // Mongoose for MongoDB modeling
+import mongoose, { Document, Schema, model } from 'mongoose'; // Mongoose for MongoDB modeling
 
 // User Interface Definition
 export interface IUser extends Document {

@@ -20,7 +20,6 @@ import "./jobs/dailyTips.job"; // Cron job for daily tips
 import "./jobs/runner.job"; // Other background jobs
 
 // Middlewares
-// Middlewares
 import errorHandler from './middlewares/globalErrorHandler'; // Global error handler
 import sanitizeInput from './middlewares/sanitization';
 import { clerkMiddleware } from '@clerk/express';
@@ -41,45 +40,12 @@ import { swaggerOptions } from './utils/swaggerOptions';
 
 const app = express();
 
-
-// --- Global Middlewares ---
-
-// Serve static files from 'public' directory
-app.use(express.static('public'));
-
-// Parse incoming JSON payloads (req.body)
-app.use(express.json());
-
-// Parse URL-encoded data (e.g., forms)
-app.use(express.urlencoded({ extended: false }));
-
-// Initialize Morgan logger for request logging
-app.use(morgan('dev'));
-
-// Enable CORS to allow requests from frontend domains
-app.use(cors());
-
-// Initialize Clerk middleware for secure authentication
-app.use(clerkMiddleware());
-import cookieParser from 'cookie-parser';
-import figlet from 'figlet';
-import helmet from 'helmet';
-import path from 'path';
-import { config as appConfig } from './config/config';
-import connectDb from './Database/connectDb';
-import "./jobs/dailyTips.job";
-import "./jobs/runner.job";
-import sanitizeInput from './middlewares/sanitization';
-import redis from './redis/client';
-
-dotenv.config();
-
-const app = express();
-
+// --- Database Connection ---
 (async () => {
     await connectDb(process.env.DB_URI as string);
 })();
 
+// --- Redis Connection Event ---
 redis.on('connect', (): void => {
     figlet(
         'R e d i s   c o n n e c t e d',
@@ -88,12 +54,13 @@ redis.on('connect', (): void => {
     );
 });
 
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(morgan('dev'));
-app.use(express.static(path.resolve('./Public')));
+// --- Global Middlewares ---
+
+// Serve static files from 'public' directory
+app.use(express.static('public')); // Checks 'public' first
+app.use(express.static(path.resolve('./Public'))); // Fallback/Alternative
+
+// Security Headers
 app.use(
     helmet({
         contentSecurityPolicy: {
@@ -110,67 +77,71 @@ app.use(
     })
 );
 
+// Enable CORS
+app.use(cors());
+
+// Parse Incoming Data
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+
+// Logging
+app.use(morgan('dev'));
+
+// Authentication
 app.use(clerkMiddleware());
 
-// API to listen to clerk Webhooks...
-app.use('/api/clerk', cleckWebhook);
-// Initialize Swagger Docs generator
+// Initialize Swagger Docs
 const swaggerDocs = swaggerJSDoc(swaggerOptions);
-
-// Serve Swagger UI at /api-docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
+// Input Sanitization (Applies to all routes below)
 app.use(sanitizeInput);
+
 
 // --- Routes Definition ---
 
-// Clerk Webhook Route (Handles user sync events from Clerk)
-// Prefix: /api/clerk
+// Clerk Webhook Route
 app.use('/api/clerk', cleckWebhook);
 
-// User Management Routes (Profile, etc.)
-// Prefix: /api/v1/users
+// User Management Routes
 app.use('/api/v1/users', userRoute);
 
-// AI Planning Routes (Trip generation)
-// Prefix: /api/v1/plans
+// AI Planning Routes
 app.use('/api/v1/plans', planningRoute);
 
-// Hotel Management Routes (Seeding, etc.)
-// Prefix: /api/v1/hotels
+// Hotel Management Routes
 app.use('/api/v1/hotels', hotelsRoute);
 
 // Newsletter Subscription Route
-// Endpoint: POST /api/v1/mail/subscribe
 app.post('/api/v1/mail/subscribe', subscribeDailyMailController);
+
 
 // --- Error Handling ---
 
-// 404 Not Found Handler for undefined routes
+// 404 Not Found Handler
 app.use((req: Request, res: Response, next: NextFunction) => {
-    next(createHttpError(404)); // Pass 404 error to global handler
+    next(createHttpError(404));
 });
 
-// Global Error Handler (Catches all errors passed to next())
+// Global Error Handler
 app.use(errorHandler);
 
-// Export the app instance for testing or other uses
+// Export app instance
 export default app;
 
-// Start the Server
+// --- Server Start ---
 app.listen(config.port, (err?: Error): void =>
     err
         ? figlet(
             `S e r v e r  c o n n e c t i o n  e r r o r`,
             (err: Error | null, data: string | undefined): void => {
-                // Log connection error with ASCII art
                 err ? console.log('Figlet error') : console.log(data);
             }
         )
         : figlet(
             `S e r v e r  c o n n e c t e d \n P O R T :  ${config.port}`,
             (err: Error | null, data: string | undefined): void => {
-                // Log successful connection with ASCII art
                 err ? console.log('Figlet error...') : console.log(data);
             }
         )
