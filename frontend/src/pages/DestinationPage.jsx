@@ -1,865 +1,507 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
-    Search,
-    MapPin,
-    Star,
-    Heart,
-    Share,
-    Calendar,
-    Users,
-    DollarSign,
-    Filter,
-    Grid,
-    List,
-    Plane,
-    Camera,
-    Mountain,
-    Compass,
-    Clock,
-    ThermometerSun,
-    Wifi,
-    Car,
-    Utensils,
-    Shield,
-    Award,
-    TrendingUp,
-    Bot,
-    ChevronDown,
-    ChevronRight,
-    Eye,
-    BookOpen,
-    Navigation,
-    Globe,
-    Play,
-    ArrowRight,
-    X,
-    SlidersHorizontal,
-    MapIcon
+    Search, MapPin, Star, Heart, TrendingUp, Filter,
+    Grid, List, X, ChevronDown, SlidersHorizontal,
+    ArrowRight, Globe, Users, Clock, ThermometerSun,
+    Calendar, CheckCircle, Ticket
 } from 'lucide-react';
-
-// GSAP Imports
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import NavBar from '@/components/NavBar';
-import NumberCounter from '@/components/NumberCounter';
+import Footer from '@/components/mvpblocks/footer-newsletter';
 
-gsap.registerPlugin(ScrollTrigger);
+// Mock Data (Enriched)
+const initialDestinations = [
+    {
+        id: 1,
+        name: 'Tokyo, Japan',
+        country: 'Japan',
+        continent: 'Asia',
+        rating: 4.8,
+        reviews: 2547,
+        price: 1800,
+        duration: '7 days',
+        image: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800',
+        category: 'Cultural',
+        description: 'Experience the perfect blend of traditional culture and modern innovation in Tokyo.',
+        tags: ['Culture', 'City', 'Food'],
+        trending: true,
+        highlights: ['Shibuya Crossing', 'Senso-ji Temple', 'Akihabara', 'Meiji Shrine'],
+        includes: ['Hotel', 'Breakfast', 'Metro Pass'],
+        gallery: [
+            'https://images.unsplash.com/photo-1536098561742-ca998e48cbcc?w=800',
+            'https://images.unsplash.com/photo-1542051841857-5f90071e7989?w=800'
+        ]
+    },
+    {
+        id: 2,
+        name: 'Santorini, Greece',
+        country: 'Greece',
+        continent: 'Europe',
+        rating: 4.9,
+        reviews: 1823,
+        price: 2200,
+        duration: '5 days',
+        image: 'https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?w=800',
+        category: 'Beach',
+        description: 'Discover white-washed buildings and crystal-clear waters in this Aegean paradise.',
+        tags: ['Beach', 'Romance', 'Sunset'],
+        trending: false,
+        highlights: ['Oia Sunset', 'Volcano Tour', 'Red Beach', 'Wine Tasting'],
+        includes: ['Villa Stay', 'Ferry Transfer', 'Wine Tour'],
+        gallery: [
+            'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=800',
+            'https://images.unsplash.com/photo-1601581875309-fafbf2d3ed92?w=800'
+        ]
+    },
+    {
+        id: 3,
+        name: 'Machu Picchu, Peru',
+        country: 'Peru',
+        continent: 'South America',
+        rating: 4.7,
+        reviews: 3421,
+        price: 1600,
+        duration: '4 days',
+        image: 'https://images.unsplash.com/photo-1526392060635-9d6019884377?w=800',
+        category: 'Adventure',
+        description: 'Trek to the ancient Incan citadel in the Andes Mountains for a life-changing experience.',
+        tags: ['Adventure', 'History', 'Hiking'],
+        trending: true,
+        highlights: ['The Citadel', 'Inca Trail', 'Sun Gate', 'Llama Watching'],
+        includes: ['Camping Gear', 'Expert Guide', 'All Meals'],
+        gallery: [
+            'https://images.unsplash.com/photo-1587595431973-160d0d94add1?w=800',
+            'https://images.unsplash.com/photo-1509216242873-7786f446f465?w=800'
+        ]
+    },
+    {
+        id: 4,
+        name: 'Bali, Indonesia',
+        country: 'Indonesia',
+        continent: 'Asia',
+        rating: 4.6,
+        reviews: 4156,
+        price: 1200,
+        duration: '8 days',
+        image: 'https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?w=800',
+        category: 'Beach',
+        description: 'Immerse yourself in Balinese culture, lush rice terraces, and pristine beaches.',
+        tags: ['Beach', 'Culture', 'Spa'],
+        trending: true,
+        highlights: ['Ubud Monkey Forest', 'Uluwatu Temple', 'Tegallalang Rice Terrace', 'Surfing'],
+        includes: ['Resort Stay', 'Spa Treatment', 'Scooter Rental'],
+        gallery: [
+            'https://images.unsplash.com/photo-1555400038-63f5ba517a97?w=800',
+            'https://images.unsplash.com/photo-1539367628448-4bc5c9d171c8?w=800'
+        ]
+    },
+    {
+        id: 5,
+        name: 'Swiss Alps, Switzerland',
+        country: 'Switzerland',
+        continent: 'Europe',
+        rating: 4.9,
+        reviews: 1934,
+        price: 3200,
+        duration: '6 days',
+        image: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=800',
+        category: 'Adventure',
+        description: 'Breathtaking alpine scenery, skiing, and outdoor adventures in the heart of Europe.',
+        tags: ['Mountains', 'Nature', 'Luxury'],
+        trending: false,
+        highlights: ['Matterhorn', 'Zermatt', 'Glacier Express', 'Chocolate Tasting'],
+        includes: ['Chalet Stay', 'Ski Pass', 'Fondue Dinner'],
+        gallery: [
+            'https://images.unsplash.com/photo-1496531693211-14051a9b5877?w=800',
+            'https://images.unsplash.com/photo-1628169222582-73010b40eb94?w=800'
+        ]
+    },
+    {
+        id: 6,
+        name: 'Dubai, UAE',
+        country: 'UAE',
+        continent: 'Asia',
+        rating: 4.5,
+        reviews: 2891,
+        price: 2500,
+        duration: '5 days',
+        image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800',
+        category: 'Luxury',
+        description: 'Experience futuristic luxury, desert safaris, and world-class shopping.',
+        tags: ['Luxury', 'City', 'Shopping'],
+        trending: true,
+        highlights: ['Burj Khalifa', 'Palm Jumeirah', 'Desert Safari', 'Gold Souk'],
+        includes: ['5-Star Hotel', 'Private Driver', 'VIP Access'],
+        gallery: [
+            'https://images.unsplash.com/photo-1579482569502-36476142c125?w=800',
+            'https://images.unsplash.com/photo-1528702748617-c64d49f918af?w=800'
+        ]
+    }
+];
 
-// DestinationsPage component displays a grid of travel destinations
+const categories = ['all', 'Cultural', 'Beach', 'Adventure', 'Luxury', 'Nature'];
+
 const DestinationsPage = () => {
-    // Sample destinations data used for rendering the cards
-    const [destinations, setDestinations] = useState([
-        {
-            id: 1,
-            name: 'Tokyo, Japan',
-            country: 'Japan',
-            continent: 'Asia',
-            rating: 4.8,
-            reviews: 2547,
-            price: 1800,
-            duration: '7 days',
-            image: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800',
-            gallery: [
-                'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800',
-                'https://images.unsplash.com/photo-1554797589-7241bb691973?w=800',
-                'https://images.unsplash.com/photo-1513407030348-c983a97b98d8?w=800'
-            ],
-            category: 'Cultural',
-            bestTime: 'March - May',
-            temperature: '15-25°C',
-            description: 'Experience the perfect blend of traditional culture and modern innovation in Japan\'s vibrant capital.',
-            highlights: ['Cherry Blossoms', 'Shibuya Crossing', 'Mt. Fuji Views', 'Traditional Temples'],
-            activities: ['City Tours', 'Cultural Experiences', 'Food Tours', 'Shopping'],
-            difficulty: 'Easy',
-            groupSize: '2-12',
-            includes: ['Accommodation', 'Daily Breakfast', 'Airport Transfers', 'City Tours'],
-            coordinates: { lat: 35.6762, lng: 139.6503 },
-            trending: true,
-            aiRecommended: true,
-            featured: true,
-            tags: ['Culture', 'City', 'Food', 'Technology']
-        },
-        {
-            id: 2,
-            name: 'Santorini, Greece',
-            country: 'Greece',
-            continent: 'Europe',
-            rating: 4.9,
-            reviews: 1823,
-            price: 2200,
-            duration: '5 days',
-            image: 'https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?w=800',
-            gallery: [
-                'https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?w=800',
-                'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=800',
-                'https://images.unsplash.com/photo-1504554318364-c4d2851efc84?w=800'
-            ],
-            category: 'Beach',
-            bestTime: 'April - October',
-            temperature: '20-28°C',
-            description: 'Discover the stunning white-washed buildings and crystal-clear waters of this Greek island paradise.',
-            highlights: ['Blue Domed Churches', 'Sunset Views', 'Ancient Ruins', 'Local Wineries'],
-            activities: ['Beach Activities', 'Photography', 'Wine Tasting', 'Boat Tours'],
-            difficulty: 'Easy',
-            groupSize: '2-8',
-            includes: ['Accommodation', 'Daily Breakfast', 'Airport Transfers', 'Sunset Tour'],
-            coordinates: { lat: 36.3932, lng: 25.4615 },
-            trending: false,
-            aiRecommended: true,
-            featured: true,
-            tags: ['Beach', 'Romance', 'Photography', 'Sunset']
-        },
-        {
-            id: 3,
-            name: 'Machu Picchu, Peru',
-            country: 'Peru',
-            continent: 'South America',
-            rating: 4.7,
-            reviews: 3421,
-            price: 1600,
-            duration: '4 days',
-            image: 'https://images.unsplash.com/photo-1526392060635-9d6019884377?w=800',
-            gallery: [
-                'https://images.unsplash.com/photo-1526392060635-9d6019884377?w=800',
-                'https://images.unsplash.com/photo-1587595431973-160d0d94add1?w=800',
-                'https://images.unsplash.com/photo-1531065208531-4036c0dba3f5?w=800'
-            ],
-            category: 'Adventure',
-            bestTime: 'May - September',
-            temperature: '10-20°C',
-            description: 'Trek to the ancient Incan citadel and witness one of the world\'s most spectacular archaeological sites.',
-            highlights: ['Ancient Ruins', 'Mountain Views', 'Inca Trail', 'Sunrise Experience'],
-            activities: ['Hiking', 'Photography', 'Cultural Tours', 'Adventure Sports'],
-            difficulty: 'Moderate',
-            groupSize: '4-16',
-            includes: ['Accommodation', 'All Meals', 'Professional Guide', 'Entry Tickets'],
-            coordinates: { lat: -13.1631, lng: -72.5450 },
-            trending: true,
-            aiRecommended: false,
-            featured: true,
-            tags: ['Adventure', 'History', 'Hiking', 'Mountains']
-        },
-        {
-            id: 4,
-            name: 'Bali, Indonesia',
-            country: 'Indonesia',
-            continent: 'Asia',
-            rating: 4.6,
-            reviews: 4156,
-            price: 1200,
-            duration: '8 days',
-            image: 'https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?w=800',
-            gallery: [
-                'https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?w=800',
-                'https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?w=800',
-                'https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?w=800'
-            ],
-            category: 'Beach',
-            bestTime: 'April - October',
-            temperature: '24-30°C',
-            description: 'Immerse yourself in Balinese culture while enjoying pristine beaches and lush landscapes.',
-            highlights: ['Rice Terraces', 'Beach Clubs', 'Hindu Temples', 'Volcanic Mountains'],
-            activities: ['Beach Activities', 'Temple Visits', 'Spa Treatments', 'Water Sports'],
-            difficulty: 'Easy',
-            groupSize: '2-10',
-            includes: ['Accommodation', 'Daily Breakfast', 'Airport Transfers', 'Temple Tours'],
-            coordinates: { lat: -8.3405, lng: 115.0920 },
-            trending: true,
-            aiRecommended: true,
-            featured: false,
-            tags: ['Beach', 'Culture', 'Relaxation', 'Spa']
-        },
-        {
-            id: 5,
-            name: 'Swiss Alps, Switzerland',
-            country: 'Switzerland',
-            continent: 'Europe',
-            rating: 4.9,
-            reviews: 1934,
-            price: 3200,
-            duration: '6 days',
-            image: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=800',
-            gallery: [
-                'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=800',
-                'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800',
-                'https://images.unsplash.com/photo-1573160103600-193fc42da8b8?w=800'
-            ],
-            category: 'Adventure',
-            bestTime: 'June - September',
-            temperature: '5-20°C',
-            description: 'Experience breathtaking alpine scenery and world-class outdoor adventures in the heart of Europe.',
-            highlights: ['Mountain Railways', 'Alpine Lakes', 'Glacier Views', 'Charming Villages'],
-            activities: ['Hiking', 'Cable Car Rides', 'Photography', 'Mountain Biking'],
-            difficulty: 'Moderate',
-            groupSize: '2-12',
-            includes: ['Accommodation', 'Daily Breakfast', 'Train Passes', 'Mountain Excursions'],
-            coordinates: { lat: 46.8182, lng: 8.2275 },
-            trending: false,
-            aiRecommended: true,
-            featured: false,
-            tags: ['Mountains', 'Adventure', 'Nature', 'Luxury']
-        },
-        {
-            id: 6,
-            name: 'Dubai, UAE',
-            country: 'UAE',
-            continent: 'Asia',
-            rating: 4.5,
-            reviews: 2891,
-            price: 2500,
-            duration: '5 days',
-            image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800',
-            gallery: [
-                'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800',
-                'https://images.unsplash.com/photo-1518684079-3c830dcef090?w=800',
-                'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800'
-            ],
-            category: 'Luxury',
-            bestTime: 'November - March',
-            temperature: '20-30°C',
-            description: 'Experience luxury and innovation in this futuristic desert metropolis.',
-            highlights: ['Burj Khalifa', 'Desert Safari', 'Luxury Shopping', 'Beach Resorts'],
-            activities: ['City Tours', 'Desert Adventures', 'Shopping', 'Beach Activities'],
-            difficulty: 'Easy',
-            groupSize: '2-8',
-            includes: ['Luxury Accommodation', 'Daily Breakfast', 'Airport Transfers', 'City Tours'],
-            coordinates: { lat: 25.2048, lng: 55.2708 },
-            trending: true,
-            aiRecommended: false,
-            featured: true,
-            tags: ['Luxury', 'City', 'Desert', 'Modern']
-        }
-    ]);
-
-    // State management
-    const [filteredDestinations, setFilteredDestinations] = useState(destinations);
+    // State
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
-    const [selectedContinent, setSelectedContinent] = useState('all');
-    const [priceRange, setPriceRange] = useState([0, 5000]);
-    const [sortBy, setSortBy] = useState('popular');
+    const [destinations, setDestinations] = useState(initialDestinations);
     const [viewMode, setViewMode] = useState('grid');
-    const [showFilters, setShowFilters] = useState(false);
     const [favorites, setFavorites] = useState([]);
     const [selectedDestination, setSelectedDestination] = useState(null);
 
-    // Refs for animations
-    const heroRef = useRef(null);
-    const searchRef = useRef(null);
-    const filtersRef = useRef(null);
-    const destinationsRef = useRef(null);
-    const mapRef = useRef(null);
-
-    // Categories and continents
-    const categories = ['all', 'Cultural', 'Beach', 'Adventure', 'Luxury', 'Nature'];
-    const continents = ['all', 'Asia', 'Europe', 'South America', 'North America', 'Africa', 'Oceania'];
-
-    useEffect(() => {
-        let ctx = gsap.context(() => {
-            // Hero animation
-            gsap.from(heroRef.current, {
-                opacity: 0,
-                y: -50,
-                duration: 1,
-                ease: "power2.out"
-            });
-
-            // Search bar animation
-            gsap.from(searchRef.current, {
-                opacity: 0,
-                scale: 0.9,
-                duration: 0.8,
-                delay: 0.3,
-                ease: "back.out(1.7)"
-            });
-
-            // Destinations cards animation
-            gsap.from(".destination-card", {
-                scrollTrigger: {
-                    trigger: destinationsRef.current,
-                    start: "top 80%",
-                },
-                opacity: 0,
-                y: 60,
-                duration: 0.8,
-                stagger: 0.1,
-                ease: "power2.out"
-            });
-        });
-
-        return () => ctx.revert();
-    }, []);
-
-    // Filter and search logic
-    useEffect(() => {
-        let filtered = destinations.filter(dest => {
-            const matchesSearch = dest.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                dest.country.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                dest.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-
-            const matchesCategory = selectedCategory === 'all' || dest.category === selectedCategory;
-            const matchesContinent = selectedContinent === 'all' || dest.continent === selectedContinent;
-            const matchesPrice = dest.price >= priceRange[0] && dest.price <= priceRange[10];
-
-            return matchesSearch && matchesCategory && matchesContinent && matchesPrice;
-        });
-
-        // Sort destinations
-        switch (sortBy) {
-            case 'price-low':
-                filtered.sort((a, b) => a.price - b.price);
-                break;
-            case 'price-high':
-                filtered.sort((a, b) => b.price - a.price);
-                break;
-            case 'rating':
-                filtered.sort((a, b) => b.rating - a.rating);
-                break;
-            case 'reviews':
-                filtered.sort((a, b) => b.reviews - a.reviews);
-                break;
-            default: // popular
-                filtered.sort((a, b) => {
-                    if (a.featured && !b.featured) return -1;
-                    if (!a.featured && b.featured) return 1;
-                    if (a.trending && !b.trending) return -1;
-                    if (!a.trending && b.trending) return 1;
-                    return b.rating - a.rating;
-                });
-        }
-
-        setFilteredDestinations(filtered);
-    }, [searchTerm, selectedCategory, selectedContinent, priceRange, sortBy, destinations]);
-
-    // Favorite functionality
-    const toggleFavorite = (destinationId) => {
-        setFavorites(prev =>
-            prev.includes(destinationId)
-                ? prev.filter(id => id !== destinationId)
-                : [...prev, destinationId]
-        );
+    // Logic
+    const toggleFavorite = (id) => {
+        setFavorites(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]);
     };
 
-    // Get AI recommendations
-    const aiRecommendations = destinations.filter(dest => dest.aiRecommended).slice(0, 3);
+    const filteredDestinations = destinations.filter(dest => {
+        const matchesSearch = dest.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            dest.country.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesCategory = selectedCategory === 'all' || dest.category === selectedCategory;
+        return matchesSearch && matchesCategory;
+    });
 
-    // Get trending destinations
-    const trendingDestinations = destinations.filter(dest => dest.trending).slice(0, 4);
+    return (
+        <div className="min-h-screen bg-background text-foreground selection:bg-primary/30">
+            <NavBar />
 
-    const DestinationCard = ({ destination, className = "" }) => (
-        <Card className={`destination-card group cursor-pointer hover:scale-105 transition-all duration-300 bg-card border-border overflow-hidden ${className}`}
-            onClick={() => setSelectedDestination(destination)}>
-            <div className="relative">
-                <img
-                    src={destination.image}
-                    alt={destination.name}
-                    className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            {/* Immersive Hero Section */}
+            <section className="relative pt-32 pb-16 px-6">
+                <div className="max-w-7xl mx-auto text-center">
+                    <motion.h1
+                        className="text-5xl md:text-7xl font-bold mb-6 tracking-tight"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6 }}
+                    >
+                        Explore the <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-600">Unseen</span>
+                    </motion.h1>
+                    <motion.p
+                        className="text-xl text-muted-foreground max-w-2xl mx-auto mb-12"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.1 }}
+                    >
+                        Handpicked destinations for your next unforgettable journey.
+                    </motion.p>
 
-                {/* Badges */}
-                <div className="absolute top-3 left-3 flex gap-2">
-                    {destination.trending && (
-                        <Badge className="bg-red-600 text-white text-xs">
-                            <TrendingUp size={12} className="mr-1" />
-                            Trending
-                        </Badge>
-                    )}
-                    {destination.aiRecommended && (
-                        <Badge className="bg-primary text-primary-foreground text-xs">
-                            <Bot size={12} className="mr-1" />
-                            AI Pick
-                        </Badge>
-                    )}
-                    {destination.featured && (
-                        <Badge className="bg-yellow-600 text-white text-xs">
-                            <Award size={12} className="mr-1" />
-                            Featured
-                        </Badge>
-                    )}
+                    {/* Floating Search Bar */}
+                    <motion.div
+                        className="max-w-2xl mx-auto relative z-20"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                    >
+                        <div className="relative group">
+                            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-purple-600/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            <div className="relative bg-card/80 backdrop-blur-xl border border-border shadow-2xl rounded-2xl flex items-center p-2">
+                                <Search className="w-6 h-6 text-muted-foreground ml-4" />
+                                <input
+                                    type="text"
+                                    placeholder="Where do you want to go?"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="flex-1 bg-transparent border-none text-lg px-4 py-3 focus:outline-none placeholder:text-muted-foreground/50 text-foreground"
+                                />
+                                <button className="bg-primary text-primary-foreground px-6 py-3 rounded-xl font-medium hover:bg-primary/90 transition-colors">
+                                    Search
+                                </button>
+                            </div>
+                        </div>
+                    </motion.div>
                 </div>
+            </section>
 
-                {/* Favorite button */}
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        toggleFavorite(destination.id);
-                    }}
-                    className="absolute top-3 right-3 p-2 bg-black/50 rounded-full hover:bg-black/70 transition-colors"
-                >
-                    <Heart
-                        size={16}
-                        className={`${favorites.includes(destination.id) ? 'fill-red-500 text-red-500' : 'text-white'}`}
-                    />
-                </button>
+            {/* Sticky Filter Bar */}
+            <div className="sticky top-20 z-40 bg-background/80 backdrop-blur-md border-y border-border/50 py-4">
+                <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+                    {/* Categories */}
+                    <div className="flex items-center gap-2 overflow-x-auto no-scrollbar w-full md:w-auto pb-2 md:pb-0">
+                        {categories.map(cat => (
+                            <button
+                                key={cat}
+                                onClick={() => setSelectedCategory(cat)}
+                                className={`px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-300 ${selectedCategory === cat
+                                        ? 'bg-primary text-primary-foreground shadow-md'
+                                        : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'
+                                    }`}
+                            >
+                                {cat === 'all' ? 'All' : cat}
+                            </button>
+                        ))}
+                    </div>
 
-                {/* Price */}
-                <div className="absolute bottom-3 right-3 bg-black/70 rounded-lg px-2 py-1">
-                    <span className="text-white font-semibold text-sm">${destination.price}</span>
+                    {/* View Toggle */}
+                    <div className="flex items-center gap-2 bg-muted/50 p-1 rounded-lg">
+                        <button
+                            onClick={() => setViewMode('grid')}
+                            className={`p-2 rounded-md transition-all ${viewMode === 'grid' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground'}`}
+                        >
+                            <Grid size={18} />
+                        </button>
+                        <button
+                            onClick={() => setViewMode('list')}
+                            className={`p-2 rounded-md transition-all ${viewMode === 'list' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground'}`}
+                        >
+                            <List size={18} />
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <CardContent className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                    <div>
-                        <h3 className="text-lg font-semibold text-card-foreground group-hover:text-primary transition-colors">
-                            {destination.name}
-                        </h3>
-                        <p className="text-muted-foreground text-sm flex items-center">
-                            <MapPin size={12} className="mr-1" />
-                            {destination.country}
-                        </p>
-                    </div>
-                    <div className="flex items-center">
-                        <Star size={14} className="text-yellow-400 fill-current mr-1" />
-                        <span className="text-card-foreground font-medium">{destination.rating}</span>
-                        <span className="text-muted-foreground text-sm ml-1">({destination.reviews})</span>
-                    </div>
-                </div>
-
-                <p className="text-muted-foreground text-sm mb-3 line-clamp-2">{destination.description}</p>
-
-                <div className="flex flex-wrap gap-1 mb-3">
-                    {destination.tags.slice(0, 3).map(tag => (
-                        <Badge key={tag} variant="secondary" className="text-xs bg-muted text-muted-foreground">
-                            {tag}
-                        </Badge>
-                    ))}
-                </div>
-
-                <div className="flex justify-between items-center text-sm text-muted-foreground">
-                    <div className="flex items-center">
-                        <Clock size={12} className="mr-1" />
-                        {destination.duration}
-                    </div>
-                    <div className="flex items-center">
-                        <Users size={12} className="mr-1" />
-                        {destination.groupSize}
-                    </div>
-                    <div className="flex items-center">
-                        <ThermometerSun size={12} className="mr-1" />
-                        {destination.temperature}
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
-    );
-
-    return (
-        <div className="min-h-screen bg-background text-foreground">
-            <NavBar />
-
-            {/* Hero Section with Search */}
-            <section ref={heroRef} className="py-20 bg-gradient-to-br from-background via-background to-background relative overflow-hidden">
-                <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute -top-10 -right-10 w-80 h-80 bg-primary/20 rounded-full opacity-50"></div>
-                    <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-secondary/20 rounded-full opacity-30"></div>
-                </div>
-
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
-                    <div className="text-center space-y-8 max-w-4xl mx-auto">
-                        <div>
-                            <h1 className="text-4xl md:text-6xl font-bold text-foreground leading-tight mb-4">
-                                Discover Your Next
-                                <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"> Adventure</span>
-                            </h1>
-                            <p className="text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-                                Explore handpicked destinations from around the world, powered by AI recommendations tailored just for you.
-                            </p>
-                        </div>
-
-                        {/* Search Bar */}
-                        <div ref={searchRef} className="max-w-2xl mx-auto">
-                            <div className="relative">
-                                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
-                                <Input
-                                    type="text"
-                                    placeholder="Search destinations, countries, or activities..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="pl-12 pr-4 py-4 text-lg bg-card/90 border-border text-foreground placeholder-muted-foreground rounded-xl backdrop-blur-sm shadow-sm"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Stats */}
-                        <div className="flex justify-center space-x-8 text-sm text-muted-foreground">
-                            <div className="flex items-center">
-                                <Globe className="mr-2" size={16} />
-                                <NumberCounter targetNumber={195} duration={2} />+ Countries
-                            </div>
-                            <div className="flex items-center">
-                                <MapPin className="mr-2" size={16} />
-                                <NumberCounter targetNumber={5} duration={2.5} />+ Destinations
-                            </div>
-                            <div className="flex items-center">
-                                <Users className="mr-2" size={16} />
-                                <NumberCounter targetNumber={5} duration={3} />+ Travelers
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* AI Recommendations */}
-            <section className="py-16 bg-muted/30">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center justify-between mb-8">
-                        <div>
-                            <h2 className="text-2xl md:text-3xl font-bold text-foreground flex items-center">
-                                <Bot className="mr-3 text-primary" size={28} />
-                                AI Recommended for You
-                            </h2>
-                            <p className="text-muted-foreground mt-2">Personalized suggestions based on your preferences</p>
-                        </div>
-                        <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-                            View All AI Picks
-                            <ArrowRight className="ml-2" size={16} />
-                        </Button>
-                    </div>
-
-                    <div className="grid md:grid-cols-3 gap-6">
-                        {aiRecommendations.map(destination => (
-                            <DestinationCard key={destination.id} destination={destination} />
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Filters and Controls */}
-            <section ref={filtersRef} className="py-8 bg-background border-t border-border">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
-                        {/* Filter Toggle */}
-                        <div className="flex items-center space-x-4">
-                            <Button
-                                variant="outline"
-                                onClick={() => setShowFilters(!showFilters)}
-                                className="border-border text-foreground hover:bg-muted"
-                            >
-                                <SlidersHorizontal className="mr-2" size={16} />
-                                Filters {showFilters && <ChevronDown className="ml-2" size={16} />}
-                            </Button>
-                            <span className="text-muted-foreground">
-                                {filteredDestinations.length} destinations found
-                            </span>
-                        </div>
-
-                        {/* View Controls */}
-                        <div className="flex items-center space-x-4">
-                            <div className="flex items-center space-x-2">
-                                <span className="text-muted-foreground text-sm">Sort by:</span>
-                                <select
-                                    value={sortBy}
-                                    onChange={(e) => setSortBy(e.target.value)}
-                                    className="bg-card border border-border text-foreground rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                                >
-                                    <option value="popular">Popular</option>
-                                    <option value="rating">Highest Rated</option>
-                                    <option value="price-low">Price: Low to High</option>
-                                    <option value="price-high">Price: High to Low</option>
-                                    <option value="reviews">Most Reviewed</option>
-                                </select>
-                            </div>
-
-                            <div className="flex border border-border rounded">
-                                <button
-                                    onClick={() => setViewMode('grid')}
-                                    className={`p-2 ${viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-                                >
-                                    <Grid size={16} />
-                                </button>
-                                <button
-                                    onClick={() => setViewMode('list')}
-                                    className={`p-2 ${viewMode === 'list' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-                                >
-                                    <List size={16} />
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Expandable Filters */}
-                    {showFilters && (
-                        <div className="mt-6 p-6 bg-card rounded-lg border border-border">
-                            <div className="grid md:grid-cols-4 gap-6">
-                                <div>
-                                    <label className="block text-sm font-medium text-foreground mb-2">Category</label>
-                                    <select
-                                        value={selectedCategory}
-                                        onChange={(e) => setSelectedCategory(e.target.value)}
-                                        className="w-full bg-input border border-border text-foreground rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring"
-                                    >
-                                        {categories.map(category => (
-                                            <option key={category} value={category}>
-                                                {category === 'all' ? 'All Categories' : category}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-foreground mb-2">Continent</label>
-                                    <select
-                                        value={selectedContinent}
-                                        onChange={(e) => setSelectedContinent(e.target.value)}
-                                        className="w-full bg-input border border-border text-foreground rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring"
-                                    >
-                                        {continents.map(continent => (
-                                            <option key={continent} value={continent}>
-                                                {continent === 'all' ? 'All Continents' : continent}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-foreground mb-2">
-                                        Price Range: ${priceRange[0]} - ${priceRange[1]}
-                                    </label>
-                                    <input
-                                        type="range"
-                                        min="0"
-                                        max="5000"
-                                        step="100"
-                                        value={priceRange[1]}
-                                        onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
-                                        className="w-full accent-primary"
-                                    />
-                                </div>
-
-                                <div className="flex items-end">
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => {
-                                            setSelectedCategory('all');
-                                            setSelectedContinent('all');
-                                            setPriceRange([0, 5000]);
-                                            setSearchTerm('');
-                                        }}
-                                        className="border-border text-destructive hover:bg-destructive hover:text-destructive-foreground"
-                                    >
-                                        Clear All
-                                    </Button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </section>
-
             {/* Destinations Grid */}
-            <section ref={destinationsRef} className="py-16 bg-background">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    {viewMode === 'grid' ? (
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {filteredDestinations.map(destination => (
-                                <DestinationCard key={destination.id} destination={destination} />
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="space-y-6">
-                            {filteredDestinations.map(destination => (
-                                <Card key={destination.id} className="destination-card bg-card border-border overflow-hidden">
-                                    <div className="flex flex-col md:flex-row">
-                                        <div className="w-full md:w-1/3">
-                                            <img
-                                                src={destination.image}
-                                                alt={destination.name}
-                                                className="w-full h-48 md:h-full object-cover"
-                                            />
-                                        </div>
-                                        <CardContent className="w-full md:w-2/3 p-6">
-                                            <div className="flex justify-between items-start mb-3">
-                                                <div>
-                                                    <h3 className="text-xl font-semibold text-foreground">{destination.name}</h3>
-                                                    <p className="text-muted-foreground flex items-center">
-                                                        <MapPin size={14} className="mr-1" />
-                                                        {destination.country}
-                                                    </p>
-                                                </div>
-                                                <div className="flex items-center space-x-4">
-                                                    <div className="flex items-center">
-                                                        <Star size={16} className="text-yellow-400 fill-current mr-1" />
-                                                        <span className="text-foreground font-medium">{destination.rating}</span>
-                                                    </div>
-                                                    <div className="text-xl font-bold text-foreground">${destination.price}</div>
-                                                </div>
-                                            </div>
-                                            <p className="text-muted-foreground mb-4">{destination.description}</p>
-                                            <div className="flex flex-wrap gap-2 mb-4">
-                                                {destination.tags.map(tag => (
-                                                    <Badge key={tag} variant="secondary" className="bg-muted text-muted-foreground">
-                                                        {tag}
-                                                    </Badge>
-                                                ))}
-                                            </div>
-                                            <div className="flex justify-between items-center">
-                                                <div className="flex space-x-4 text-sm text-muted-foreground">
-                                                    <span>{destination.duration}</span>
-                                                    <span>{destination.groupSize} people</span>
-                                                    <span>{destination.bestTime}</span>
-                                                </div>
-                                                <Button
-                                                    size="sm"
-                                                    className="bg-gradient-to-r from-primary to-secondary text-primary-foreground"
-                                                    onClick={() => setSelectedDestination(destination)}
-                                                >
-                                                    View Details
-                                                </Button>
-                                            </div>
-                                        </CardContent>
-                                    </div>
-                                </Card>
-                            ))}
-                        </div>
-                    )}
-
-                    {filteredDestinations.length === 0 && (
-                        <div className="text-center py-20">
-                            <Compass className="mx-auto text-muted-foreground mb-4" size={64} />
-                            <h3 className="text-xl font-semibold text-foreground mb-2">No destinations found</h3>
-                            <p className="text-muted-foreground">Try adjusting your filters or search terms</p>
-                        </div>
-                    )}
-                </div>
-            </section>
-
-            {/* Trending Destinations */}
-            <section className="py-16 bg-muted/30">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center justify-between mb-8">
-                        <div>
-                            <h2 className="text-2xl md:text-3xl font-bold text-foreground flex items-center">
-                                <TrendingUp className="mr-3 text-red-500" size={28} />
-                                Trending Now
-                            </h2>
-                            <p className="text-muted-foreground mt-2">Popular destinations this month</p>
-                        </div>
-                    </div>
-
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {trendingDestinations.map(destination => (
-                            <DestinationCard key={destination.id} destination={destination} />
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* CTA Section */}
-            <section className="py-20 bg-gradient-to-br from-primary via-secondary to-purple-600 text-white">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <div className="max-w-3xl mx-auto space-y-8">
-                        <h2 className="text-3xl md:text-4xl font-bold">Ready to Plan Your Dream Trip?</h2>
-                        <p className="text-xl opacity-90">
-                            Let our AI create a personalized itinerary for any destination. Start planning your perfect adventure today.
-                        </p>
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Button size="lg" variant="secondary" className="text-lg px-8 py-6 bg-white text-primary hover:bg-gray-50">
-                                <Bot className="mr-2" size={20} />
-                                Get AI Recommendations
-                            </Button>
-                            <Button size="lg" variant="outline" className="text-lg px-8 py-6 text-white border-white hover:bg-white hover:text-primary">
-                                <Plane className="mr-2" size={20} />
-                                Plan Custom Trip
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Destination Detail Modal */}
-            {selectedDestination && (
-                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-                    <div className="bg-card rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-border">
-                        <div className="relative">
-                            <img
-                                src={selectedDestination.image}
-                                alt={selectedDestination.name}
-                                className="w-full h-64 object-cover rounded-t-xl"
-                            />
-                            <button
-                                onClick={() => setSelectedDestination(null)}
-                                className="absolute top-4 right-4 bg-black/50 rounded-full p-2 text-white hover:bg-black/70 transition-colors"
+            <section className="py-12 px-6 max-w-7xl mx-auto min-h-[60vh]">
+                <div className={`grid gap-8 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
+                    <AnimatePresence mode="popLayout">
+                        {filteredDestinations.map((dest) => (
+                            <motion.div
+                                key={dest.id}
+                                layout
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.9 }}
+                                transition={{ duration: 0.3 }}
+                                className={`group relative bg-card rounded-3xl border border-border overflow-hidden hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 ${viewMode === 'list' ? 'flex flex-col md:flex-row' : ''
+                                    }`}
+                                onClick={() => setSelectedDestination(dest)}
                             >
-                                <X size={20} />
-                            </button>
-                        </div>
-                        <div className="p-6">
-                            <div className="flex justify-between items-start mb-4">
-                                <div>
-                                    <h2 className="text-2xl font-bold text-foreground">{selectedDestination.name}</h2>
-                                    <p className="text-muted-foreground">{selectedDestination.country}</p>
-                                </div>
-                                <div className="text-right">
-                                    <div className="text-2xl font-bold text-foreground">${selectedDestination.price}</div>
-                                    <div className="text-muted-foreground">per person</div>
-                                </div>
-                            </div>
+                                {/* Image */}
+                                <div className={`relative overflow-hidden cursor-pointer ${viewMode === 'list' ? 'w-full md:w-1/3 aspect-video md:aspect-auto' : 'aspect-[4/3]'}`}>
+                                    <img
+                                        src={dest.image}
+                                        alt={dest.name}
+                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
 
-                            <div className="grid md:grid-cols-2 gap-6 mb-6">
-                                <div>
-                                    <h3 className="text-lg font-semibold text-foreground mb-2">Overview</h3>
-                                    <p className="text-muted-foreground mb-4">{selectedDestination.description}</p>
+                                    {/* Floating Badges */}
+                                    <div className="absolute top-4 left-4 flex gap-2">
+                                        {dest.trending && (
+                                            <span className="px-3 py-1 rounded-full bg-red-500/90 text-white text-xs font-bold backdrop-blur-md flex items-center gap-1">
+                                                <TrendingUp size={12} /> Trending
+                                            </span>
+                                        )}
+                                        <span className="px-3 py-1 rounded-full bg-black/40 text-white text-xs font-medium backdrop-blur-md border border-white/10">
+                                            {dest.category}
+                                        </span>
+                                    </div>
 
-                                    <h4 className="text-md font-semibold text-foreground mb-2">Highlights</h4>
-                                    <ul className="space-y-1">
-                                        {selectedDestination.highlights.map((highlight, index) => (
-                                            <li key={index} className="text-muted-foreground text-sm flex items-center">
-                                                <ChevronRight size={12} className="mr-2 text-primary" />
-                                                {highlight}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
+                                    {/* Favorite Button */}
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); toggleFavorite(dest.id); }}
+                                        className="absolute top-4 right-4 p-2 rounded-full bg-black/40 backdrop-blur-md text-white hover:bg-white hover:text-red-500 transition-all duration-300 z-10"
+                                    >
+                                        <Heart size={18} className={favorites.includes(dest.id) ? "fill-red-500 text-red-500" : ""} />
+                                    </button>
 
-                                <div>
-                                    <h3 className="text-lg font-semibold text-foreground mb-2">Trip Details</h3>
-                                    <div className="space-y-2">
-                                        <div className="flex justify-between">
-                                            <span className="text-muted-foreground">Duration:</span>
-                                            <span className="text-foreground">{selectedDestination.duration}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-muted-foreground">Best Time:</span>
-                                            <span className="text-foreground">{selectedDestination.bestTime}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-muted-foreground">Temperature:</span>
-                                            <span className="text-foreground">{selectedDestination.temperature}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-muted-foreground">Group Size:</span>
-                                            <span className="text-foreground">{selectedDestination.groupSize}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-muted-foreground">Difficulty:</span>
-                                            <span className="text-foreground">{selectedDestination.difficulty}</span>
-                                        </div>
+                                    {/* Price Badge */}
+                                    <div className="absolute bottom-4 right-4 px-4 py-2 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 text-white font-bold">
+                                        ${dest.price}
                                     </div>
                                 </div>
-                            </div>
 
-                            <div className="flex gap-4">
-                                <Button className="flex-1 bg-gradient-to-r from-primary to-secondary text-primary-foreground">
-                                    <Plane className="mr-2" size={16} />
-                                    Book Now
-                                </Button>
-                                <Button variant="outline" className="border-border text-muted-foreground hover:text-foreground hover:bg-muted">
-                                    <Heart size={16} />
-                                </Button>
-                                <Button variant="outline" className="border-border text-muted-foreground hover:text-foreground hover:bg-muted">
-                                    <Share size={16} />
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
+                                {/* Content */}
+                                <div className="p-6 flex flex-col justify-between flex-1 cursor-pointer">
+                                    <div>
+                                        <div className="flex justify-between items-start mb-2">
+                                            <div>
+                                                <h3 className="text-xl font-bold text-foreground mb-1 group-hover:text-primary transition-colors">{dest.name}</h3>
+                                                <div className="flex items-center text-muted-foreground text-sm">
+                                                    <MapPin size={14} className="mr-1 text-primary" />
+                                                    {dest.country}
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-1 bg-muted/50 px-2 py-1 rounded-lg">
+                                                <Star size={14} className="text-yellow-400 fill-yellow-400" />
+                                                <span className="font-bold text-sm">{dest.rating}</span>
+                                            </div>
+                                        </div>
+
+                                        <p className="text-muted-foreground text-sm line-clamp-2 mb-4 leading-relaxed">
+                                            {dest.description}
+                                        </p>
+
+                                        {/* Tags */}
+                                        <div className="flex flex-wrap gap-2 mb-6">
+                                            {dest.tags.map(tag => (
+                                                <span key={tag} className="text-xs px-3 py-1 rounded-lg bg-muted text-muted-foreground font-medium">
+                                                    #{tag}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Footer Info */}
+                                    <div className="flex items-center justify-between pt-4 border-t border-border/50">
+                                        <div className="flex gap-4 text-xs font-medium text-muted-foreground">
+                                            <div className="flex items-center gap-1">
+                                                <Clock size={14} /> {dest.duration}
+                                            </div>
+                                            <div className="flex items-center gap-1">
+                                                <Users size={14} /> Group
+                                            </div>
+                                        </div>
+
+                                        <button
+                                            className="text-sm font-semibold text-primary flex items-center gap-1 hover:gap-2 transition-all"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setSelectedDestination(dest);
+                                            }}
+                                        >
+                                            Details <ArrowRight size={16} />
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
                 </div>
-            )}
+
+                {filteredDestinations.length === 0 && (
+                    <div className="text-center py-20">
+                        <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                            <Search size={32} className="text-muted-foreground" />
+                        </div>
+                        <h3 className="text-xl font-bold text-foreground">No destinations found</h3>
+                        <p className="text-muted-foreground mt-2">Try adjusting your filters or search term.</p>
+                        <button
+                            onClick={() => { setSearchTerm(''); setSelectedCategory('all'); }}
+                            className="mt-6 text-primary font-medium hover:underline"
+                        >
+                            Clear all filters
+                        </button>
+                    </div>
+                )}
+            </section>
+
+            {/* Destination Modal */}
+            <AnimatePresence>
+                {selectedDestination && (
+                    <>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setSelectedDestination(null)}
+                            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 overflow-y-auto"
+                        >
+                            <div className="min-h-screen px-4 flex items-center justify-center py-10">
+                                <motion.div
+                                    initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                                    animate={{ scale: 1, opacity: 1, y: 0 }}
+                                    exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="bg-card w-full max-w-4xl rounded-3xl overflow-hidden shadow-2xl border border-border relative flex flex-col md:flex-row max-h-[90vh]"
+                                >
+                                    {/* Close Button */}
+                                    <button
+                                        onClick={() => setSelectedDestination(null)}
+                                        className="absolute top-4 right-4 p-2 bg-black/20 hover:bg-black/40 text-white rounded-full z-10 transition-colors backdrop-blur-md"
+                                    >
+                                        <X size={20} />
+                                    </button>
+
+                                    {/* Left: Images */}
+                                    <div className="md:w-2/5 relative h-64 md:h-auto">
+                                        <img
+                                            src={selectedDestination.image}
+                                            alt={selectedDestination.name}
+                                            className="w-full h-full object-cover"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80 md:opacity-60" />
+                                        <div className="absolute bottom-6 left-6 text-white">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <span className="px-2 py-1 bg-white/20 backdrop-blur-md rounded-lg text-xs font-medium border border-white/10">
+                                                    {selectedDestination.duration}
+                                                </span>
+                                                <span className="flex items-center gap-1 text-xs font-medium text-yellow-400">
+                                                    <Star size={12} fill="currentColor" /> {selectedDestination.rating}
+                                                </span>
+                                            </div>
+                                            <h2 className="text-3xl font-bold leading-tight mb-1">{selectedDestination.name}</h2>
+                                            <p className="opacity-90 flex items-center gap-1 text-sm">
+                                                <MapPin size={14} /> {selectedDestination.country}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Right: Content */}
+                                    <div className="md:w-3/5 p-8 overflow-y-auto custom-scrollbar">
+                                        <div className="space-y-6">
+                                            {/* Description */}
+                                            <div>
+                                                <h3 className="text-lg font-bold text-foreground mb-2">About The Trip</h3>
+                                                <p className="text-muted-foreground leading-relaxed">
+                                                    {selectedDestination.description}
+                                                    {selectedDestination.description} {/* Doubled for mock length */}
+                                                </p>
+                                            </div>
+
+                                            {/* Highlights */}
+                                            <div>
+                                                <h3 className="text-lg font-bold text-foreground mb-3">Highlights</h3>
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    {selectedDestination.highlights?.map((highlight, idx) => (
+                                                        <div key={idx} className="flex items-center gap-2 text-sm text-foreground/80">
+                                                            <CheckCircle size={16} className="text-primary shrink-0" />
+                                                            {highlight}
+                                                        </div>
+                                                    )) || <p className="text-muted-foreground text-sm">Highlights loading...</p>}
+                                                </div>
+                                            </div>
+
+                                            {/* What's Included */}
+                                            <div className="bg-muted/30 p-4 rounded-2xl border border-border/50">
+                                                <h3 className="text-sm font-bold text-foreground mb-3 uppercase tracking-wider">Includes</h3>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {selectedDestination.includes?.map((item, idx) => (
+                                                        <span key={idx} className="px-3 py-1 bg-background rounded-lg border border-border text-xs font-medium text-muted-foreground shadow-sm">
+                                                            {item}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            {/* Gallery */}
+                                            {selectedDestination.gallery && (
+                                                <div>
+                                                    <h3 className="text-lg font-bold text-foreground mb-3">Gallery</h3>
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        {selectedDestination.gallery.map((img, idx) => (
+                                                            <img
+                                                                key={idx}
+                                                                src={img}
+                                                                alt="Gallery"
+                                                                className="rounded-xl w-full h-24 object-cover hover:opacity-90 transition-opacity cursor-pointer block"
+                                                            />
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Footer Actions */}
+                                        <div className="mt-8 pt-6 border-t border-border flex items-center justify-between">
+                                            <div>
+                                                <div className="text-sm text-muted-foreground">Total Price</div>
+                                                <div className="text-2xl font-bold text-foreground">
+                                                    ${selectedDestination.price}
+                                                    <span className="text-sm text-muted-foreground font-normal"> / person</span>
+                                                </div>
+                                            </div>
+                                            <button className="bg-primary text-primary-foreground px-8 py-3 rounded-xl font-bold hover:bg-primary/90 transition-all shadow-lg hover:shadow-primary/25 flex items-center gap-2">
+                                                Book Now <Ticket size={18} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
         </div>
     );
 };
