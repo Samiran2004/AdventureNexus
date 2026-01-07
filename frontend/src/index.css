@@ -261,4 +261,38 @@
     animation: shimmer 3s linear infinite;
     color: #0ea5e9;
   }
+
+  /* Notion-style AI Icon Animations */
+  @keyframes gradient-rotate {
+    0% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  @keyframes spin-slow {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .animate-gradient-rotate {
+    background-size: 200% 200%;
+    animation: gradient-rotate 3s ease infinite;
+  }
+
+  .animate-spin-slow {
+    animation: spin-slow 8s linear infinite;
+  }
 }
