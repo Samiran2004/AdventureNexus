@@ -64,6 +64,28 @@ app.use(
 app.use(clerkMiddleware());
 
 // API to listen to clerk Webhooks...
+/**
+ * @swagger
+ * tags:
+ *   name: Webhooks
+ *   description: External webhook integrations
+ */
+
+/**
+ * @swagger
+ * /api/clerk:
+ *   post:
+ *     summary: Clerk Webhook
+ *     tags: [Webhooks]
+ *     security:
+ *       - clerkAuth: []
+ *     description: Receives events from Clerk (user.created, user.updated, etc.) to sync with local database.
+ *     responses:
+ *       200:
+ *         description: Webhook processed successfully
+ *       500:
+ *         description: Webhook verification failed
+ */
 app.use('/api/clerk', cleckWebhook);
 
 const swaggerDocs = swaggerJSDoc(swaggerOptions);
@@ -81,6 +103,51 @@ app.get('/', (req: Request, res: Response): void => {
 app.use('/api/v1/users', userRoute);
 app.use('/api/v1/plans', planningRoute);
 app.use('/api/v1/hotels', hotelsRoute);
+app.use('/api/v1/hotels', hotelsRoute);
+
+/**
+ * @swagger
+ * tags:
+ *   name: Mail
+ *   description: Email subscription services
+ */
+
+/**
+ * @swagger
+ * /api/v1/mail/subscribe:
+ *   post:
+ *     summary: Subscribe to Daily Tips
+ *     tags: [Mail]
+ *     description: Subscribes an email address to receive daily travel tips.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - userMail
+ *             properties:
+ *               userMail:
+ *                 type: string
+ *                 format: email
+ *                 example: "user@example.com"
+ *     responses:
+ *       200:
+ *         description: Registered or Already subscribed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/GeneralResponse'
+ *       400:
+ *         description: Missing required fields
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       417:
+ *         description: Mail sending error
+ */
 app.post('/api/v1/mail/subscribe', subscribeDailyMailController);
 
 app.use(errorHandler);
@@ -88,17 +155,17 @@ app.use(errorHandler);
 app.listen(config.port, (err?: Error): void =>
     err
         ? figlet(
-              `S e r v e r  c o n n e c t i o n  e r r o r`,
-              (err: Error | null, data: string | undefined): void => {
-                  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-                  err ? console.log('Figlet error') : console.log(data);
-              }
-          )
+            `S e r v e r  c o n n e c t i o n  e r r o r`,
+            (err: Error | null, data: string | undefined): void => {
+                // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+                err ? console.log('Figlet error') : console.log(data);
+            }
+        )
         : figlet(
-              `S e r v e r  c o n n e c t e d \n P O R T :  ${config.port}`,
-              (err: Error | null, data: string | undefined): void => {
-                  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-                  err ? console.log('Figlet error...') : console.log(data);
-              }
-          )
+            `S e r v e r  c o n n e c t e d \n P O R T :  ${config.port}`,
+            (err: Error | null, data: string | undefined): void => {
+                // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+                err ? console.log('Figlet error...') : console.log(data);
+            }
+        )
 );

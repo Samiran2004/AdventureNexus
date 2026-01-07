@@ -12,8 +12,9 @@ Authentication is handled via **Clerk**.
 - **Header:** `Authorization: Bearer <token>`
 - **Middleware:** `protect` (verifies the Clerk session token)
 
-> [!NOTE]
-> Some endpoints check `req.auth().userId` manually even if the middleware is not explicitly present in the route definition.
+> [!IMPORTANT]
+> - **User Profile endpoint (GET /users/profile)**: STRICTLY requires a valid Clerk token. The `protect` middleware attaches the user to `req.user`.
+> - **Search Plan endpoint (POST /plans/search/destination)**: Checks `req.auth().userId` manually. Requires a signed-in user.
 
 ## ⚠️ Error Handling
 The API generally returns errors in the following format:
@@ -37,27 +38,29 @@ Retrieves the profile details of the currently authenticated user.
 - **Endpoint:** `/profile`
 - **Method:** ![GET](https://img.shields.io/badge/GET-blue?style=for-the-badge&logo=appveyor)
 - **Auth Required:** ![Yes](https://img.shields.io/badge/Auth-Required-red?style=flat-square)
+- **Request Body:** None.
 - **Success Response:**
   - **Code:** `200 OK`
   - **Content:**
     ```json
     {
-       "status": "success",
-       "data": {
-           "_id": "60d0fe4f5311236168a109ca",
-           "clerkUserId": "user_2P...",
+       "status": "Success",
+       "userData": {
+           "fullname": "John Doe",
+           "firstname": "John",
+           "lastname": "Doe",
            "email": "user@example.com",
-           "firstName": "John",
-           "lastName": "Doe",
+           "phonenumber": 1234567890,
            "username": "johndoe",
            "profilepicture": "https://...",
-           "preferences": ["adventure", "nature"],
-           "plans": [...]
+           "preference": ["adventure"],
+           "country": "USA"
        }
     }
     ```
 - **Error Responses:**
   - `401 Unauthorized`: Token missing or invalid.
+  - `404 Not Found`: "User not found!" (if token is valid but user not in DB)
 
 ---
 
@@ -72,51 +75,32 @@ Generates a detailed travel plan using AI based on user input.
 - **Endpoint:** `/search/destination`
 - **Method:** ![POST](https://img.shields.io/badge/POST-success?style=for-the-badge&logo=appveyor)
 - **Auth Required:** ![Yes](https://img.shields.io/badge/Auth-Required-red?style=flat-square)
-- **Request Body:**
+- **Request Body:** (All fields below are **REQUIRED**)
   ```json
   {
-      "to": "Paris, France",
-      "from": "New York, USA",
-      "date": "2023-12-25",
-      "travelers": 2,
-      "budget": 2000,
-      "budget_range": "mid-range",
-      "activities": ["museums", "food"],
-      "travel_style": "relaxed"
+      "to": "Paris, France",        // Required
+      "from": "New York, USA",      // Required
+      "date": "2023-12-25",         // Required
+      "travelers": 2,               // Required
+      "budget": 2000,               // Required
+      "budget_range": "mid-range",  // Optional
+      "activities": ["museums"],    // Optional
+      "travel_style": "relaxed"     // Optional
   }
   ```
-- **Success Response (Plan Generated):**
+- **Success Response:**
   - **Code:** `200 OK`
   - **Content:**
     ```json
     {
       "status": "Ok",
-      "message": "Generated",
-      "data": {
-        "clerkUserId": "user_2P...",
-        "to": "Paris, France",
-        "ai_score": "95",
-        "days": 5,
-        "cost": 1800,
-        "suggested_itinerary": [...],
-        "local_tips": ["..."]
-      }
-    }
-    ```
-- **Success Response (Plan Already Exists):**
-  - **Code:** `200 OK`
-  - **Content:**
-    ```json
-    {
-      "status": "Ok",
-      "message": "Plan already exists",
+      "message": "Generated", // or "Plan already exists"
       "data": { ... }
     }
     ```
 - **Error Responses:**
-  - `400 Bad Request`: "Provide all required fields!"
+  - `400 Bad Request`: "Provide all required fields!" (if any required field is missing)
   - `401 Unauthorized`: "Unauthorized: Clerk user not found"
-  - `404 Not Found`: "User not found"
 
 ---
 
@@ -124,15 +108,12 @@ Generates a detailed travel plan using AI based on user input.
 **Base Path:** `/hotels`
 
 ### Create/Seed Hotels
-Triggers a seeding script to populate the database with initial hotel data. This is typically an administrative or development endpoint.
+Triggers a seeding script. This is a utility endpoint.
 
 - **Endpoint:** `/create`
 - **Method:** ![GET](https://img.shields.io/badge/GET-blue?style=for-the-badge&logo=appveyor)
 - **Auth Required:** ![No](https://img.shields.io/badge/Auth-None-green?style=flat-square)
-- **Success Response:**
-  - **Code:** `200 OK` (Implicit, logs to console)
-- **Error Responses:**
-  - `500 Internal Server Error`: "Internal Server Error"
+- **Success Response:** `200 OK` (Logs to console)
 
 ---
 
@@ -148,27 +129,14 @@ Subscribes an email address to receive daily travel tips.
 - **Request Body:**
   ```json
   {
-      "userMail": "user@example.com"
+      "userMail": "user@example.com" // REQUIRED
   }
   ```
 - **Success Response:**
   - **Code:** `200 OK`
-  - **Content:**
-    ```json
-    {
-      "status": "Ok",
-      "message": "Registered!"
-    }
-    ```
-  - **Or if already subscribed:**
-    ```json
-    {
-      "status": "OK",
-      "message": "Already subscribed!"
-    }
-    ```
+  - **Content:** `{ "status": "Ok", "message": "Registered!" }`
 - **Error Responses:**
-  - `400 Bad Request`: "Required fields not exist!"
+  - `400 Bad Request`: "Required fields not exist!" (if `userMail` is missing)
   - `417 Expectation Failed`: "Mail sending error!"
 
 ---
@@ -177,24 +145,8 @@ Subscribes an email address to receive daily travel tips.
 **Base Path:** `/api/clerk`
 
 ### Clerk Webhook
-Receives events from Clerk to synchronize user data with the local database.
+Receives events from Clerk.
 
 - **Endpoint:** `/`
 - **Method:** ![POST](https://img.shields.io/badge/POST-success?style=for-the-badge&logo=appveyor)
 - **Auth Required:** ![Signature](https://img.shields.io/badge/Auth-Signature-orange?style=flat-square)
-- **Supported Events:**
-  - `user.created`: Creates new user.
-  - `user.updated`: Updates user details.
-  - `user.deleted`: Deletes user.
-- **Success Response:**
-  - **Code:** `200 OK`
-  - **Content:**
-    ```json
-    {
-      "success": true,
-      "message": "Webhook processed successfully",
-      "eventType": "user.created"
-    }
-    ```
-- **Error Responses:**
-  - `500 Internal Server Error`: Verification failed or processing error.
