@@ -270,13 +270,14 @@ const SearchPage = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-8">
-              <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                Find Your Perfect
-                <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                  {" "}
-                  Adventure
-                </span>
-              </h1>
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <Sparkles className="w-8 h-8 text-primary animate-pulse" />
+                <h1 className="text-3xl md:text-4xl font-bold text-foreground font-outfit">
+                  Find Your Perfect
+                  <span className="bg-gradient-to-r from-primary via-secondary to-purple-600 bg-clip-text text-transparent animate-gradient"> Adventure</span>
+                </h1>
+                <Sparkles className="w-8 h-8 text-secondary animate-pulse" />
+              </div>
               <p className="text-lg text-muted-foreground">
                 Let AI curate personalized travel experiences just for you
               </p>
@@ -284,44 +285,45 @@ const SearchPage = () => {
 
 
             {/* Search Form */}
-            <Card className="bg-card/80 border-border backdrop-blur-sm">
-              <CardContent className="p-6">
-                <div className="grid md:grid-cols-4 gap-4 mb-4">
+            <Card className="bg-card/80 border-border backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-300">
+              <CardContent className="p-6 md:p-8">
+                <div className="grid md:grid-cols-2 gap-6 mb-6">
                   {/* where to */}
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <Label
                       htmlFor="destination"
-                      className="text-foreground text-sm font-medium"
+                      className="text-foreground text-sm font-semibold flex items-center gap-2"
                     >
+                      <MapPin size={16} className="text-primary" />
                       Where to?
                     </Label>
                     <div className="relative">
                       <MapPin
-                        className="absolute left-3 top-3 text-muted-foreground"
-                        size={19}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
+                        size={18}
                       />
                       <Input
                         id="destination"
                         placeholder="Enter destination"
                         value={to}
                         onChange={(e) => setTo(e.target.value)}
-                        className="pl-10 bg-input border-input text-foreground placeholder-muted-foreground focus:border-primary"
+                        className="pl-12 h-12 bg-input border-input text-foreground placeholder-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl transition-all"
                       />
                     </div>
                   </div>
 
-
                   {/* Where from */}
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <Label
                       htmlFor="from-destination"
-                      className="text-foreground text-sm font-medium"
+                      className="text-foreground text-sm font-semibold flex items-center gap-2"
                     >
+                      <Plane size={16} className="text-secondary" />
                       Where from?
                     </Label>
                     <div className="relative">
-                      <MapPin
-                        className="absolute left-3 top-3 text-muted-foreground"
+                      <Plane
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
                         size={18}
                       />
                       <Input
@@ -329,23 +331,23 @@ const SearchPage = () => {
                         placeholder="Enter origin"
                         value={from}
                         onChange={(e) => setFrom(e.target.value)}
-                        className="pl-10 bg-input border-input text-foreground placeholder-muted-foreground focus:border-primary"
+                        className="pl-12 h-12 bg-input border-input text-foreground placeholder-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl transition-all"
                       />
                     </div>
                   </div>
 
-
                   {/* From Date */}
-                  <div className="space-y-2">
-                    <Label htmlFor="dates" className="text-foreground text-sm font-medium">
-                      From
+                  <div className="space-y-3">
+                    <Label htmlFor="dates" className="text-foreground text-sm font-semibold flex items-center gap-2">
+                      <Calendar size={16} className="text-primary" />
+                      Departure Date
                     </Label>
                     <div className="relative">
-                      <Calendar className="absolute left-3 top-3 text-muted-foreground pointer-events-none" size={18} />
+                      <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" size={18} />
                       <Input
                         id="dates"
                         type="date"
-                        className="pl-10 bg-input border-input text-foreground placeholder-muted-foreground focus:border-primary cursor-pointer"
+                        className="pl-12 h-12 bg-input border-input text-foreground placeholder-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 cursor-pointer rounded-xl transition-all"
                         value={fromDate}
                         onChange={(e) => setFromDate(e.target.value)}
                         min={new Date().toISOString().split("T")[0]}
@@ -354,18 +356,18 @@ const SearchPage = () => {
                     </div>
                   </div>
 
-
                   {/* To Date */}
-                  <div className="space-y-2">
-                    <Label htmlFor="dates-to" className="text-foreground text-sm font-medium">
-                      To
+                  <div className="space-y-3">
+                    <Label htmlFor="dates-to" className="text-foreground text-sm font-semibold flex items-center gap-2">
+                      <Calendar size={16} className="text-secondary" />
+                      Return Date
                     </Label>
                     <div className="relative">
-                      <Calendar className="absolute left-3 top-3 text-muted-foreground pointer-events-none" size={18} />
+                      <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" size={18} />
                       <Input
                         id="dates-to"
                         type="date"
-                        className="pl-10 bg-input border-input text-foreground placeholder-muted-foreground focus:border-primary cursor-pointer"
+                        className="pl-12 h-12 bg-input border-input text-foreground placeholder-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 cursor-pointer rounded-xl transition-all"
                         value={toDate}
                         onChange={(e) => setToDate(e.target.value)}
                         min={fromDate}
@@ -376,67 +378,70 @@ const SearchPage = () => {
                 </div>
 
 
-                {/* Select total travelers */}
-                <div className="space-y-2 mb-4">
-                  <Label
-                    htmlFor="travelers"
-                    className="text-foreground text-sm font-medium"
-                  >
-                    Travelers
-                  </Label>
-                  <div className="relative">
-                    <Users
-                      className="absolute left-3 top-3 text-muted-foreground"
-                      size={18}
-                    />
-                    <Select value={travelers} onValueChange={(value) => setTravelers(value)}>
-                      <SelectTrigger className="pl-10 bg-input border-input text-foreground cursor-pointer">
-                        <SelectValue placeholder="2 travelers" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-popover border-border cursor-pointer">
-                        <SelectItem value="1" className="cursor-pointer">1 traveler</SelectItem>
-                        <SelectItem value="2" className="cursor-pointer">2 travelers</SelectItem>
-                        <SelectItem value="3" className="cursor-pointer">3 travelers</SelectItem>
-                        <SelectItem value="4" className="cursor-pointer">4+ travelers</SelectItem>
-                      </SelectContent>
-                    </Select>
+                <div className="grid md:grid-cols-2 gap-6 mb-6">
+                  {/* Select total travelers */}
+                  <div className="space-y-3">
+                    <Label
+                      htmlFor="travelers"
+                      className="text-foreground text-sm font-semibold flex items-center gap-2"
+                    >
+                      <Users size={16} className="text-primary" />
+                      Travelers
+                    </Label>
+                    <div className="relative">
+                      <Users
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground z-10"
+                        size={18}
+                      />
+                      <Select value={travelers} onValueChange={(value) => setTravelers(value)}>
+                        <SelectTrigger className="pl-12 h-12 bg-input border-input text-foreground cursor-pointer rounded-xl focus:ring-2 focus:ring-primary/20 transition-all">
+                          <SelectValue placeholder="2 travelers" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-popover border-border cursor-pointer">
+                          <SelectItem value="1" className="cursor-pointer">1 traveler</SelectItem>
+                          <SelectItem value="2" className="cursor-pointer">2 travelers</SelectItem>
+                          <SelectItem value="3" className="cursor-pointer">3 travelers</SelectItem>
+                          <SelectItem value="4" className="cursor-pointer">4+ travelers</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Select Budget */}
+                  <div className="space-y-3">
+                    <Label className="text-foreground text-sm font-semibold flex items-center gap-2">
+                      <IndianRupee size={16} className="text-secondary" />
+                      Budget Range
+                    </Label>
+                    <div className="relative">
+                      <IndianRupee
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground z-10"
+                        size={18}
+                      />
+                      <Select value={budget} onValueChange={(value) => setBudget(value)}>
+                        <SelectTrigger className="pl-12 h-12 bg-input border-input text-foreground cursor-pointer rounded-xl focus:ring-2 focus:ring-primary/20 transition-all">
+                          <SelectValue placeholder="Any budget range" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-popover border-border cursor-pointer">
+                          <SelectItem value="budget" className="cursor-pointer">
+                            Budget (₹5000-₹15000)
+                          </SelectItem>
+                          <SelectItem value="mid" className="cursor-pointer">
+                            Mid-range (₹15000-₹30000)
+                          </SelectItem>
+                          <SelectItem value="luxury" className="cursor-pointer">
+                            Luxury (₹30000+)
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 </div>
 
 
-                {/* Select Budget */}
-                <div className="space-y-2 mb-4">
-                  <Label className="text-foreground text-sm font-medium">
-                    Budget Range
-                  </Label>
-                  <div className="relative">
-                    <IndianRupee
-                      className="absolute left-3 top-3 text-muted-foreground"
-                      size={18}
-                    />
-                    <Select value={budget} onValueChange={(value) => setBudget(value)}>
-                      <SelectTrigger className="pl-10 bg-input border-input text-foreground cursor-pointer">
-                        <SelectValue placeholder="Any budget range" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-popover border-border cursor-pointer">
-                        <SelectItem value="budget" className="cursor-pointer">
-                          Budget (₹5000-₹15000)
-                        </SelectItem>
-                        <SelectItem value="mid" className="cursor-pointer">
-                          Mid-range (₹15000-₹30000)
-                        </SelectItem>
-                        <SelectItem value="luxury" className="cursor-pointer">
-                          Luxury (₹30000+)
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-
-                <div className="flex flex-col sm:flex-row gap-4 items-center">
+                <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
                   <Button
-                    className="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground px-8 cursor-pointer"
+                    className="w-full sm:flex-1 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground px-8 cursor-pointer shadow-xl hover:shadow-2xl hover-lift"
                     size="lg"
                     onClick={() => handleSearchResult()}
                     disabled={isLoading}
@@ -458,13 +463,14 @@ const SearchPage = () => {
 
                   <Button
                     variant="outline"
-                    className="border-input text-foreground hover:bg-accent hover:text-accent-foreground"
+                    size="lg"
+                    className="w-full sm:w-auto border-2 border-border text-foreground hover:bg-accent hover:text-accent-foreground hover:border-primary/50 transition-all shadow-md hover:shadow-lg"
                     onClick={() => setShowFilters(!showFilters)}
                   >
                     <SlidersHorizontal className="mr-2" size={18} />
                     Filters
                     <ChevronDown
-                      className={`ml-2 transition-transform ${showFilters ? "rotate-180" : ""
+                      className={`ml-2 transition-transform duration-300 ${showFilters ? "rotate-180" : ""
                         }`}
                       size={16}
                     />
@@ -474,59 +480,89 @@ const SearchPage = () => {
 
                 {/* Advanced Filters */}
                 {showFilters && (
-                  <div className="mt-6 pt-6 border-t border-border cursor-pointer">
+                  <div className="mt-8 pt-8 border-t border-border/50 animate-in fade-in-50 duration-500">
                     <div className="grid md:grid-cols-3 gap-6">
-                      <div className="space-y-4">
-                        <h3 className="text-foreground font-semibold">
+                      {/* Budget Range Card */}
+                      <div className="space-y-4 p-5 rounded-2xl bg-gradient-to-br from-primary/5 via-transparent to-primary/10 border border-primary/20 shadow-lg hover:shadow-xl transition-all duration-300">
+                        <h3 className="text-foreground font-bold text-base flex items-center gap-2">
+                          <div className="p-2 bg-gradient-to-br from-primary to-primary/70 rounded-lg shadow-md">
+                            <IndianRupee size={16} className="text-white" />
+                          </div>
                           Budget Range
                         </h3>
-                        <div className="px-2">
-                          <Slider
-                            value={budgetRange}
-                            onValueChange={setBudgetRange}
-                            max={10000}
-                            min={500}
-                            step={100}
-                            className="w-full"
-                          />
-                          <div className="flex justify-between text-sm text-muted-foreground mt-2">
-                            <span>${budgetRange[0]}</span>
-                            <span>${budgetRange[1]}</span>
+                        <div className="px-3 py-4 bg-background/50 backdrop-blur-sm rounded-xl border border-border/50">
+                          <div className="mb-3">
+                            <div className="flex justify-between text-[10px] text-muted-foreground mb-2">
+                              <span>Min</span>
+                              <span>Max</span>
+                            </div>
+                            <Slider
+                              value={budgetRange}
+                              onValueChange={setBudgetRange}
+                              max={10000}
+                              min={500}
+                              step={100}
+                              className="w-full"
+                            />
+                            <div className="flex justify-between text-[10px] text-muted-foreground mt-2">
+                              <span>$500</span>
+                              <span>$10K</span>
+                            </div>
+                          </div>
+                          <div className="flex justify-between gap-2">
+                            <div className="flex-1 min-w-0">
+                              <div className="text-[10px] text-muted-foreground mb-1 text-center">From</div>
+                              <div className="px-2 py-2 bg-gradient-to-r from-primary to-primary/80 text-white rounded-xl shadow-lg text-center font-bold text-sm truncate">
+                                ${budgetRange[0].toLocaleString()}
+                              </div>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-[10px] text-muted-foreground mb-1 text-center">To</div>
+                              <div className="px-2 py-2 bg-gradient-to-r from-secondary to-secondary/80 text-white rounded-xl shadow-lg text-center font-bold text-sm truncate">
+                                ${budgetRange[1].toLocaleString()}
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
 
-
-                      <div className="space-y-4">
-                        <h3 className="text-foreground font-semibold">Activities</h3>
+                      {/* Activities Card */}
+                      <div className="space-y-4 p-5 rounded-2xl bg-gradient-to-br from-secondary/5 via-transparent to-secondary/10 border border-secondary/20 shadow-lg hover:shadow-xl transition-all duration-300">
+                        <h3 className="text-foreground font-bold text-base flex items-center gap-2">
+                          <div className="p-2 bg-gradient-to-br from-secondary to-secondary/70 rounded-lg shadow-md">
+                            <Sparkles size={16} className="text-white" />
+                          </div>
+                          Activities
+                        </h3>
                         <div className="grid grid-cols-2 gap-2">
                           {activities.slice(0, 6).map((activity) => (
-                            <div
+                            <label
                               key={activity}
-                              className="flex items-center space-x-2"
+                              className={`flex items-center gap-1.5 px-2 py-2 rounded-lg border-2 transition-all duration-300 cursor-pointer ${selectedActivities.includes(activity)
+                                  ? 'bg-gradient-to-r from-secondary/20 to-secondary/10 border-secondary shadow-md scale-105'
+                                  : 'bg-background/50 border-border/50 hover:border-secondary/50 hover:bg-secondary/5'
+                                }`}
                             >
                               <Checkbox
                                 id={activity}
                                 checked={selectedActivities.includes(activity)}
-                                onCheckedChange={() =>
-                                  handleActivityToggle(activity)
-                                }
-                                className="border-input"
+                                onCheckedChange={() => handleActivityToggle(activity)}
+                                className="border-secondary data-[state=checked]:bg-secondary data-[state=checked]:border-secondary flex-shrink-0"
                               />
-                              <Label
-                                htmlFor={activity}
-                                className="text-sm text-muted-foreground"
-                              >
+                              <span className="text-xs font-semibold text-foreground truncate">
                                 {activity}
-                              </Label>
-                            </div>
+                              </span>
+                            </label>
                           ))}
                         </div>
                       </div>
 
-
-                      <div className="space-y-4">
-                        <h3 className="text-foreground font-semibold">
+                      {/* Travel Style Card */}
+                      <div className="space-y-4 p-5 rounded-2xl bg-gradient-to-br from-purple-500/5 via-transparent to-purple-500/10 border border-purple-500/20 shadow-lg hover:shadow-xl transition-all duration-300">
+                        <h3 className="text-foreground font-bold text-base flex items-center gap-2">
+                          <div className="p-2 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-md">
+                            <Users size={16} className="text-white" />
+                          </div>
                           Travel Style
                         </h3>
                         <div className="space-y-2">
@@ -536,21 +572,18 @@ const SearchPage = () => {
                             "Romantic",
                             "Group Travel",
                           ].map((style) => (
-                            <div
+                            <label
                               key={style}
-                              className="flex items-center space-x-2"
+                              className="flex items-center gap-2 px-3 py-2.5 rounded-lg border-2 border-border/50 bg-background/50 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all duration-300 cursor-pointer hover:scale-105"
                             >
                               <Checkbox
                                 id={style}
-                                className="border-input"
+                                className="border-purple-500 data-[state=checked]:bg-purple-500 data-[state=checked]:border-purple-500 flex-shrink-0"
                               />
-                              <Label
-                                htmlFor={style}
-                                className="text-sm text-muted-foreground"
-                              >
+                              <span className="text-xs font-semibold text-foreground">
                                 {style}
-                              </Label>
-                            </div>
+                              </span>
+                            </label>
                           ))}
                         </div>
                       </div>
@@ -568,20 +601,21 @@ const SearchPage = () => {
       <section className="py-8 bg-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           {/* Results Header */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
             <div>
-              <h2 className="text-2xl font-bold text-foreground mb-2">
+              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2 font-outfit">
                 AI-Curated Travel Plans
               </h2>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground flex items-center gap-2">
+                <Sparkles size={16} className="text-primary" />
                 Found {searchResults?.length || 0} personalized adventures • Powered by AI
               </p>
             </div>
 
-
-            <div className="flex items-center space-x-4 mt-4 sm:mt-0">
+            <div className="flex items-center space-x-4 w-full sm:w-auto">
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-48 bg-input border-input text-foreground">
+                <SelectTrigger className="w-full sm:w-56 h-11 bg-input border-input text-foreground rounded-xl shadow-md hover:shadow-lg transition-all">
+                  <TrendingUp size={16} className="mr-2" />
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-popover border-border">
@@ -623,14 +657,14 @@ const SearchPage = () => {
               {searchResults.map((result, index) => (
                 <Card
                   key={index}
-                  className="result-card bg-card border-border hover:border-primary/50 transition-all duration-300 group"
+                  className="result-card bg-card border-border hover:border-primary/50 transition-all duration-300 group shadow-xl hover:shadow-2xl hover-lift"
                 >
                   <div className="relative">
-                    <div className="relative h-48 overflow-hidden rounded-t-lg">
+                    <div className="relative h-56 overflow-hidden rounded-t-lg">
                       <img
                         src={result.image_url}
                         alt={result.name}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-110"
                         onError={(e) => {
                           e.target.onerror = null;
                           e.target.src = "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80";
@@ -638,11 +672,13 @@ const SearchPage = () => {
                         loading="lazy"
                       />
 
+                      {/* Glassmorphism Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
                       {/* AI Score Badge */}
-                      <Badge className="absolute top-3 left-3 bg-gradient-to-r from-primary to-secondary text-primary-foreground">
-                        <Bot className="mr-1" size={12} />
-                        AI Score: {result.ai_score}
+                      <Badge className="absolute top-4 left-4 bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-xl backdrop-blur-sm">
+                        <Bot className="mr-1 animate-pulse" size={14} />
+                        {result.ai_score}
                       </Badge>
 
 
@@ -667,47 +703,38 @@ const SearchPage = () => {
                   </div>
 
 
-                  <CardContent className="p-6">
+                  <CardContent className="p-6 space-y-4">
                     <div className="space-y-4">
                       <div className="flex justify-between items-start">
-                        <div>
-                          <h3 className="text-xl font-bold text-card-foreground mb-1">
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-card-foreground mb-2 font-outfit group-hover:text-primary transition-colors">
                             {result.name}
                           </h3>
-                          <p className="text-muted-foreground text-sm flex items-center">
-                            <Clock className="mr-1" size={14} />
-                            {result.days} {result.days === 1 ? 'Day' : 'Days'}
-                          </p>
+                          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                            <span className="flex items-center gap-1">
+                              <Clock size={14} />
+                              {result.days} {result.days === 1 ? 'Day' : 'Days'}
+                            </span>
+                            <span className="w-1 h-1 rounded-full bg-muted-foreground"></span>
+                            <div className="flex items-center gap-1">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  size={14}
+                                  className="text-yellow-500"
+                                  fill={i < Math.floor(result.star) ? "currentColor" : "none"}
+                                />
+                              ))}
+                              <span className="ml-1 font-semibold text-card-foreground">{result.star}</span>
+                            </div>
+                          </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-2xl font-bold text-card-foreground">
+                          <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                             ₹{result.cost?.toLocaleString() || 'N/A'}
                           </div>
-                          <div className="text-sm text-muted-foreground">per person</div>
+                          <div className="text-xs text-muted-foreground">per person</div>
                         </div>
-                      </div>
-
-
-                      <div className="flex items-center space-x-2">
-                        <div className="flex text-yellow-500">
-                          {[...Array(5)].map((_, i) => (
-                            <Star
-                              key={i}
-                              size={16}
-                              fill={
-                                i < Math.floor(result.star)
-                                  ? "currentColor"
-                                  : "none"
-                              }
-                            />
-                          ))}
-                        </div>
-                        <span className="text-card-foreground font-semibold">
-                          {result.star}
-                        </span>
-                        <span className="text-muted-foreground text-sm">
-                          ({result.total_reviews} reviews)
-                        </span>
                       </div>
 
 
@@ -764,7 +791,7 @@ const SearchPage = () => {
                       <div className="pt-4 border-t border-border">
                         <div className="flex space-x-2">
                           <Button
-                            className="flex-1 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 cursor-pointer text-primary-foreground"
+                            className="flex-1 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 cursor-pointer text-primary-foreground shadow-lg hover:shadow-xl transition-all"
                             onClick={() => handleViewDetails(result)}
                           >
                             View Details
@@ -804,11 +831,11 @@ const SearchPage = () => {
 
       {/* Detailed Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-5xl max-h-[90vh] bg-card border-border text-foreground p-0 overflow-hidden">
+        <DialogContent className="max-w-7xl max-h-[90vh] bg-card border-border text-foreground p-0 overflow-hidden shadow-2xl">
           {selectedDestination && (
             <>
               {/* Modal Header with Image */}
-              <div className="relative h-64 w-full">
+              <div className="relative h-72 w-full overflow-hidden">
                 <img
                   src={selectedDestination.image_url}
                   alt={selectedDestination.name}
@@ -818,30 +845,31 @@ const SearchPage = () => {
                     e.target.src = "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80";
                   }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-transparent"></div>
 
 
                 {/* Title Overlay */}
-                <div className="absolute bottom-0 left-0 right-0 p-6">
+                <div className="absolute bottom-0 left-0 right-0 p-8">
                   <div className="flex items-start justify-between">
-                    <div>
-                      <Badge className="bg-gradient-to-r from-primary to-secondary text-primary-foreground mb-3">
-                        <Bot className="mr-1" size={12} />
+                    <div className="flex-1">
+                      <Badge className="bg-gradient-to-r from-primary to-secondary text-primary-foreground mb-4 shadow-xl backdrop-blur-sm px-3 py-1">
+                        <Bot className="mr-1.5 animate-pulse" size={14} />
                         AI Score: {selectedDestination.ai_score}
                       </Badge>
-                      <h2 className="text-3xl font-bold text-foreground mb-2">
+                      <h2 className="text-4xl font-bold text-foreground mb-3 font-outfit">
                         {selectedDestination.name}
                       </h2>
-                      <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                        <span className="flex items-center">
-                          <Clock className="mr-1" size={16} />
+                      <div className="flex items-center gap-6 text-sm">
+                        <span className="flex items-center gap-1.5 text-muted-foreground">
+                          <Clock size={16} />
                           {selectedDestination.days} Days
                         </span>
-                        <span className="flex items-center">
-                          <Star className="mr-1 text-yellow-500" size={16} fill="currentColor" />
-                          {selectedDestination.star} ({selectedDestination.total_reviews} reviews)
+                        <span className="flex items-center gap-1.5">
+                          <Star className="text-yellow-500" size={16} fill="currentColor" />
+                          <span className="font-semibold text-foreground">{selectedDestination.star}</span>
+                          <span className="text-muted-foreground">({selectedDestination.total_reviews} reviews)</span>
                         </span>
-                        <span className="text-2xl font-bold text-green-600 dark:text-green-400">
+                        <span className="text-3xl font-bold text-green-600 dark:text-green-400">
                           ₹{selectedDestination.cost?.toLocaleString()}
                         </span>
                       </div>
@@ -867,11 +895,11 @@ const SearchPage = () => {
                 <div className="space-y-6 mt-6">
                   {/* Overview */}
                   <div>
-                    <h3 className="text-xl font-semibold mb-3 flex items-center text-foreground">
-                      <Info className="mr-2 text-primary" size={20} />
+                    <h3 className="text-xl font-semibold mb-4 flex items-center text-foreground font-outfit">
+                      <Info className="mr-2 text-primary" size={22} />
                       Overview
                     </h3>
-                    <p className="text-muted-foreground leading-relaxed">
+                    <p className="text-muted-foreground leading-relaxed text-base">
                       {selectedDestination.destination_overview}
                     </p>
                   </div>
@@ -880,13 +908,16 @@ const SearchPage = () => {
                   {/* Perfect For Tags */}
                   {selectedDestination.perfect_for && (
                     <div>
-                      <h3 className="text-xl font-semibold mb-3 text-foreground">Perfect For</h3>
+                      <h3 className="text-xl font-semibold mb-4 text-foreground font-outfit flex items-center">
+                        <Sparkles className="mr-2 text-secondary" size={22} />
+                        Perfect For
+                      </h3>
                       <div className="flex flex-wrap gap-2">
                         {selectedDestination.perfect_for.map((tag, idx) => (
                           <Badge
                             key={idx}
                             variant="outline"
-                            className="border-primary/50 text-primary bg-primary/20 px-4 py-2"
+                            className="border-primary/50 text-primary bg-primary/10 px-4 py-2 hover:bg-primary/20 transition-colors"
                           >
                             {tag}
                           </Badge>
@@ -898,17 +929,21 @@ const SearchPage = () => {
 
                   {/* Tabs for Detailed Info */}
                   <Tabs defaultValue="highlights" className="w-full">
-                    <TabsList className="grid w-full grid-cols-4 bg-muted mb-6">
-                      <TabsTrigger value="highlights" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground cursor-pointer">
+                    <TabsList className="grid w-full grid-cols-4 bg-muted/50 backdrop-blur-sm mb-8 p-1 rounded-xl shadow-lg">
+                      <TabsTrigger value="highlights" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground cursor-pointer rounded-lg transition-all duration-300 data-[state=active]:shadow-lg font-medium">
+                        <Lightbulb className="mr-2" size={16} />
                         Highlights
                       </TabsTrigger>
-                      <TabsTrigger value="itinerary" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground cursor-pointer">
+                      <TabsTrigger value="itinerary" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground cursor-pointer rounded-lg transition-all duration-300 data-[state=active]:shadow-lg font-medium">
+                        <CalendarDays className="mr-2" size={16} />
                         Itinerary
                       </TabsTrigger>
-                      <TabsTrigger value="budget" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground cursor-pointer">
+                      <TabsTrigger value="budget" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground cursor-pointer rounded-lg transition-all duration-300 data-[state=active]:shadow-lg font-medium">
+                        <IndianRupee className="mr-2" size={16} />
                         Budget
                       </TabsTrigger>
-                      <TabsTrigger value="tips" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground cursor-pointer">
+                      <TabsTrigger value="tips" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground cursor-pointer rounded-lg transition-all duration-300 data-[state=active]:shadow-lg font-medium">
+                        <Lightbulb className="mr-2" size={16} />
                         Tips
                       </TabsTrigger>
                     </TabsList>
@@ -918,20 +953,20 @@ const SearchPage = () => {
                     <TabsContent value="highlights" className="space-y-4">
                       {selectedDestination.trip_highlights && selectedDestination.trip_highlights.length > 0 ? (
                         selectedDestination.trip_highlights.map((highlight, idx) => (
-                          <Card key={idx} className="bg-card border-border">
-                            <CardContent className="p-4">
+                          <Card key={idx} className="bg-card border-border shadow-lg hover:shadow-xl transition-all duration-300 hover-lift">
+                            <CardContent className="p-5">
                               <div className="flex items-start space-x-4">
-                                <div className="bg-primary/20 p-3 rounded-lg">
+                                <div className="bg-gradient-to-br from-primary/20 to-secondary/20 p-3 rounded-xl shadow-md">
                                   <MapPinned className="text-primary" size={24} />
                                 </div>
                                 <div className="flex-1">
-                                  <h4 className="font-semibold text-card-foreground mb-1">
+                                  <h4 className="font-semibold text-card-foreground mb-2 text-lg font-outfit">
                                     {highlight.name}
                                   </h4>
-                                  <p className="text-muted-foreground text-sm mb-2">
+                                  <p className="text-muted-foreground text-sm mb-3 leading-relaxed">
                                     {highlight.description}
                                   </p>
-                                  <Badge variant="secondary" className="bg-secondary/30 text-secondary-foreground text-xs">
+                                  <Badge variant="secondary" className="bg-secondary/20 text-secondary-foreground text-xs px-3 py-1">
                                     {highlight.match_reason}
                                   </Badge>
                                 </div>
@@ -949,27 +984,36 @@ const SearchPage = () => {
                     <TabsContent value="itinerary" className="space-y-4">
                       {selectedDestination.suggested_itinerary && selectedDestination.suggested_itinerary.length > 0 ? (
                         selectedDestination.suggested_itinerary.map((day, idx) => (
-                          <Card key={idx} className="bg-card border-border">
-                            <CardContent className="p-4">
+                          <Card key={idx} className="bg-card border-border shadow-lg hover:shadow-xl transition-all duration-300 hover-lift">
+                            <CardContent className="p-5">
                               <div className="flex items-start space-x-4">
-                                <div className="bg-secondary/20 p-3 rounded-lg flex items-center justify-center min-w-[60px]">
+                                <div className="bg-gradient-to-br from-secondary/20 to-primary/20 p-3 rounded-xl flex items-center justify-center min-w-[70px] shadow-md">
                                   <div className="text-center">
-                                    <CalendarDays className="text-secondary mx-auto mb-1" size={20} />
+                                    <CalendarDays className="text-secondary mx-auto mb-1" size={22} />
                                     <span className="text-secondary font-bold text-sm">Day {day.day}</span>
                                   </div>
                                 </div>
-                                <div className="flex-1 space-y-2">
+                                <div className="flex-1 space-y-3">
                                   <div>
-                                    <span className="text-xs text-muted-foreground uppercase font-semibold">Morning</span>
-                                    <p className="text-muted-foreground text-sm">{day.morning}</p>
+                                    <span className="text-xs text-primary uppercase font-semibold flex items-center gap-1">
+                                      <Clock size={12} />
+                                      Morning
+                                    </span>
+                                    <p className="text-muted-foreground text-sm mt-1">{day.morning}</p>
                                   </div>
                                   <div>
-                                    <span className="text-xs text-muted-foreground uppercase font-semibold">Afternoon</span>
-                                    <p className="text-muted-foreground text-sm">{day.afternoon}</p>
+                                    <span className="text-xs text-primary uppercase font-semibold flex items-center gap-1">
+                                      <Clock size={12} />
+                                      Afternoon
+                                    </span>
+                                    <p className="text-muted-foreground text-sm mt-1">{day.afternoon}</p>
                                   </div>
                                   <div>
-                                    <span className="text-xs text-muted-foreground uppercase font-semibold">Evening</span>
-                                    <p className="text-muted-foreground text-sm">{day.evening}</p>
+                                    <span className="text-xs text-primary uppercase font-semibold flex items-center gap-1">
+                                      <Clock size={12} />
+                                      Evening
+                                    </span>
+                                    <p className="text-muted-foreground text-sm mt-1">{day.evening}</p>
                                   </div>
                                 </div>
                               </div>
@@ -987,17 +1031,17 @@ const SearchPage = () => {
                       {selectedDestination.budget_breakdown ? (
                         <div className="grid grid-cols-2 gap-4">
                           {Object.entries(selectedDestination.budget_breakdown).map(([category, amount], idx) => (
-                            <Card key={idx} className="bg-card border-border">
-                              <CardContent className="p-4">
-                                <div className="flex items-center space-x-3">
-                                  <div className="bg-green-600/20 p-2 rounded-lg">
-                                    {category === 'flights' && <Plane className="text-green-600 dark:text-green-400" size={20} />}
-                                    {category === 'accommodation' && <Hotel className="text-green-600 dark:text-green-400" size={20} />}
-                                    {category === 'food' && <Utensils className="text-green-600 dark:text-green-400" size={20} />}
-                                    {category === 'activities' && <MapPinned className="text-green-600 dark:text-green-400" size={20} />}
+                            <Card key={idx} className="bg-card border-border shadow-lg hover:shadow-xl transition-all duration-300 hover-lift">
+                              <CardContent className="p-5">
+                                <div className="flex items-center space-x-4">
+                                  <div className="bg-gradient-to-br from-green-600/20 to-emerald-600/20 p-3 rounded-xl shadow-md">
+                                    {category === 'flights' && <Plane className="text-green-600 dark:text-green-400" size={22} />}
+                                    {category === 'accommodation' && <Hotel className="text-green-600 dark:text-green-400" size={22} />}
+                                    {category === 'food' && <Utensils className="text-green-600 dark:text-green-400" size={22} />}
+                                    {category === 'activities' && <MapPinned className="text-green-600 dark:text-green-400" size={22} />}
                                   </div>
-                                  <div>
-                                    <h4 className="font-semibold text-card-foreground capitalize">
+                                  <div className="flex-1">
+                                    <h4 className="font-semibold text-card-foreground capitalize text-lg font-outfit mb-1">
                                       {category}
                                     </h4>
                                     <p className="text-muted-foreground text-sm">{amount}</p>
@@ -1017,11 +1061,13 @@ const SearchPage = () => {
                     <TabsContent value="tips" className="space-y-3">
                       {selectedDestination.local_tips && selectedDestination.local_tips.length > 0 ? (
                         selectedDestination.local_tips.map((tip, idx) => (
-                          <Card key={idx} className="bg-card border-border">
-                            <CardContent className="p-4">
-                              <div className="flex items-start space-x-3">
-                                <Lightbulb className="text-yellow-500 mt-1 flex-shrink-0" size={20} />
-                                <p className="text-muted-foreground text-sm">{tip}</p>
+                          <Card key={idx} className="bg-card border-border shadow-lg hover:shadow-xl transition-all duration-300 hover-lift">
+                            <CardContent className="p-5">
+                              <div className="flex items-start space-x-4">
+                                <div className="bg-gradient-to-br from-yellow-500/20 to-amber-500/20 p-2 rounded-xl shadow-md flex-shrink-0">
+                                  <Lightbulb className="text-yellow-500" size={22} />
+                                </div>
+                                <p className="text-muted-foreground text-sm leading-relaxed flex-1">{tip}</p>
                               </div>
                             </CardContent>
                           </Card>
@@ -1034,7 +1080,7 @@ const SearchPage = () => {
 
 
                   {/* Action Buttons */}
-                  <div className="flex gap-3 pt-4 border-t border-border mb-5">
+                  <div className="flex gap-3 pt-4 border-t border-border mb-12">
                     <Button className="flex-1 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 cursor-pointer text-primary-foreground">
                       <Heart className="mr-2" size={18} />
                       Save to Favorites
