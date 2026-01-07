@@ -12,30 +12,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const generative_ai_1 = require("@google/generative-ai");
+exports.groqGeneratedData = groqGeneratedData;
+const groq_sdk_1 = __importDefault(require("groq-sdk"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const config_1 = require("../../config/config");
-const genai_1 = require("@google/genai");
 dotenv_1.default.config();
-const genAi = new generative_ai_1.GoogleGenerativeAI(config_1.config.GEMINI_API_KEY);
-const ai = new genai_1.GoogleGenAI({ apiKey: config_1.config.GEMINI_API_KEY });
-function generateRecommendation(prompt) {
+const groq = new groq_sdk_1.default({ apiKey: process.env.GROQ_API_KEY });
+function groqGeneratedData(prompt) {
     return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const response = yield ai.models.generateContent({
-                model: "gemini-2.5-flash",
-                contents: prompt
-            });
-            const text = response.text;
-            if (!text) {
-                console.error("No text found in the response from the AI.");
-                return undefined;
-            }
-            return text;
-        }
-        catch (error) {
-            console.error('Error generating recommendation:', error);
-        }
+        var _a, _b;
+        const chatComplete = groq.chat.completions.create({
+            messages: [
+                {
+                    role: "assistant",
+                    content: prompt
+                }
+            ],
+            model: "openai/gpt-oss-120b"
+        });
+        return ((_b = (_a = (yield chatComplete).choices[0]) === null || _a === void 0 ? void 0 : _a.message) === null || _b === void 0 ? void 0 : _b.content) || "";
     });
 }
-exports.default = generateRecommendation;

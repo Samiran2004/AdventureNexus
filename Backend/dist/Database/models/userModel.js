@@ -1,6 +1,35 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose_1 = require("mongoose");
+const mongoose_1 = __importStar(require("mongoose"));
+var Gender;
+(function (Gender) {
+    Gender["Male"] = "male";
+    Gender["Female"] = "female";
+    Gender["Other"] = "other";
+})(Gender || (Gender = {}));
 const userSchema = new mongoose_1.Schema({
     clerkUserId: {
         type: String,
@@ -8,36 +37,17 @@ const userSchema = new mongoose_1.Schema({
         unique: true,
         index: true
     },
-    fullname: {
-        type: String,
-        default: null
-    },
     email: {
         type: String,
         required: true,
+        unique: true,
         lowercase: true,
         trim: true
     },
-    firstName: {
-        type: String,
-        default: null,
-        trim: true
-    },
-    lastName: {
-        type: String,
-        default: null,
-        trim: true
-    },
-    password: {
-        type: String,
-        default: null
-    },
-    username: {
-        type: String,
-        default: null,
-        trim: true,
-        unique: true
-    },
+    firstName: { type: String, trim: true },
+    lastName: { type: String, trim: true },
+    username: { type: String, unique: true, sparse: true, trim: true },
+    profilepicture: { type: String, default: "" },
     phonenumber: {
         type: Number,
         validate: {
@@ -46,44 +56,26 @@ const userSchema = new mongoose_1.Schema({
             },
             message: 'Phone number must be exactly 10 digits'
         },
-        required: false
+        default: null
     },
-    profilepicture: {
+    fullname: { type: String, default: "" },
+    role: {
         type: String,
-        default: 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745'
+        enum: ['user', 'admin'],
+        default: 'user',
     },
+    gender: {
+        type: String,
+        enum: Object.values(Gender),
+    },
+    country: { type: String, default: "" },
     preferences: {
         type: [String],
-        enum: [
-            'adventure',
-            'relaxation',
-            'culture',
-            'nature',
-            'beach',
-            'mountains',
-            'urban',
-        ],
-        default: []
-    },
-    country: {
-        type: String,
-        default: null
-    },
-    createdat: {
-        type: Date,
-        default: Date.now,
-    },
-    refreshtoken: {
-        type: String,
-        default: null
-    },
-    currency_code: {
-        type: String,
-        default: "$"
+        default: [],
     },
     plans: [
         {
-            type: mongoose_1.Schema.Types.ObjectId,
+            type: mongoose_1.default.Schema.Types.ObjectId,
             ref: 'Plan',
         },
     ],
@@ -97,8 +89,6 @@ userSchema.post('save', function (error, doc, next) {
         }
         else if (error.keyPattern.username) {
             next(new Error('Username already taken'));
-        }
-        else if (error.keyPattern.phonenumber) {
             next(new Error('Phone number already registered'));
         }
         else {
@@ -109,5 +99,5 @@ userSchema.post('save', function (error, doc, next) {
         next(error);
     }
 });
-const User = (0, mongoose_1.model)('User', userSchema);
+const User = model('User', userSchema);
 exports.default = User;

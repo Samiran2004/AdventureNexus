@@ -13,14 +13,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
-const figlet_1 = __importDefault(require("figlet"));
-const connectDb = (mongoURI) => __awaiter(void 0, void 0, void 0, function* () {
+const connectDb = (url) => __awaiter(void 0, void 0, void 0, function* () {
+    mongoose_1.default.connection.on('connected', () => {
+        console.log("Connected to database successfully");
+    });
+    mongoose_1.default.connection.on('error', (err) => {
+        console.log("Error connecting to database", err);
+    });
     try {
-        yield mongoose_1.default.connect(mongoURI);
-        (0, figlet_1.default)('D a t a b a s e   c o n n e c t e d', (err, data) => err ? console.log('Figlet error...') : console.log(data));
+        yield mongoose_1.default.connect(url);
     }
-    catch (err) {
-        (0, figlet_1.default)('D a t a b a s e  c o n n e c t i o n  e r r o r', (err, data) => err ? console.log('Figlet error') : console.log(data));
+    catch (error) {
+        console.error("Failed to connect to database:", error);
+        process.exit(1);
     }
 });
 exports.default = connectDb;
