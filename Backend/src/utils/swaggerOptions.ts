@@ -141,5 +141,5 @@ export const swaggerOptions = {
             ],
         },
     },
-    apis: ['src/routes/*.ts', 'src/app.ts', 'dist/app.js', 'dist/routes/*.js'],
+    apis: ['src/routes/*.ts', 'src/app.ts', 'dist/app.js', 'dist/routes/*.js', 'src/docs/swagger/*.ts'],
 };
