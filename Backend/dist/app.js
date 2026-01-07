@@ -13,28 +13,38 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const cors_1 = __importDefault(require("cors"));
-const helmet_1 = __importDefault(require("helmet"));
+const http_errors_1 = __importDefault(require("http-errors"));
 const morgan_1 = __importDefault(require("morgan"));
-const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
-const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
-const swaggerOptions_1 = require("./utils/swaggerOptions");
-const figlet_1 = __importDefault(require("figlet"));
-const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
-const recommendationRoutes_1 = __importDefault(require("./routes/recommendationRoutes"));
-const planningRoute_1 = __importDefault(require("./routes/planningRoute"));
-const sanitization_1 = __importDefault(require("./middlewares/sanitization"));
-const client_1 = __importDefault(require("./redis/client"));
-const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const globalErrorHandler_1 = __importDefault(require("./middlewares/globalErrorHandler"));
-const config_1 = require("./config/config");
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const helmet_1 = __importDefault(require("helmet"));
 const path_1 = __importDefault(require("path"));
+const figlet_1 = __importDefault(require("figlet"));
+dotenv_1.default.config();
+const config_1 = require("./config/config");
 const connectDb_1 = __importDefault(require("./Database/connectDb"));
+const client_1 = __importDefault(require("./redis/client"));
+require("./jobs/dailyTips.job");
+require("./jobs/runner.job");
+const globalErrorHandler_1 = __importDefault(require("./middlewares/globalErrorHandler"));
+const sanitization_1 = __importDefault(require("./middlewares/sanitization"));
 const express_2 = require("@clerk/express");
 const ClerkWebhook_1 = __importDefault(require("./controller/ClerkWebhook"));
-const hotelsRoute_1 = __importDefault(require("./routes/hotelsRoute"));
 const subscribeDailyMail_controller_1 = __importDefault(require("./controller/newsSubscriptionController/subscribeDailyMail.controller"));
+const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
+const planningRoute_1 = __importDefault(require("./routes/planningRoute"));
+const hotelsRoute_1 = __importDefault(require("./routes/hotelsRoute"));
+const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
+const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
+const swaggerOptions_1 = require("./utils/swaggerOptions");
+const app = (0, express_1.default)();
+app.use(express_1.default.static('public'));
+app.use(express_1.default.json());
+app.use(express_1.default.urlencoded({ extended: false }));
+app.use((0, morgan_1.default)('dev'));
+app.use((0, cors_1.default)());
+app.use((0, express_2.clerkMiddleware)());
 require("./jobs/dailyTips.job");
 require("./jobs/runner.job");
 dotenv_1.default.config();
@@ -69,18 +79,16 @@ app.use('/api/clerk', ClerkWebhook_1.default);
 const swaggerDocs = (0, swagger_jsdoc_1.default)(swaggerOptions_1.swaggerOptions);
 app.use('/api-docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerDocs));
 app.use(sanitization_1.default);
-app.get('/isWork', (req, res) => {
-    res.status(200).send({
-        status: 'success',
-        isWorking: true,
-    });
-});
+app.use('/api/clerk', ClerkWebhook_1.default);
 app.use('/api/v1/users', userRoutes_1.default);
-app.use('/api/v1/recommendations', recommendationRoutes_1.default);
 app.use('/api/v1/plans', planningRoute_1.default);
 app.use('/api/v1/hotels', hotelsRoute_1.default);
 app.post('/api/v1/mail/subscribe', subscribeDailyMail_controller_1.default);
+app.use((req, res, next) => {
+    next((0, http_errors_1.default)(404));
+});
 app.use(globalErrorHandler_1.default);
+exports.default = app;
 app.listen(config_1.config.port, (err) => err
     ? (0, figlet_1.default)(`S e r v e r  c o n n e c t i o n  e r r o r`, (err, data) => {
         err ? console.log('Figlet error') : console.log(data);

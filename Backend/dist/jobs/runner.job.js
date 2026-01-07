@@ -16,7 +16,7 @@ const chalk_1 = __importDefault(require("chalk"));
 const node_cron_1 = __importDefault(require("node-cron"));
 const runnerCronJob = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log(chalk_1.default.bgCyan("Runner is running..."));
+        console.log(chalk_1.default.bgCyan(`Runner is running...`));
     }
     catch (error) {
         console.log(chalk_1.default.red("Failed to run runner cron job..."));

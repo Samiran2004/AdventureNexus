@@ -33,10 +33,8 @@ const sendAutoDailyTipsJob = () => __awaiter(void 0, void 0, void 0, function* (
             console.log(userMail.mail);
             let mailData = emailTemplate_1.default.sendDailyTipEmailData(userMail.mail, tipDataObject);
             yield (0, mailService_1.default)(mailData, (mailError) => {
-                return res.status(StatusCodes.EXPECTATION_FAILED).json({
-                    status: 'Failed',
-                    message: "Mail sending error!"
-                });
+                if (mailError)
+                    console.error("Mail sending failed for user:", userMail.mail);
             });
             console.log("Done...");
         }

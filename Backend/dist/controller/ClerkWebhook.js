@@ -76,13 +76,15 @@ const clerkWebhook = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 console.log('Deleting user:', data.id);
                 const deletedUser = yield userModel_1.default.findOneAndDelete({ clerkUserId: data.id });
                 console.log('User deleted:', deletedUser ? 'Success' : 'Not found');
-                const { deleteUserEmailData } = emailTemplate_1.default;
-                const emailData = deleteUserEmailData(deletedUser.firstName, deletedUser.email);
-                yield (0, mailService_1.default)(emailData, (mailError) => {
-                    if (mailError) {
-                        console.log("Mail sending error...");
-                    }
-                });
+                if (deletedUser) {
+                    const { deleteUserEmailData } = emailTemplate_1.default;
+                    const emailData = deleteUserEmailData(deletedUser.firstName, deletedUser.email);
+                    yield (0, mailService_1.default)(emailData, (mailError) => {
+                        if (mailError) {
+                            console.log("Mail sending error...");
+                        }
+                    });
+                }
                 break;
             }
             default:
