@@ -4,6 +4,7 @@ import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+// Menubar component built on Radix UI Menubar
 function Menubar({
   className,
   ...props

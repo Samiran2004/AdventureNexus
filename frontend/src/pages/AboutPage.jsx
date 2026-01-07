@@ -36,8 +36,9 @@ import ContactUs1 from '@/components/mvpblocks/contact-us-1';
 // Register GSAP Plugins
 gsap.registerPlugin(ScrollTrigger);
 
+// AboutPage component displays information about the company
 const AboutPage = () => {
-    // Refs for GSAP animations
+    // Refs for GSAP animations that are used to animate the sections of the page
     const heroRef = useRef(null);
     const missionRef = useRef(null);
     const storyRef = useRef(null);

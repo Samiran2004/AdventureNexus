@@ -25,6 +25,7 @@ const badgeVariants = cva(
   }
 )
 
+// Badge component for status indicators or labels
 function Badge({
   className,
   variant,

@@ -48,6 +48,7 @@ import Footer from '@/components/mvpblocks/footer-newsletter';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// FlightsPage component for searching and booking flights
 const FlightsPage = () => {
     const navigate = useNavigate();
     const pageRef = useRef(null);
@@ -266,21 +267,21 @@ const FlightsPage = () => {
                             <div className="flex space-x-4 mb-6">
                                 <Button
                                     variant={searchForm.tripType === 'roundTrip' ? 'default' : 'outline'}
-                                    onClick={() => setSearchForm({...searchForm, tripType: 'roundTrip'})}
+                                    onClick={() => setSearchForm({ ...searchForm, tripType: 'roundTrip' })}
                                     className="bg-gradient-to-r from-blue-600 to-purple-600"
                                 >
                                     Round Trip
                                 </Button>
                                 <Button
                                     variant={searchForm.tripType === 'oneWay' ? 'default' : 'outline'}
-                                    onClick={() => setSearchForm({...searchForm, tripType: 'oneWay'})}
+                                    onClick={() => setSearchForm({ ...searchForm, tripType: 'oneWay' })}
                                     className="border-gray-600"
                                 >
                                     One Way
                                 </Button>
                                 <Button
                                     variant={searchForm.tripType === 'multiCity' ? 'default' : 'outline'}
-                                    onClick={() => setSearchForm({...searchForm, tripType: 'multiCity'})}
+                                    onClick={() => setSearchForm({ ...searchForm, tripType: 'multiCity' })}
                                     className="border-gray-600"
                                 >
                                     Multi-City
@@ -296,7 +297,7 @@ const FlightsPage = () => {
                                         <Input
                                             placeholder="Departure city"
                                             value={searchForm.from}
-                                            onChange={(e) => setSearchForm({...searchForm, from: e.target.value})}
+                                            onChange={(e) => setSearchForm({ ...searchForm, from: e.target.value })}
                                             className="pl-10 bg-gray-800 border-gray-600"
                                         />
                                     </div>
@@ -309,7 +310,7 @@ const FlightsPage = () => {
                                         <Input
                                             placeholder="Destination city"
                                             value={searchForm.to}
-                                            onChange={(e) => setSearchForm({...searchForm, to: e.target.value})}
+                                            onChange={(e) => setSearchForm({ ...searchForm, to: e.target.value })}
                                             className="pl-10 bg-gray-800 border-gray-600"
                                         />
                                     </div>
@@ -322,7 +323,7 @@ const FlightsPage = () => {
                                         <Input
                                             type="date"
                                             value={searchForm.departure}
-                                            onChange={(e) => setSearchForm({...searchForm, departure: e.target.value})}
+                                            onChange={(e) => setSearchForm({ ...searchForm, departure: e.target.value })}
                                             className="pl-10 bg-gray-800 border-gray-600"
                                         />
                                     </div>
@@ -336,7 +337,7 @@ const FlightsPage = () => {
                                             <Input
                                                 type="date"
                                                 value={searchForm.return}
-                                                onChange={(e) => setSearchForm({...searchForm, return: e.target.value})}
+                                                onChange={(e) => setSearchForm({ ...searchForm, return: e.target.value })}
                                                 className="pl-10 bg-gray-800 border-gray-600"
                                             />
                                         </div>
@@ -352,7 +353,7 @@ const FlightsPage = () => {
                                         <Button
                                             variant="ghost"
                                             size="sm"
-                                            onClick={() => setSearchForm({...searchForm, passengers: Math.max(1, searchForm.passengers - 1)})}
+                                            onClick={() => setSearchForm({ ...searchForm, passengers: Math.max(1, searchForm.passengers - 1) })}
                                             className="h-10"
                                         >
                                             <Minus size={16} />
@@ -361,7 +362,7 @@ const FlightsPage = () => {
                                         <Button
                                             variant="ghost"
                                             size="sm"
-                                            onClick={() => setSearchForm({...searchForm, passengers: searchForm.passengers + 1})}
+                                            onClick={() => setSearchForm({ ...searchForm, passengers: searchForm.passengers + 1 })}
                                             className="h-10"
                                         >
                                             <Plus size={16} />
@@ -373,7 +374,7 @@ const FlightsPage = () => {
                                     <label className="text-sm text-gray-400">Class</label>
                                     <select
                                         value={searchForm.class}
-                                        onChange={(e) => setSearchForm({...searchForm, class: e.target.value})}
+                                        onChange={(e) => setSearchForm({ ...searchForm, class: e.target.value })}
                                         className="w-full bg-gray-800 border border-gray-600 rounded-md px-3 py-2 text-white"
                                     >
                                         <option value="economy">Economy</option>
@@ -420,7 +421,7 @@ const FlightsPage = () => {
                                                     min="0"
                                                     max="2000"
                                                     value={filters.maxPrice}
-                                                    onChange={(e) => setFilters({...filters, maxPrice: e.target.value})}
+                                                    onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
                                                     className="w-full"
                                                 />
                                                 <span className="text-sm text-white">${filters.maxPrice}</span>
@@ -430,7 +431,7 @@ const FlightsPage = () => {
                                                 <label className="text-sm text-gray-400">Stops</label>
                                                 <select
                                                     value={filters.stops}
-                                                    onChange={(e) => setFilters({...filters, stops: e.target.value})}
+                                                    onChange={(e) => setFilters({ ...filters, stops: e.target.value })}
                                                     className="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white text-sm"
                                                 >
                                                     <option value="any">Any</option>
@@ -445,7 +446,7 @@ const FlightsPage = () => {
                                                     <Button
                                                         variant={filters.wifi ? "default" : "outline"}
                                                         size="sm"
-                                                        onClick={() => setFilters({...filters, wifi: !filters.wifi})}
+                                                        onClick={() => setFilters({ ...filters, wifi: !filters.wifi })}
                                                         className="text-xs"
                                                     >
                                                         <Wifi size={14} className="mr-1" />
@@ -454,7 +455,7 @@ const FlightsPage = () => {
                                                     <Button
                                                         variant={filters.meals ? "default" : "outline"}
                                                         size="sm"
-                                                        onClick={() => setFilters({...filters, meals: !filters.meals})}
+                                                        onClick={() => setFilters({ ...filters, meals: !filters.meals })}
                                                         className="text-xs"
                                                     >
                                                         <Utensils size={14} className="mr-1" />
@@ -463,7 +464,7 @@ const FlightsPage = () => {
                                                     <Button
                                                         variant={filters.baggage ? "default" : "outline"}
                                                         size="sm"
-                                                        onClick={() => setFilters({...filters, baggage: !filters.baggage})}
+                                                        onClick={() => setFilters({ ...filters, baggage: !filters.baggage })}
                                                         className="text-xs"
                                                     >
                                                         <Luggage size={14} className="mr-1" />
@@ -509,7 +510,7 @@ const FlightsPage = () => {
                                 <h2 className="text-3xl font-bold text-white mb-2">Flight Results</h2>
                                 <p className="text-gray-400">Found {flights.length} flights • Sorted by AI recommendations</p>
                             </div>
-                            
+
                             {/* AI Insights */}
                             <Card className="bg-gradient-to-r from-blue-900/20 to-purple-900/20 border-blue-700/30 mt-4 md:mt-0">
                                 <CardContent className="p-4">
@@ -531,9 +532,8 @@ const FlightsPage = () => {
                             {flights.map((flight) => (
                                 <Card
                                     key={flight.id}
-                                    className={`flight-card bg-gray-900 border-gray-700 hover:border-blue-500 transition-all cursor-pointer ${
-                                        flight.isRecommended ? 'ring-2 ring-blue-500/50' : ''
-                                    }`}
+                                    className={`flight-card bg-gray-900 border-gray-700 hover:border-blue-500 transition-all cursor-pointer ${flight.isRecommended ? 'ring-2 ring-blue-500/50' : ''
+                                        }`}
                                     onClick={() => handleFlightSelect(flight)}
                                 >
                                     <CardContent className="p-6">
@@ -555,7 +555,7 @@ const FlightsPage = () => {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    
+
                                                     {flight.isRecommended && (
                                                         <Badge className="bg-gradient-to-r from-blue-600 to-purple-600">
                                                             <Bot size={12} className="mr-1" />
@@ -571,7 +571,7 @@ const FlightsPage = () => {
                                                         <div className="text-sm text-gray-400">{flight.from}</div>
                                                         <div className="text-xs text-gray-500">{flight.fromCity}</div>
                                                     </div>
-                                                    
+
                                                     <div className="flex-1 relative">
                                                         <div className="flex items-center justify-center">
                                                             <div className="h-px bg-gray-600 flex-1"></div>
@@ -585,7 +585,7 @@ const FlightsPage = () => {
                                                             <div className="h-px bg-gray-600 flex-1"></div>
                                                         </div>
                                                     </div>
-                                                    
+
                                                     <div className="text-center">
                                                         <div className="text-2xl font-bold text-white">{flight.arrival}</div>
                                                         <div className="text-sm text-gray-400">{flight.to}</div>
@@ -599,7 +599,7 @@ const FlightsPage = () => {
                                                         <Luggage size={14} />
                                                         <span>{flight.baggage}</span>
                                                     </div>
-                                                    
+
                                                     <div className="flex items-center space-x-2">
                                                         {flight.amenities.map((amenity, idx) => (
                                                             <div key={idx} className="flex items-center space-x-1">
@@ -608,7 +608,7 @@ const FlightsPage = () => {
                                                             </div>
                                                         ))}
                                                     </div>
-                                                    
+
                                                     <div className="flex items-center space-x-1">
                                                         <Leaf className="text-green-400" size={14} />
                                                         <span>{flight.carbonFootprint} tons CO₂</span>
@@ -646,21 +646,20 @@ const FlightsPage = () => {
                                                             ${flight.price}
                                                         </div>
                                                     </div>
-                                                    
+
                                                     <div className="flex items-center justify-end space-x-1 mt-1">
                                                         {flight.priceChange > 0 ? (
                                                             <TrendingUp className="text-red-400" size={14} />
                                                         ) : flight.priceChange < 0 ? (
                                                             <TrendingDown className="text-green-400" size={14} />
                                                         ) : null}
-                                                        <span className={`text-xs ${
-                                                            flight.priceChange > 0 ? 'text-red-400' : 
-                                                            flight.priceChange < 0 ? 'text-green-400' : 'text-gray-400'
-                                                        }`}>
+                                                        <span className={`text-xs ${flight.priceChange > 0 ? 'text-red-400' :
+                                                                flight.priceChange < 0 ? 'text-green-400' : 'text-gray-400'
+                                                            }`}>
                                                             {flight.priceChange > 0 ? '+' : ''}{flight.priceChange}%
                                                         </span>
                                                     </div>
-                                                    
+
                                                     <div className="text-xs text-gray-400 mt-1">per person</div>
                                                 </div>
 
@@ -668,7 +667,7 @@ const FlightsPage = () => {
                                                     <Button className="bg-gradient-to-r from-blue-600 to-purple-600">
                                                         Select Flight
                                                     </Button>
-                                                    
+
                                                     <div className="flex space-x-1">
                                                         <Button
                                                             variant="outline"
@@ -737,11 +736,10 @@ const FlightsPage = () => {
                         <CardContent className="space-y-4 max-h-96 overflow-y-auto">
                             {chatMessages.map((msg, idx) => (
                                 <div key={idx} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                    <div className={`max-w-[80%] p-3 rounded-lg ${
-                                        msg.type === 'user' 
-                                            ? 'bg-blue-600 text-white' 
+                                    <div className={`max-w-[80%] p-3 rounded-lg ${msg.type === 'user'
+                                            ? 'bg-blue-600 text-white'
                                             : 'bg-gray-800 text-gray-200'
-                                    }`}>
+                                        }`}>
                                         <p className="text-sm">{msg.message}</p>
                                     </div>
                                 </div>

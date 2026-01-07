@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
+// Data for pricing plans
 const pricingPlans = [
   {
     name: "Starter",
@@ -55,6 +56,7 @@ const pricingPlans = [
   },
 ];
 
+// Animation variants for container staggering
 const containerVariants = {
   hidden: { opacity: 0 },
   show: {
@@ -63,6 +65,7 @@ const containerVariants = {
   },
 };
 
+// Animation variants for individual pricing cards
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
   show: {
@@ -72,17 +75,18 @@ const itemVariants = {
   },
 };
 
+// PricingPage component renders the pricing section with monthly/annual toggle
 const PricingPage = ({ plans = pricingPlans, className }) => {
   const [isAnnual, setIsAnnual] = React.useState(true);
   return (
     // 1. ADDED bg-black and text-white here
     <div className={cn("relative w-full overflow-hidden bg-black text-white min-h-screen", className)}>
-      
+
       {/* Background elements */}
       <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
         <div className="bg-primary/20 absolute -right-[10%] -bottom-[10%] h-[40%] w-[40%] rounded-full blur-3xl" />
         <div className="bg-primary/20 absolute -bottom-[10%] -left-[10%] h-[40%] w-[40%] rounded-full blur-3xl" />
-        
+
         {/* Adjusted Title color for dark mode (subtle white) */}
         <h1 className="text-center text-[7rem] font-bold md:text-[10rem] text-white select-none">
           Pricing
@@ -118,6 +122,7 @@ const PricingPage = ({ plans = pricingPlans, className }) => {
   );
 };
 
+// Component to display the price based on billing cycle
 const PriceDisplay = ({ price, isAnnual, className }) => {
   return (
     <div className={cn("relative mb-8", className)}>
@@ -141,6 +146,7 @@ const PriceDisplay = ({ price, isAnnual, className }) => {
   );
 };
 
+// Component to list features of a pricing plan
 const PricingFeatures = ({ features, className }) => {
   return (
     <ul className={cn("relative mb-8 space-y-3", className)}>
@@ -157,6 +163,7 @@ const PricingFeatures = ({ features, className }) => {
   );
 };
 
+// Component representing a single pricing card
 const PricingCard = React.forwardRef(
   ({ plan, isAnnual, className, ...props }, ref) => {
     return (
@@ -166,7 +173,7 @@ const PricingCard = React.forwardRef(
           "relative flex flex-col justify-between overflow-hidden rounded-2xl p-6 w-full max-w-sm",
           // 5. UPDATED Card Styles for Dark Mode (Zinc-900 borders, glass effect)
           "border border-white/10",
-          "bg-zinc-900/50 backdrop-blur-md", 
+          "bg-zinc-900/50 backdrop-blur-md",
           "shadow-xl",
           "hover:border-white/20 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-300",
           className
@@ -188,7 +195,7 @@ const PricingCard = React.forwardRef(
         <div className="relative">
           <Button
             className={cn(
-              "w-full bg-white text-black hover:bg-zinc-200", 
+              "w-full bg-white text-black hover:bg-zinc-200",
               "shadow-lg shadow-white/10"
             )}
           >
@@ -201,6 +208,7 @@ const PricingCard = React.forwardRef(
 );
 PricingCard.displayName = "PricingCard";
 
+// Switch component to toggle between monthly and annual billing
 const BillingToggle = ({ isAnnual, onCheckedChange, className }) => {
   return (
     <motion.div

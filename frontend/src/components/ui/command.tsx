@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 
+// Command component for fuzzy search commands, built on cmdk
 function Command({
   className,
   ...props

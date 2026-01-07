@@ -9,7 +9,7 @@ axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 
 const AppContext = createContext();
 
-// Make sure this component is properly exported
+// AppProvider component to manage global state and authentication
 function AppProvider({ children }) {
     const currency = import.meta.env.VITE_CURRENCY;
     const navigate = useNavigate();
@@ -112,7 +112,7 @@ function AppProvider({ children }) {
     );
 }
 
-// Custom hook - make sure it's properly defined
+// Custom hook to access the AppContext
 function useAppContext() {
     const context = useContext(AppContext);
     if (!context) {

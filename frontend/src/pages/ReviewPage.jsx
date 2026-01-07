@@ -43,6 +43,7 @@ import Footer from '@/components/mvpblocks/footer-newsletter';
 // Register GSAP Plugins
 gsap.registerPlugin(ScrollTrigger);
 
+// AdventureNexusReviews component displays user reviews and testimonials from travelers
 const AdventureNexusReviews = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [selectedFilter, setSelectedFilter] = useState('all');
@@ -200,8 +201,8 @@ const AdventureNexusReviews = () => {
 
     const filteredReviews = reviews.filter(review => {
         const matchesSearch = review.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            review.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            review.trip.toLowerCase().includes(searchQuery.toLowerCase());
+            review.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            review.trip.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesCategory = selectedFilter === 'all' || review.category === selectedFilter;
         const matchesRating = selectedRating === 'all' || review.rating.toString() === selectedRating;
         return matchesSearch && matchesCategory && matchesRating;
@@ -219,7 +220,7 @@ const AdventureNexusReviews = () => {
 
     return (
         <div className="min-h-screen bg-black">
-            <NavBar/>
+            <NavBar />
 
             {/* Header Section */}
             <section ref={headerRef} className="py-12 bg-gradient-to-br from-gray-900 via-black to-gray-900">
@@ -588,7 +589,7 @@ const AdventureNexusReviews = () => {
                     </div>
                 </div>
             </footer> */}
-            <Footer/>
+            <Footer />
         </div>
     );
 };

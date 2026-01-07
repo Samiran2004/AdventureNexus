@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+// Table component for displaying tabular data
 function Table({ className, ...props }: React.ComponentProps<"table">) {
   return (
     <div

@@ -1,5 +1,6 @@
 import Earth from '@/components/ui/globe';
 
+// Globe2 component displays an interactive 3D globe using the Earth component
 export default function Globe2() {
   return (
     <>

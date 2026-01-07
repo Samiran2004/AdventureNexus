@@ -1,5 +1,6 @@
 import { TextReveal } from '@/components/ui/text-reveal';
 
+// TextRevealWords component demonstrates text reveal animation split by word
 export default function TextRevealWords() {
   return (
     <TextReveal

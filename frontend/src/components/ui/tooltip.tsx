@@ -16,6 +16,7 @@ function TooltipProvider({
   )
 }
 
+// Tooltip component built on Radix UI Tooltip
 function Tooltip({
   ...props
 }: React.ComponentProps<typeof TooltipPrimitive.Root>) {

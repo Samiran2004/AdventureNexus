@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 import "@fontsource/inter/400.css";
 import "@fontsource/inter/700.css";
 
+// TextRevealLetters component demonstrates text reveal animation split by letter
 export default function TextRevealLetters() {
   return (
     <TextReveal

@@ -8,6 +8,7 @@ import { Link, useMatch } from 'react-router-dom';
 const vite_backend_url = import.meta.env.VITE_BACKEND_URL
 // const vite_backend_url = "http://localhost:8000"
 
+// Footer navigation columns data
 const footerColumns = [
   {
     title: 'Explore',
@@ -41,6 +42,7 @@ const footerColumns = [
   },
 ];
 
+// Content for legal links
 const legalLinks = [
   { name: 'Terms of Service', href: '/terms' },
   { name: 'Privacy Policy', href: '/privacy' },
@@ -48,6 +50,7 @@ const legalLinks = [
   { name: 'Accessibility', href: '/accessibility' },
 ];
 
+// Social media links
 const socialIcons = [
   { icon: <Instagram className="h-5 w-5" />, href: 'https://instagram.com/adventurenexus', label: 'Instagram' },
   { icon: <Twitter className="h-5 w-5" />, href: 'https://twitter.com/adventurenexus', label: 'Twitter' },
@@ -55,10 +58,12 @@ const socialIcons = [
   { icon: <Youtube className="h-5 w-5" />, href: 'https://youtube.com/adventurenexus', label: 'YouTube' },
 ];
 
+// Footer component handles newsletter subscription and renders footer links
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   const [userMail, setUserMail] = useState("");
 
+  // Handle newsletter subscription
   const onClickSubscribeButton = async () => {
     console.log(userMail);
 

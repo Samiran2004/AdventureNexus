@@ -4,6 +4,7 @@ import * as ResizablePrimitive from "react-resizable-panels"
 
 import { cn } from "@/lib/utils"
 
+// ResizablePanelGroup component built on react-resizable-panels
 function ResizablePanelGroup({
   className,
   ...props

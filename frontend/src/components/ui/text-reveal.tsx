@@ -13,6 +13,7 @@ interface TextRevealProps {
   split?: 'word' | 'letter';
 }
 
+// TextReveal component allows text to be revealed character by character or word by word
 export const TextReveal = ({
   children,
   className,

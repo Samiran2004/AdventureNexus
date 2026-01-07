@@ -49,8 +49,9 @@ import NumberCounter from '@/components/NumberCounter';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// DestinationsPage component displays a grid of travel destinations
 const DestinationsPage = () => {
-    // Sample destinations data
+    // Sample destinations data used for rendering the cards
     const [destinations, setDestinations] = useState([
         {
             id: 1,
@@ -297,9 +298,9 @@ const DestinationsPage = () => {
     useEffect(() => {
         let filtered = destinations.filter(dest => {
             const matchesSearch = dest.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                dest.country.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                dest.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-            
+                dest.country.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                dest.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+
             const matchesCategory = selectedCategory === 'all' || dest.category === selectedCategory;
             const matchesContinent = selectedContinent === 'all' || dest.continent === selectedContinent;
             const matchesPrice = dest.price >= priceRange[0] && dest.price <= priceRange[10];
@@ -336,8 +337,8 @@ const DestinationsPage = () => {
 
     // Favorite functionality
     const toggleFavorite = (destinationId) => {
-        setFavorites(prev => 
-            prev.includes(destinationId) 
+        setFavorites(prev =>
+            prev.includes(destinationId)
                 ? prev.filter(id => id !== destinationId)
                 : [...prev, destinationId]
         );
@@ -351,15 +352,15 @@ const DestinationsPage = () => {
 
     const DestinationCard = ({ destination, className = "" }) => (
         <Card className={`destination-card group cursor-pointer hover:scale-105 transition-all duration-300 bg-gray-900 border-gray-700 overflow-hidden ${className}`}
-              onClick={() => setSelectedDestination(destination)}>
+            onClick={() => setSelectedDestination(destination)}>
             <div className="relative">
-                <img 
-                    src={destination.image} 
+                <img
+                    src={destination.image}
                     alt={destination.name}
                     className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                
+
                 {/* Badges */}
                 <div className="absolute top-3 left-3 flex gap-2">
                     {destination.trending && (
@@ -390,9 +391,9 @@ const DestinationsPage = () => {
                     }}
                     className="absolute top-3 right-3 p-2 bg-black/50 rounded-full hover:bg-black/70 transition-colors"
                 >
-                    <Heart 
-                        size={16} 
-                        className={`${favorites.includes(destination.id) ? 'fill-red-500 text-red-500' : 'text-white'}`} 
+                    <Heart
+                        size={16}
+                        className={`${favorites.includes(destination.id) ? 'fill-red-500 text-red-500' : 'text-white'}`}
                     />
                 </button>
 
@@ -520,7 +521,7 @@ const DestinationsPage = () => {
                             <ArrowRight className="ml-2" size={16} />
                         </Button>
                     </div>
-                    
+
                     <div className="grid md:grid-cols-3 gap-6">
                         {aiRecommendations.map(destination => (
                             <DestinationCard key={destination.id} destination={destination} />
@@ -564,7 +565,7 @@ const DestinationsPage = () => {
                                     <option value="reviews">Most Reviewed</option>
                                 </select>
                             </div>
-                            
+
                             <div className="flex border border-gray-700 rounded">
                                 <button
                                     onClick={() => setViewMode('grid')}
@@ -666,8 +667,8 @@ const DestinationsPage = () => {
                                 <Card key={destination.id} className="destination-card bg-gray-900 border-gray-700 overflow-hidden">
                                     <div className="flex">
                                         <div className="w-1/3">
-                                            <img 
-                                                src={destination.image} 
+                                            <img
+                                                src={destination.image}
                                                 alt={destination.name}
                                                 className="w-full h-48 object-cover"
                                             />
@@ -703,7 +704,7 @@ const DestinationsPage = () => {
                                                     <span>{destination.groupSize} people</span>
                                                     <span>{destination.bestTime}</span>
                                                 </div>
-                                                <Button 
+                                                <Button
                                                     size="sm"
                                                     className="bg-gradient-to-r from-blue-600 to-purple-600"
                                                     onClick={() => setSelectedDestination(destination)}
@@ -740,7 +741,7 @@ const DestinationsPage = () => {
                             <p className="text-gray-400 mt-2">Popular destinations this month</p>
                         </div>
                     </div>
-                    
+
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {trendingDestinations.map(destination => (
                             <DestinationCard key={destination.id} destination={destination} />
@@ -776,8 +777,8 @@ const DestinationsPage = () => {
                 <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
                     <div className="bg-gray-900 rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
                         <div className="relative">
-                            <img 
-                                src={selectedDestination.image} 
+                            <img
+                                src={selectedDestination.image}
                                 alt={selectedDestination.name}
                                 className="w-full h-64 object-cover rounded-t-xl"
                             />
@@ -799,12 +800,12 @@ const DestinationsPage = () => {
                                     <div className="text-gray-400">per person</div>
                                 </div>
                             </div>
-                            
+
                             <div className="grid md:grid-cols-2 gap-6 mb-6">
                                 <div>
                                     <h3 className="text-lg font-semibold text-white mb-2">Overview</h3>
                                     <p className="text-gray-300 mb-4">{selectedDestination.description}</p>
-                                    
+
                                     <h4 className="text-md font-semibold text-white mb-2">Highlights</h4>
                                     <ul className="space-y-1">
                                         {selectedDestination.highlights.map((highlight, index) => (
@@ -815,7 +816,7 @@ const DestinationsPage = () => {
                                         ))}
                                     </ul>
                                 </div>
-                                
+
                                 <div>
                                     <h3 className="text-lg font-semibold text-white mb-2">Trip Details</h3>
                                     <div className="space-y-2">
@@ -842,7 +843,7 @@ const DestinationsPage = () => {
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div className="flex gap-4">
                                 <Button className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600">
                                     <Plane className="mr-2" size={16} />

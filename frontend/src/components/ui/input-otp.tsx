@@ -6,6 +6,7 @@ import { MinusIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+// InputOTP component for one-time password inputs
 function InputOTP({
   className,
   containerClassName,

@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 
+// HowItWorks component explains the application's process to the user
 const HowItWorks = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [activeTab, setActiveTab] = useState('planning');
@@ -136,7 +137,7 @@ const HowItWorks = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white overflow-hidden">
-        <NavBar/>
+      <NavBar />
       {/* Hero Section */}
       <motion.section
         className="relative py-20 px-4 text-center"
@@ -278,11 +279,10 @@ const HowItWorks = () => {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-8 py-3 rounded-full font-semibold transition-all duration-300 ${
-                  activeTab === tab
+                className={`px-8 py-3 rounded-full font-semibold transition-all duration-300 ${activeTab === tab
                     ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white'
                     : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                }`}
+                  }`}
               >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
               </button>
@@ -426,7 +426,7 @@ const HowItWorks = () => {
           </motion.div>
         </div>
       </motion.section>
-      <Footer/>
+      <Footer />
     </div>
   );
 };

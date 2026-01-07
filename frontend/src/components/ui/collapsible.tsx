@@ -1,5 +1,6 @@
 import * as CollapsiblePrimitive from "@radix-ui/react-collapsible"
 
+// Collapsible component for expandable content
 function Collapsible({
   ...props
 }: React.ComponentProps<typeof CollapsiblePrimitive.Root>) {

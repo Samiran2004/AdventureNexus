@@ -19,6 +19,7 @@ const alertVariants = cva(
   }
 )
 
+// Alert component for displaying partial user feedback or system messages
 function Alert({
   className,
   variant,

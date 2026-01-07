@@ -14,6 +14,7 @@ const ToggleGroupContext = React.createContext<
   variant: "default",
 })
 
+// ToggleGroup component built on Radix UI Toggle Group
 function ToggleGroup({
   className,
   variant,

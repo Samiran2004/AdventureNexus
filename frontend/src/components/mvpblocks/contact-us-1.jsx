@@ -8,7 +8,9 @@ import Earth from "@/components/ui/globe";
 import { SparklesCore } from "@/components/ui/sparkles";
 import { Label } from "@/components/ui/label";
 import { Check, Loader2 } from "lucide-react";
+// ContactUs1 component renders a contact form with animations
 export default function ContactUs1() {
+  // State for form fields and submission status
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
@@ -16,13 +18,15 @@ export default function ContactUs1() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const formRef = useRef(null);
   const isInView = useInView(formRef, { once: true, amount: 0.3 });
+
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      // Perform form submission logic here
+      // Perform form submission logic here (currently just logging)
       console.log("Form submitted:", { name, email, message });
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate delay
       setName("");
       setEmail("");
       setMessage("");

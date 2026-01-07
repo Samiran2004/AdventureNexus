@@ -16,6 +16,7 @@ interface EarthProps {
   markerColor?: [number, number, number];
   glowColor?: [number, number, number];
 }
+// Earth component renders an interactive 3D globe using cobe
 const Earth: React.FC<EarthProps> = ({
   className,
   theta = 0.25,

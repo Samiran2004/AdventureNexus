@@ -5,6 +5,7 @@ import * as SwitchPrimitive from "@radix-ui/react-switch"
 
 import { cn } from "@/lib/utils"
 
+// Switch component built on Radix UI Switch
 function Switch({
   className,
   ...props

@@ -3,6 +3,7 @@ import * as AvatarPrimitive from "@radix-ui/react-avatar"
 
 import { cn } from "@/lib/utils"
 
+// Avatar component for displaying user profile images or fallbacks
 function Avatar({
   className,
   ...props
