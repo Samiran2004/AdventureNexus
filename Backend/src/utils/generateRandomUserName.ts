@@ -1,4 +1,4 @@
-import User from '../Database/models/userModel';
+import User from '../database/models/userModel';
 
 /**
  * Generates a unique username based on the user's full name.

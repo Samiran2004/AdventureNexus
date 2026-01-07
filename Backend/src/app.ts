@@ -14,7 +14,7 @@ dotenv.config();
 
 // Config & Database
 import { config } from './config/config'; // App configuration
-import connectDb from './Database/connectDb'; // DB connection function
+import connection from './database/connection'; // DB connection function
 import redis from './redis/client'; // Redis client
 import "./jobs/dailyTips.job"; // Cron job for daily tips
 import "./jobs/runner.job"; // Other background jobs
@@ -25,13 +25,13 @@ import sanitizeInput from './middlewares/sanitization';
 import { clerkMiddleware } from '@clerk/express';
 
 // Controllers
-import cleckWebhook from './controller/ClerkWebhook';
-import subscribeDailyMailController from './controller/newsSubscriptionController/subscribeDailyMail.controller';
+import cleckWebhook from './controllers/ClerkWebhook';
+import subscribeDailyMailController from './controllers/newsSubscriptionController/subscribeDailyMail.controller';
 
 // Routes
-import userRoute from './routes/userRoutes';
-import planningRoute from './routes/planningRoute';
-import hotelsRoute from './routes/hotelsRoute';
+import userRoute from './routes/user.routes';
+import planningRoute from './routes/planning.routes';
+import hotelsRoute from './routes/hotels.routes';
 
 // Swagger
 import swaggerJSDoc from 'swagger-jsdoc';
@@ -42,7 +42,7 @@ const app = express();
 
 // --- Database Connection ---
 (async () => {
-    await connectDb(process.env.DB_URI as string);
+    await connection(process.env.DB_URI as string);
 })();
 
 // --- Redis Connection Event ---

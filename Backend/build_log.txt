@@ -1,0 +1,10 @@
+src/controllers/ClerkWebhook.ts(5,13): error TS1005: '=' expected.
+src/controllers/ClerkWebhook.ts(5,25): error TS1005: ';' expected.
+src/controllers/newsSubscriptionController/subscribeDailyMail.controller.ts(5,13): error TS1005: '=' expected.
+src/controllers/newsSubscriptionController/subscribeDailyMail.controller.ts(5,25): error TS1005: ';' expected.
+src/controllers/usercontroller/registerController.ts(9,13): error TS1005: '=' expected.
+src/controllers/usercontroller/registerController.ts(9,25): error TS1005: ';' expected.
+src/jobs/dailyTips.job.ts(4,13): error TS1005: '=' expected.
+src/jobs/dailyTips.job.ts(4,25): error TS1005: ';' expected.
+src/utils/email-templates.ts(24,12): error TS1005: ',' expected.
+src/utils/email-templates.ts(24,23): error TS1005: ';' expected.
