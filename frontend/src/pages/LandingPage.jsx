@@ -28,6 +28,9 @@ import {
     Bot,
     Search,
     Navigation,
+    Sparkles,
+    Zap,
+    TrendingUp,
     Mail,
     Phone,
     MessageCircle
@@ -139,19 +142,19 @@ const AdventureNexusLanding = () => {
                 ease: "back.out(1.7)"
             });
 
-            // Pricing cards animation
-            gsap.from(".pricing-card", {
-                scrollTrigger: {
-                    trigger: pricingRef.current,
-                    start: "top 80%",
-                },
-                y: 80,
-                opacity: 0,
-                scale: 0.9,
-                duration: 1,
-                stagger: 0.15,
-                ease: "power2.out"
-            });
+            // Pricing cards animation - TEMPORARILY DISABLED
+            // gsap.from(".pricing-card", {
+            //     scrollTrigger: {
+            //         trigger: pricingRef.current,
+            //         start: "top 80%",
+            //     },
+            //     y: 80,
+            //     opacity: 0,
+            //     scale: 0.9,
+            //     duration: 1,
+            //     stagger: 0.15,
+            //     ease: "power2.out"
+            // });
 
             // CTA section animation
             gsap.from(ctaRef.current, {
@@ -215,15 +218,17 @@ const AdventureNexusLanding = () => {
                     <div className="grid lg:grid-cols-2 gap-12 items-center">
                         <div ref={heroContentRef} className="space-y-8">
                             <div className="space-y-4">
-                                <Badge className="bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20">
-                                    🤖 AI-Powered Travel Planning
+                                <Badge className="bg-gradient-to-r from-primary/10 to-secondary/10 text-primary border border-primary/30 hover:border-primary/50 transition-all duration-300 shadow-lg shadow-primary/20 flex items-center gap-2 px-4 py-2">
+                                    <Sparkles className="w-4 h-4 animate-pulse" />
+                                    AI-Powered Travel Planning
+                                    <Zap className="w-3 h-3" />
                                 </Badge>
-                                <h1 className="text-4xl md:text-6xl font-bold text-foreground leading-tight">
-                                    Your Perfect Trip
-                                    <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"> Planned by AI</span>
+                                <h1 className="text-4xl md:text-6xl font-bold text-foreground leading-tight font-outfit">
+                                    Your Dream Adventure
+                                    <span className="bg-gradient-to-r from-primary via-secondary to-purple-600 bg-clip-text text-transparent animate-gradient"> Starts Here</span>
                                 </h1>
                                 <p className="text-xl text-muted-foreground leading-relaxed">
-                                    Let our advanced AI create personalized itineraries, find the best flights and hotels, and discover hidden gems tailored to your preferences and budget.
+                                    Experience intelligent travel planning powered by AI. Get personalized itineraries, discover hidden destinations, and book the perfect trip—all in one place.
                                 </p>
                             </div>
 
@@ -258,15 +263,15 @@ const AdventureNexusLanding = () => {
                             <div className="flex items-center space-x-6 text-sm text-muted-foreground">
                                 <div className="flex items-center">
                                     <CheckCircle className="text-green-600 dark:text-green-400 mr-2" size={16} />
-                                    Free to use
+                                    Free to start
                                 </div>
                                 <div className="flex items-center">
                                     <CheckCircle className="text-green-600 dark:text-green-400 mr-2" size={16} />
-                                    Instant results
+                                    AI-powered insights
                                 </div>
                                 <div className="flex items-center">
                                     <CheckCircle className="text-green-600 dark:text-green-400 mr-2" size={16} />
-                                    No credit card required
+                                    No credit card needed
                                 </div>
                             </div>
                         </div>
@@ -345,9 +350,13 @@ const AdventureNexusLanding = () => {
             <section id="testimonials" ref={testimonialsRef} className="py-20 bg-background">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center space-y-4 mb-16">
-                        <h2 className="text-3xl md:text-4xl font-bold text-foreground">
-                            Travelers Love AdventureNexus
-                        </h2>
+                        <div className="flex items-center justify-center gap-2 mb-4">
+                            <Star className="w-8 h-8 text-primary fill-primary animate-pulse" />
+                            <h2 className="text-3xl md:text-4xl font-bold text-foreground font-outfit">
+                                Travelers Love AdventureNexus
+                            </h2>
+                            <Star className="w-8 h-8 text-secondary fill-secondary animate-pulse" />
+                        </div>
                         <p className="text-xl text-muted-foreground">
                             See what our community of adventurers is saying
                         </p>
@@ -377,20 +386,20 @@ const AdventureNexusLanding = () => {
                                 location: "Argentina, Barcelona, Canada"
                             }
                         ].map((testimonial, index) => (
-                            <Card key={index} className="testimonial-card bg-card border-border shadow-3d hover-lift glow-border">
+                            <Card key={index} className="testimonial-card bg-card border-border shadow-lg hover:shadow-xl transition-shadow duration-300">
                                 <CardContent className="p-6 space-y-4">
                                     <div className="flex text-yellow-500">
                                         {[...Array(testimonial.rating)].map((_, i) => (
-                                            <Star key={i} size={20} fill="currentColor" className="drop-shadow-lg" />
+                                            <Star key={i} size={20} fill="currentColor" />
                                         ))}
                                     </div>
                                     <p className="text-muted-foreground italic leading-relaxed">"{testimonial.content}"</p>
                                     <div className="border-t border-border pt-4 flex items-center space-x-3">
                                         <div className="relative">
-                                            <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-primary-foreground font-bold shadow-lg ring-2 ring-primary/20 ring-offset-2 ring-offset-background">
+                                            <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-primary-foreground font-bold shadow-lg">
                                                 {testimonial.name.split(' ').map(n => n[0]).join('')}
                                             </div>
-                                            <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-background shadow-sm"></div>
+                                            <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-background"></div>
                                         </div>
                                         <div>
                                             <div className="font-semibold text-card-foreground">{testimonial.name}</div>
@@ -408,9 +417,12 @@ const AdventureNexusLanding = () => {
             <section id="pricing" ref={pricingRef} className="py-20 bg-muted/30">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center space-y-4 mb-16">
-                        <h2 className="text-3xl md:text-4xl font-bold text-foreground">
-                            Simple, Transparent Pricing
-                        </h2>
+                        <div className="flex items-center justify-center gap-3 mb-4">
+                            <TrendingUp className="w-8 h-8 text-primary" />
+                            <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-foreground via-primary to-secondary bg-clip-text text-transparent font-outfit">
+                                Simple, Transparent Pricing
+                            </h2>
+                        </div>
                         <p className="text-xl text-muted-foreground">
                             Choose the plan that fits your travel style
                         </p>
@@ -448,11 +460,11 @@ const AdventureNexusLanding = () => {
                         ].map((plan, index) => (
                             <Card
                                 key={index}
-                                className={`pricing-card relative shadow-3d hover-lift glow-border transition-all duration-500 ${plan.popular ? 'border-primary glass-card scale-105' : 'border-border bg-card'
+                                className={`pricing-card relative bg-card shadow-xl hover:shadow-2xl transition-all duration-300 ${plan.popular ? 'border-primary scale-105' : 'border-border'
                                     }`}
                             >
                                 {plan.popular && (
-                                    <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-xl shadow-primary/50 animate-pulse">
+                                    <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-lg">
                                         Most Popular
                                     </Badge>
                                 )}
@@ -470,7 +482,7 @@ const AdventureNexusLanding = () => {
                                     <ul className="space-y-3">
                                         {plan.features.map((feature, featureIndex) => (
                                             <li key={featureIndex} className="flex items-center">
-                                                <CheckCircle className="text-green-600 dark:text-green-400 mr-3 drop-shadow-sm" size={16} />
+                                                <CheckCircle className="text-green-600 dark:text-green-400 mr-3" size={16} />
                                                 <span className="text-sm text-muted-foreground">{feature}</span>
                                             </li>
                                         ))}
@@ -496,11 +508,15 @@ const AdventureNexusLanding = () => {
             <section ref={ctaRef} className="py-20 bg-gradient-to-br from-primary via-secondary to-purple-800 text-white">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
                     <div className="max-w-3xl mx-auto space-y-8">
-                        <h2 className="text-3xl md:text-4xl font-bold">
-                            Ready to Plan Your Next Adventure?
-                        </h2>
+                        <div className="flex items-center justify-center gap-3 mb-4">
+                            <Sparkles className="w-10 h-10 animate-pulse" />
+                            <h2 className="text-3xl md:text-4xl font-bold font-outfit">
+                                Ready to Plan Your Next Adventure?
+                            </h2>
+                            <Sparkles className="w-10 h-10 animate-pulse" />
+                        </div>
                         <p className="text-xl opacity-90">
-                            Join thousands of travelers who trust our AI to create unforgettable journeys. Start planning your perfect trip today.
+                            Join thousands of adventurers who trust AdventureNexus to create unforgettable journeys. Your next great adventure is just a click away.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Button
@@ -527,15 +543,15 @@ const AdventureNexusLanding = () => {
                         <div className="flex items-center justify-center space-x-8 text-sm opacity-75">
                             <div className="flex items-center">
                                 <Award className="mr-2" size={16} />
-                                AI-powered recommendations
+                                Smart AI recommendations
                             </div>
                             <div className="flex items-center">
                                 <Clock className="mr-2" size={16} />
-                                Plans ready in seconds
+                                Instant trip planning
                             </div>
                             <div className="flex items-center">
                                 <Globe className="mr-2" size={16} />
-                                195+ countries covered
+                                195+ destinations worldwide
                             </div>
                         </div>
                     </div>

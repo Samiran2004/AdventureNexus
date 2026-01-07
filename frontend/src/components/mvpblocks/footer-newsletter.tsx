@@ -157,7 +157,7 @@ export default function Footer() {
           <div className="col-span-1 lg:col-span-2">
             <Link to="/" className="mb-6 flex items-center space-x-2 hover:scale-105 transition-transform duration-300">
               <AnimatedLogo size={48} />
-              <span className="text-2xl font-bold text-foreground">AdventureNexus</span>
+              <span className="text-2xl font-bold logo-shimmer font-outfit tracking-tight drop-shadow-xl">AdventureNexus</span>
             </Link>
             <p className="text-muted-foreground mb-6 max-w-md">
               AI-powered travel planning platform that creates personalized itineraries

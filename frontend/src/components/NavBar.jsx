@@ -97,7 +97,7 @@ function NavBar() {
                     <div className="flex justify-between items-center p-6 border-b border-border">
                         <div className="flex items-center space-x-2">
                             <AnimatedLogo size={40} />
-                            <span className="text-lg font-bold text-foreground">
+                            <span className="text-lg font-bold logo-shimmer font-outfit tracking-tight drop-shadow-lg">
                                 AdventureNexus
                             </span>
                         </div>
@@ -181,7 +181,7 @@ function NavBar() {
                             className="flex items-center space-x-2 hover:scale-105 transition-transform duration-300"
                         >
                             <AnimatedLogo size={48} />
-                            <span className="text-2xl font-bold text-foreground drop-shadow-md">
+                            <span className="text-2xl font-bold logo-shimmer font-outfit tracking-tight drop-shadow-2xl hover:scale-110 transition-all duration-300">
                                 AdventureNexus
                             </span>
                         </Link>
