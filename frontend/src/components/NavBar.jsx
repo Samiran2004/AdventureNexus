@@ -123,20 +123,44 @@ function NavBar() {
                         ))}
 
                         <div className="flex items-center justify-between px-4 py-3">
-                            <span className="text-muted-foreground">Theme</span>
-                            <Button
-                                variant="ghost"
-                                size="icon"
+                            <span className="text-muted-foreground font-semibold">Theme</span>
+                            <button
                                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                                className="h-9 w-9 p-0"
+                                className="relative w-16 h-8 rounded-full bg-gradient-to-r from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800 shadow-inner transition-shadow duration-300 hover:shadow-lg group"
                             >
-                                {theme === 'dark' ? (
-                                    <Sun className="h-5 w-5 text-yellow-500" />
-                                ) : (
-                                    <Moon className="h-5 w-5 text-slate-700" />
-                                )}
+                                {/* Track gradient overlay */}
+                                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400/20 via-purple-400/20 to-pink-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                                {/* Animated toggle ball */}
+                                <div
+                                    className="absolute top-0.5 w-7 h-7 rounded-full transition-all duration-300 ease-out will-change-transform"
+                                    style={{
+                                        transform: theme === 'dark' ? 'translateX(2px) scale(1)' : 'translateX(34px) scale(1)',
+                                        background: theme === 'dark'
+                                            ? 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)'
+                                            : 'linear-gradient(135deg, #fde047 0%, #facc15 50%, #fb923c 100%)',
+                                        boxShadow: theme === 'dark'
+                                            ? '0 2px 8px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.1)'
+                                            : '0 2px 8px rgba(251,191,36,0.4), inset 0 1px 2px rgba(255,255,255,0.5)'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.transform = theme === 'dark' ? 'translateX(2px) scale(1.1)' : 'translateX(34px) scale(1.1)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.transform = theme === 'dark' ? 'translateX(2px) scale(1)' : 'translateX(34px) scale(1)'}
+                                >
+                                    {/* Inner glow */}
+                                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/40 to-transparent pointer-events-none"></div>
+
+                                    {/* Icon */}
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        {theme === 'dark' ? (
+                                            <Moon className="h-4 w-4 text-slate-300 drop-shadow transition-transform duration-300 group-hover:rotate-[-20deg]" />
+                                        ) : (
+                                            <Sun className="h-4 w-4 text-white drop-shadow transition-transform duration-300 group-hover:rotate-180" />
+                                        )}
+                                    </div>
+                                </div>
+
                                 <span className="sr-only">Toggle theme</span>
-                            </Button>
+                            </button>
                         </div>
 
                         <div className="border-t border-border pt-4 mt-4 space-y-3">
@@ -202,17 +226,41 @@ function NavBar() {
 
                         {/* Desktop CTA Buttons */}
                         <div className="hidden md:flex items-center space-x-4">
-                            <Button
-                                variant="ghost"
+                            <button
                                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                                className="w-10 h-10 p-0 rounded-full flex items-center justify-center"
+                                className="relative w-16 h-8 rounded-full bg-gradient-to-r from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800 shadow-inner transition-shadow duration-300 hover:shadow-lg group"
                             >
-                                {theme === 'dark' ? (
-                                    <Sun className="h-5 w-5 text-yellow-500" />
-                                ) : (
-                                    <Moon className="h-5 w-5 text-slate-700" />
-                                )}
-                            </Button>
+                                {/* Track gradient overlay */}
+                                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400/20 via-purple-400/20 to-pink-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                                {/* Animated toggle ball */}
+                                <div
+                                    className="absolute top-0.5 w-7 h-7 rounded-full transition-all duration-300 ease-out will-change-transform"
+                                    style={{
+                                        transform: theme === 'dark' ? 'translateX(2px) scale(1)' : 'translateX(34px) scale(1)',
+                                        background: theme === 'dark'
+                                            ? 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)'
+                                            : 'linear-gradient(135deg, #fde047 0%, #facc15 50%, #fb923c 100%)',
+                                        boxShadow: theme === 'dark'
+                                            ? '0 2px 8px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.1)'
+                                            : '0 2px 8px rgba(251,191,36,0.4), inset 0 1px 2px rgba(255,255,255,0.5)'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.transform = theme === 'dark' ? 'translateX(2px) scale(1.1)' : 'translateX(34px) scale(1.1)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.transform = theme === 'dark' ? 'translateX(2px) scale(1)' : 'translateX(34px) scale(1)'}
+                                >
+                                    {/* Inner glow */}
+                                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/40 to-transparent pointer-events-none"></div>
+
+                                    {/* Icon */}
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        {theme === 'dark' ? (
+                                            <Moon className="h-4 w-4 text-slate-300 drop-shadow transition-transform duration-300 group-hover:rotate-[-20deg]" />
+                                        ) : (
+                                            <Sun className="h-4 w-4 text-white drop-shadow transition-transform duration-300 group-hover:rotate-180" />
+                                        )}
+                                    </div>
+                                </div>
+                            </button>
 
                             <SignedOut>
                                 <SignInButton mode="modal">
