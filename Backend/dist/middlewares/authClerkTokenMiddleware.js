@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.protect = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const http_status_codes_1 = require("http-status-codes");
-const userModel_1 = __importDefault(require("../Database/models/userModel"));
+const userModel_1 = __importDefault(require("../database/models/userModel"));
 const protect = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     console.log("🔐 Auth Middleware: Request received");

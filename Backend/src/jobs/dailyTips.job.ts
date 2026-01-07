@@ -1,10 +1,10 @@
 import cron from 'node-cron';
-import SubscribeMail from '../Database/models/subscribeMail.model';
+import SubscribeMail from '../database/models/subscribeMail.model';
 import chalk from 'chalk';
-import emailTemplates from '../utils/emailTemplate';
-import sendMail from '../service/mailService';
-import generateRecommendation from '../utils/Gemini Utils/generateRecommendation';
-import { generateDailyTips } from '../utils/Gemini Utils/generateDailyTips.prompt';
+import emailTemplates from '../utils/email-templates';
+import sendMail from '../services/mailService';
+import generateRecommendation from '../utils/gemini/generateRecommendation';
+import { generateDailyTips } from '../utils/gemini/generateDailyTips.prompt';
 
 /**
  * Cron Job to send Daily Travel Tips to subscribers.

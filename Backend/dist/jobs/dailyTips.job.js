@@ -13,12 +13,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const node_cron_1 = __importDefault(require("node-cron"));
-const subscribeMail_model_1 = __importDefault(require("../Database/models/subscribeMail.model"));
+const subscribeMail_model_1 = __importDefault(require("../database/models/subscribeMail.model"));
 const chalk_1 = __importDefault(require("chalk"));
-const emailTemplate_1 = __importDefault(require("../utils/emailTemplate"));
-const mailService_1 = __importDefault(require("../service/mailService"));
-const generateRecommendation_1 = __importDefault(require("../utils/Gemini Utils/generateRecommendation"));
-const generateDailyTips_prompt_1 = require("../utils/Gemini Utils/generateDailyTips.prompt");
+const email_templates_1 = __importDefault(require("../utils/email-templates"));
+const mailService_1 = __importDefault(require("../services/mailService"));
+const generateRecommendation_1 = __importDefault(require("../utils/gemini/generateRecommendation"));
+const generateDailyTips_prompt_1 = require("../utils/gemini/generateDailyTips.prompt");
 const sendAutoDailyTipsJob = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log(chalk_1.default.green('Running daily tips cron job at 6 AM...'));
@@ -31,7 +31,7 @@ const sendAutoDailyTipsJob = () => __awaiter(void 0, void 0, void 0, function* (
         const tipDataObject = JSON.parse(cleanString);
         for (const userMail of userMails) {
             console.log(userMail.mail);
-            let mailData = emailTemplate_1.default.sendDailyTipEmailData(userMail.mail, tipDataObject);
+            let mailData = email_templates_1.default.sendDailyTipEmailData(userMail.mail, tipDataObject);
             yield (0, mailService_1.default)(mailData, (mailError) => {
                 if (mailError)
                     console.error("Mail sending failed for user:", userMail.mail);

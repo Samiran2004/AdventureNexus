@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import JWT from "jsonwebtoken";
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
-import User, { IUser } from "../Database/models/userModel";
+import User, { IUser } from "../database/models/userModel";
 
 // Interface for Clerk JWT Payload
 interface ClerkJWTPayload {
