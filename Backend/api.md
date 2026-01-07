@@ -1,20 +1,21 @@
-# AdventureNexus API Documentation
+# 🚀 AdventureNexus API Documentation
 
-## Introduction
-Welcome to the AdventureNexus API documentation. This API powers the AdventureNexus backend, providing services for user management, travel planning, hotel management, and email subscriptions.
+## 📖 Introduction
+Welcome to the **AdventureNexus** API documentation. This API powers the AdventureNexus backend, providing services for user management, travel planning, hotel management, and email subscriptions.
 
-## Base URL
+## 🔗 Base URL
 All API requests should be made to:
 `http://<domain>/api/v1` (unless otherwise specified, e.g., Webhooks)
 
-## Authentication
+## 🔐 Authentication
 Authentication is handled via **Clerk**.
 - **Header:** `Authorization: Bearer <token>`
 - **Middleware:** `protect` (verifies the Clerk session token)
 
-Some endpoints checks `req.auth().userId` manually even if the middleware is not explicitly present in the route definition.
+> [!NOTE]
+> Some endpoints check `req.auth().userId` manually even if the middleware is not explicitly present in the route definition.
 
-## Error Handling
+## ⚠️ Error Handling
 The API generally returns errors in the following format:
 ```json
 {
@@ -25,15 +26,17 @@ The API generally returns errors in the following format:
 
 ---
 
-## 1. User Routes
+## 1. 👤 User Routes
 **Base Path:** `/users`
+
+![User System Architecture](./Images/UserRouter%20HLD%20Post.png)
 
 ### Get User Profile
 Retrieves the profile details of the currently authenticated user.
 
 - **Endpoint:** `/profile`
-- **Method:** `GET`
-- **Auth Required:** `Yes`
+- **Method:** ![GET](https://img.shields.io/badge/GET-blue?style=for-the-badge&logo=appveyor)
+- **Auth Required:** ![Yes](https://img.shields.io/badge/Auth-Required-red?style=flat-square)
 - **Success Response:**
   - **Code:** `200 OK`
   - **Content:**
@@ -58,15 +61,17 @@ Retrieves the profile details of the currently authenticated user.
 
 ---
 
-## 2. Planning Routes
+## 2. ✈️ Planning Routes
 **Base Path:** `/plans`
+
+![Planning System Architecture](./Images/PlanningRouter%20System%20Architecture.png)
 
 ### Search & Generate Destination Plan
 Generates a detailed travel plan using AI based on user input.
 
 - **Endpoint:** `/search/destination`
-- **Method:** `POST`
-- **Auth Required:** `Yes` (Checks Clerk User ID)
+- **Method:** ![POST](https://img.shields.io/badge/POST-success?style=for-the-badge&logo=appveyor)
+- **Auth Required:** ![Yes](https://img.shields.io/badge/Auth-Required-red?style=flat-square)
 - **Request Body:**
   ```json
   {
@@ -115,15 +120,15 @@ Generates a detailed travel plan using AI based on user input.
 
 ---
 
-## 3. Hotel Routes
+## 3. 🏨 Hotel Routes
 **Base Path:** `/hotels`
 
 ### Create/Seed Hotels
 Triggers a seeding script to populate the database with initial hotel data. This is typically an administrative or development endpoint.
 
 - **Endpoint:** `/create`
-- **Method:** `GET`
-- **Auth Required:** `No`
+- **Method:** ![GET](https://img.shields.io/badge/GET-blue?style=for-the-badge&logo=appveyor)
+- **Auth Required:** ![No](https://img.shields.io/badge/Auth-None-green?style=flat-square)
 - **Success Response:**
   - **Code:** `200 OK` (Implicit, logs to console)
 - **Error Responses:**
@@ -131,15 +136,15 @@ Triggers a seeding script to populate the database with initial hotel data. This
 
 ---
 
-## 4. Mail Routes
+## 4. 📧 Mail Routes
 **Base Path:** `/mail`
 
 ### Subscribe to Daily Tips
 Subscribes an email address to receive daily travel tips.
 
 - **Endpoint:** `/subscribe`
-- **Method:** `POST`
-- **Auth Required:** `No`
+- **Method:** ![POST](https://img.shields.io/badge/POST-success?style=for-the-badge&logo=appveyor)
+- **Auth Required:** ![No](https://img.shields.io/badge/Auth-None-green?style=flat-square)
 - **Request Body:**
   ```json
   {
@@ -168,15 +173,15 @@ Subscribes an email address to receive daily travel tips.
 
 ---
 
-## 5. Webhooks
+## 5. 🪝 Webhooks
 **Base Path:** `/api/clerk`
 
 ### Clerk Webhook
 Receives events from Clerk to synchronize user data with the local database.
 
 - **Endpoint:** `/`
-- **Method:** `POST`
-- **Auth Required:** `Signature Verification` (svix headers)
+- **Method:** ![POST](https://img.shields.io/badge/POST-success?style=for-the-badge&logo=appveyor)
+- **Auth Required:** ![Signature](https://img.shields.io/badge/Auth-Signature-orange?style=flat-square)
 - **Supported Events:**
   - `user.created`: Creates new user.
   - `user.updated`: Updates user details.
