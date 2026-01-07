@@ -126,6 +126,15 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  ::selection {
+    background: rgba(14, 165, 233, 0.3);
+    color: white;
+  }
 }
 
 @layer utilities {
@@ -294,5 +303,312 @@
 
   .animate-spin-slow {
     animation: spin-slow 8s linear infinite;
+  }
+
+  /* 3D Card Effects */
+  .perspective-container {
+    perspective: 1000px;
+  }
+
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+
+  .card-3d {
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card-3d:hover {
+    transform: translateZ(20px);
+  }
+
+  /* Tilt Hover Effect */
+  .tilt-hover {
+    transform-style: preserve-3d;
+    transition: transform 0.3s ease-out;
+  }
+
+  /* Depth Shadow - Multi-layer 3D shadows */
+  .depth-shadow {
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.05),
+      0 4px 8px rgba(0, 0, 0, 0.08),
+      0 8px 16px rgba(0, 0, 0, 0.1),
+      0 16px 32px rgba(0, 0, 0, 0.12),
+      0 0 60px rgba(14, 165, 233, 0.1);
+  }
+
+  .depth-shadow-hover:hover {
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.06),
+      0 8px 16px rgba(0, 0, 0, 0.1),
+      0 16px 32px rgba(0, 0, 0, 0.12),
+      0 32px 64px rgba(0, 0, 0, 0.15),
+      0 0 80px rgba(14, 165, 233, 0.2);
+  }
+
+  /* Parallax Layers */
+  .parallax-layer {
+    will-change: transform;
+  }
+
+  /* 3D Float Animation */
+  @keyframes float-3d {
+
+    0%,
+    100% {
+      transform: translateY(0px) translateZ(0px);
+    }
+
+    50% {
+      transform: translateY(-20px) translateZ(10px);
+    }
+  }
+
+  .float-3d {
+    animation: float-3d 4s ease-in-out infinite;
+  }
+
+  /* 3D Rotation Animation */
+  @keyframes rotate-3d {
+    0% {
+      transform: rotateY(0deg) rotateX(0deg);
+    }
+
+    50% {
+      transform: rotateY(180deg) rotateX(10deg);
+    }
+
+    100% {
+      transform: rotateY(360deg) rotateX(0deg);
+    }
+  }
+
+  .rotate-3d {
+    animation: rotate-3d 10s linear infinite;
+    transform-style: preserve-3d;
+  }
+
+  /* Scale with Depth */
+  .scale-depth {
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .scale-depth:hover {
+    transform: scale(1.05) translateZ(30px);
+  }
+
+  /* Gradient Mesh Background */
+  @keyframes gradient-mesh {
+
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  .gradient-mesh {
+    background: linear-gradient(135deg,
+        rgba(14, 165, 233, 0.15) 0%,
+        rgba(139, 92, 246, 0.15) 25%,
+        rgba(236, 72, 153, 0.15) 50%,
+        rgba(251, 146, 60, 0.15) 75%,
+        rgba(14, 165, 233, 0.15) 100%);
+    background-size: 400% 400%;
+    animation: gradient-mesh 15s ease infinite;
+  }
+
+  /* Enhanced Glassmorphism with 3D */
+  .glass-3d {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+      0 8px 32px 0 rgba(0, 0, 0, 0.37),
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .dark .glass-3d {
+    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  /* 3D Glow Effect */
+  .glow-3d {
+    position: relative;
+    box-shadow:
+      0 0 20px rgba(14, 165, 233, 0.3),
+      0 0 40px rgba(139, 92, 246, 0.2),
+      0 0 60px rgba(236, 72, 153, 0.1);
+  }
+
+  .glow-3d:hover {
+    box-shadow:
+      0 0 30px rgba(14, 165, 233, 0.5),
+      0 0 60px rgba(139, 92, 246, 0.3),
+      0 0 90px rgba(236, 72, 153, 0.2);
+  }
+
+  /* 3D Shimmer Animation */
+  @keyframes shimmer-3d {
+    0% {
+      background-position: -200% center;
+      transform: translateZ(0px);
+    }
+
+    50% {
+      transform: translateZ(5px);
+    }
+
+    100% {
+      background-position: 200% center;
+      transform: translateZ(0px);
+    }
+  }
+
+  .shimmer-3d {
+    background: linear-gradient(90deg,
+        rgba(14, 165, 233, 0.1) 0%,
+        rgba(139, 92, 246, 0.3) 25%,
+        rgba(255, 255, 255, 0.5) 50%,
+        rgba(139, 92, 246, 0.3) 75%,
+        rgba(14, 165, 233, 0.1) 100%);
+    background-size: 200% auto;
+    animation: shimmer-3d 3s linear infinite;
+  }
+
+  /* Card Flip Animation */
+  .flip-card {
+    perspective: 1000px;
+  }
+
+  .flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+  }
+
+  .flip-card:hover .flip-card-inner {
+    transform: rotateY(180deg);
+  }
+
+  .flip-card-front,
+  .flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+  }
+
+  .flip-card-back {
+    transform: rotateY(180deg);
+  }
+
+  /* Pulse 3D Effect */
+  @keyframes pulse-3d {
+
+    0%,
+    100% {
+      transform: scale(1) translateZ(0);
+      opacity: 1;
+    }
+
+    50% {
+      transform: scale(1.05) translateZ(10px);
+      opacity: 0.8;
+    }
+  }
+
+  .pulse-3d {
+    animation: pulse-3d 2s ease-in-out infinite;
+  }
+
+  /* Smooth Scroll Reveal */
+  .scroll-reveal {
+    opacity: 0;
+    transform: translateY(50px) translateZ(-20px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .scroll-reveal.revealed {
+    opacity: 1;
+    transform: translateY(0) translateZ(0);
+  }
+
+  /* Layered Card Effect */
+  .layered-card {
+    position: relative;
+  }
+
+  .layered-card::before,
+  .layered-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: inherit;
+    z-index: -1;
+  }
+
+  .layered-card::before {
+    transform: translateZ(-10px) scale(0.95);
+    opacity: 0.5;
+  }
+
+  .layered-card::after {
+    transform: translateZ(-20px) scale(0.9);
+    opacity: 0.3;
+  }
+
+  /* Icon 3D Rotation */
+  @keyframes icon-rotate-3d {
+    0% {
+      transform: rotateY(0deg) rotateX(0deg);
+    }
+
+    25% {
+      transform: rotateY(90deg) rotateX(10deg);
+    }
+
+    50% {
+      transform: rotateY(180deg) rotateX(0deg);
+    }
+
+    75% {
+      transform: rotateY(270deg) rotateX(-10deg);
+    }
+
+    100% {
+      transform: rotateY(360deg) rotateX(0deg);
+    }
+  }
+
+  .icon-rotate-3d {
+    animation: icon-rotate-3d 8s ease-in-out infinite;
+    transform-style: preserve-3d;
+  }
+
+  /* Bounce 3D */
+  @keyframes bounce-3d {
+
+    0%,
+    100% {
+      transform: translateY(0) translateZ(0);
+    }
+
+    50% {
+      transform: translateY(-15px) translateZ(15px);
+    }
+  }
+
+  .bounce-3d {
+    animation: bounce-3d 2s ease-in-out infinite;
   }
 }
