@@ -1,3 +1,7 @@
+/**
+ * Generates an AI Prompt to find an official website URL for a hotel.
+ * This URL is meant to be used (or scrapped) to find images, though the prompt asks for 'official_url'.
+ */
 export const generateHotelImage = (data) => {
     return `
     Act as a web search expert. Your task is to find the official website URL for the hotel specified below.

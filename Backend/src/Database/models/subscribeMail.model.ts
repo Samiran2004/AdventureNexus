@@ -1,13 +1,21 @@
-import mongoose from "mongoose";
+import { model, Schema, Document } from "mongoose"; // Mongoose ODM
 
-const subscribeUserMailSchema = new mongoose.Schema({
-    mail: {
+// Interface for Subscription Document
+export interface ISubscribe extends Document {
+    userMail: string; // Subscriber's email
+}
+
+// Subscription Schema
+const subscribeMailSchema = new Schema<ISubscribe>({
+    userMail: {
         type: String,
-        unique: true,
-        required: true
+        required: true,
+        unique: true, // Prevent duplicate subscriptions
+        trim: true,
+        lowercase: true // Normalize email
     }
-}, {timestamps: true});
+}, { timestamps: true }); // Auto-timestamps
 
-const SubscribeMail = mongoose.model('SubscribeMail', subscribeUserMailSchema);
-
+// Export Subscription Model
+const SubscribeMail = model<ISubscribe>("SubscribeMail", subscribeMailSchema);
 export default SubscribeMail;

@@ -9,6 +9,11 @@ export interface SearchNewDestinationPromptData {
     travel_style?: string;
 }
 
+/**
+ * Generates a highly detailed AI prompt for creating a custom Travel Plan.
+ * Includes specific instructions for AI to generate dynamic image URLs via Pollinations.ai.
+ * Formats the output as a strict JSON object with detailed trip breakdown.
+ */
 const generateNewSearchDestinationPrompt = (data: SearchNewDestinationPromptData): string => {
     const activitiesList = data.activities && data.activities.length > 0
         ? data.activities.join(", ")

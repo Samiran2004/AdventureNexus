@@ -1,26 +1,33 @@
 import Joi from 'joi';
 
-// Define the validation schema for travel recommendations
-export const recommendationValidation = Joi.object({
-    day: Joi.number()
-        .integer() // Ensures the number is an integer
-        .positive() // Ensures the number is positive
-        .required(), // day is required
+/**
+ * Joi Schema for Trip Recommendation Search.
+ * Validates travel plan parameters like destination, dates, budget, etc.
+ */
+const recommendationsJoiSchema = Joi.object({
+    // Destination (required string)
+    to: Joi.string().required(),
 
-    budget: Joi.number()
-        .positive() // Ensures the budget is a positive number
-        .required(), // budget is required
+    // Origin (required string)
+    from: Joi.string().required(),
 
-    destination: Joi.string()
-        .min(1) // Ensures at least one character
-        .required(), // destination is required
+    // Travel Date (required string, format unspecified here)
+    date: Joi.string().required(),
 
-    date: Joi.string()
-        .isoDate() // Validates that the string is an ISO 8601 date format (YYYY-MM-DD)
-        .required(), // date is required
+    // Number of Travelers (required number)
+    travelers: Joi.number().required(),
 
-    totalPeople: Joi.number()
-        .integer() // Ensures the number is an integer
-        .positive() // Ensures the number is positive
-        .required(), // totalPeople is required
+    // Budget per person/total (required number)
+    budget: Joi.number().required(),
+
+    // Custom Validation Messages
+    messages: {
+        'string.base': `Field should be a type of 'text'`,
+        'string.empty': `Field cannot be an empty field`,
+        'any.required': `Field is a required field`,
+        'number.base': `Field should be a type of 'number'`,
+        'number.empty': `Field cannot be an empty field`,
+    }
 });
+
+export default recommendationsJoiSchema;

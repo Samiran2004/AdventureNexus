@@ -1,7 +1,12 @@
 // utils/swaggerOptions.ts
+
+/**
+ * Swagger (OpenAPI) Configuration Options.
+ * Defines the API documentation structure, servers, security schemes, and reusable schemas.
+ */
 export const swaggerOptions = {
     swaggerDefinition: {
-        openapi: '3.0.0',
+        openapi: '3.0.0', // OpenAPI version
         info: {
             title: 'AdventureNexus API',
             version: '1.0.0',
@@ -11,6 +16,7 @@ export const swaggerOptions = {
                 email: 'support@adventurenexus.com'
             }
         },
+        // List of API servers (Local, Production, etc.)
         servers: [
             {
                 url: 'http://localhost:8000',
@@ -22,6 +28,7 @@ export const swaggerOptions = {
             },
         ],
         components: {
+            // Security Definitions (JWT Bearer & Clerk)
             securitySchemes: {
                 bearerAuth: {
                     type: 'http',
@@ -35,6 +42,7 @@ export const swaggerOptions = {
                     description: 'Clerk Short-lived Session Token'
                 }
             },
+            // Reusable Data Models (Schemas)
             schemas: {
                 User: {
                     type: 'object',
@@ -141,5 +149,6 @@ export const swaggerOptions = {
             ],
         },
     },
+    // Files containing OpenAPI annotations
     apis: ['src/routes/*.ts', 'src/app.ts', 'dist/app.js', 'dist/routes/*.js', 'src/docs/swagger/*.ts'],
 };

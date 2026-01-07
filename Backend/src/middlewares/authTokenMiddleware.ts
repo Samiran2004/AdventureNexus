@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import User, { IUser } from '../Database/models/userModel';
 import { config } from '../config/config';
 
+// Interface for JWT Payload
 interface UserPayload extends JwtPayload {
     fullname: string;
     email: string;
@@ -14,16 +15,23 @@ interface UserPayload extends JwtPayload {
     currency: string;
 }
 
+// Extend Request interface to include user
 interface CustomRequest extends Request {
     user?: UserPayload;
 }
 
+/**
+ * Legacy Authentication Middleware.
+ * Uses cookies ('accessToken') to verify user identity.
+ * Handles access token verification and refresh token rotation.
+ */
 export default async function authTokenMiddleware(
     req: Request,
     res: Response,
     next: NextFunction
 ): Promise<void> {
     try {
+        // Retrieve access token from cookies
         const accessToken: string = req.cookies['accessToken'];
 
         if (!accessToken) {
@@ -34,13 +42,16 @@ export default async function authTokenMiddleware(
             return;
         }
 
+        // Verify Access Token
         jwt.verify(
             accessToken,
             config.JWT_ACCESS_SECRET as string,
             async (err, user) => {
                 if (err) {
+                    // Handle Token Expiration
                     if (err.name === 'TokenExpiredError') {
                         try {
+                            // Find user to check refresh token
                             const userData: IUser | null = await User.findById(
                                 (user as UserPayload)?._id
                             );
@@ -53,6 +64,7 @@ export default async function authTokenMiddleware(
                                 return;
                             }
 
+                            // Verify Refresh Token
                             jwt.verify(
                                 userData.refreshtoken,
                                 config.JWT_REFRESH_SECRET as string,
@@ -66,6 +78,7 @@ export default async function authTokenMiddleware(
                                         return;
                                     }
 
+                                    // Create new Access Token
                                     const newUserPayload: UserPayload = {
                                         fullname: userData.fullname,
                                         email: userData.email,
@@ -86,6 +99,7 @@ export default async function authTokenMiddleware(
                                         }
                                     );
 
+                                    // Set new cookie
                                     res.cookie('accessToken', newAccessToken, {
                                         httpOnly: true,
                                         // secure: process.env.NODE_ENV === 'production',
@@ -110,6 +124,7 @@ export default async function authTokenMiddleware(
                         });
                     }
                 } else {
+                    // Token is valid
                     (req as CustomRequest).user = user as UserPayload;
                     next();
                 }

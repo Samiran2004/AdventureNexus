@@ -28,7 +28,7 @@ const searchNewDestination = async (req: Request, res: Response) => {
       travel_style,
     } = req.body;
 
-    // 🔐 Validate required fields
+    // 🔐 1. Validate required fields
     if (!to || !from || !date || !travelers || !budget) {
       winstonLogger.error(`URL: ${fullUrl} - Missing required fields`);
       return res.status(StatusCodes.BAD_REQUEST).json({
@@ -37,7 +37,7 @@ const searchNewDestination = async (req: Request, res: Response) => {
       });
     }
 
-    // ✅ GET CLERK USER ID (CORRECT WAY)
+    // ✅ 2. GET CLERK USER ID
     const clerkUserId = req.auth()?.userId;
 
     if (!clerkUserId) {
@@ -47,7 +47,7 @@ const searchNewDestination = async (req: Request, res: Response) => {
       });
     }
 
-    // 🧠 Generate AI prompt
+    // 🧠 3. Generate AI prompt with user preferences
     const promptData: SearchNewDestinationPromptData = {
       to,
       from,
@@ -60,15 +60,17 @@ const searchNewDestination = async (req: Request, res: Response) => {
     };
 
     const prompt = generateNewSearchDestinationPrompt(promptData);
+
+    // 4. Call Groq AI Service
     const generatedData = await groqGeneratedData(prompt);
 
-    // 🧼 Clean AI response
+    // 🧼 5. Clean and Parse AI response (Extract JSON object from string)
     const startIndex = generatedData.indexOf("{");
     const endIndex = generatedData.lastIndexOf("}");
     const cleanString = generatedData.substring(startIndex, endIndex + 1);
     const aiResponse = JSON.parse(cleanString);
 
-    // 🧩 MERGE USER INPUT + AI DATA
+    // 🧩 6. Construct Plan Data Object (Merge Input + AI Output)
     const planData: IPlan = {
       clerkUserId,
       to,
@@ -96,7 +98,7 @@ const searchNewDestination = async (req: Request, res: Response) => {
       local_tips: aiResponse.local_tips,
     };
 
-    // 🔎 CHECK IF PLAN ALREADY EXISTS
+    // 🔎 7. Check for Duplicate Plans (Prevent regenerating identical trips)
     const existingPlan = await Plan.findOne({
       clerkUserId,
       to,
@@ -114,7 +116,7 @@ const searchNewDestination = async (req: Request, res: Response) => {
       });
     }
 
-    // Find user
+    // 8. Find User in DB to link plan
     const user = await User.findOne({ clerkUserId });
 
     if (!user) {
@@ -127,11 +129,11 @@ const searchNewDestination = async (req: Request, res: Response) => {
 
     planData.userId = user._id;
 
-    // 💾 SAVE PLAN
+    // 💾 9. Save New Plan to Database
     const newPlan = new Plan(planData);
     await newPlan.save();
 
-    // ✅ SUCCESS RESPONSE
+    // ✅ 10. Send Success Response
     winstonLogger.info(`URL: ${fullUrl} - Plan generated successfully`);
     return res.status(StatusCodes.OK).json({
       status: "Ok",

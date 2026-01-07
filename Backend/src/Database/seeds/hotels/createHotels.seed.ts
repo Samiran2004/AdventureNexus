@@ -5,11 +5,16 @@ import { generateHotelSearchPrompt } from "../../../utils/Gemini Utils/createHot
 import generateRecommendation from "../../../utils/Gemini Utils/generateRecommendation";
 import { generateHotelImage } from "../../../utils/Gemini Utils/generateHotelsImagePrompt";
 
+/**
+ * Seed Function to generate and return Hotel Recommendations.
+ * Uses AI to search for hotels and generate hotel images based on criteria.
+ * Note: This 'seed' seems to behave more like a service/controller function returning data, rather than seeding DB directly?
+ */
 const createHotels = async (req, res: Response) => {
     try {
         console.log("Create Hotels seed...");
 
-        // Fetch request body...
+        // 1. Fetch request body parameters
         const {
             destination,
             duration,
@@ -17,6 +22,7 @@ const createHotels = async (req, res: Response) => {
             currency_code
         } = req.body;
 
+        // 2. Validate Required Fields
         if (!destination || !duration || !budget || !currency_code) {
             console.log(chalk.red("All fields are required..."));
             return res.status(StatusCodes.BAD_REQUEST).json({
@@ -25,7 +31,7 @@ const createHotels = async (req, res: Response) => {
             });
         }
 
-        // Create payload...
+        // 3. Prepare Payload for AI Prompt
         const dataPayload = {
             destination,
             duration,
@@ -33,31 +39,35 @@ const createHotels = async (req, res: Response) => {
             currency_code
         }
 
-        // Generate Prompt...
+        // 4. Generate AI Prompt for Hotel Search
         let prompt = await generateHotelSearchPrompt(dataPayload);
         // console.log(chalk.bgGreen(prompt));
 
-        // Generate Data...
+        // 5. Call AI Service to get Hotel Data
         const generatedData = await generateRecommendation(prompt);
 
+        // 6. Clean and Parse AI Response
         const data = JSON.parse(generatedData.replace(/```json|```/g, '').trim());
 
-        // Create payload for generating hotel's image..
+        // 7. Prepare Payload for Hotel Image Generation (for the first hotel?)
         const imagePayload = {
             hotelName: data[0].hotel_name,
             location: data[0].location_description
         }
 
-        // Generate prompt for hotel's image...
+        // 8. Generate AI Prompt for Hotel Image
         prompt = await generateHotelImage(imagePayload);
 
+        // 9. Call AI Service to get Image Data
         const hotelImageData = await generateRecommendation(prompt);
         const imageData = JSON.parse(hotelImageData.replace(/```json|```/g, '').trim());
 
+        // 10. Assign Image to All Hotels (Currently assigning same image to all?)
         for (const d of data) {
             d.image = imageData
         }
 
+        // 11. Return Generated Data
         return res.status(StatusCodes.OK).json({
             status: 'Ok',
             data: data

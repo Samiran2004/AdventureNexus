@@ -1,5 +1,9 @@
 import { IHotelContact, IHotelLocation, IHotelReview, IHotelRoom } from "./locationDTO"
 
+/**
+ * Interface representing the detailed structure of a Hotel entity.
+ * Includes relationships to location, contact, rooms, and reviews.
+ */
 export interface IHotel {
     hotel_name: string,
     description: string,
@@ -16,6 +20,10 @@ export interface IHotel {
     reviews: IHotelReview[]
 }
 
+/**
+ * Enum for Hotel Categories.
+ * Defines standard types of accommodation.
+ */
 enum Category {
     Hotel = "Hotel",
     Resort = "Resort",

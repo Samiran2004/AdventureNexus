@@ -1,7 +1,12 @@
-import mongoose, { Schema } from "mongoose";
-import { IHotel } from "../DTOs/HotelsDTO";
+import mongoose, { Schema } from "mongoose"; // Mongoose ODM
+import { IHotel } from "../DTOs/HotelsDTO"; // Hotel Interface
 
+/**
+ * Hotel Schema Definition.
+ * Represents a hotel entity with details, location, and metadata.
+ */
 const hotelSchema: IHotel = new Schema<IHotel>({
+    // Basic Info
     hotel_name: {
         type: String,
         required: true
@@ -13,7 +18,7 @@ const hotelSchema: IHotel = new Schema<IHotel>({
     category: {
         type: String,
         required: true,
-        enum: ["Hotel", "Resort", "Apartment", "Villa", "Hostel"]
+        enum: ["Hotel", "Resort", "Apartment", "Villa", "Hostel"] // Allowed categories
     },
     starRating: {
         type: Number,
@@ -21,6 +26,7 @@ const hotelSchema: IHotel = new Schema<IHotel>({
         min: 1,
         max: 5
     },
+    // Detailed Location Data
     location: {
         address: {
             type: String,
@@ -42,6 +48,7 @@ const hotelSchema: IHotel = new Schema<IHotel>({
             type: String,
             required: true
         },
+        // GeoJSON for spatial queries
         geo: {
             type: {
                 type: String,
@@ -49,15 +56,17 @@ const hotelSchema: IHotel = new Schema<IHotel>({
                 default: 'Point'
             },
             coordinates: {
-                type: [Number],
-                index: '2dsphere'
+                type: [Number], // [Longitude, Latitude]
+                index: '2dsphere' // Geospatial Index
             }
         }
     },
+    // Reference to Contact Info (if separate)
     contact: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Contact'
     },
+    // Media (Cloudinary)
     images: [
         {
             cloudinaryURL: {
@@ -69,6 +78,7 @@ const hotelSchema: IHotel = new Schema<IHotel>({
         }
     ],
     amenities: [String],
+    // Policies
     checkInTime: {
         type: String,
         default: '14:00'
@@ -77,6 +87,7 @@ const hotelSchema: IHotel = new Schema<IHotel>({
         type: String,
         default: "11:00"
     },
+    // Sub-documents / References
     rooms: [
         {
             type: mongoose.Schema.Types.ObjectId,
@@ -89,7 +100,7 @@ const hotelSchema: IHotel = new Schema<IHotel>({
             ref: 'Review'
         }
     ]
-}, {timestamps: true});
+}, { timestamps: true }); // Auto-timestamps
 
 const Hotel = mongoose.model('Hotel', hotelSchema);
 

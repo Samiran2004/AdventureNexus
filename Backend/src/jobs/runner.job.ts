@@ -1,6 +1,10 @@
 import chalk from "chalk";
 import cron from "node-cron";
 
+/**
+ * Simple Runner Job for testing Cron functionality.
+ * Runs every 10 seconds to indicate the scheduler is active.
+ */
 const runnerCronJob = async () => {
     try {
         console.log(chalk.bgCyan(`Runner is running...`));
