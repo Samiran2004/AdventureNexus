@@ -236,53 +236,53 @@ const FlightsPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-black text-white" ref={pageRef}>
+        <div className="min-h-screen bg-background text-foreground" ref={pageRef}>
             <NavBar />
 
             {/* Hero Search Section */}
-            <section className="py-20 bg-gradient-to-br from-gray-900 via-black to-gray-900 relative overflow-hidden">
+            <section className="py-20 bg-gradient-to-br from-background via-background to-background relative overflow-hidden">
                 <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute -top-10 -right-10 w-80 h-80 bg-blue-900/20 rounded-full opacity-50"></div>
-                    <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-purple-900/20 rounded-full opacity-30"></div>
+                    <div className="absolute -top-10 -right-10 w-80 h-80 bg-primary/20 rounded-full opacity-50"></div>
+                    <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-secondary/20 rounded-full opacity-30"></div>
                 </div>
 
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
                     <div className="text-center space-y-6 mb-12">
-                        <Badge className="bg-gradient-to-r from-blue-900/50 to-purple-900/50 text-blue-400 border border-blue-700/30">
+                        <Badge className="bg-primary/10 text-primary border border-primary/20">
                             ✈️ AI-Powered Flight Search
                         </Badge>
-                        <h1 className="text-4xl md:text-5xl font-bold text-white">
+                        <h1 className="text-4xl md:text-5xl font-bold text-foreground">
                             Find Your Perfect Flight
-                            <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"> with AI</span>
+                            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"> with AI</span>
                         </h1>
-                        <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                        <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
                             Smart price predictions, carbon footprint tracking, and personalized recommendations powered by advanced AI.
                         </p>
                     </div>
 
                     {/* Advanced Search Form */}
-                    <Card ref={searchRef} className="bg-gray-900/80 border-gray-700 backdrop-blur-sm max-w-6xl mx-auto">
+                    <Card ref={searchRef} className="bg-card/80 border-border backdrop-blur-sm max-w-6xl mx-auto">
                         <CardContent className="p-8">
                             {/* Trip Type Selector */}
                             <div className="flex space-x-4 mb-6">
                                 <Button
                                     variant={searchForm.tripType === 'roundTrip' ? 'default' : 'outline'}
                                     onClick={() => setSearchForm({ ...searchForm, tripType: 'roundTrip' })}
-                                    className="bg-gradient-to-r from-blue-600 to-purple-600"
+                                    className={searchForm.tripType === 'roundTrip' ? "bg-gradient-to-r from-primary to-secondary text-primary-foreground" : "border-border"}
                                 >
                                     Round Trip
                                 </Button>
                                 <Button
                                     variant={searchForm.tripType === 'oneWay' ? 'default' : 'outline'}
                                     onClick={() => setSearchForm({ ...searchForm, tripType: 'oneWay' })}
-                                    className="border-gray-600"
+                                    className="border-border"
                                 >
                                     One Way
                                 </Button>
                                 <Button
                                     variant={searchForm.tripType === 'multiCity' ? 'default' : 'outline'}
                                     onClick={() => setSearchForm({ ...searchForm, tripType: 'multiCity' })}
-                                    className="border-gray-600"
+                                    className="border-border"
                                 >
                                     Multi-City
                                 </Button>
@@ -291,54 +291,54 @@ const FlightsPage = () => {
                             {/* Search Fields */}
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                                 <div className="space-y-2">
-                                    <label className="text-sm text-gray-400">From</label>
+                                    <label className="text-sm text-muted-foreground">From</label>
                                     <div className="relative">
-                                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
                                         <Input
                                             placeholder="Departure city"
                                             value={searchForm.from}
                                             onChange={(e) => setSearchForm({ ...searchForm, from: e.target.value })}
-                                            className="pl-10 bg-gray-800 border-gray-600"
+                                            className="pl-10 bg-input border-border text-foreground placeholder:text-muted-foreground"
                                         />
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-sm text-gray-400">To</label>
+                                    <label className="text-sm text-muted-foreground">To</label>
                                     <div className="relative">
-                                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
                                         <Input
                                             placeholder="Destination city"
                                             value={searchForm.to}
                                             onChange={(e) => setSearchForm({ ...searchForm, to: e.target.value })}
-                                            className="pl-10 bg-gray-800 border-gray-600"
+                                            className="pl-10 bg-input border-border text-foreground placeholder:text-muted-foreground"
                                         />
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-sm text-gray-400">Departure</label>
+                                    <label className="text-sm text-muted-foreground">Departure</label>
                                     <div className="relative">
-                                        <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                                        <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
                                         <Input
                                             type="date"
                                             value={searchForm.departure}
                                             onChange={(e) => setSearchForm({ ...searchForm, departure: e.target.value })}
-                                            className="pl-10 bg-gray-800 border-gray-600"
+                                            className="pl-10 bg-input border-border text-foreground"
                                         />
                                     </div>
                                 </div>
 
                                 {searchForm.tripType === 'roundTrip' && (
                                     <div className="space-y-2">
-                                        <label className="text-sm text-gray-400">Return</label>
+                                        <label className="text-sm text-muted-foreground">Return</label>
                                         <div className="relative">
-                                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
                                             <Input
                                                 type="date"
                                                 value={searchForm.return}
                                                 onChange={(e) => setSearchForm({ ...searchForm, return: e.target.value })}
-                                                className="pl-10 bg-gray-800 border-gray-600"
+                                                className="pl-10 bg-input border-border text-foreground"
                                             />
                                         </div>
                                     </div>
@@ -348,22 +348,22 @@ const FlightsPage = () => {
                             {/* Passengers and Class */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                                 <div className="space-y-2">
-                                    <label className="text-sm text-gray-400">Passengers</label>
-                                    <div className="flex items-center space-x-3 bg-gray-800 rounded-md border border-gray-600">
+                                    <label className="text-sm text-muted-foreground">Passengers</label>
+                                    <div className="flex items-center space-x-3 bg-input rounded-md border border-border">
                                         <Button
                                             variant="ghost"
                                             size="sm"
                                             onClick={() => setSearchForm({ ...searchForm, passengers: Math.max(1, searchForm.passengers - 1) })}
-                                            className="h-10"
+                                            className="h-10 text-foreground hover:bg-muted"
                                         >
                                             <Minus size={16} />
                                         </Button>
-                                        <span className="flex-1 text-center">{searchForm.passengers}</span>
+                                        <span className="flex-1 text-center text-foreground">{searchForm.passengers}</span>
                                         <Button
                                             variant="ghost"
                                             size="sm"
                                             onClick={() => setSearchForm({ ...searchForm, passengers: searchForm.passengers + 1 })}
-                                            className="h-10"
+                                            className="h-10 text-foreground hover:bg-muted"
                                         >
                                             <Plus size={16} />
                                         </Button>
@@ -371,11 +371,11 @@ const FlightsPage = () => {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-sm text-gray-400">Class</label>
+                                    <label className="text-sm text-muted-foreground">Class</label>
                                     <select
                                         value={searchForm.class}
                                         onChange={(e) => setSearchForm({ ...searchForm, class: e.target.value })}
-                                        className="w-full bg-gray-800 border border-gray-600 rounded-md px-3 py-2 text-white"
+                                        className="w-full bg-input border border-border rounded-md px-3 py-2 text-foreground focus:ring-2 focus:ring-ring focus:border-border"
                                     >
                                         <option value="economy">Economy</option>
                                         <option value="premium">Premium Economy</option>
@@ -385,13 +385,13 @@ const FlightsPage = () => {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-sm text-gray-400">Advanced Options</label>
+                                    <label className="text-sm text-muted-foreground">Advanced Options</label>
                                     <div className="flex space-x-2">
                                         <Button
                                             variant="outline"
                                             size="sm"
                                             onClick={() => setShowFilters(!showFilters)}
-                                            className="border-gray-600 flex-1"
+                                            className="border-border flex-1 text-foreground hover:bg-muted"
                                         >
                                             <Filter size={16} className="mr-2" />
                                             Filters
@@ -400,7 +400,7 @@ const FlightsPage = () => {
                                             variant="outline"
                                             size="sm"
                                             onClick={() => setAiAssistant(!aiAssistant)}
-                                            className="border-gray-600 flex-1"
+                                            className="border-border flex-1 text-foreground hover:bg-muted"
                                         >
                                             <Bot size={16} className="mr-2" />
                                             AI Help
@@ -411,28 +411,28 @@ const FlightsPage = () => {
 
                             {/* Advanced Filters */}
                             {showFilters && (
-                                <Card className="bg-gray-800 border-gray-600 mb-6">
+                                <Card className="bg-muted/50 border-border mb-6">
                                     <CardContent className="p-4">
                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                             <div className="space-y-2">
-                                                <label className="text-sm text-gray-400">Max Price</label>
+                                                <label className="text-sm text-muted-foreground">Max Price</label>
                                                 <input
                                                     type="range"
                                                     min="0"
                                                     max="2000"
                                                     value={filters.maxPrice}
                                                     onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
-                                                    className="w-full"
+                                                    className="w-full accent-primary"
                                                 />
-                                                <span className="text-sm text-white">${filters.maxPrice}</span>
+                                                <span className="text-sm text-foreground">${filters.maxPrice}</span>
                                             </div>
 
                                             <div className="space-y-2">
-                                                <label className="text-sm text-gray-400">Stops</label>
+                                                <label className="text-sm text-muted-foreground">Stops</label>
                                                 <select
                                                     value={filters.stops}
                                                     onChange={(e) => setFilters({ ...filters, stops: e.target.value })}
-                                                    className="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white text-sm"
+                                                    className="w-full bg-input border border-border rounded-md px-3 py-2 text-foreground text-sm"
                                                 >
                                                     <option value="any">Any</option>
                                                     <option value="direct">Direct only</option>
@@ -441,7 +441,7 @@ const FlightsPage = () => {
                                             </div>
 
                                             <div className="space-y-2">
-                                                <label className="text-sm text-gray-400">Amenities</label>
+                                                <label className="text-sm text-muted-foreground">Amenities</label>
                                                 <div className="flex flex-wrap gap-2">
                                                     <Button
                                                         variant={filters.wifi ? "default" : "outline"}
@@ -481,7 +481,7 @@ const FlightsPage = () => {
                             <Button
                                 onClick={handleSearch}
                                 disabled={isSearching}
-                                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 py-6 text-lg"
+                                className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 py-6 text-lg text-primary-foreground"
                             >
                                 {isSearching ? (
                                     <>
@@ -502,23 +502,23 @@ const FlightsPage = () => {
 
             {/* Flight Results */}
             {showResults && (
-                <section ref={resultsRef} className="py-16 bg-black">
+                <section ref={resultsRef} className="py-16 bg-background">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         {/* Results Header */}
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
                             <div>
-                                <h2 className="text-3xl font-bold text-white mb-2">Flight Results</h2>
-                                <p className="text-gray-400">Found {flights.length} flights • Sorted by AI recommendations</p>
+                                <h2 className="text-3xl font-bold text-foreground mb-2">Flight Results</h2>
+                                <p className="text-muted-foreground">Found {flights.length} flights • Sorted by AI recommendations</p>
                             </div>
 
                             {/* AI Insights */}
-                            <Card className="bg-gradient-to-r from-blue-900/20 to-purple-900/20 border-blue-700/30 mt-4 md:mt-0">
+                            <Card className="bg-primary/10 border-primary/20 mt-4 md:mt-0">
                                 <CardContent className="p-4">
                                     <div className="flex items-center space-x-2 mb-2">
-                                        <Zap className="text-yellow-400" size={16} />
-                                        <span className="text-sm font-semibold text-blue-300">AI Insights</span>
+                                        <Zap className="text-yellow-500" size={16} />
+                                        <span className="text-sm font-semibold text-primary">AI Insights</span>
                                     </div>
-                                    <ul className="text-xs text-blue-200 space-y-1">
+                                    <ul className="text-xs text-primary/80 space-y-1">
                                         <li>• Prices likely to increase by 15% next week</li>
                                         <li>• Tuesday departures are 20% cheaper</li>
                                         <li>• Consider carbon offset for this route</li>
@@ -532,7 +532,7 @@ const FlightsPage = () => {
                             {flights.map((flight) => (
                                 <Card
                                     key={flight.id}
-                                    className={`flight-card bg-gray-900 border-gray-700 hover:border-blue-500 transition-all cursor-pointer ${flight.isRecommended ? 'ring-2 ring-blue-500/50' : ''
+                                    className={`flight-card bg-card border-border hover:border-primary transition-all cursor-pointer ${flight.isRecommended ? 'ring-2 ring-primary/50' : ''
                                         }`}
                                     onClick={() => handleFlightSelect(flight)}
                                 >
@@ -545,19 +545,19 @@ const FlightsPage = () => {
                                                     <div className="flex items-center space-x-3">
                                                         <span className="text-2xl">{flight.logo}</span>
                                                         <div>
-                                                            <h3 className="text-lg font-semibold text-white">{flight.airline}</h3>
+                                                            <h3 className="text-lg font-semibold text-card-foreground">{flight.airline}</h3>
                                                             <div className="flex items-center space-x-2">
-                                                                <span className="text-sm text-gray-400">{flight.aircraft}</span>
+                                                                <span className="text-sm text-muted-foreground">{flight.aircraft}</span>
                                                                 <div className="flex items-center">
-                                                                    <Star className="text-yellow-400 mr-1" size={14} />
-                                                                    <span className="text-sm text-gray-400">{flight.rating}</span>
+                                                                    <Star className="text-yellow-500 mr-1" size={14} />
+                                                                    <span className="text-sm text-muted-foreground">{flight.rating}</span>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
 
                                                     {flight.isRecommended && (
-                                                        <Badge className="bg-gradient-to-r from-blue-600 to-purple-600">
+                                                        <Badge className="bg-gradient-to-r from-primary to-secondary text-primary-foreground">
                                                             <Bot size={12} className="mr-1" />
                                                             AI Pick
                                                         </Badge>
@@ -567,34 +567,34 @@ const FlightsPage = () => {
                                                 {/* Route and Time */}
                                                 <div className="flex items-center space-x-6">
                                                     <div className="text-center">
-                                                        <div className="text-2xl font-bold text-white">{flight.departure}</div>
-                                                        <div className="text-sm text-gray-400">{flight.from}</div>
-                                                        <div className="text-xs text-gray-500">{flight.fromCity}</div>
+                                                        <div className="text-2xl font-bold text-card-foreground">{flight.departure}</div>
+                                                        <div className="text-sm text-muted-foreground">{flight.from}</div>
+                                                        <div className="text-xs text-muted-foreground/80">{flight.fromCity}</div>
                                                     </div>
 
                                                     <div className="flex-1 relative">
                                                         <div className="flex items-center justify-center">
-                                                            <div className="h-px bg-gray-600 flex-1"></div>
+                                                            <div className="h-px bg-border flex-1"></div>
                                                             <div className="mx-4 text-center">
-                                                                <Plane className="text-blue-400 mb-1" size={20} />
-                                                                <div className="text-xs text-gray-400">{flight.duration}</div>
+                                                                <Plane className="text-primary mb-1" size={20} />
+                                                                <div className="text-xs text-muted-foreground">{flight.duration}</div>
                                                                 {flight.stops > 0 && (
-                                                                    <div className="text-xs text-yellow-400">{flight.stops} stop</div>
+                                                                    <div className="text-xs text-yellow-500">{flight.stops} stop</div>
                                                                 )}
                                                             </div>
-                                                            <div className="h-px bg-gray-600 flex-1"></div>
+                                                            <div className="h-px bg-border flex-1"></div>
                                                         </div>
                                                     </div>
 
                                                     <div className="text-center">
-                                                        <div className="text-2xl font-bold text-white">{flight.arrival}</div>
-                                                        <div className="text-sm text-gray-400">{flight.to}</div>
-                                                        <div className="text-xs text-gray-500">{flight.toCity}</div>
+                                                        <div className="text-2xl font-bold text-card-foreground">{flight.arrival}</div>
+                                                        <div className="text-sm text-muted-foreground">{flight.to}</div>
+                                                        <div className="text-xs text-muted-foreground/80">{flight.toCity}</div>
                                                     </div>
                                                 </div>
 
                                                 {/* Amenities and Details */}
-                                                <div className="flex flex-wrap items-center gap-4 text-sm text-gray-400">
+                                                <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                                                     <div className="flex items-center space-x-1">
                                                         <Luggage size={14} />
                                                         <span>{flight.baggage}</span>
@@ -610,21 +610,21 @@ const FlightsPage = () => {
                                                     </div>
 
                                                     <div className="flex items-center space-x-1">
-                                                        <Leaf className="text-green-400" size={14} />
+                                                        <Leaf className="text-green-500" size={14} />
                                                         <span>{flight.carbonFootprint} tons CO₂</span>
                                                     </div>
                                                 </div>
 
                                                 {/* AI Insights */}
                                                 {flight.aiInsights.length > 0 && (
-                                                    <div className="bg-blue-900/20 border border-blue-700/30 rounded-lg p-3">
+                                                    <div className="bg-primary/10 border border-primary/20 rounded-lg p-3">
                                                         <div className="flex items-center space-x-2 mb-1">
-                                                            <Bot className="text-blue-400" size={14} />
-                                                            <span className="text-xs font-semibold text-blue-300">AI Insights</span>
+                                                            <Bot className="text-primary" size={14} />
+                                                            <span className="text-xs font-semibold text-primary">AI Insights</span>
                                                         </div>
                                                         <div className="flex flex-wrap gap-2">
                                                             {flight.aiInsights.map((insight, idx) => (
-                                                                <Badge key={idx} variant="outline" className="text-xs border-blue-600 text-blue-300">
+                                                                <Badge key={idx} variant="outline" className="text-xs border-primary text-primary">
                                                                     {insight}
                                                                 </Badge>
                                                             ))}
@@ -638,33 +638,33 @@ const FlightsPage = () => {
                                                 <div className="text-right">
                                                     <div className="flex items-center space-x-2">
                                                         {flight.originalPrice > flight.price && (
-                                                            <span className="text-sm text-gray-400 line-through">
+                                                            <span className="text-sm text-muted-foreground line-through">
                                                                 ${flight.originalPrice}
                                                             </span>
                                                         )}
-                                                        <div className="text-3xl font-bold text-white">
+                                                        <div className="text-3xl font-bold text-card-foreground">
                                                             ${flight.price}
                                                         </div>
                                                     </div>
 
                                                     <div className="flex items-center justify-end space-x-1 mt-1">
                                                         {flight.priceChange > 0 ? (
-                                                            <TrendingUp className="text-red-400" size={14} />
+                                                            <TrendingUp className="text-destructive" size={14} />
                                                         ) : flight.priceChange < 0 ? (
-                                                            <TrendingDown className="text-green-400" size={14} />
+                                                            <TrendingDown className="text-green-500" size={14} />
                                                         ) : null}
-                                                        <span className={`text-xs ${flight.priceChange > 0 ? 'text-red-400' :
-                                                                flight.priceChange < 0 ? 'text-green-400' : 'text-gray-400'
+                                                        <span className={`text-xs ${flight.priceChange > 0 ? 'text-destructive' :
+                                                            flight.priceChange < 0 ? 'text-green-500' : 'text-muted-foreground'
                                                             }`}>
                                                             {flight.priceChange > 0 ? '+' : ''}{flight.priceChange}%
                                                         </span>
                                                     </div>
 
-                                                    <div className="text-xs text-gray-400 mt-1">per person</div>
+                                                    <div className="text-xs text-muted-foreground mt-1">per person</div>
                                                 </div>
 
                                                 <div className="flex lg:flex-col space-x-2 lg:space-x-0 lg:space-y-2">
-                                                    <Button className="bg-gradient-to-r from-blue-600 to-purple-600">
+                                                    <Button className="bg-gradient-to-r from-primary to-secondary text-primary-foreground hover:from-primary/90 hover:to-secondary/90">
                                                         Select Flight
                                                     </Button>
 
@@ -676,21 +676,21 @@ const FlightsPage = () => {
                                                                 e.stopPropagation();
                                                                 addPriceAlert(flight);
                                                             }}
-                                                            className="border-gray-600"
+                                                            className="border-border hover:bg-muted"
                                                         >
                                                             <Bell size={14} />
                                                         </Button>
                                                         <Button
                                                             variant="outline"
                                                             size="sm"
-                                                            className="border-gray-600"
+                                                            className="border-border hover:bg-muted"
                                                         >
                                                             <Heart size={14} />
                                                         </Button>
                                                         <Button
                                                             variant="outline"
                                                             size="sm"
-                                                            className="border-gray-600"
+                                                            className="border-border hover:bg-muted"
                                                         >
                                                             <Share2 size={14} />
                                                         </Button>
@@ -705,7 +705,7 @@ const FlightsPage = () => {
 
                         {/* Load More */}
                         <div className="text-center mt-8">
-                            <Button variant="outline" className="border-gray-600 text-black hover:text-gray-700">
+                            <Button variant="outline" className="border-border text-foreground hover:bg-muted">
                                 Load More Flights
                             </Button>
                         </div>
@@ -716,18 +716,19 @@ const FlightsPage = () => {
             {/* AI Assistant Chat */}
             {aiAssistant && (
                 <div className="fixed bottom-4 right-4 w-96 max-w-[calc(100vw-2rem)] z-50">
-                    <Card className="bg-gray-900 border-gray-700 shadow-2xl">
+                    <Card className="bg-card border-border shadow-2xl">
                         <CardHeader className="pb-2">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-2">
-                                    <Bot className="text-blue-400" size={20} />
-                                    <CardTitle className="text-lg text-white">Flight Assistant</CardTitle>
-                                    <Badge className="bg-green-900/50 text-green-400">Online</Badge>
+                                    <Bot className="text-primary" size={20} />
+                                    <CardTitle className="text-lg text-card-foreground">Flight Assistant</CardTitle>
+                                    <Badge className="bg-green-500/10 text-green-500">Online</Badge>
                                 </div>
                                 <Button
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => setAiAssistant(false)}
+                                    className="text-muted-foreground hover:text-foreground"
                                 >
                                     ✕
                                 </Button>
@@ -737,21 +738,21 @@ const FlightsPage = () => {
                             {chatMessages.map((msg, idx) => (
                                 <div key={idx} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
                                     <div className={`max-w-[80%] p-3 rounded-lg ${msg.type === 'user'
-                                            ? 'bg-blue-600 text-white'
-                                            : 'bg-gray-800 text-gray-200'
+                                        ? 'bg-primary text-primary-foreground'
+                                        : 'bg-muted text-foreground'
                                         }`}>
                                         <p className="text-sm">{msg.message}</p>
                                     </div>
                                 </div>
                             ))}
                         </CardContent>
-                        <div className="p-4 border-t border-gray-700">
+                        <div className="p-4 border-t border-border">
                             <div className="flex space-x-2">
                                 <Input
                                     placeholder="Ask about flights, prices, or travel tips..."
-                                    className="bg-gray-800 border-gray-600 flex-1"
+                                    className="bg-input border-border flex-1"
                                 />
-                                <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600">
+                                <Button size="sm" className="bg-gradient-to-r from-primary to-secondary">
                                     <ArrowRight size={16} />
                                 </Button>
                             </div>
@@ -763,26 +764,26 @@ const FlightsPage = () => {
             {/* Price Alerts Sidebar */}
             {priceAlerts.length > 0 && (
                 <div className="fixed top-20 right-4 w-80 z-40">
-                    <Card className="bg-gray-900 border-gray-700 shadow-lg">
+                    <Card className="bg-card border-border shadow-lg">
                         <CardHeader>
-                            <CardTitle className="text-lg text-white flex items-center">
-                                <Bell className="mr-2 text-yellow-400" size={18} />
+                            <CardTitle className="text-lg text-card-foreground flex items-center">
+                                <Bell className="mr-2 text-yellow-500" size={18} />
                                 Price Alerts ({priceAlerts.length})
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-2">
                             {priceAlerts.map((alert) => (
-                                <div key={alert.id} className="bg-gray-800 p-3 rounded-lg">
+                                <div key={alert.id} className="bg-muted p-3 rounded-lg">
                                     <div className="flex justify-between items-start">
                                         <div>
-                                            <div className="font-medium text-white">{alert.flight}</div>
-                                            <div className="text-sm text-gray-400">{alert.route}</div>
-                                            <div className="text-xs text-green-400">
+                                            <div className="font-medium text-foreground">{alert.flight}</div>
+                                            <div className="text-sm text-muted-foreground">{alert.route}</div>
+                                            <div className="text-xs text-green-500">
                                                 Alert when below ${alert.targetPrice}
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            <div className="text-sm font-medium text-white">
+                                            <div className="text-sm font-medium text-foreground">
                                                 ${alert.currentPrice}
                                             </div>
                                         </div>

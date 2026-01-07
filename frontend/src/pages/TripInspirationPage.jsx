@@ -450,7 +450,7 @@ const TripInspirationPage = () => {
     }, []);
 
     const StoryCard = ({ story, size = "normal" }) => (
-        <Card className={`inspiration-card group cursor-pointer hover:scale-105 transition-all duration-300 bg-gray-900 border-gray-700 overflow-hidden ${size === 'featured' ? 'md:col-span-2' : ''}`}>
+        <Card className={`inspiration-card group cursor-pointer hover:scale-105 transition-all duration-300 bg-card border-border overflow-hidden ${size === 'featured' ? 'md:col-span-2' : ''}`}>
             <div className="relative">
                 <img
                     src={story.image}
@@ -476,17 +476,17 @@ const TripInspirationPage = () => {
 
             <CardContent className="p-4">
                 <div className="flex items-center space-x-2 mb-2">
-                    <Badge variant="secondary" className="text-xs bg-gray-700 text-gray-300">
+                    <Badge variant="secondary" className="text-xs bg-secondary text-secondary-foreground">
                         {story.category}
                     </Badge>
-                    <span className="text-gray-400 text-xs">{story.readTime}</span>
+                    <span className="text-muted-foreground text-xs">{story.readTime}</span>
                 </div>
 
-                <h3 className={`${size === 'featured' ? 'text-xl' : 'text-lg'} font-semibold text-white mb-2 group-hover:text-blue-400 transition-colors line-clamp-2`}>
+                <h3 className={`${size === 'featured' ? 'text-xl' : 'text-lg'} font-semibold text-card-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2`}>
                     {story.title}
                 </h3>
 
-                <p className="text-gray-300 text-sm mb-3 line-clamp-3">
+                <p className="text-muted-foreground text-sm mb-3 line-clamp-3">
                     {story.excerpt}
                 </p>
 
@@ -497,10 +497,10 @@ const TripInspirationPage = () => {
                             alt={story.author}
                             className="w-6 h-6 rounded-full"
                         />
-                        <span className="text-gray-400 text-sm">{story.author}</span>
+                        <span className="text-muted-foreground text-sm">{story.author}</span>
                     </div>
 
-                    <div className="flex items-center space-x-3 text-gray-400 text-sm">
+                    <div className="flex items-center space-x-3 text-muted-foreground text-sm">
                         <div className="flex items-center">
                             <ThumbsUp size={14} className="mr-1" />
                             {story.likes}
@@ -516,24 +516,24 @@ const TripInspirationPage = () => {
     );
 
     return (
-        <div className="min-h-screen bg-black text-white">
+        <div className="min-h-screen bg-background text-foreground">
             <NavBar />
 
             {/* Hero Section */}
-            <section ref={heroRef} className="py-20 bg-gradient-to-br from-gray-900 via-black to-gray-900 relative overflow-hidden">
+            <section ref={heroRef} className="py-20 bg-background relative overflow-hidden">
                 <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute -top-10 -right-10 w-80 h-80 bg-blue-900/20 rounded-full opacity-50"></div>
-                    <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-purple-900/20 rounded-full opacity-30"></div>
+                    <div className="absolute -top-10 -right-10 w-80 h-80 bg-primary/20 rounded-full opacity-50 blur-3xl"></div>
+                    <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-secondary/20 rounded-full opacity-30 blur-3xl"></div>
                 </div>
 
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
                     <div className="text-center space-y-8 max-w-4xl mx-auto">
                         <div>
-                            <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight mb-4">
+                            <h1 className="text-4xl md:text-6xl font-bold text-foreground leading-tight mb-4">
                                 Find Your Next
-                                <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"> Adventure</span>
+                                <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"> Adventure</span>
                             </h1>
-                            <p className="text-xl text-gray-300 leading-relaxed max-w-2xl mx-auto">
+                            <p className="text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto">
                                 Get inspired with curated travel stories, seasonal guides, and personalized recommendations for every type of journey.
                             </p>
                         </div>
@@ -541,19 +541,19 @@ const TripInspirationPage = () => {
                         {/* Search Bar */}
                         <div className="max-w-xl mx-auto">
                             <div className="relative">
-                                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
                                 <Input
                                     type="text"
                                     placeholder="Search for inspiration, destinations, or travel styles..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="pl-12 pr-4 py-3 bg-gray-800/90 border-gray-700 text-white placeholder-gray-400 rounded-xl backdrop-blur-sm"
+                                    className="pl-12 pr-4 py-3 bg-card/90 border-border text-foreground placeholder:text-muted-foreground rounded-xl backdrop-blur-sm"
                                 />
                             </div>
                         </div>
 
                         {/* Quick Stats */}
-                        <div className="flex justify-center space-x-8 text-sm text-gray-400">
+                        <div className="flex justify-center space-x-8 text-sm text-muted-foreground">
                             <div className="flex items-center">
                                 <BookOpen className="mr-2" size={16} />
                                 <NumberCounter targetNumber={500} duration={2} />+ Travel Stories
@@ -572,7 +572,7 @@ const TripInspirationPage = () => {
             </section>
 
             {/* Main Content */}
-            <section ref={contentRef} className="py-16 bg-black">
+            <section ref={contentRef} className="py-16 bg-background">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
 
                     {/* Navigation Tabs */}
@@ -588,8 +588,8 @@ const TripInspirationPage = () => {
                                 key={tab.id}
                                 onClick={() => setSelectedCategory(tab.id)}
                                 className={`flex items-center px-6 py-3 rounded-full transition-all ${selectedCategory === tab.id
-                                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
-                                        : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700'
+                                    ? 'bg-gradient-to-r from-primary to-secondary text-primary-foreground'
+                                    : 'bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80'
                                     }`}
                             >
                                 <tab.icon size={16} className="mr-2" />
@@ -602,10 +602,10 @@ const TripInspirationPage = () => {
                     {selectedCategory === 'stories' && (
                         <div className="inspiration-section space-y-8">
                             <div className="text-center space-y-4">
-                                <h2 className="text-3xl md:text-4xl font-bold text-white">
+                                <h2 className="text-3xl md:text-4xl font-bold text-foreground">
                                     Inspiring Travel Stories
                                 </h2>
-                                <p className="text-xl text-gray-400">
+                                <p className="text-xl text-muted-foreground">
                                     Real adventures from real travelers around the world
                                 </p>
                             </div>
@@ -623,18 +623,18 @@ const TripInspirationPage = () => {
                             {/* Categories */}
                             <div className="grid md:grid-cols-3 gap-6 mt-12">
                                 {['Adventure Stories', 'Cultural Immersion', 'Food & Travel'].map((category, index) => (
-                                    <Card key={index} className="bg-gray-900 border-gray-700 hover:border-blue-500 transition-colors cursor-pointer">
+                                    <Card key={index} className="bg-card border-border hover:border-primary transition-colors cursor-pointer">
                                         <CardContent className="p-6 text-center">
                                             <div className="text-4xl mb-4">
                                                 {index === 0 ? '🏔️' : index === 1 ? '🎭' : '🍜'}
                                             </div>
-                                            <h3 className="text-lg font-semibold text-white mb-2">{category}</h3>
-                                            <p className="text-gray-400 text-sm mb-4">
+                                            <h3 className="text-lg font-semibold text-card-foreground mb-2">{category}</h3>
+                                            <p className="text-muted-foreground text-sm mb-4">
                                                 {index === 0 ? 'Thrilling adventures and outdoor experiences' :
                                                     index === 1 ? 'Deep cultural connections and local experiences' :
                                                         'Culinary journeys and food discoveries'}
                                             </p>
-                                            <Button variant="outline" size="sm" className="border-blue-600 text-blue-400 hover:bg-blue-600 hover:text-white">
+                                            <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
                                                 Explore Stories
                                                 <ArrowRight className="ml-2" size={14} />
                                             </Button>
@@ -649,10 +649,10 @@ const TripInspirationPage = () => {
                     {selectedCategory === 'seasonal' && (
                         <div className="inspiration-section space-y-8">
                             <div className="text-center space-y-4">
-                                <h2 className="text-3xl md:text-4xl font-bold text-white">
+                                <h2 className="text-3xl md:text-4xl font-bold text-foreground">
                                     Seasonal Travel Guides
                                 </h2>
-                                <p className="text-xl text-gray-400">
+                                <p className="text-xl text-muted-foreground">
                                     Discover the perfect destinations for every season
                                 </p>
                             </div>
@@ -664,8 +664,8 @@ const TripInspirationPage = () => {
                                         key={season.season.toLowerCase()}
                                         onClick={() => setSelectedSeason(season.season.toLowerCase())}
                                         className={`flex items-center px-6 py-3 rounded-lg transition-all ${selectedSeason === season.season.toLowerCase()
-                                                ? `bg-${season.color}-600 text-white`
-                                                : 'bg-gray-800 text-gray-400 hover:text-white'
+                                            ? `bg-${season.color}-600 text-white`
+                                            : 'bg-muted text-muted-foreground hover:text-foreground'
                                             }`}
                                     >
                                         {season.icon}
@@ -679,7 +679,7 @@ const TripInspirationPage = () => {
                                 selectedSeason === season.season.toLowerCase() && (
                                     <div key={season.season} className="grid md:grid-cols-2 gap-8">
                                         {season.destinations.map((destination, index) => (
-                                            <Card key={index} className="inspiration-card bg-gray-900 border-gray-700 overflow-hidden hover:scale-105 transition-transform">
+                                            <Card key={index} className="inspiration-card bg-card border-border overflow-hidden hover:scale-105 transition-transform">
                                                 <div className="relative">
                                                     <img
                                                         src={destination.image}
@@ -695,15 +695,15 @@ const TripInspirationPage = () => {
                                                 <CardContent className="p-6">
                                                     <div className="space-y-4">
                                                         <div>
-                                                            <h4 className="text-sm font-medium text-gray-400 mb-2">Average Temperature</h4>
-                                                            <p className="text-white font-medium">{destination.averageTemp}</p>
+                                                            <h4 className="text-sm font-medium text-muted-foreground mb-2">Average Temperature</h4>
+                                                            <p className="text-card-foreground font-medium">{destination.averageTemp}</p>
                                                         </div>
                                                         <div>
-                                                            <h4 className="text-sm font-medium text-gray-400 mb-2">Highlights</h4>
+                                                            <h4 className="text-sm font-medium text-muted-foreground mb-2">Highlights</h4>
                                                             <div className="space-y-1">
                                                                 {destination.highlights.map((highlight, i) => (
-                                                                    <div key={i} className="flex items-center text-sm text-gray-300">
-                                                                        <CheckCircle className="text-green-400 mr-2" size={12} />
+                                                                    <div key={i} className="flex items-center text-sm text-muted-foreground">
+                                                                        <CheckCircle className="text-green-600 dark:text-green-400 mr-2" size={12} />
                                                                         {highlight}
                                                                     </div>
                                                                 ))}
@@ -727,34 +727,34 @@ const TripInspirationPage = () => {
                     {selectedCategory === 'budget' && (
                         <div className="inspiration-section space-y-8">
                             <div className="text-center space-y-4">
-                                <h2 className="text-3xl md:text-4xl font-bold text-white flex items-center justify-center">
-                                    <PiggyBank className="mr-3 text-green-400" />
+                                <h2 className="text-3xl md:text-4xl font-bold text-foreground flex items-center justify-center">
+                                    <PiggyBank className="mr-3 text-green-600 dark:text-green-400" />
                                     Budget Travel Tips
                                 </h2>
-                                <p className="text-xl text-gray-400">
+                                <p className="text-xl text-muted-foreground">
                                     Travel more for less with these money-saving strategies
                                 </p>
                             </div>
 
                             <div className="grid md:grid-cols-2 gap-8">
                                 {inspirationData.budgetTips.map((category, index) => (
-                                    <Card key={index} className="inspiration-card bg-gray-900 border-gray-700">
+                                    <Card key={index} className="inspiration-card bg-card border-border">
                                         <CardHeader>
-                                            <CardTitle className="text-white flex items-center">
+                                            <CardTitle className="text-card-foreground flex items-center">
                                                 {category.icon}
                                                 <span className="ml-3">{category.category}</span>
                                             </CardTitle>
                                         </CardHeader>
                                         <CardContent className="space-y-4">
                                             {category.tips.map((tip, tipIndex) => (
-                                                <div key={tipIndex} className="p-4 bg-gray-800 rounded-lg">
+                                                <div key={tipIndex} className="p-4 bg-muted/50 rounded-lg">
                                                     <div className="flex justify-between items-start mb-2">
-                                                        <h4 className="text-white font-medium flex-1">{tip.title}</h4>
+                                                        <h4 className="text-card-foreground font-medium flex-1">{tip.title}</h4>
                                                         <Badge className="bg-green-600 text-white ml-2">
                                                             {tip.savings}
                                                         </Badge>
                                                     </div>
-                                                    <p className="text-gray-300 text-sm">{tip.description}</p>
+                                                    <p className="text-muted-foreground text-sm">{tip.description}</p>
                                                 </div>
                                             ))}
                                         </CardContent>
@@ -763,13 +763,13 @@ const TripInspirationPage = () => {
                             </div>
 
                             {/* Budget Calculator CTA */}
-                            <Card className="bg-gradient-to-r from-green-900/50 to-blue-900/50 border-green-700/30">
+                            <Card className="bg-gradient-to-r from-green-100 to-blue-100 dark:from-green-900/50 dark:to-blue-900/50 border-green-200 dark:border-green-700/30">
                                 <CardContent className="p-8 text-center">
                                     <div className="flex items-center justify-center mb-4">
-                                        <Bot className="text-green-400" size={32} />
+                                        <Bot className="text-green-600 dark:text-green-400" size={32} />
                                     </div>
-                                    <h3 className="text-2xl font-bold text-white mb-4">Get AI-Powered Budget Planning</h3>
-                                    <p className="text-gray-300 mb-6">
+                                    <h3 className="text-2xl font-bold text-foreground mb-4">Get AI-Powered Budget Planning</h3>
+                                    <p className="text-muted-foreground mb-6">
                                         Let our AI analyze your preferences and create a personalized budget breakdown for your next trip.
                                     </p>
                                     <Button size="lg" className="bg-green-600 hover:bg-green-700">
@@ -785,32 +785,32 @@ const TripInspirationPage = () => {
                     {selectedCategory === 'styles' && (
                         <div className="inspiration-section space-y-8">
                             <div className="text-center space-y-4">
-                                <h2 className="text-3xl md:text-4xl font-bold text-white">
+                                <h2 className="text-3xl md:text-4xl font-bold text-foreground">
                                     Adventure vs Relaxation
                                 </h2>
-                                <p className="text-xl text-gray-400">
+                                <p className="text-xl text-muted-foreground">
                                     Discover your perfect travel style
                                 </p>
                             </div>
 
                             <div className="grid md:grid-cols-2 gap-8">
                                 {Object.entries(inspirationData.travelStyles).map(([key, style]) => (
-                                    <Card key={key} className="inspiration-card bg-gray-900 border-gray-700 hover:border-red-500 transition-colors">
+                                    <Card key={key} className="inspiration-card bg-card border-border hover:border-red-500 transition-colors">
                                         <CardHeader className="text-center pb-4">
                                             <div className="flex justify-center mb-4">
                                                 {style.icon}
                                             </div>
-                                            <CardTitle className="text-2xl text-white">{style.title}</CardTitle>
-                                            <CardDescription className="text-gray-400">
+                                            <CardTitle className="text-2xl text-card-foreground">{style.title}</CardTitle>
+                                            <CardDescription className="text-muted-foreground">
                                                 {style.description}
                                             </CardDescription>
                                         </CardHeader>
                                         <CardContent className="space-y-6">
                                             <div>
-                                                <h4 className="text-white font-medium mb-3">Popular Activities</h4>
+                                                <h4 className="text-card-foreground font-medium mb-3">Popular Activities</h4>
                                                 <div className="grid grid-cols-2 gap-2">
                                                     {style.activities.map((activity, index) => (
-                                                        <Badge key={index} variant="secondary" className="bg-gray-700 text-gray-300 text-xs justify-center py-1">
+                                                        <Badge key={index} variant="secondary" className="bg-secondary text-secondary-foreground text-xs justify-center py-1">
                                                             {activity}
                                                         </Badge>
                                                     ))}
@@ -818,18 +818,18 @@ const TripInspirationPage = () => {
                                             </div>
 
                                             <div>
-                                                <h4 className="text-white font-medium mb-3">Top Destinations</h4>
+                                                <h4 className="text-card-foreground font-medium mb-3">Top Destinations</h4>
                                                 <div className="space-y-3">
                                                     {style.destinations.map((dest, index) => (
-                                                        <div key={index} className="flex items-center space-x-3 p-3 bg-gray-800 rounded-lg">
+                                                        <div key={index} className="flex items-center space-x-3 p-3 bg-muted/50 rounded-lg">
                                                             <img
                                                                 src={dest.image}
                                                                 alt={dest.name}
                                                                 className="w-12 h-12 rounded-lg object-cover"
                                                             />
                                                             <div className="flex-1">
-                                                                <h5 className="text-white font-medium">{dest.name}</h5>
-                                                                <p className="text-gray-400 text-sm">
+                                                                <h5 className="text-card-foreground font-medium">{dest.name}</h5>
+                                                                <p className="text-muted-foreground text-sm">
                                                                     {dest.activities.slice(0, 2).join(', ')}
                                                                 </p>
                                                             </div>
@@ -839,8 +839,8 @@ const TripInspirationPage = () => {
                                             </div>
 
                                             <Button className={`w-full bg-gradient-to-r ${key === 'adventure'
-                                                    ? 'from-red-600 to-orange-600'
-                                                    : 'from-blue-600 to-teal-600'
+                                                ? 'from-red-600 to-orange-600'
+                                                : 'from-blue-600 to-teal-600'
                                                 }`}>
                                                 <Compass className="mr-2" size={16} />
                                                 Explore {style.title}
@@ -851,10 +851,10 @@ const TripInspirationPage = () => {
                             </div>
 
                             {/* Style Quiz CTA */}
-                            <Card className="bg-gradient-to-r from-purple-900/50 to-pink-900/50 border-purple-700/30">
+                            <Card className="bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/50 dark:to-pink-900/50 border-purple-200 dark:border-purple-700/30">
                                 <CardContent className="p-8 text-center">
-                                    <h3 className="text-2xl font-bold text-white mb-4">Not Sure Which Style Suits You?</h3>
-                                    <p className="text-gray-300 mb-6">
+                                    <h3 className="text-2xl font-bold text-foreground mb-4">Not Sure Which Style Suits You?</h3>
+                                    <p className="text-muted-foreground mb-6">
                                         Take our AI-powered travel personality quiz to discover your perfect travel style.
                                     </p>
                                     <Button size="lg" className="bg-gradient-to-r from-purple-600 to-pink-600">
@@ -870,10 +870,10 @@ const TripInspirationPage = () => {
                     {selectedCategory === 'types' && (
                         <div className="inspiration-section space-y-8">
                             <div className="text-center space-y-4">
-                                <h2 className="text-3xl md:text-4xl font-bold text-white">
+                                <h2 className="text-3xl md:text-4xl font-bold text-foreground">
                                     Solo, Family & Couple Travel
                                 </h2>
-                                <p className="text-xl text-gray-400">
+                                <p className="text-xl text-muted-foreground">
                                     Find inspiration for every type of journey
                                 </p>
                             </div>
@@ -885,8 +885,8 @@ const TripInspirationPage = () => {
                                         key={type}
                                         onClick={() => setSelectedTravelType(type)}
                                         className={`px-6 py-3 rounded-lg capitalize transition-all ${selectedTravelType === type
-                                                ? 'bg-blue-600 text-white'
-                                                : 'bg-gray-800 text-gray-400 hover:text-white'
+                                            ? 'bg-primary text-primary-foreground'
+                                            : 'bg-muted text-muted-foreground hover:text-foreground'
                                             }`}
                                     >
                                         {type} Travel
@@ -898,13 +898,13 @@ const TripInspirationPage = () => {
                             {inspirationData.travelTypes.map(travelType => (
                                 travelType.type.toLowerCase().includes(selectedTravelType) && (
                                     <div key={travelType.type}>
-                                        <Card className="bg-gray-900 border-gray-700 mb-8">
+                                        <Card className="bg-card border-border mb-8">
                                             <CardHeader className="text-center">
                                                 <div className="flex justify-center mb-4">
                                                     {travelType.icon}
                                                 </div>
-                                                <CardTitle className="text-2xl text-white">{travelType.type}</CardTitle>
-                                                <CardDescription className="text-gray-400 text-lg">
+                                                <CardTitle className="text-2xl text-card-foreground">{travelType.type}</CardTitle>
+                                                <CardDescription className="text-muted-foreground text-lg">
                                                     {travelType.description}
                                                 </CardDescription>
                                             </CardHeader>
@@ -912,9 +912,9 @@ const TripInspirationPage = () => {
 
                                         <div className="grid md:grid-cols-2 gap-8">
                                             {/* Benefits */}
-                                            <Card className="bg-gray-900 border-gray-700">
+                                            <Card className="bg-card border-border">
                                                 <CardHeader>
-                                                    <CardTitle className="text-white flex items-center">
+                                                    <CardTitle className="text-card-foreground flex items-center">
                                                         <Award className="mr-2 text-yellow-400" />
                                                         Benefits
                                                     </CardTitle>
@@ -922,8 +922,8 @@ const TripInspirationPage = () => {
                                                 <CardContent>
                                                     <ul className="space-y-2">
                                                         {travelType.benefits.map((benefit, index) => (
-                                                            <li key={index} className="flex items-start text-gray-300">
-                                                                <CheckCircle className="text-green-400 mr-2 mt-1 flex-shrink-0" size={14} />
+                                                            <li key={index} className="flex items-start text-muted-foreground">
+                                                                <CheckCircle className="text-green-600 dark:text-green-400 mr-2 mt-1 flex-shrink-0" size={14} />
                                                                 {benefit}
                                                             </li>
                                                         ))}
@@ -932,9 +932,9 @@ const TripInspirationPage = () => {
                                             </Card>
 
                                             {/* Tips */}
-                                            <Card className="bg-gray-900 border-gray-700">
+                                            <Card className="bg-card border-border">
                                                 <CardHeader>
-                                                    <CardTitle className="text-white flex items-center">
+                                                    <CardTitle className="text-card-foreground flex items-center">
                                                         <Lightbulb className="mr-2 text-blue-400" />
                                                         Essential Tips
                                                     </CardTitle>
@@ -942,7 +942,7 @@ const TripInspirationPage = () => {
                                                 <CardContent>
                                                     <ul className="space-y-2">
                                                         {travelType.tips.map((tip, index) => (
-                                                            <li key={index} className="flex items-start text-gray-300">
+                                                            <li key={index} className="flex items-start text-muted-foreground">
                                                                 <Zap className="text-yellow-400 mr-2 mt-1 flex-shrink-0" size={14} />
                                                                 {tip}
                                                             </li>
@@ -954,10 +954,10 @@ const TripInspirationPage = () => {
 
                                         {/* Destinations and Cost */}
                                         <div className="grid md:grid-cols-2 gap-8 mt-8">
-                                            <Card className="bg-gray-900 border-gray-700">
+                                            <Card className="bg-card border-border">
                                                 <CardHeader>
-                                                    <CardTitle className="text-white flex items-center">
-                                                        <MapPin className="mr-2 text-green-400" />
+                                                    <CardTitle className="text-card-foreground flex items-center">
+                                                        <MapPin className="mr-2 text-green-600 dark:text-green-400" />
                                                         Best Destinations
                                                     </CardTitle>
                                                 </CardHeader>
@@ -972,18 +972,18 @@ const TripInspirationPage = () => {
                                                 </CardContent>
                                             </Card>
 
-                                            <Card className="bg-gray-900 border-gray-700">
+                                            <Card className="bg-card border-border">
                                                 <CardHeader>
-                                                    <CardTitle className="text-white flex items-center">
+                                                    <CardTitle className="text-card-foreground flex items-center">
                                                         <DollarSign className="mr-2 text-orange-400" />
                                                         Average Daily Cost
                                                     </CardTitle>
                                                 </CardHeader>
                                                 <CardContent>
-                                                    <div className="text-2xl font-bold text-white mb-2">
+                                                    <div className="text-2xl font-bold text-card-foreground mb-2">
                                                         {travelType.averageDailyCost}
                                                     </div>
-                                                    <p className="text-gray-400 text-sm">
+                                                    <p className="text-muted-foreground text-sm">
                                                         Per day for accommodation, food, and activities
                                                     </p>
                                                     <Button className="mt-4 w-full bg-gradient-to-r from-blue-600 to-purple-600">
@@ -1012,11 +1012,11 @@ const TripInspirationPage = () => {
                             Let our AI create your perfect itinerary based on the inspiration that speaks to you.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Button size="lg" variant="secondary" className="text-lg px-8 py-6 bg-white text-white hover:text-black bg-black hover:bg-gray-50">
+                            <Button size="lg" variant="secondary" className="text-lg px-8 py-6 bg-white text-primary hover:bg-white/90">
                                 <Bot className="mr-2" size={20} />
                                 Create AI Itinerary
                             </Button>
-                            <Button size="lg" variant="outline" className="text-lg px-8 py-6 text - bg-green-300 hover:text bg-black border-white hover:bg-white hover:text-blue-600">
+                            <Button size="lg" variant="outline" className="text-lg px-8 py-6 text-white border-white hover:bg-white hover:text-primary">
                                 <BookmarkPlus className="mr-2" size={20} />
                                 Save Inspiration
                             </Button>

@@ -190,21 +190,21 @@ const ProfilePage = () => {
             ) : (
                 getInitials(userData.firstName, userData.lastName)
             )}
-            <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                 <Camera className="text-white" size={20} />
             </div>
         </div>
     );
 
     return (
-        <div className="min-h-screen bg-black text-white">
+        <div className="min-h-screen bg-background text-foreground">
             <NavBar />
 
             {/* Profile Header */}
-            <section ref={headerRef} className="bg-gradient-to-br from-gray-900 via-black to-gray-900 py-20 relative overflow-hidden">
+            <section ref={headerRef} className="bg-background py-20 relative overflow-hidden">
                 <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute -top-10 -right-10 w-80 h-80 bg-blue-900/20 rounded-full opacity-50"></div>
-                    <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-purple-900/20 rounded-full opacity-30"></div>
+                    <div className="absolute -top-10 -right-10 w-80 h-80 bg-primary/20 rounded-full opacity-50 blur-3xl"></div>
+                    <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-secondary/20 rounded-full opacity-30 blur-3xl"></div>
                 </div>
 
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
@@ -214,11 +214,11 @@ const ProfilePage = () => {
                         <div className="flex-1 text-center md:text-left">
                             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
                                 <div>
-                                    <h1 className="text-3xl md:text-4xl font-bold text-white">
+                                    <h1 className="text-3xl md:text-4xl font-bold text-foreground">
                                         {userData.firstName} {userData.lastName}
                                     </h1>
-                                    <p className="text-gray-400 text-lg">Digital Nomad & Travel Enthusiast</p>
-                                    <div className="flex flex-wrap justify-center md:justify-start items-center space-x-4 mt-2 text-sm text-gray-400">
+                                    <p className="text-muted-foreground text-lg">Digital Nomad & Travel Enthusiast</p>
+                                    <div className="flex flex-wrap justify-center md:justify-start items-center space-x-4 mt-2 text-sm text-muted-foreground">
                                         <div className="flex items-center">
                                             <MapPin size={16} className="mr-1" />
                                             {userData.location}
@@ -234,7 +234,7 @@ const ProfilePage = () => {
                                         variant={isEditing ? "destructive" : "outline"}
                                         size="sm"
                                         onClick={isEditing ? handleCancel : () => setIsEditing(true)}
-                                        className="border-gray-600 text-blue-600 hover:bg-green-400 hover:text-white hover:border-white"
+                                        className="border-input text-primary hover:bg-primary/10 hover:text-primary hover:border-primary"
                                     >
                                         {isEditing ? <X size={16} className="mr-2" /> : <Edit size={16} className="mr-2" />}
                                         {isEditing ? 'Cancel' : 'Edit Profile'}
@@ -243,7 +243,7 @@ const ProfilePage = () => {
                                         <Button
                                             size="sm"
                                             onClick={handleSave}
-                                            className="bg-gradient-to-r from-blue-600 to-purple-600"
+                                            className="bg-gradient-to-r from-primary to-secondary text-primary-foreground"
                                         >
                                             <Save size={16} className="mr-2" />
                                             Save
@@ -252,7 +252,7 @@ const ProfilePage = () => {
                                 </div>
                             </div>
 
-                            <p className="text-gray-300 max-w-2xl">
+                            <p className="text-muted-foreground max-w-2xl">
                                 {userData.bio}
                             </p>
                         </div>
@@ -261,35 +261,35 @@ const ProfilePage = () => {
             </section>
 
             {/* Stats Section */}
-            <section ref={statsRef} className="py-10 bg-gray-900">
+            <section ref={statsRef} className="py-10 bg-muted/30">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        <Card className="bg-gray-800 border-gray-700 text-center">
+                        <Card className="bg-card border-border text-center">
                             <CardContent className="p-4">
                                 <Plane className="text-blue-400 mx-auto mb-2" size={24} />
-                                <div className="text-2xl font-bold text-white">{userData.stats.tripsPlanned}</div>
-                                <div className="text-sm text-gray-400">Trips Planned</div>
+                                <div className="text-2xl font-bold text-card-foreground">{userData.stats.tripsPlanned}</div>
+                                <div className="text-sm text-muted-foreground">Trips Planned</div>
                             </CardContent>
                         </Card>
-                        <Card className="bg-gray-800 border-gray-700 text-center">
+                        <Card className="bg-card border-border text-center">
                             <CardContent className="p-4">
                                 <Globe className="text-green-400 mx-auto mb-2" size={24} />
-                                <div className="text-2xl font-bold text-white">{userData.stats.countriesVisited}</div>
-                                <div className="text-sm text-gray-400">Countries Visited</div>
+                                <div className="text-2xl font-bold text-card-foreground">{userData.stats.countriesVisited}</div>
+                                <div className="text-sm text-muted-foreground">Countries Visited</div>
                             </CardContent>
                         </Card>
-                        <Card className="bg-gray-800 border-gray-700 text-center">
+                        <Card className="bg-card border-border text-center">
                             <CardContent className="p-4">
                                 <Heart className="text-pink-400 mx-auto mb-2" size={24} />
-                                <div className="text-2xl font-bold text-white">{userData.stats.favoriteDestinations}</div>
-                                <div className="text-sm text-gray-400">Favorites</div>
+                                <div className="text-2xl font-bold text-card-foreground">{userData.stats.favoriteDestinations}</div>
+                                <div className="text-sm text-muted-foreground">Favorites</div>
                             </CardContent>
                         </Card>
-                        <Card className="bg-gray-800 border-gray-700 text-center">
+                        <Card className="bg-card border-border text-center">
                             <CardContent className="p-4">
                                 <Star className="text-yellow-400 mx-auto mb-2" size={24} />
-                                <div className="text-2xl font-bold text-white">{userData.stats.reviewsWritten}</div>
-                                <div className="text-sm text-gray-400">Reviews</div>
+                                <div className="text-2xl font-bold text-card-foreground">{userData.stats.reviewsWritten}</div>
+                                <div className="text-sm text-muted-foreground">Reviews</div>
                             </CardContent>
                         </Card>
                     </div>
@@ -297,10 +297,10 @@ const ProfilePage = () => {
             </section>
 
             {/* Main Content */}
-            <section ref={contentRef} className="py-10 bg-black">
+            <section ref={contentRef} className="py-10 bg-background">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Tab Navigation */}
-                    <div className="flex space-x-1 mb-8 bg-gray-900 p-1 rounded-lg max-w-fit">
+                    <div className="flex space-x-1 mb-8 bg-muted p-1 rounded-lg max-w-fit">
                         {[
                             { id: 'profile', label: 'Profile', icon: User },
                             { id: 'preferences', label: 'Travel Preferences', icon: Compass },
@@ -310,8 +310,8 @@ const ProfilePage = () => {
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
                                 className={`flex items-center px-4 py-2 rounded-md transition-all ${activeTab === tab.id
-                                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
-                                        : 'text-gray-400 hover:text-white'
+                                    ? 'bg-gradient-to-r from-primary to-secondary text-primary-foreground'
+                                    : 'text-muted-foreground hover:text-foreground'
                                     }`}
                             >
                                 <tab.icon size={16} className="mr-2" />
@@ -325,113 +325,113 @@ const ProfilePage = () => {
                         {/* Main Content Area */}
                         <div className="lg:col-span-2">
                             {activeTab === 'profile' && (
-                                <Card className="bg-gray-900 border-gray-700">
+                                <Card className="bg-card border-border">
                                     <CardHeader>
-                                        <CardTitle className="text-white">Personal Information</CardTitle>
-                                        <CardDescription className="text-gray-400">
+                                        <CardTitle className="text-card-foreground">Personal Information</CardTitle>
+                                        <CardDescription className="text-muted-foreground">
                                             Manage your personal details and contact information
                                         </CardDescription>
                                     </CardHeader>
                                     <CardContent className="space-y-6">
                                         <div className="grid md:grid-cols-2 gap-4">
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-300 mb-2">
+                                                <label className="block text-sm font-medium text-muted-foreground mb-2">
                                                     First Name
                                                 </label>
                                                 {isEditing ? (
                                                     <Input
                                                         value={editData.firstName}
                                                         onChange={(e) => handleInputChange('firstName', e.target.value)}
-                                                        className="bg-gray-800 border-gray-700 text-white"
+                                                        className="bg-input border-input text-foreground"
                                                     />
                                                 ) : (
-                                                    <p className="text-white">{userData.firstName}</p>
+                                                    <p className="text-foreground">{userData.firstName}</p>
                                                 )}
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-300 mb-2">
+                                                <label className="block text-sm font-medium text-muted-foreground mb-2">
                                                     Last Name
                                                 </label>
                                                 {isEditing ? (
                                                     <Input
                                                         value={editData.lastName}
                                                         onChange={(e) => handleInputChange('lastName', e.target.value)}
-                                                        className="bg-gray-800 border-gray-700 text-white"
+                                                        className="bg-input border-input text-foreground"
                                                     />
                                                 ) : (
-                                                    <p className="text-white">{userData.lastName}</p>
+                                                    <p className="text-foreground">{userData.lastName}</p>
                                                 )}
                                             </div>
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-300 mb-2">
+                                            <label className="block text-sm font-medium text-muted-foreground mb-2">
                                                 Email Address
                                             </label>
                                             <div className="flex items-center space-x-3">
-                                                <Mail className="text-gray-400" size={16} />
+                                                <Mail className="text-muted-foreground" size={16} />
                                                 {isEditing ? (
                                                     <Input
                                                         type="email"
                                                         value={editData.email}
                                                         onChange={(e) => handleInputChange('email', e.target.value)}
-                                                        className="bg-gray-800 border-gray-700 text-white flex-1"
+                                                        className="bg-input border-input text-foreground flex-1"
                                                     />
                                                 ) : (
-                                                    <p className="text-white">{userData.email}</p>
+                                                    <p className="text-foreground">{userData.email}</p>
                                                 )}
                                             </div>
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-300 mb-2">
+                                            <label className="block text-sm font-medium text-muted-foreground mb-2">
                                                 Phone Number
                                             </label>
                                             <div className="flex items-center space-x-3">
-                                                <Phone className="text-gray-400" size={16} />
+                                                <Phone className="text-muted-foreground" size={16} />
                                                 {isEditing ? (
                                                     <Input
                                                         value={editData.phone}
                                                         onChange={(e) => handleInputChange('phone', e.target.value)}
-                                                        className="bg-gray-800 border-gray-700 text-white flex-1"
+                                                        className="bg-input border-input text-foreground flex-1"
                                                     />
                                                 ) : (
-                                                    <p className="text-white">{userData.phone}</p>
+                                                    <p className="text-foreground">{userData.phone}</p>
                                                 )}
                                             </div>
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-300 mb-2">
+                                            <label className="block text-sm font-medium text-muted-foreground mb-2">
                                                 Location
                                             </label>
                                             <div className="flex items-center space-x-3">
-                                                <MapPin className="text-gray-400" size={16} />
+                                                <MapPin className="text-muted-foreground" size={16} />
                                                 {isEditing ? (
                                                     <Input
                                                         value={editData.location}
                                                         onChange={(e) => handleInputChange('location', e.target.value)}
-                                                        className="bg-gray-800 border-gray-700 text-white flex-1"
+                                                        className="bg-input border-input text-foreground flex-1"
                                                     />
                                                 ) : (
-                                                    <p className="text-white">{userData.location}</p>
+                                                    <p className="text-foreground">{userData.location}</p>
                                                 )}
                                             </div>
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-300 mb-2">
+                                            <label className="block text-sm font-medium text-muted-foreground mb-2">
                                                 Bio
                                             </label>
                                             {isEditing ? (
                                                 <Textarea
                                                     value={editData.bio}
                                                     onChange={(e) => handleInputChange('bio', e.target.value)}
-                                                    className="bg-gray-800 border-gray-700 text-white"
+                                                    className="bg-input border-input text-foreground"
                                                     rows={3}
                                                 />
                                             ) : (
-                                                <p className="text-white">{userData.bio}</p>
+                                                <p className="text-foreground">{userData.bio}</p>
                                             )}
                                         </div>
                                     </CardContent>
@@ -441,16 +441,16 @@ const ProfilePage = () => {
                             {activeTab === 'preferences' && (
                                 <div className="space-y-6">
                                     {/* Travel Style */}
-                                    <Card className="bg-gray-900 border-gray-700">
+                                    <Card className="bg-card border-border">
                                         <CardHeader>
-                                            <CardTitle className="text-white flex items-center">
+                                            <CardTitle className="text-foreground flex items-center">
                                                 <Compass className="mr-2" size={20} />
                                                 Travel Preferences
                                             </CardTitle>
                                         </CardHeader>
                                         <CardContent className="space-y-6">
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-300 mb-3">
+                                                <label className="block text-sm font-medium text-muted-foreground mb-3">
                                                     Travel Style
                                                 </label>
                                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
@@ -460,24 +460,24 @@ const ProfilePage = () => {
                                                                 type="checkbox"
                                                                 checked={userData.preferences.travelStyle.includes(style)}
                                                                 onChange={(e) => handleArrayChange('preferences.travelStyle', style, e.target.checked)}
-                                                                className="rounded bg-gray-800 border-gray-600"
+                                                                className="rounded bg-input border-input"
                                                                 disabled={!isEditing}
                                                             />
-                                                            <span className="text-gray-300 text-sm">{style}</span>
+                                                            <span className="text-muted-foreground text-sm">{style}</span>
                                                         </label>
                                                     ))}
                                                 </div>
                                             </div>
 
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-300 mb-2">
+                                                <label className="block text-sm font-medium text-muted-foreground mb-2">
                                                     Budget Range
                                                 </label>
                                                 {isEditing ? (
                                                     <select
                                                         value={editData.preferences.budgetRange}
                                                         onChange={(e) => handleInputChange('preferences.budgetRange', e.target.value)}
-                                                        className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-white"
+                                                        className="w-full p-3 rounded-lg bg-input border border-input text-foreground"
                                                     >
                                                         <option value="$500-1000">$500 - $1,000</option>
                                                         <option value="$1000-3000">$1,000 - $3,000</option>
@@ -485,12 +485,12 @@ const ProfilePage = () => {
                                                         <option value="$5000+">$5,000+</option>
                                                     </select>
                                                 ) : (
-                                                    <p className="text-white">{userData.preferences.budgetRange}</p>
+                                                    <p className="text-foreground">{userData.preferences.budgetRange}</p>
                                                 )}
                                             </div>
 
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-300 mb-3">
+                                                <label className="block text-sm font-medium text-muted-foreground mb-3">
                                                     Accommodation Preferences
                                                 </label>
                                                 <div className="grid grid-cols-2 gap-2">
@@ -500,17 +500,17 @@ const ProfilePage = () => {
                                                                 type="checkbox"
                                                                 checked={userData.preferences.accommodation.includes(acc)}
                                                                 onChange={(e) => handleArrayChange('preferences.accommodation', acc, e.target.checked)}
-                                                                className="rounded bg-gray-800 border-gray-600"
+                                                                className="rounded bg-input border-input"
                                                                 disabled={!isEditing}
                                                             />
-                                                            <span className="text-gray-300 text-sm">{acc}</span>
+                                                            <span className="text-muted-foreground text-sm">{acc}</span>
                                                         </label>
                                                     ))}
                                                 </div>
                                             </div>
 
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-300 mb-3">
+                                                <label className="block text-sm font-medium text-muted-foreground mb-3">
                                                     Dietary Requirements
                                                 </label>
                                                 <div className="grid grid-cols-2 gap-2">
@@ -520,10 +520,10 @@ const ProfilePage = () => {
                                                                 type="checkbox"
                                                                 checked={userData.preferences.dietaryRequirements.includes(diet)}
                                                                 onChange={(e) => handleArrayChange('preferences.dietaryRequirements', diet, e.target.checked)}
-                                                                className="rounded bg-gray-800 border-gray-600"
+                                                                className="rounded bg-input border-input"
                                                                 disabled={!isEditing}
                                                             />
-                                                            <span className="text-gray-300 text-sm">{diet}</span>
+                                                            <span className="text-muted-foreground text-sm">{diet}</span>
                                                         </label>
                                                     ))}
                                                 </div>
@@ -534,9 +534,9 @@ const ProfilePage = () => {
                             )}
 
                             {activeTab === 'settings' && (
-                                <Card className="bg-gray-900 border-gray-700">
+                                <Card className="bg-card border-border">
                                     <CardHeader>
-                                        <CardTitle className="text-white flex items-center">
+                                        <CardTitle className="text-foreground flex items-center">
                                             <Settings className="mr-2" size={20} />
                                             Account Settings
                                         </CardTitle>
@@ -545,43 +545,43 @@ const ProfilePage = () => {
                                         <div className="space-y-4">
                                             <div className="flex items-center justify-between">
                                                 <div>
-                                                    <h4 className="text-white font-medium">Email Notifications</h4>
-                                                    <p className="text-gray-400 text-sm">Get notified about trip updates</p>
+                                                    <h4 className="text-foreground font-medium">Email Notifications</h4>
+                                                    <p className="text-muted-foreground text-sm">Get notified about trip updates</p>
                                                 </div>
-                                                <input type="checkbox" defaultChecked className="rounded bg-gray-800 border-gray-600" />
+                                                <input type="checkbox" defaultChecked className="rounded bg-input border-input" />
                                             </div>
                                             <div className="flex items-center justify-between">
                                                 <div>
-                                                    <h4 className="text-white font-medium">SMS Alerts</h4>
-                                                    <p className="text-gray-400 text-sm">Receive trip reminders via SMS</p>
+                                                    <h4 className="text-foreground font-medium">SMS Alerts</h4>
+                                                    <p className="text-muted-foreground text-sm">Receive trip reminders via SMS</p>
                                                 </div>
-                                                <input type="checkbox" className="rounded bg-gray-800 border-gray-600" />
+                                                <input type="checkbox" className="rounded bg-input border-input" />
                                             </div>
                                             <div className="flex items-center justify-between">
                                                 <div>
-                                                    <h4 className="text-white font-medium">Marketing Emails</h4>
-                                                    <p className="text-gray-400 text-sm">Get travel deals and recommendations</p>
+                                                    <h4 className="text-foreground font-medium">Marketing Emails</h4>
+                                                    <p className="text-muted-foreground text-sm">Get travel deals and recommendations</p>
                                                 </div>
-                                                <input type="checkbox" defaultChecked className="rounded bg-gray-800 border-gray-600" />
+                                                <input type="checkbox" defaultChecked className="rounded bg-input border-input" />
                                             </div>
                                         </div>
 
-                                        <hr className="border-gray-700" />
+                                        <hr className="border-border" />
 
                                         <div>
-                                            <h4 className="text-white font-medium mb-4">Privacy Settings</h4>
+                                            <h4 className="text-foreground font-medium mb-4">Privacy Settings</h4>
                                             <div className="space-y-3">
                                                 <div className="flex items-center justify-between">
-                                                    <span className="text-gray-300">Profile Visibility</span>
-                                                    <select className="bg-gray-800 border border-gray-700 text-white rounded px-3 py-1 text-sm">
+                                                    <span className="text-muted-foreground">Profile Visibility</span>
+                                                    <select className="bg-input border border-input text-foreground rounded px-3 py-1 text-sm">
                                                         <option>Public</option>
                                                         <option>Friends Only</option>
                                                         <option>Private</option>
                                                     </select>
                                                 </div>
                                                 <div className="flex items-center justify-between">
-                                                    <span className="text-gray-300">Show Travel History</span>
-                                                    <input type="checkbox" defaultChecked className="rounded bg-gray-800 border-gray-600" />
+                                                    <span className="text-muted-foreground">Show Travel History</span>
+                                                    <input type="checkbox" defaultChecked className="rounded bg-input border-input" />
                                                 </div>
                                             </div>
                                         </div>
@@ -593,20 +593,20 @@ const ProfilePage = () => {
                         {/* Sidebar */}
                         <div className="space-y-6">
                             {/* Quick Actions */}
-                            <Card className="bg-gray-900 border-gray-700">
+                            <Card className="bg-card border-border">
                                 <CardHeader>
-                                    <CardTitle className="text-white text-lg">Quick Actions</CardTitle>
+                                    <CardTitle className="text-foreground text-lg">Quick Actions</CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-3">
-                                    <Button className="w-full justify-start bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                                    <Button className="w-full justify-start bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground">
                                         <Plane className="mr-2" size={16} />
                                         Plan New Trip
                                     </Button>
-                                    <Button variant="outline" className="w-full justify-start border-gray-600 text-blue-500 hover:bg-green-400 hover:text-white hover:border-white">
+                                    <Button variant="outline" className="w-full justify-start border-input text-muted-foreground hover:bg-muted hover:text-foreground">
                                         <History className="mr-2" size={16} />
                                         View Trip History
                                     </Button>
-                                    <Button variant="outline" className="w-full justify-start border-gray-600 text-blue-500 hover:bg-green-500 hover:text-white hover:border-white">
+                                    <Button variant="outline" className="w-full justify-start border-input text-muted-foreground hover:bg-muted hover:text-foreground">
                                         <Heart className="mr-2" size={16} />
                                         Saved Destinations
                                     </Button>
@@ -614,9 +614,9 @@ const ProfilePage = () => {
                             </Card>
 
                             {/* Achievements */}
-                            <Card className="bg-gray-900 border-gray-700">
+                            <Card className="bg-card border-border">
                                 <CardHeader>
-                                    <CardTitle className="text-white text-lg flex items-center">
+                                    <CardTitle className="text-foreground text-lg flex items-center">
                                         <Award className="mr-2" size={20} />
                                         Achievements
                                     </CardTitle>
@@ -627,8 +627,8 @@ const ProfilePage = () => {
                                             <Star size={16} className="text-white" />
                                         </div>
                                         <div>
-                                            <p className="text-white text-sm font-medium">Explorer</p>
-                                            <p className="text-gray-400 text-xs">Visited 10+ countries</p>
+                                            <p className="text-foreground text-sm font-medium">Explorer</p>
+                                            <p className="text-muted-foreground text-xs">Visited 10+ countries</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center space-x-3">
@@ -636,8 +636,8 @@ const ProfilePage = () => {
                                             <Users size={16} className="text-white" />
                                         </div>
                                         <div>
-                                            <p className="text-white text-sm font-medium">Community Helper</p>
-                                            <p className="text-gray-400 text-xs">Wrote 5+ reviews</p>
+                                            <p className="text-foreground text-sm font-medium">Community Helper</p>
+                                            <p className="text-muted-foreground text-xs">Wrote 5+ reviews</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center space-x-3">
@@ -645,30 +645,30 @@ const ProfilePage = () => {
                                             <CheckCircle size={16} className="text-white" />
                                         </div>
                                         <div>
-                                            <p className="text-white text-sm font-medium">Planner Pro</p>
-                                            <p className="text-gray-400 text-xs">Completed 20+ trips</p>
+                                            <p className="text-foreground text-sm font-medium">Planner Pro</p>
+                                            <p className="text-muted-foreground text-xs">Completed 20+ trips</p>
                                         </div>
                                     </div>
                                 </CardContent>
                             </Card>
 
                             {/* Recent Activity */}
-                            <Card className="bg-gray-900 border-gray-700">
+                            <Card className="bg-card border-border">
                                 <CardHeader>
-                                    <CardTitle className="text-white text-lg">Recent Activity</CardTitle>
+                                    <CardTitle className="text-foreground text-lg">Recent Activity</CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-3">
                                     <div className="text-sm">
-                                        <p className="text-white">Planned trip to Tokyo</p>
-                                        <p className="text-gray-400">2 days ago</p>
+                                        <p className="text-foreground">Planned trip to Tokyo</p>
+                                        <p className="text-muted-foreground">2 days ago</p>
                                     </div>
                                     <div className="text-sm">
-                                        <p className="text-white">Added Paris to favorites</p>
-                                        <p className="text-gray-400">1 week ago</p>
+                                        <p className="text-foreground">Added Paris to favorites</p>
+                                        <p className="text-muted-foreground">1 week ago</p>
                                     </div>
                                     <div className="text-sm">
-                                        <p className="text-white">Wrote review for Barcelona trip</p>
-                                        <p className="text-gray-400">2 weeks ago</p>
+                                        <p className="text-foreground">Wrote review for Barcelona trip</p>
+                                        <p className="text-muted-foreground">2 weeks ago</p>
                                     </div>
                                 </CardContent>
                             </Card>

@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'; // Method to create the root of t
 import { BrowserRouter } from 'react-router-dom'; // Router for handling navigation in the app
 import { ClerkProvider } from '@clerk/clerk-react'; // Provider for Clerk authentication
 import { Analytics } from '@vercel/analytics/react'; // Vercel analytics integration
+import { ThemeProvider } from 'next-themes';
 
 import App from './App.jsx'; // Main application component
 import './index.css'; // Global CSS styles
@@ -23,10 +24,12 @@ createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       {/* Provide Clerk authentication context */}
       <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
-        {/* Provide global app context */}
-        <AppProvider>
-          <App />
-        </AppProvider>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+          {/* Provide global app context */}
+          <AppProvider>
+            <App />
+          </AppProvider>
+        </ThemeProvider>
         {/* Enable analytics */}
         <Analytics />
       </ClerkProvider>

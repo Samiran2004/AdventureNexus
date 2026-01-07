@@ -199,30 +199,30 @@ const AdventureNexusLanding = () => {
     const navigate = useNavigate();
 
     return (
-        <div className="min-h-screen bg-black overflow-hidden">
+        <div className="min-h-screen bg-background overflow-hidden">
 
             <NavBar />
 
             {/* Hero Section */}
-            <section ref={heroRef} className="py-20 bg-gradient-to-br from-gray-900 via-black to-gray-900 relative overflow-hidden">
+            <section ref={heroRef} className="py-20 bg-background relative overflow-hidden">
                 {/* Background decorative elements */}
                 <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute -top-10 -right-10 w-80 h-80 bg-blue-900/20 rounded-full opacity-50"></div>
-                    <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-purple-900/20 rounded-full opacity-30"></div>
+                    <div className="absolute -top-10 -right-10 w-80 h-80 bg-primary/20 rounded-full opacity-50 blur-3xl"></div>
+                    <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-secondary/20 rounded-full opacity-30 blur-3xl"></div>
                 </div>
 
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
                     <div className="grid lg:grid-cols-2 gap-12 items-center">
                         <div ref={heroContentRef} className="space-y-8">
                             <div className="space-y-4">
-                                <Badge className="bg-gradient-to-r from-blue-900/50 to-purple-900/50 text-blue-400 border border-blue-700/30">
+                                <Badge className="bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20">
                                     🤖 AI-Powered Travel Planning
                                 </Badge>
-                                <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight">
+                                <h1 className="text-4xl md:text-6xl font-bold text-foreground leading-tight">
                                     Your Perfect Trip
-                                    <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"> Planned by AI</span>
+                                    <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"> Planned by AI</span>
                                 </h1>
-                                <p className="text-xl text-gray-300 leading-relaxed">
+                                <p className="text-xl text-muted-foreground leading-relaxed">
                                     Let our advanced AI create personalized itineraries, find the best flights and hotels, and discover hidden gems tailored to your preferences and budget.
                                 </p>
                             </div>
@@ -230,7 +230,7 @@ const AdventureNexusLanding = () => {
                             <div className="flex flex-col sm:flex-row gap-4">
                                 <Button
                                     size="lg"
-                                    className="text-lg px-8 py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 cursor-pointer"
+                                    className="text-lg px-8 py-6 bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer shadow-lg hover:shadow-primary/25"
                                     onMouseEnter={handleButtonHover}
                                     onMouseLeave={handleButtonLeave}
                                     onClick={() => {
@@ -243,7 +243,7 @@ const AdventureNexusLanding = () => {
                                 <Button
                                     variant="outline"
                                     size="lg"
-                                    className="text-lg px-8 py-6 border-2 border-gray-600 text-black hover:bg-gray-800 hover:text-white cursor-pointer"
+                                    className="text-lg px-8 py-6 border-2 border-input text-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer"
                                     onMouseEnter={handleButtonHover}
                                     onMouseLeave={handleButtonLeave}
                                     onClick={() => {
@@ -255,66 +255,66 @@ const AdventureNexusLanding = () => {
                                 </Button>
                             </div>
 
-                            <div className="flex items-center space-x-6 text-sm text-gray-400">
+                            <div className="flex items-center space-x-6 text-sm text-muted-foreground">
                                 <div className="flex items-center">
-                                    <CheckCircle className="text-green-400 mr-2" size={16} />
+                                    <CheckCircle className="text-green-600 dark:text-green-400 mr-2" size={16} />
                                     Free to use
                                 </div>
                                 <div className="flex items-center">
-                                    <CheckCircle className="text-green-400 mr-2" size={16} />
+                                    <CheckCircle className="text-green-600 dark:text-green-400 mr-2" size={16} />
                                     Instant results
                                 </div>
                                 <div className="flex items-center">
-                                    <CheckCircle className="text-green-400 mr-2" size={16} />
+                                    <CheckCircle className="text-green-600 dark:text-green-400 mr-2" size={16} />
                                     No credit card required
                                 </div>
                             </div>
                         </div>
 
                         <div ref={heroImageRef} className="relative">
-                            <div className="bg-gray-900/80 border border-gray-700 rounded-2xl shadow-2xl p-8 space-y-6 backdrop-blur-sm">
+                            <div className="glass-card shadow-3d hover-lift rounded-2xl p-8 space-y-6 glow-border">
                                 <div className="flex items-center justify-between">
-                                    <h3 className="text-lg font-semibold text-white">Trip Planner Dashboard</h3>
-                                    <Badge variant="secondary" className="bg-green-900/50 text-green-400 border border-green-700">AI Active</Badge>
+                                    <h3 className="text-lg font-semibold text-card-foreground">Trip Planner Dashboard</h3>
+                                    <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-400 border border-green-200 dark:border-green-800 shadow-lg">AI Active</Badge>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
-                                    <Card className="bg-gray-800 border-gray-700">
+                                    <Card className="bg-muted/50 border-border hover-lift shadow-lg hover:shadow-2xl transition-all duration-300">
                                         <CardContent className="p-4 text-center">
-                                            <MapPin className="text-blue-400 mx-auto mb-2" size={24} />
-                                            <div className="text-2xl font-bold text-white">
+                                            <MapPin className="text-primary mx-auto mb-2 animate-float" size={24} />
+                                            <div className="text-2xl font-bold text-foreground">
                                                 <NumberCounter
                                                     targetNumber={195}
                                                     duration={3}
-                                                    className="text-2xl font-bold text-white"
+                                                    className="text-2xl font-bold text-foreground"
                                                 />
                                             </div>
-                                            <div className="text-sm text-gray-400">Countries</div>
+                                            <div className="text-sm text-muted-foreground">Countries</div>
                                         </CardContent>
                                     </Card>
-                                    <Card className="bg-gray-800 border-gray-700">
+                                    <Card className="bg-muted/50 border-border hover-lift shadow-lg hover:shadow-2xl transition-all duration-300">
                                         <CardContent className="p-4 text-center">
-                                            <Users className="text-green-400 mx-auto mb-2" size={24} />
-                                            <div className="text-2xl font-bold text-white">
+                                            <Users className="text-green-600 dark:text-green-400 mx-auto mb-2 animate-float" size={24} />
+                                            <div className="text-2xl font-bold text-foreground">
                                                 <NumberCounter
                                                     targetNumber={5}
                                                     duration={2.5}
-                                                    className="text-2xl font-bold text-white"
+                                                    className="text-2xl font-bold text-foreground"
                                                 />
                                                 +
                                             </div>
-                                            <div className="text-sm text-gray-400">Happy Travelers</div>
+                                            <div className="text-sm text-muted-foreground">Happy Travelers</div>
                                         </CardContent>
                                     </Card>
                                 </div>
                                 <div className="space-y-3">
                                     <div className="flex items-center space-x-3">
-                                        <Bot className="text-purple-400" size={20} />
-                                        <div className="flex-1 bg-gray-800 rounded-lg p-2">
-                                            <div className="text-sm text-gray-300">Planning your 7-day Japan adventure...</div>
+                                        <Bot className="text-secondary animate-float" size={20} />
+                                        <div className="flex-1 bg-muted/70 backdrop-blur-sm rounded-lg p-2 border border-border/50">
+                                            <div className="text-sm text-muted-foreground">Planning your 7-day Japan adventure...</div>
                                         </div>
                                     </div>
-                                    <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
-                                        <div className="h-full bg-gradient-to-r from-blue-600 to-purple-600 rounded-full w-3/4"></div>
+                                    <div className="h-2 bg-muted/70 rounded-full overflow-hidden backdrop-blur-sm border border-border/30">
+                                        <div className="h-full bg-gradient-to-r from-primary via-secondary to-primary rounded-full w-3/4 animate-pulse shadow-lg"></div>
                                     </div>
                                 </div>
                             </div>
@@ -324,17 +324,17 @@ const AdventureNexusLanding = () => {
             </section>
 
             {/* Features Section */}
-            <section id="features" ref={featuresRef} className="py-10 bg-black">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className='m-0'>
+            <section id="features" ref={featuresRef} className="py-10 bg-background">
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8 space-y-20">
+                    <div className="w-full">
                         <Globe2 />
                     </div>
 
-                    <div className=''>
+                    <div className="w-full">
                         <CardSlider />
                     </div>
-                    <div>
-                        {/* <ScrollBasedVelocityDemo /> */}
+
+                    <div className="space-y-10">
                         <TextRevealLetters />
                         <BentoGrid1 />
                     </div>
@@ -342,13 +342,13 @@ const AdventureNexusLanding = () => {
             </section>
 
             {/* Testimonials Section */}
-            <section id="testimonials" ref={testimonialsRef} className="py-20 bg-black">
+            <section id="testimonials" ref={testimonialsRef} className="py-20 bg-background">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center space-y-4 mb-16">
-                        <h2 className="text-3xl md:text-4xl font-bold text-white">
+                        <h2 className="text-3xl md:text-4xl font-bold text-foreground">
                             Travelers Love AdventureNexus
                         </h2>
-                        <p className="text-xl text-gray-400">
+                        <p className="text-xl text-muted-foreground">
                             See what our community of adventurers is saying
                         </p>
                     </div>
@@ -377,21 +377,24 @@ const AdventureNexusLanding = () => {
                                 location: "Argentina, Barcelona, Canada"
                             }
                         ].map((testimonial, index) => (
-                            <Card key={index} className="testimonial-card bg-gray-900 border-gray-700 shadow-lg">
+                            <Card key={index} className="testimonial-card bg-card border-border shadow-3d hover-lift glow-border">
                                 <CardContent className="p-6 space-y-4">
-                                    <div className="flex text-yellow-400">
+                                    <div className="flex text-yellow-500">
                                         {[...Array(testimonial.rating)].map((_, i) => (
-                                            <Star key={i} size={20} fill="currentColor" />
+                                            <Star key={i} size={20} fill="currentColor" className="drop-shadow-lg" />
                                         ))}
                                     </div>
-                                    <p className="text-gray-300 italic">"{testimonial.content}"</p>
-                                    <div className="border-t border-gray-700 pt-4 flex items-center space-x-3">
-                                        <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
-                                            {testimonial.name.split(' ').map(n => n[0]).join('')}
+                                    <p className="text-muted-foreground italic leading-relaxed">"{testimonial.content}"</p>
+                                    <div className="border-t border-border pt-4 flex items-center space-x-3">
+                                        <div className="relative">
+                                            <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-primary-foreground font-bold shadow-lg ring-2 ring-primary/20 ring-offset-2 ring-offset-background">
+                                                {testimonial.name.split(' ').map(n => n[0]).join('')}
+                                            </div>
+                                            <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-background shadow-sm"></div>
                                         </div>
                                         <div>
-                                            <div className="font-semibold text-white">{testimonial.name}</div>
-                                            <div className="text-sm text-gray-400">{testimonial.role} • {testimonial.location}</div>
+                                            <div className="font-semibold text-card-foreground">{testimonial.name}</div>
+                                            <div className="text-sm text-muted-foreground">{testimonial.role} • {testimonial.location}</div>
                                         </div>
                                     </div>
                                 </CardContent>
@@ -402,13 +405,13 @@ const AdventureNexusLanding = () => {
             </section>
 
             {/* Pricing Section */}
-            <section id="pricing" ref={pricingRef} className="py-20 bg-gray-900">
+            <section id="pricing" ref={pricingRef} className="py-20 bg-muted/30">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center space-y-4 mb-16">
-                        <h2 className="text-3xl md:text-4xl font-bold text-white">
+                        <h2 className="text-3xl md:text-4xl font-bold text-foreground">
                             Simple, Transparent Pricing
                         </h2>
-                        <p className="text-xl text-gray-400">
+                        <p className="text-xl text-muted-foreground">
                             Choose the plan that fits your travel style
                         </p>
                     </div>
@@ -445,37 +448,37 @@ const AdventureNexusLanding = () => {
                         ].map((plan, index) => (
                             <Card
                                 key={index}
-                                className={`pricing-card relative hover:scale-105 transition-transform duration-300 bg-gray-800 ${plan.popular ? 'border-blue-500 shadow-2xl scale-105' : 'border-gray-700'
+                                className={`pricing-card relative shadow-3d hover-lift glow-border transition-all duration-500 ${plan.popular ? 'border-primary glass-card scale-105' : 'border-border bg-card'
                                     }`}
                             >
                                 {plan.popular && (
-                                    <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-blue-600 to-purple-600">
+                                    <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-xl shadow-primary/50 animate-pulse">
                                         Most Popular
                                     </Badge>
                                 )}
                                 <CardHeader className="text-center">
-                                    <CardTitle className="text-2xl text-white">{plan.name}</CardTitle>
+                                    <CardTitle className="text-2xl text-card-foreground">{plan.name}</CardTitle>
                                     <div className="space-y-2">
-                                        <div className="text-4xl font-bold text-white">
+                                        <div className="text-4xl font-bold text-card-foreground">
                                             {plan.price}
-                                            <span className="text-lg font-normal text-gray-400">{plan.period}</span>
+                                            <span className="text-lg font-normal text-muted-foreground">{plan.period}</span>
                                         </div>
-                                        <CardDescription className="text-gray-400">{plan.description}</CardDescription>
+                                        <CardDescription className="text-muted-foreground">{plan.description}</CardDescription>
                                     </div>
                                 </CardHeader>
                                 <CardContent className="space-y-6">
                                     <ul className="space-y-3">
                                         {plan.features.map((feature, featureIndex) => (
                                             <li key={featureIndex} className="flex items-center">
-                                                <CheckCircle className="text-green-400 mr-3" size={16} />
-                                                <span className="text-sm text-gray-300">{feature}</span>
+                                                <CheckCircle className="text-green-600 dark:text-green-400 mr-3 drop-shadow-sm" size={16} />
+                                                <span className="text-sm text-muted-foreground">{feature}</span>
                                             </li>
                                         ))}
                                     </ul>
                                     <Button
-                                        className={`w-full ${plan.popular
-                                            ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700'
-                                            : 'bg-gray-700 hover:bg-gray-600 text-white'
+                                        className={`w-full shadow-lg hover:shadow-xl transition-all ${plan.popular
+                                            ? 'bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground'
+                                            : 'bg-muted hover:bg-muted/80 text-foreground'
                                             }`}
                                         onMouseEnter={handleButtonHover}
                                         onMouseLeave={handleButtonLeave}
@@ -490,7 +493,7 @@ const AdventureNexusLanding = () => {
             </section>
 
             {/* Call to Action Section */}
-            <section ref={ctaRef} className="py-20 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 text-white">
+            <section ref={ctaRef} className="py-20 bg-gradient-to-br from-primary via-secondary to-purple-800 text-white">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
                     <div className="max-w-3xl mx-auto space-y-8">
                         <h2 className="text-3xl md:text-4xl font-bold">
@@ -503,21 +506,21 @@ const AdventureNexusLanding = () => {
                             <Button
                                 size="lg"
                                 variant="secondary"
-                                className="text-lg px-8 py-6 bg-white text-blue-600 hover:bg-gray-50 cursor-pointer"
+                                className="text-lg px-8 py-6 bg-white text-primary hover:bg-gray-50 cursor-pointer shadow-3d hover-lift"
                                 onMouseEnter={handleButtonHover}
                                 onMouseLeave={handleButtonLeave}
                             >
                                 Start Planning Now
-                                <ArrowRight className="ml-2" size={20} />
+                                <ArrowRight className="ml-2 animate-float" size={20} />
                             </Button>
                             <Button
                                 size="lg"
                                 variant="outline"
-                                className="text-lg px-8 py-6 text-black border-white hover:bg-white hover:text-blue-600 cursor-pointer"
+                                className="text-lg px-8 py-6 text-white border-white hover:bg-white hover:text-primary cursor-pointer bg-transparent shadow-lg hover:shadow-2xl transition-all"
                                 onMouseEnter={handleButtonHover}
                                 onMouseLeave={handleButtonLeave}
                             >
-                                <MessageCircle className="mr-2" size={20} />
+                                <MessageCircle className="mr-2 animate-float" size={20} />
                                 Talk to Our AI
                             </Button>
                         </div>
@@ -540,73 +543,6 @@ const AdventureNexusLanding = () => {
             </section>
 
             {/* Footer */}
-            {/* <footer className="bg-gray-900 text-white py-12 border-t border-gray-800">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid md:grid-cols-4 gap-8">
-                        <div className="space-y-4">
-                            <div className="flex items-center space-x-2">
-                                <div className="bg-gradient-to-br from-blue-600 to-purple-600 text-white p-2 rounded-lg">
-                                    <Compass size={24} />
-                                </div>
-                                <span className="text-2xl font-bold">AdventureNexus</span>
-                            </div>
-                            <p className="text-gray-400">
-                                Empowering travelers with AI-powered trip planning and personalized recommendations for unforgettable adventures.
-                            </p>
-                            <div className="flex space-x-4">
-                                <Button variant="outline" size="sm" className="text-gray-400 border-gray-600 hover:text-white hover:border-white hover:bg-gray-800">
-                                    <Mail size={16} className="mr-2" />
-                                    Newsletter
-                                </Button>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h3 className="font-semibold mb-4 text-white">Product</h3>
-                            <ul className="space-y-2 text-gray-400">
-                                <li><a href="#features" className="hover:text-white transition-colors">AI Trip Planner</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Flight Search</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Hotel Booking</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Destinations</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Mobile App</a></li>
-                            </ul>
-                        </div>
-
-                        <div>
-                            <h3 className="font-semibold mb-4 text-white">Company</h3>
-                            <ul className="space-y-2 text-gray-400">
-                                <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Travel Blog</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Press</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Partnerships</a></li>
-                            </ul>
-                        </div>
-
-                        <div>
-                            <h3 className="font-semibold mb-4 text-white">Support</h3>
-                            <ul className="space-y-2 text-gray-400">
-                                <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Contact Us</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">Travel Guides</a></li>
-                                <li><a href="https://adventurenexus.onrender.com/api-docs/" className="hover:text-white transition-colors">API Docs</a></li>
-                                <li><a href="#" className="hover:text-white transition-colors">System Status</a></li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-                        <p className="text-gray-400 text-sm">
-                            © 2025 AdventureNexus. All rights reserved. Powered by AI for better travel experiences.
-                        </p>
-                        <div className="flex space-x-6 mt-4 md:mt-0">
-                            <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Privacy Policy</a>
-                            <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Terms of Service</a>
-                            <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Cookie Settings</a>
-                        </div>
-                    </div>
-                </div>
-            </footer> */}
             <Footer />
         </div>
     );

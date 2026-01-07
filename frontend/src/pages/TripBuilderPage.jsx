@@ -322,29 +322,29 @@ const TripBuilderPage = () => {
     );
 
     return (
-        <div className="min-h-screen bg-black text-white">
+        <div className="min-h-screen bg-background text-foreground">
             <NavBar />
 
             {/* Hero Section */}
-            <section ref={heroRef} className="py-16 bg-gradient-to-br from-gray-900 via-black to-gray-900 relative overflow-hidden">
+            <section ref={heroRef} className="py-16 bg-gradient-to-br from-background via-background to-background relative overflow-hidden">
                 <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute -top-10 -right-10 w-80 h-80 bg-blue-900/20 rounded-full opacity-50"></div>
-                    <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-purple-900/20 rounded-full opacity-30"></div>
+                    <div className="absolute -top-10 -right-10 w-80 h-80 bg-primary/20 rounded-full opacity-50"></div>
+                    <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-secondary/20 rounded-full opacity-30"></div>
                 </div>
 
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
                     <div className="max-w-4xl mx-auto text-center space-y-6">
-                        <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight">
+                        <h1 className="text-4xl md:text-5xl font-bold text-foreground leading-tight">
                             Build Your Perfect
-                            <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"> Itinerary</span>
+                            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"> Itinerary</span>
                         </h1>
-                        <p className="text-xl text-gray-300 leading-relaxed">
+                        <p className="text-xl text-muted-foreground leading-relaxed">
                             Plan every detail of your trip with our interactive itinerary builder,
                             budget tracker, and collaborative planning tools.
                         </p>
 
                         {/* Trip Quick Stats */}
-                        <div className="flex justify-center space-x-8 text-sm text-gray-400 mt-8">
+                        <div className="flex justify-center space-x-8 text-sm text-muted-foreground mt-8">
                             <div className="flex items-center">
                                 <Calendar className="mr-2" size={16} />
                                 {itinerary.length} Days
@@ -363,16 +363,16 @@ const TripBuilderPage = () => {
             </section>
 
             {/* Main Content */}
-            <section ref={contentRef} className="py-16 bg-black">
+            <section ref={contentRef} className="py-16 bg-background">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Tab Navigation */}
                     <div className="flex justify-center mb-8">
-                        <div className="flex space-x-1 bg-gray-900 p-1 rounded-lg">
+                        <div className="flex space-x-1 bg-muted p-1 rounded-lg">
                             <button
                                 onClick={() => setActiveTab('planner')}
                                 className={`flex items-center px-6 py-3 rounded-md transition-all ${activeTab === 'planner'
-                                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
-                                        : 'text-gray-400 hover:text-white'
+                                    ? 'bg-gradient-to-r from-primary to-secondary text-primary-foreground'
+                                    : 'text-muted-foreground hover:text-foreground'
                                     }`}
                             >
                                 <Calendar size={16} className="mr-2" />
@@ -387,10 +387,10 @@ const TripBuilderPage = () => {
                             <div className="grid lg:grid-cols-4 gap-8">
                                 {/* Activities Library */}
                                 <div className="lg:col-span-1 space-y-6">
-                                    <Card className="bg-gray-900 border-gray-700">
+                                    <Card className="bg-card border-border">
                                         <CardHeader>
-                                            <CardTitle className="text-white flex items-center">
-                                                <Search className="mr-2 text-blue-400" size={20} />
+                                            <CardTitle className="text-card-foreground flex items-center">
+                                                <Search className="mr-2 text-primary" size={20} />
                                                 Activity Library
                                             </CardTitle>
                                         </CardHeader>
@@ -400,14 +400,14 @@ const TripBuilderPage = () => {
                                                 placeholder="Search activities..."
                                                 value={searchTerm}
                                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                                className="bg-gray-800 border-gray-700 text-white"
+                                                className="bg-input border-input text-foreground"
                                             />
 
                                             {/* Category Filter */}
                                             <select
                                                 value={selectedCategory}
                                                 onChange={(e) => setSelectedCategory(e.target.value)}
-                                                className="w-full bg-gray-800 border border-gray-700 text-white rounded px-3 py-2"
+                                                className="w-full bg-input border border-input text-foreground rounded px-3 py-2 focus:ring-2 focus:ring-ring focus:border-border"
                                             >
                                                 <option value="all">All Categories</option>
                                                 <option value="sightseeing">Sightseeing</option>
@@ -447,8 +447,8 @@ const TripBuilderPage = () => {
                                                 key={index}
                                                 onClick={() => setSelectedDay(index)}
                                                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedDay === index
-                                                        ? 'bg-blue-600 text-white'
-                                                        : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700'
+                                                    ? 'bg-primary text-primary-foreground'
+                                                    : 'bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80'
                                                     }`}
                                             >
                                                 Day {day.dayNumber}
@@ -464,14 +464,14 @@ const TripBuilderPage = () => {
 
                                     {/* Selected Day Content */}
                                     {itinerary[selectedDay] && (
-                                        <Card className="bg-gray-900 border-gray-700">
+                                        <Card className="bg-card border-border">
                                             <CardHeader>
                                                 <div className="flex justify-between items-center">
                                                     <div>
-                                                        <CardTitle className="text-white">
+                                                        <CardTitle className="text-card-foreground">
                                                             Day {itinerary[selectedDay].dayNumber} Schedule
                                                         </CardTitle>
-                                                        <CardDescription className="text-gray-400">
+                                                        <CardDescription className="text-muted-foreground">
                                                             {new Date(itinerary[selectedDay].date).toLocaleDateString('en-US', {
                                                                 weekday: 'long',
                                                                 year: 'numeric',
@@ -481,10 +481,10 @@ const TripBuilderPage = () => {
                                                         </CardDescription>
                                                     </div>
                                                     <div className="text-right">
-                                                        <div className="text-white font-medium">
+                                                        <div className="text-card-foreground font-medium">
                                                             {itinerary[selectedDay].activities.length} Activities
                                                         </div>
-                                                        <div className="text-green-400 font-medium">
+                                                        <div className="text-green-600 dark:text-green-400 font-medium">
                                                             ${itinerary[selectedDay].activities.reduce((sum, act) => sum + act.cost, 0)}
                                                         </div>
                                                     </div>
@@ -498,12 +498,12 @@ const TripBuilderPage = () => {
                                                             {...provided.droppableProps}
                                                             ref={provided.innerRef}
                                                             className={`min-h-[300px] rounded-lg border-2 border-dashed transition-colors ${snapshot.isDraggingOver
-                                                                    ? 'border-blue-500 bg-blue-500/10'
-                                                                    : 'border-gray-600'
+                                                                ? 'border-primary bg-primary/10'
+                                                                : 'border-border'
                                                                 }`}
                                                         >
                                                             {itinerary[selectedDay].activities.length === 0 ? (
-                                                                <div className="flex flex-col items-center justify-center h-48 text-gray-400">
+                                                                <div className="flex flex-col items-center justify-center h-48 text-muted-foreground">
                                                                     <Calendar size={48} className="mb-4 opacity-50" />
                                                                     <p className="text-lg font-medium">No activities scheduled</p>
                                                                     <p className="text-sm">Drag activities from the library to build your day</p>
@@ -522,22 +522,22 @@ const TripBuilderPage = () => {
                                                                                     {...provided.draggableProps}
                                                                                     {...provided.dragHandleProps}
                                                                                 >
-                                                                                    <Card className="bg-gray-800 border-gray-700 mb-3">
+                                                                                    <Card className="bg-card border-border mb-3">
                                                                                         <CardContent className="p-4">
                                                                                             <div className="flex items-start justify-between">
                                                                                                 <div className="flex items-start space-x-3 flex-1">
-                                                                                                    <GripVertical className="text-gray-400 cursor-move" size={16} />
+                                                                                                    <GripVertical className="text-muted-foreground cursor-move" size={16} />
                                                                                                     <img
                                                                                                         src={activity.image}
                                                                                                         alt={activity.name}
                                                                                                         className="w-10 h-10 rounded-lg object-cover"
                                                                                                     />
                                                                                                     <div className="flex-1">
-                                                                                                        <h4 className="text-white font-medium">{activity.name}</h4>
-                                                                                                        <p className="text-gray-400 text-sm">{activity.description}</p>
+                                                                                                        <h4 className="text-card-foreground font-medium">{activity.name}</h4>
+                                                                                                        <p className="text-muted-foreground text-sm">{activity.description}</p>
                                                                                                         <div className="flex items-center space-x-4 mt-2">
-                                                                                                            <span className="text-gray-400 text-sm">{activity.duration}</span>
-                                                                                                            <span className="text-green-400 font-medium">${activity.cost}</span>
+                                                                                                            <span className="text-muted-foreground text-sm">{activity.duration}</span>
+                                                                                                            <span className="text-green-600 dark:text-green-400 font-medium">${activity.cost}</span>
                                                                                                         </div>
                                                                                                     </div>
                                                                                                 </div>
@@ -545,7 +545,7 @@ const TripBuilderPage = () => {
                                                                                                     variant="ghost"
                                                                                                     size="sm"
                                                                                                     onClick={() => removeActivity(selectedDay, activityIndex)}
-                                                                                                    className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                                                                                                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
                                                                                                 >
                                                                                                     <Trash2 size={16} />
                                                                                                 </Button>
@@ -572,15 +572,15 @@ const TripBuilderPage = () => {
 
                     {/* Action Buttons */}
                     <div className="flex justify-center space-x-4 mt-12">
-                        <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600">
+                        <Button size="lg" className="bg-gradient-to-r from-primary to-secondary text-primary-foreground hover:from-primary/90 hover:to-secondary/90">
                             <Download className="mr-2" size={20} />
                             Export Itinerary
                         </Button>
-                        <Button size="lg" variant="outline" className="border-gray-600 text-blue-400 hover:text-black hover:bg-green-500 hover:border-white">
+                        <Button size="lg" variant="outline" className="border-border text-primary hover:text-primary-foreground hover:bg-primary">
                             <Bot className="mr-2" size={20} />
                             Optimize with AI
                         </Button>
-                        <Button size="lg" variant="outline" className="border-gray-600 text-blue-400 hover:text-black hover:bg-green-500 hover:border-white">
+                        <Button size="lg" variant="outline" className="border-border text-primary hover:text-primary-foreground hover:bg-primary">
                             <Save className="mr-2" size={20} />
                             Save Trip
                         </Button>
