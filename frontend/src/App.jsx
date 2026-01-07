@@ -18,6 +18,8 @@ import TripBuilderPage from './pages/TripBuilderPage';
 import AccommodationsPage from './pages/HotelPage';
 import MyTripsPage from './pages/MyTripPage';
 import FlightsPage from './pages/FlightsPage';
+import ChatAssistant from './components/ChatAssistant'; // Floating chat assistant
+import { ChatProvider } from './context/ChatContext'; // Chat context provider
 
 // App content component that uses the context
 const AppContent = () => {
@@ -86,6 +88,9 @@ const AppContent = () => {
         {/* --- 404 Not Found Page (Catches all unknown routes) --- */}
         <Route path='*' element={<PageNotFound />} />
       </Routes>
+
+      {/* Floating Chat Assistant - Available on all pages */}
+      <ChatAssistant />
     </>
   );
 };
@@ -94,7 +99,9 @@ const AppContent = () => {
 function App() {
   return (
     <AppProvider>
-      <AppContent />
+      <ChatProvider>
+        <AppContent />
+      </ChatProvider>
     </AppProvider>
   );
 }
