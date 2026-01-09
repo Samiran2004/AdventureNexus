@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -276,14 +277,19 @@ const AdventureNexusLanding = () => {
                             </div>
                         </div>
 
-                        <div ref={heroImageRef} className="relative">
-                            <div className="glass-card shadow-3d hover-lift rounded-2xl p-8 space-y-6 glow-border">
-                                <div className="flex items-center justify-between">
+                        <div ref={heroImageRef} className="relative perspective-container">
+                            <motion.div
+                                className="glass-3d rounded-2xl p-8 space-y-6 glow-border preserve-3d"
+                                initial={{ rotateX: 0, rotateY: 0 }}
+                                whileHover={{ rotateX: 5, rotateY: -5, scale: 1.02 }}
+                                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                            >
+                                <div className="flex items-center justify-between transform translate-z-10">
                                     <h3 className="text-lg font-semibold text-card-foreground">Trip Planner Dashboard</h3>
-                                    <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-400 border border-green-200 dark:border-green-800 shadow-lg">AI Active</Badge>
+                                    <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-400 border border-green-200 dark:border-green-800 shadow-lg animate-pulse">AI Active</Badge>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
-                                    <Card className="bg-muted/50 border-border hover-lift shadow-lg hover:shadow-2xl transition-all duration-300">
+                                    <Card className="bg-muted/50 border-border hover-lift shadow-lg hover:shadow-2xl transition-all duration-300 card-3d">
                                         <CardContent className="p-4 text-center">
                                             <MapPin className="text-primary mx-auto mb-2 animate-float" size={24} />
                                             <div className="text-2xl font-bold text-foreground">
@@ -296,7 +302,7 @@ const AdventureNexusLanding = () => {
                                             <div className="text-sm text-muted-foreground">Countries</div>
                                         </CardContent>
                                     </Card>
-                                    <Card className="bg-muted/50 border-border hover-lift shadow-lg hover:shadow-2xl transition-all duration-300">
+                                    <Card className="bg-muted/50 border-border hover-lift shadow-lg hover:shadow-2xl transition-all duration-300 card-3d">
                                         <CardContent className="p-4 text-center">
                                             <Users className="text-green-600 dark:text-green-400 mx-auto mb-2 animate-float" size={24} />
                                             <div className="text-2xl font-bold text-foreground">
@@ -311,18 +317,18 @@ const AdventureNexusLanding = () => {
                                         </CardContent>
                                     </Card>
                                 </div>
-                                <div className="space-y-3">
+                                <div className="space-y-3 transform translate-z-20">
                                     <div className="flex items-center space-x-3">
                                         <Bot className="text-secondary animate-float" size={20} />
-                                        <div className="flex-1 bg-muted/70 backdrop-blur-sm rounded-lg p-2 border border-border/50">
+                                        <div className="flex-1 bg-muted/70 backdrop-blur-sm rounded-lg p-2 border border-border/50 shadow-inner">
                                             <div className="text-sm text-muted-foreground">Planning your 7-day Japan adventure...</div>
                                         </div>
                                     </div>
                                     <div className="h-2 bg-muted/70 rounded-full overflow-hidden backdrop-blur-sm border border-border/30">
-                                        <div className="h-full bg-gradient-to-r from-primary via-secondary to-primary rounded-full w-3/4 animate-pulse shadow-lg"></div>
+                                        <div className="h-full bg-gradient-to-r from-primary via-secondary to-primary rounded-full w-3/4 animate-shimmer shadow-lg"></div>
                                     </div>
                                 </div>
-                            </div>
+                            </motion.div>
                         </div>
                     </div>
                 </div>
