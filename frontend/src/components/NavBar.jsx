@@ -192,81 +192,61 @@ function NavBar() {
                 </div>
             )}
 
-            {/* Main Navigation */}
-            <nav className={`border-b border-transparent fixed top-0 w-full z-40 transition-all duration-300 ${scrolled
-                ? 'bg-background/80 shadow-lg border-border backdrop-blur-md'
-                : 'bg-transparent'
-                }`}>
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
+            {/* Main Navigation - Floating Island */}
+            <div className="fixed top-0 w-full z-40 flex justify-center pt-4 md:pt-6 px-4">
+                <nav
+                    className={`transition-all duration-500 ease-in-out ${scrolled
+                        ? 'w-full md:w-auto md:min-w-[700px] rounded-full glass-3d shadow-3d border border-white/20 px-6 py-3'
+                        : 'w-full bg-transparent py-4'
+                        }`}
+                >
+                    <div className="flex justify-between items-center">
                         {/* Logo */}
                         <Link
                             to="/"
                             className="flex items-center space-x-2 hover:scale-105 transition-transform duration-300"
                         >
-                            <AnimatedLogo size={48} />
-                            <span className="text-2xl font-bold logo-shimmer font-outfit tracking-tight drop-shadow-2xl hover:scale-110 transition-all duration-300">
-                                AdventureNexus
+                            <AnimatedLogo size={scrolled ? 36 : 42} />
+                            <span className={`font-bold font-outfit tracking-tight transition-all duration-300 ${scrolled ? 'text-xl' : 'text-2xl drop-shadow-md'}`}>
+                                <span className={scrolled ? 'text-foreground' : 'text-foreground'}>Adventure</span>
+                                <span className="text-primary">Nexus</span>
                             </span>
                         </Link>
 
                         {/* Desktop Navigation */}
-                        <div className="hidden md:flex items-center space-x-8">
+                        <div className="hidden md:flex items-center space-x-1">
                             {navItems.map((item) => (
                                 <Link
                                     key={item.name}
                                     to={item.path}
-                                    className="text-muted-foreground hover:text-foreground transition-colors duration-300 relative group font-medium"
+                                    className="relative px-4 py-2 rounded-full text-sm font-medium text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300 group"
                                 >
                                     {item.name}
-                                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
+                                    {/* Active/Hover Indicator */}
+                                    <span className="absolute inset-x-0 bottom-0 h-0.5 bg-primary scale-x-0 group-hover:scale-x-75 transition-transform duration-300 rounded-full origin-center" />
                                 </Link>
                             ))}
                         </div>
 
-                        {/* Desktop CTA Buttons */}
-                        <div className="hidden md:flex items-center space-x-4">
+                        {/* Desktop CTA Buttons & Actions */}
+                        <div className="hidden md:flex items-center space-x-3">
                             <button
                                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                                className="relative w-16 h-8 rounded-full bg-gradient-to-r from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800 shadow-inner transition-shadow duration-300 hover:shadow-lg group"
+                                className="relative p-2 rounded-full hover:bg-accent transition-colors duration-300 group"
+                                aria-label="Toggle theme"
                             >
-                                {/* Track gradient overlay */}
-                                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400/20 via-purple-400/20 to-pink-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                                {/* Animated toggle ball */}
-                                <div
-                                    className="absolute top-0.5 w-7 h-7 rounded-full transition-all duration-300 ease-out will-change-transform"
-                                    style={{
-                                        transform: theme === 'dark' ? 'translateX(2px) scale(1)' : 'translateX(34px) scale(1)',
-                                        background: theme === 'dark'
-                                            ? 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)'
-                                            : 'linear-gradient(135deg, #fde047 0%, #facc15 50%, #fb923c 100%)',
-                                        boxShadow: theme === 'dark'
-                                            ? '0 2px 8px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.1)'
-                                            : '0 2px 8px rgba(251,191,36,0.4), inset 0 1px 2px rgba(255,255,255,0.5)'
-                                    }}
-                                    onMouseEnter={(e) => e.currentTarget.style.transform = theme === 'dark' ? 'translateX(2px) scale(1.1)' : 'translateX(34px) scale(1.1)'}
-                                    onMouseLeave={(e) => e.currentTarget.style.transform = theme === 'dark' ? 'translateX(2px) scale(1)' : 'translateX(34px) scale(1)'}
-                                >
-                                    {/* Inner glow */}
-                                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/40 to-transparent pointer-events-none"></div>
-
-                                    {/* Icon */}
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        {theme === 'dark' ? (
-                                            <Moon className="h-4 w-4 text-slate-300 drop-shadow transition-transform duration-300 group-hover:rotate-[-20deg]" />
-                                        ) : (
-                                            <Sun className="h-4 w-4 text-white drop-shadow transition-transform duration-300 group-hover:rotate-180" />
-                                        )}
-                                    </div>
-                                </div>
+                                {theme === 'dark' ? (
+                                    <Moon className="h-5 w-5 text-primary group-hover:rotate-[-20deg] transition-transform" />
+                                ) : (
+                                    <Sun className="h-5 w-5 text-orange-500 group-hover:rotate-90 transition-transform" />
+                                )}
                             </button>
 
                             <SignedOut>
                                 <SignInButton mode="modal">
                                     <Button
                                         variant="ghost"
-                                        className="text-foreground hover:bg-accent hover:scale-105 transition-all duration-300"
+                                        className="text-foreground hover:text-primary transition-colors font-medium"
                                     >
                                         Sign In
                                     </Button>
@@ -276,28 +256,29 @@ function NavBar() {
                                 <UserButton
                                     appearance={{
                                         elements: {
-                                            avatarBox: "w-8 h-8 hover:scale-110 transition-transform duration-300"
+                                            avatarBox: "w-8 h-8 ring-2 ring-primary/20 hover:ring-primary/50 transition-all"
                                         }
                                     }}
                                 />
                             </SignedIn>
+
                             <Link to="/search">
-                                <Button className="bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-105 font-semibold px-6 py-2 transition-all duration-300 cursor-pointer shadow-md hover:shadow-primary/25">
-                                    Plan My Trip
+                                <Button className={`${scrolled ? 'h-9 px-4 text-sm' : 'h-10 px-6'} bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-105 transition-all duration-300 shadow-md hover:shadow-primary/25 rounded-full`}>
+                                    Plan Trip
                                 </Button>
                             </Link>
                         </div>
 
                         {/* Mobile menu button */}
                         <button
-                            className="md:hidden text-foreground hover:text-muted-foreground transition-colors duration-300 hover:scale-110"
+                            className="md:hidden p-2 text-foreground hover:bg-accent rounded-full transition-colors"
                             onClick={toggleMobileMenu}
                         >
                             {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
                         </button>
                     </div>
-                </div>
-            </nav>
+                </nav>
+            </div>
 
             {/* Spacer to prevent content overlap */}
             <div className="h-10" />

@@ -539,8 +539,8 @@ const SearchPage = () => {
                             <label
                               key={activity}
                               className={`flex items-center gap-1.5 px-2 py-2 rounded-lg border-2 transition-all duration-300 cursor-pointer ${selectedActivities.includes(activity)
-                                  ? 'bg-gradient-to-r from-secondary/20 to-secondary/10 border-secondary shadow-md scale-105'
-                                  : 'bg-background/50 border-border/50 hover:border-secondary/50 hover:bg-secondary/5'
+                                ? 'bg-gradient-to-r from-secondary/20 to-secondary/10 border-secondary shadow-md scale-105'
+                                : 'bg-background/50 border-border/50 hover:border-secondary/50 hover:bg-secondary/5'
                                 }`}
                             >
                               <Checkbox
