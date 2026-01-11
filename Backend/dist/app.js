@@ -73,7 +73,9 @@ app.use('/api/clerk', ClerkWebhook_1.default);
 app.use('/api/v1/users', user_routes_1.default);
 app.use('/api/v1/plans', planning_routes_1.default);
 app.use('/api/v1/hotels', hotels_routes_1.default);
+const triggerDailyTips_controller_1 = __importDefault(require("./controllers/newsSubscriptionController/triggerDailyTips.controller"));
 app.post('/api/v1/mail/subscribe', subscribeDailyMail_controller_1.default);
+app.post('/api/v1/mail/trigger-daily-tips', triggerDailyTips_controller_1.default);
 app.use((req, res, next) => {
     next((0, http_errors_1.default)(404));
 });

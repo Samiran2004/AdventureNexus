@@ -5,7 +5,7 @@ import SubscribeMail from "../../database/models/subscribeMail.model";
 import emailTemplates from "../../utils/email-templates";
 import sendMail from "../../services/mailService";
 import { generateDailyTips } from "../../utils/gemini/generateDailyTips.prompt";
-import generateRecommendation from "../../utils/gemini/generateRecommendation";
+
 import { groqGeneratedData } from "../../services/groq.service";
 import winstonLogger from "../../services/winston.service";
 import getFullURL from "../../services/getFullURL.service";

@@ -114,7 +114,10 @@ app.use('/api/v1/plans', planningRoute);
 app.use('/api/v1/hotels', hotelsRoute);
 
 // Newsletter Subscription Route
+import triggerDailyTips from './controllers/newsSubscriptionController/triggerDailyTips.controller';
 app.post('/api/v1/mail/subscribe', subscribeDailyMailController);
+app.post('/api/v1/mail/trigger-daily-tips', triggerDailyTips);
+
 
 
 // --- Error Handling ---

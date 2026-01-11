@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chalk_1 = __importDefault(require("chalk"));
 const http_status_codes_1 = require("http-status-codes");
 const createHotelsPrompt_1 = require("../../../utils/gemini/createHotelsPrompt");
-const generateRecommendation_1 = __importDefault(require("../../../utils/gemini/generateRecommendation"));
+const groq_service_1 = require("../../../services/groq.service");
 const generateHotelsImagePrompt_1 = require("../../../utils/gemini/generateHotelsImagePrompt");
 const createHotels = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -35,14 +35,14 @@ const createHotels = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             currency_code
         };
         let prompt = yield (0, createHotelsPrompt_1.generateHotelSearchPrompt)(dataPayload);
-        const generatedData = yield (0, generateRecommendation_1.default)(prompt);
+        const generatedData = yield (0, groq_service_1.groqGeneratedData)(prompt);
         const data = JSON.parse(generatedData.replace(/```json|```/g, '').trim());
         const imagePayload = {
             hotelName: data[0].hotel_name,
             location: data[0].location_description
         };
         prompt = yield (0, generateHotelsImagePrompt_1.generateHotelImage)(imagePayload);
-        const hotelImageData = yield (0, generateRecommendation_1.default)(prompt);
+        const hotelImageData = yield (0, groq_service_1.groqGeneratedData)(prompt);
         const imageData = JSON.parse(hotelImageData.replace(/```json|```/g, '').trim());
         for (const d of data) {
             d.image = imageData;

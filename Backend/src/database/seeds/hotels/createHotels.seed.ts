@@ -2,7 +2,7 @@ import chalk from "chalk";
 import { Response } from "express"
 import { getReasonPhrase, StatusCodes } from "http-status-codes"
 import { generateHotelSearchPrompt } from "../../../utils/gemini/createHotelsPrompt";
-import generateRecommendation from "../../../utils/gemini/generateRecommendation";
+import { groqGeneratedData } from "../../../services/groq.service";
 import { generateHotelImage } from "../../../utils/gemini/generateHotelsImagePrompt";
 
 /**
@@ -44,7 +44,7 @@ const createHotels = async (req, res: Response) => {
         // console.log(chalk.bgGreen(prompt));
 
         // 5. Call AI Service to get Hotel Data
-        const generatedData = await generateRecommendation(prompt);
+        const generatedData = await groqGeneratedData(prompt);
 
         // 6. Clean and Parse AI Response
         const data = JSON.parse(generatedData.replace(/```json|```/g, '').trim());
@@ -59,7 +59,7 @@ const createHotels = async (req, res: Response) => {
         prompt = await generateHotelImage(imagePayload);
 
         // 9. Call AI Service to get Image Data
-        const hotelImageData = await generateRecommendation(prompt);
+        const hotelImageData = await groqGeneratedData(prompt);
         const imageData = JSON.parse(hotelImageData.replace(/```json|```/g, '').trim());
 
         // 10. Assign Image to All Hotels (Currently assigning same image to all?)

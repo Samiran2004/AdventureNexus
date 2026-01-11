@@ -17,31 +17,66 @@ const subscribeMail_model_1 = __importDefault(require("../database/models/subscr
 const chalk_1 = __importDefault(require("chalk"));
 const email_templates_1 = __importDefault(require("../utils/email-templates"));
 const mailService_1 = __importDefault(require("../services/mailService"));
-const generateRecommendation_1 = __importDefault(require("../utils/gemini/generateRecommendation"));
+const groq_service_1 = require("../services/groq.service");
 const generateDailyTips_prompt_1 = require("../utils/gemini/generateDailyTips.prompt");
 const sendAutoDailyTipsJob = () => __awaiter(void 0, void 0, void 0, function* () {
+    let successCount = 0;
+    let failureCount = 0;
     try {
-        console.log(chalk_1.default.green('Running daily tips cron job at 6 AM...'));
+        console.log(chalk_1.default.green('Running daily tips cron job...'));
         const userMails = yield subscribeMail_model_1.default.find();
-        const prompt = (0, generateDailyTips_prompt_1.generateDailyTips)();
-        const generateDailyTipsContent = yield (0, generateRecommendation_1.default)(prompt);
-        const startIndex = generateDailyTipsContent.indexOf('{');
-        const endIndex = generateDailyTipsContent.lastIndexOf('}');
-        const cleanString = generateDailyTipsContent.substring(startIndex, endIndex + 1);
-        const tipDataObject = JSON.parse(cleanString);
-        for (const userMail of userMails) {
-            console.log(userMail.mail);
-            let mailData = email_templates_1.default.sendDailyTipEmailData(userMail.mail, tipDataObject);
-            yield (0, mailService_1.default)(mailData, (mailError) => {
-                if (mailError)
-                    console.error("Mail sending failed for user:", userMail.mail);
-            });
-            console.log("Done...");
+        if (userMails.length === 0) {
+            console.log(chalk_1.default.yellow("No subscribers found."));
+            return { status: 'success', message: 'No subscribers to send to.' };
         }
-        console.log(chalk_1.default.green("Done sending daily tips subscribe mail job..."));
+        const prompt = (0, generateDailyTips_prompt_1.generateDailyTips)();
+        const generateDailyTipsContent = yield (0, groq_service_1.groqGeneratedData)(prompt);
+        if (!generateDailyTipsContent) {
+            console.error(chalk_1.default.red("Failed to generate content from AI."));
+            return { status: 'failed', message: 'AI generation failed' };
+        }
+        let tipDataObject;
+        try {
+            const startIndex = generateDailyTipsContent.indexOf('{');
+            const endIndex = generateDailyTipsContent.lastIndexOf('}');
+            if (startIndex === -1 || endIndex === -1) {
+                throw new Error("Invalid JSON format from AI");
+            }
+            const cleanString = generateDailyTipsContent.substring(startIndex, endIndex + 1);
+            tipDataObject = JSON.parse(cleanString);
+        }
+        catch (parseError) {
+            console.error(chalk_1.default.red("Error parsing AI response:"), generateDailyTipsContent);
+            return { status: 'failed', message: 'JSON handling error from AI response' };
+        }
+        const emailPromises = userMails.map((userMail) => __awaiter(void 0, void 0, void 0, function* () {
+            try {
+                let mailData = email_templates_1.default.sendDailyTipEmailData(userMail.mail, tipDataObject);
+                yield new Promise((resolve, reject) => {
+                    (0, mailService_1.default)(mailData, (mailError) => {
+                        if (mailError) {
+                            console.error(`Mail sending failed for user ${userMail.mail}:`, mailError);
+                            reject(mailError);
+                        }
+                        else {
+                            resolve();
+                        }
+                    });
+                });
+                console.log(`Email sent to: ${userMail.mail}`);
+                successCount++;
+            }
+            catch (err) {
+                failureCount++;
+            }
+        }));
+        yield Promise.allSettled(emailPromises);
+        console.log(chalk_1.default.green(`Daily tips job finished. Success: ${successCount}, Failed: ${failureCount}`));
+        return { status: 'success', sent: successCount, failed: failureCount };
     }
     catch (error) {
-        console.log(chalk_1.default.red(`Error in sending daily tips mail: ${error.message}`));
+        console.error(chalk_1.default.red(`Error in sending daily tips mail: ${error instanceof Error ? error.message : error}`));
+        return { status: 'error', message: error instanceof Error ? error.message : "Unknown error" };
     }
 });
 node_cron_1.default.schedule("0 6 * * *", sendAutoDailyTipsJob, { timezone: "Asia/Kolkata" });
