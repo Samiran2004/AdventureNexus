@@ -17,7 +17,7 @@ const subscribeMail_model_1 = __importDefault(require("../database/models/subscr
 const chalk_1 = __importDefault(require("chalk"));
 const email_templates_1 = __importDefault(require("../utils/email-templates"));
 const mailService_1 = __importDefault(require("../services/mailService"));
-const generateRecommendation_1 = __importDefault(require("../utils/gemini/generateRecommendation"));
+const groq_service_1 = require("../services/groq.service");
 const generateDailyTips_prompt_1 = require("../utils/gemini/generateDailyTips.prompt");
 const sendAutoDailyTipsJob = () => __awaiter(void 0, void 0, void 0, function* () {
     let successCount = 0;
@@ -30,7 +30,7 @@ const sendAutoDailyTipsJob = () => __awaiter(void 0, void 0, void 0, function* (
             return { status: 'success', message: 'No subscribers to send to.' };
         }
         const prompt = (0, generateDailyTips_prompt_1.generateDailyTips)();
-        const generateDailyTipsContent = yield (0, generateRecommendation_1.default)(prompt);
+        const generateDailyTipsContent = yield (0, groq_service_1.groqGeneratedData)(prompt);
         if (!generateDailyTipsContent) {
             console.error(chalk_1.default.red("Failed to generate content from AI."));
             return { status: 'failed', message: 'AI generation failed' };

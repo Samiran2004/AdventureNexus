@@ -3,14 +3,14 @@ import SubscribeMail from '../database/models/subscribeMail.model';
 import chalk from 'chalk';
 import emailTemplates from '../utils/email-templates';
 import sendMail from '../services/mailService';
-import generateRecommendation from '../utils/gemini/generateRecommendation';
+import { groqGeneratedData } from '../services/groq.service';
 import { generateDailyTips } from '../utils/gemini/generateDailyTips.prompt';
 
 /**
  * Cron Job to send Daily Travel Tips to subscribers.
  * Scheduled to run every day at 6:00 AM (Asia/Kolkata).
  * 1. Fetches all subscribers.
- * 2. Generates a fresh travel tip using AI (Groq/Gemini).
+ * 2. Generates a fresh travel tip using AI (Groq).
  * 3. Sends the tip via email to each subscriber.
  */
 const sendAutoDailyTipsJob = async () => {
@@ -30,7 +30,7 @@ const sendAutoDailyTipsJob = async () => {
 
         // 2. Generate daily travel tip content using AI
         const prompt = generateDailyTips();
-        const generateDailyTipsContent = await generateRecommendation(prompt);
+        const generateDailyTipsContent = await groqGeneratedData(prompt);
 
         if (!generateDailyTipsContent) {
             console.error(chalk.red("Failed to generate content from AI."));
