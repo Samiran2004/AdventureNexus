@@ -14,45 +14,73 @@ import { generateDailyTips } from '../utils/gemini/generateDailyTips.prompt';
  * 3. Sends the tip via email to each subscriber.
  */
 const sendAutoDailyTipsJob = async () => {
+    let successCount = 0;
+    let failureCount = 0;
+
     try {
-        console.log(chalk.green('Running daily tips cron job at 6 AM...'));
+        console.log(chalk.green('Running daily tips cron job...'));
 
         // 1. Fetch all subscribed users from database
         const userMails = await SubscribeMail.find();
+
+        if (userMails.length === 0) {
+            console.log(chalk.yellow("No subscribers found."));
+            return { status: 'success', message: 'No subscribers to send to.' };
+        }
 
         // 2. Generate daily travel tip content using AI
         const prompt = generateDailyTips();
         const generateDailyTipsContent = await generateRecommendation(prompt);
 
-        // 3. Clean and Parse AI Response
-        const startIndex = generateDailyTipsContent.indexOf('{');
-        const endIndex = generateDailyTipsContent.lastIndexOf('}');
-        const cleanString = generateDailyTipsContent.substring(startIndex, endIndex + 1);
-
-        const tipDataObject = JSON.parse(cleanString);
-
-        // 4. Iterate over each subscriber and send email
-        for (const userMail of userMails) {
-            console.log(userMail.mail);
-            let mailData = emailTemplates.sendDailyTipEmailData(userMail.mail, tipDataObject);
-
-            await sendMail(mailData, (mailError: Error | null) => {
-                // Warning: 'res' is not defined in this scope! This will crash if error occurs.
-                // Refactor: Just log the error, don't try to send response.
-                if (mailError) console.error("Mail sending failed for user:", userMail.mail);
-
-                // return res.status(StatusCodes.EXPECTATION_FAILED).json({
-                //     status: 'Failed',
-                //     message: "Mail sending error!"
-                // });
-            });
-
-            console.log("Done...");
+        if (!generateDailyTipsContent) {
+            console.error(chalk.red("Failed to generate content from AI."));
+            return { status: 'failed', message: 'AI generation failed' };
         }
 
-        console.log(chalk.green("Done sending daily tips subscribe mail job..."));
+        // 3. Clean and Parse AI Response
+        let tipDataObject;
+        try {
+            const startIndex = generateDailyTipsContent.indexOf('{');
+            const endIndex = generateDailyTipsContent.lastIndexOf('}');
+            if (startIndex === -1 || endIndex === -1) {
+                throw new Error("Invalid JSON format from AI");
+            }
+            const cleanString = generateDailyTipsContent.substring(startIndex, endIndex + 1);
+            tipDataObject = JSON.parse(cleanString);
+        } catch (parseError) {
+            console.error(chalk.red("Error parsing AI response:"), generateDailyTipsContent);
+            return { status: 'failed', message: 'JSON handling error from AI response' };
+        }
+
+        // 4. Iterate over each subscriber and send email
+        const emailPromises = userMails.map(async (userMail) => {
+            try {
+                let mailData = emailTemplates.sendDailyTipEmailData(userMail.mail, tipDataObject);
+                await new Promise<void>((resolve, reject) => {
+                    sendMail(mailData, (mailError) => {
+                        if (mailError) {
+                            console.error(`Mail sending failed for user ${userMail.mail}:`, mailError);
+                            reject(mailError);
+                        } else {
+                            resolve();
+                        }
+                    });
+                });
+                console.log(`Email sent to: ${userMail.mail}`);
+                successCount++;
+            } catch (err) {
+                failureCount++;
+            }
+        });
+
+        await Promise.allSettled(emailPromises);
+
+        console.log(chalk.green(`Daily tips job finished. Success: ${successCount}, Failed: ${failureCount}`));
+        return { status: 'success', sent: successCount, failed: failureCount };
+
     } catch (error) {
-        console.log(chalk.red(`Error in sending daily tips mail: ${error.message}`));
+        console.error(chalk.red(`Error in sending daily tips mail: ${error instanceof Error ? error.message : error}`));
+        return { status: 'error', message: error instanceof Error ? error.message : "Unknown error" };
     }
 }
 
