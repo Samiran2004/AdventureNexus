@@ -9,6 +9,8 @@ import generateNewSearchDestinationPrompt, {
 
 import winstonLogger from "../../services/winston.service";
 import getFullURL from "../../services/getFullURL.service";
+import { fetchUnsplashImage } from "../../services/unsplash.service";
+import { fetchWikipediaImage } from "../../services/wikipedia.service";
 import Plan from "../../database/models/planModel";
 import { IPlan } from "../../dtos/PlansDTO";
 import User from "../../database/models/userModel";
@@ -70,6 +72,17 @@ const searchNewDestination = async (req: Request, res: Response) => {
     const cleanString = generatedData.substring(startIndex, endIndex + 1);
     const aiResponse = JSON.parse(cleanString);
 
+    // 🌐 5.5 Fetch Image with Fallback Strategy
+    // Strategy: Wikipedia (Reliable/Specific) -> Unsplash (High Quality) -> AI (Fallback)
+    const searchQuery = aiResponse.name || to;
+
+    let destinationImage = await fetchWikipediaImage(searchQuery);
+
+    if (!destinationImage) {
+      console.log(chalk.yellow(`Wikipedia failed for ${searchQuery}, trying Unsplash...`));
+      destinationImage = await fetchUnsplashImage(searchQuery);
+    }
+
     // 🧩 6. Construct Plan Data Object (Merge Input + AI Output)
     const planData: IPlan = {
       clerkUserId,
@@ -84,7 +97,7 @@ const searchNewDestination = async (req: Request, res: Response) => {
 
       // AI generated fields
       ai_score: aiResponse.ai_score,
-      image_url: aiResponse.image_url,
+      image_url: destinationImage || aiResponse.image_url, // Use our fetched image, or fallback to AI's
       name: aiResponse.name,
       days: aiResponse.days,
       cost: aiResponse.cost,
