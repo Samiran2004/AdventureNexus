@@ -18,6 +18,8 @@ const groq_service_1 = require("../../services/groq.service");
 const generatePromptForSearchNewDestinations_1 = __importDefault(require("../../utils/gemini/generatePromptForSearchNewDestinations"));
 const winston_service_1 = __importDefault(require("../../services/winston.service"));
 const getFullURL_service_1 = __importDefault(require("../../services/getFullURL.service"));
+const unsplash_service_1 = require("../../services/unsplash.service");
+const wikipedia_service_1 = require("../../services/wikipedia.service");
 const planModel_1 = __importDefault(require("../../database/models/planModel"));
 const userModel_1 = __importDefault(require("../../database/models/userModel"));
 const searchNewDestination = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -55,6 +57,12 @@ const searchNewDestination = (req, res) => __awaiter(void 0, void 0, void 0, fun
         const endIndex = generatedData.lastIndexOf("}");
         const cleanString = generatedData.substring(startIndex, endIndex + 1);
         const aiResponse = JSON.parse(cleanString);
+        const searchQuery = aiResponse.name || to;
+        let destinationImage = yield (0, wikipedia_service_1.fetchWikipediaImage)(searchQuery);
+        if (!destinationImage) {
+            console.log(chalk_1.default.yellow(`Wikipedia failed for ${searchQuery}, trying Unsplash...`));
+            destinationImage = yield (0, unsplash_service_1.fetchUnsplashImage)(searchQuery);
+        }
         const planData = {
             clerkUserId,
             to,
@@ -66,7 +74,7 @@ const searchNewDestination = (req, res) => __awaiter(void 0, void 0, void 0, fun
             activities,
             travel_style,
             ai_score: aiResponse.ai_score,
-            image_url: aiResponse.image_url,
+            image_url: destinationImage || aiResponse.image_url,
             name: aiResponse.name,
             days: aiResponse.days,
             cost: aiResponse.cost,
