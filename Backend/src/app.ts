@@ -32,6 +32,7 @@ import subscribeDailyMailController from './controllers/newsSubscriptionControll
 import userRoute from './routes/user.routes';
 import planningRoute from './routes/planning.routes';
 import hotelsRoute from './routes/hotels.routes';
+import reviewRoute from './routes/review.routes';
 
 // Swagger
 import swaggerJSDoc from 'swagger-jsdoc';
@@ -112,6 +113,9 @@ app.use('/api/v1/plans', planningRoute);
 
 // Hotel Management Routes
 app.use('/api/v1/hotels', hotelsRoute);
+
+// Review Management Routes
+app.use('/api/v1/reviews', reviewRoute);
 
 // Newsletter Subscription Route
 import triggerDailyTips from './controllers/newsSubscriptionController/triggerDailyTips.controller';

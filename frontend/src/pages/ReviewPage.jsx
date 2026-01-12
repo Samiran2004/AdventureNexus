@@ -5,7 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
+import { SignedIn, SignedOut, SignInButton, UserButton, useUser, useAuth } from '@clerk/clerk-react';
+import reviewService from '@/services/reviewService';
 import {
     MapPin,
     Star,
@@ -30,7 +31,8 @@ import {
     Send,
     Image as ImageIcon,
     StarIcon,
-    Clock
+    Clock,
+    Loader2
 } from 'lucide-react';
 
 // GSAP Imports
@@ -39,24 +41,64 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Link } from 'react-router-dom';
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/mvpblocks/footer-newsletter';
+import toast from 'react-hot-toast';
 
 // Register GSAP Plugins
 gsap.registerPlugin(ScrollTrigger);
 
 // AdventureNexusReviews component displays user reviews and testimonials from travelers
 const AdventureNexusReviews = () => {
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const { user } = useUser();
+    const { getToken } = useAuth();
+    const [reviews, setReviews] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [selectedFilter, setSelectedFilter] = useState('all');
     const [selectedRating, setSelectedRating] = useState('all');
     const [searchQuery, setSearchQuery] = useState('');
-    const [showWriteReview, setShowWriteReview] = useState(false);
     const [sortBy, setSortBy] = useState('newest');
+    const [showWriteReview, setShowWriteReview] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
+
+    // Form Stats
+    const [newReview, setNewReview] = useState({
+        location: '',
+        tripDuration: '',
+        rating: 0,
+        comment: '',
+        tripType: 'solo',
+        travelers: 'Solo'
+    });
 
     // Refs for GSAP animations
     const headerRef = useRef(null);
-    const statsRef = useRef(null);
+    const categoriesRef = useRef(null);
     const reviewsRef = useRef(null);
     const writeReviewRef = useRef(null);
+
+    const fetchReviews = async () => {
+        setLoading(true);
+        try {
+            const filters = {
+                category: selectedFilter,
+                rating: selectedRating,
+                search: searchQuery,
+                sortBy: sortBy
+            };
+            const response = await reviewService.getReviews(filters);
+            if (response.success) {
+                setReviews(response.data);
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to load reviews");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchReviews();
+    }, [selectedFilter, selectedRating, searchQuery, sortBy]);
 
     useEffect(() => {
         let ctx = gsap.context(() => {
@@ -68,251 +110,189 @@ const AdventureNexusReviews = () => {
                 ease: "power2.out"
             });
 
-            // Stats animation
-            gsap.from(".stat-card", {
-                scrollTrigger: {
-                    trigger: statsRef.current,
-                    start: "top 80%",
-                },
-                y: 50,
-                opacity: 0,
-                scale: 0.9,
-                duration: 0.8,
-                stagger: 0.2,
-                ease: "back.out(1.7)"
-            });
-
-            // Reviews animation
-            gsap.from(".review-card", {
-                scrollTrigger: {
-                    trigger: reviewsRef.current,
-                    start: "top 80%",
-                },
-                y: 60,
-                opacity: 0,
-                duration: 0.8,
-                stagger: 0.15,
-                ease: "power2.out"
-            });
-        });
+            window.scrollTo(0, 0); // Keep top scroll
+        }, []);
 
         return () => ctx.revert();
     }, []);
 
-    // Sample review data
-    const reviews = [
-        {
-            id: 1,
-            user: "Sarah Mitchell",
-            avatar: "SM",
-            location: "Bangkok, Thailand",
-            rating: 5,
-            date: "2 days ago",
-            trip: "Southeast Asia Adventure",
-            duration: "14 days",
-            travelers: "Solo",
-            content: "AdventureNexus completely transformed my travel experience! The AI recommendations were incredibly accurate - every restaurant, temple, and hidden spot was exactly my style. The itinerary flow was perfect, and I discovered places I would have never found on my own. The local insights were invaluable!",
-            images: 3,
-            helpful: 24,
-            verified: true,
-            category: "solo"
-        },
-        {
-            id: 2,
-            user: "David & Emma Chen",
-            avatar: "DC",
-            location: "Tokyo, Japan",
-            rating: 5,
-            date: "5 days ago",
-            trip: "Family Japan Discovery",
-            duration: "10 days",
-            travelers: "Family (2 kids)",
-            content: "Planning a family trip with young kids is usually overwhelming, but AdventureNexus made it effortless. The AI perfectly balanced kid-friendly activities with cultural experiences. The timing suggestions were spot-on, and the restaurant recommendations were all hits with the children!",
-            images: 8,
-            helpful: 31,
-            verified: true,
-            category: "family"
-        },
-        {
-            id: 3,
-            user: "Maria Rodriguez",
-            avatar: "MR",
-            location: "Patagonia, Chile",
-            rating: 5,
-            date: "1 week ago",
-            trip: "Patagonia Expedition",
-            duration: "21 days",
-            travelers: "Couple",
-            content: "The adventure planning was phenomenal! Every hiking trail, viewpoint, and accommodation recommendation exceeded our expectations. The AI understood our fitness level and preferences perfectly. This was our dream trip executed flawlessly.",
-            images: 12,
-            helpful: 45,
-            verified: true,
-            category: "adventure"
-        },
-        {
-            id: 4,
-            user: "James Thompson",
-            avatar: "JT",
-            location: "Rome, Italy",
-            rating: 4,
-            date: "2 weeks ago",
-            trip: "European Culture Tour",
-            duration: "12 days",
-            travelers: "Solo",
-            content: "Great experience overall! The historical site recommendations were excellent and the local food suggestions were amazing. Only minor issue was some timing could have been optimized better, but overall fantastic value and saved me hours of planning.",
-            images: 5,
-            helpful: 18,
-            verified: true,
-            category: "cultural"
-        },
-        {
-            id: 5,
-            user: "Lisa Park",
-            avatar: "LP",
-            location: "Bali, Indonesia",
-            rating: 5,
-            date: "3 weeks ago",
-            trip: "Digital Nomad Base Setup",
-            duration: "30 days",
-            travelers: "Solo",
-            content: "Perfect for digital nomads! The AI found the best coworking spaces, reliable wifi cafes, and productive environments. The balance between work-friendly spots and amazing experiences was exactly what I needed. Productivity and adventure combined!",
-            images: 6,
-            helpful: 28,
-            verified: true,
-            category: "business"
-        },
-        {
-            id: 6,
-            user: "Michael Johnson",
-            avatar: "MJ",
-            location: "Iceland",
-            rating: 4,
-            date: "1 month ago",
-            trip: "Northern Lights Quest",
-            duration: "8 days",
-            travelers: "Couple",
-            content: "Incredible northern lights viewing spots! The AI's weather predictions and location recommendations were very accurate. We saw the aurora on 5 out of 8 nights. The accommodation and restaurant suggestions were also excellent.",
-            images: 9,
-            helpful: 22,
-            verified: true,
-            category: "nature"
+    // Effect for staggering reviews when they load
+    useEffect(() => {
+        if (!loading && reviews.length > 0) {
+            gsap.from(".review-card", {
+                y: 60,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.1,
+                ease: "power2.out",
+                clearProps: "all"
+            });
         }
-    ];
+    }, [loading, reviews]);
 
-    const filteredReviews = reviews.filter(review => {
-        const matchesSearch = review.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            review.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            review.trip.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesCategory = selectedFilter === 'all' || review.category === selectedFilter;
-        const matchesRating = selectedRating === 'all' || review.rating.toString() === selectedRating;
-        return matchesSearch && matchesCategory && matchesRating;
-    });
+
+    const handleReviewSubmit = async () => {
+        if (!user) {
+            toast.error("You must be signed in to write a review");
+            return;
+        }
+        if (newReview.rating === 0) {
+            toast.error("Please provide a rating");
+            return;
+        }
+        if (!newReview.location || !newReview.comment || !newReview.tripDuration) {
+            toast.error("Please fill in all required fields (Location, Duration, Comment)");
+            return;
+        }
+
+        setSubmitting(true);
+        try {
+            const reviewData = {
+                ...newReview,
+                userName: user.fullName || user.username || 'Traveler',
+                userAvatar: user.imageUrl,
+                userId: user.id
+            };
+
+            const token = await getToken();
+            await reviewService.createReview(reviewData, token);
+            toast.success("Review submitted successfully!");
+            setShowWriteReview(false);
+            setNewReview({
+                location: '',
+                tripDuration: '',
+                rating: 0,
+                comment: '',
+                tripType: 'solo',
+                travelers: 'Solo'
+            });
+            fetchReviews();
+        } catch (error) {
+            console.error("Submission Error:", error);
+            const errorMessage = error.response?.data?.message || "Failed to submit review";
+            const errorDetails = error.response?.data?.error ? JSON.stringify(error.response.data.error) : "";
+            toast.error(`${errorMessage} ${errorDetails ? `(${errorDetails})` : ''}`);
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    const handleLike = async (id) => {
+        try {
+            const token = await getToken();
+            await reviewService.likeReview(id, token);
+            // Optimistic update or refetch
+            setReviews(reviews.map(r =>
+                r._id === id ? { ...r, helpfulCount: (r.helpfulCount || 0) + 1 } : r
+            ));
+        } catch (error) {
+            toast.error("Failed to like review");
+        }
+    };
 
     const renderStars = (rating) => {
         return [...Array(5)].map((_, i) => (
             <Star
                 key={i}
                 size={16}
-                className={`${i < rating ? 'text-yellow-400 fill-current' : 'text-muted-foreground'}`}
+                className={`${i < rating ? 'text-yellow-400 fill-current' : 'text-slate-600'}`}
             />
         ));
     };
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-black text-white selection:bg-primary/30">
             <NavBar />
 
             {/* Header Section */}
-            <section ref={headerRef} className="py-12 bg-background relative overflow-hidden">
-                <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute -top-10 -right-10 w-80 h-80 bg-primary/20 rounded-full opacity-50 blur-3xl"></div>
-                    <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-secondary/20 rounded-full opacity-30 blur-3xl"></div>
+            <section ref={headerRef} className="pt-32 pb-12 relative overflow-hidden">
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/20 rounded-full opacity-30 blur-[100px]"></div>
+                    <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-500/20 rounded-full opacity-20 blur-[100px]"></div>
                 </div>
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
-                    <div className="text-center space-y-6">
-                        <div className="flex items-center justify-center space-x-2 mb-4">
-                            <Link to="/" className="text-muted-foreground hover:text-foreground flex items-center transition-colors">
-                                <ArrowLeft size={20} className="mr-2" />
-                                Back to Home
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <div className="text-center space-y-6 pt-10">
+                        <div className="flex items-center justify-center space-x-2 mb-6">
+                            <Link to="/" className="text-xs font-mono text-zinc-500 hover:text-white flex items-center transition-colors group px-3 py-1 rounded-full border border-white/5 hover:border-white/20 bg-black/20 hover:bg-black/40 uppercase tracking-widest">
+                                <ArrowLeft size={12} className="mr-2 group-hover:-translate-x-1 transition-transform" />
+                                Return Home
                             </Link>
                         </div>
-                        <h1 className="text-4xl md:text-5xl font-bold text-foreground">
-                            Traveler Reviews
+                        <h1 className="text-6xl md:text-8xl font-black bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-600 tracking-tighter pb-4 leading-none">
+                            VOICES
                         </h1>
-                        <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                            Real experiences from our community of adventurers. See why travelers trust AdventureNexus to plan their perfect trips.
+                        <p className="text-lg text-zinc-400 max-w-xl mx-auto font-light leading-relaxed">
+                            Authentic experiences from the global community. <span className="text-white font-medium">Verified.</span>
                         </p>
                     </div>
                 </div>
             </section>
 
-            {/* Stats Section */}
-            <section ref={statsRef} className="py-12 bg-muted/20">
+            {/* Pro - Control Bar & Pulse Strip */}
+            <section className="py-8 border-b border-white/5 bg-black/20 backdrop-blur-md">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-                        <Card className="stat-card bg-card border-border text-center">
-                            <CardContent className="p-6">
-                                <div className="text-3xl font-bold text-primary mb-2">4.9</div>
-                                <div className="text-sm text-muted-foreground">Average Rating</div>
-                                <div className="flex justify-center mt-2">
-                                    {renderStars(5)}
-                                </div>
-                            </CardContent>
-                        </Card>
-                        <Card className="stat-card bg-card border-border text-center">
-                            <CardContent className="p-6">
-                                <div className="text-3xl font-bold text-green-500 mb-2">12.5K</div>
-                                <div className="text-sm text-muted-foreground">Total Reviews</div>
-                                <div className="flex items-center justify-center mt-2 text-green-500">
-                                    <TrendingUp size={16} className="mr-1" />
-                                    <span className="text-sm">+28% this month</span>
-                                </div>
-                            </CardContent>
-                        </Card>
-                        <Card className="stat-card bg-card border-border text-center">
-                            <CardContent className="p-6">
-                                <div className="text-3xl font-bold text-purple-500 mb-2">195</div>
-                                <div className="text-sm text-muted-foreground">Countries Reviewed</div>
-                                <div className="flex items-center justify-center mt-2 text-purple-500">
-                                    <Globe size={16} className="mr-1" />
-                                    <span className="text-sm">Worldwide</span>
-                                </div>
-                            </CardContent>
-                        </Card>
-                        <Card className="stat-card bg-card border-border text-center">
-                            <CardContent className="p-6">
-                                <div className="text-3xl font-bold text-yellow-500 mb-2">98%</div>
-                                <div className="text-sm text-muted-foreground">Would Recommend</div>
-                                <div className="flex items-center justify-center mt-2 text-yellow-500">
-                                    <Award size={16} className="mr-1" />
-                                    <span className="text-sm">Excellence</span>
-                                </div>
-                            </CardContent>
-                        </Card>
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                        {/* Filter Pills */}
+                        <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
+                            {[
+                                { id: 'all', label: 'All Reviews' },
+                                { id: 'adventure', label: 'Adventure' },
+                                { id: 'cultural', label: 'Cultural' },
+                                { id: 'solo', label: 'Solo' },
+                                { id: 'nature', label: 'Nature' },
+                            ].map((filter) => (
+                                <button
+                                    key={filter.id}
+                                    onClick={() => setSelectedFilter(filter.id === 'all' ? 'all' : filter.id)}
+                                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${(selectedFilter === filter.id || (selectedFilter === 'all' && filter.id === 'all'))
+                                        ? 'bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.3)]'
+                                        : 'bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white border border-white/5'
+                                        }`}
+                                >
+                                    {filter.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Community Pulse (Technical Look) */}
+                        <div className="flex items-center gap-6 text-xs font-mono text-zinc-500 uppercase tracking-widest">
+                            <div className="flex flex-col items-center md:items-end">
+                                <span className="mb-1">Avg. Rating</span>
+                                <span className="text-emerald-400 font-bold text-base flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                    4.92 / 5.0
+                                </span>
+                            </div>
+                            <div className="w-px h-8 bg-white/10"></div>
+                            <div className="flex flex-col items-center md:items-end">
+                                <span className="mb-1">Total Verified</span>
+                                <span className="text-white font-bold text-base">12,543</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
 
             {/* Filters and Search */}
-            <section className="py-8 bg-background border-y border-border">
+            <section className="py-4 sticky top-20 z-40 bg-black/80 backdrop-blur-lg border-y border-white/10">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-                        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-                            <div className="relative">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
+                        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto flex-1">
+                            <div className="relative w-full max-w-md group">
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400 group-focus-within:text-primary transition-colors" size={18} />
                                 <Input
-                                    placeholder="Search reviews..."
+                                    placeholder="Search by location, content..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="pl-10 bg-background border-input text-foreground"
+                                    className="pl-10 h-10 bg-white/10 border-white/10 text-white placeholder:text-zinc-500 focus:ring-primary/50 focus:bg-white/15 rounded-xl transition-all"
                                 />
                             </div>
 
                             <Select value={selectedFilter} onValueChange={setSelectedFilter}>
-                                <SelectTrigger className="bg-background border-input text-foreground">
+                                <SelectTrigger className="w-[180px] h-10 bg-white/10 border-white/10 text-white rounded-xl hover:bg-white/15 transition-colors">
                                     <SelectValue placeholder="Category" />
                                 </SelectTrigger>
-                                <SelectContent>
+                                <SelectContent className="bg-zinc-900 border-white/10 text-white">
                                     <SelectItem value="all">All Categories</SelectItem>
                                     <SelectItem value="solo">Solo Travel</SelectItem>
                                     <SelectItem value="family">Family</SelectItem>
@@ -325,10 +305,10 @@ const AdventureNexusReviews = () => {
                             </Select>
 
                             <Select value={selectedRating} onValueChange={setSelectedRating}>
-                                <SelectTrigger className="bg-background border-input text-foreground">
+                                <SelectTrigger className="w-[140px] h-10 bg-white/10 border-white/10 text-white rounded-xl hover:bg-white/15 transition-colors">
                                     <SelectValue placeholder="Rating" />
                                 </SelectTrigger>
-                                <SelectContent>
+                                <SelectContent className="bg-zinc-900 border-white/10 text-white">
                                     <SelectItem value="all">All Ratings</SelectItem>
                                     <SelectItem value="5">5 Stars</SelectItem>
                                     <SelectItem value="4">4+ Stars</SelectItem>
@@ -337,12 +317,12 @@ const AdventureNexusReviews = () => {
                             </Select>
                         </div>
 
-                        <div className="flex gap-4">
+                        <div className="flex gap-4 w-full md:w-auto justify-end">
                             <Select value={sortBy} onValueChange={setSortBy}>
-                                <SelectTrigger className="bg-background border-input text-foreground">
+                                <SelectTrigger className="w-[160px] h-10 bg-white/10 border-white/10 text-white rounded-xl hover:bg-white/15 transition-colors">
                                     <SelectValue placeholder="Sort by" />
                                 </SelectTrigger>
-                                <SelectContent>
+                                <SelectContent className="bg-zinc-900 border-white/10 text-white">
                                     <SelectItem value="newest">Newest First</SelectItem>
                                     <SelectItem value="oldest">Oldest First</SelectItem>
                                     <SelectItem value="highest">Highest Rated</SelectItem>
@@ -352,7 +332,7 @@ const AdventureNexusReviews = () => {
 
                             <Button
                                 onClick={() => setShowWriteReview(!showWriteReview)}
-                                className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground"
+                                className="h-10 bg-primary hover:bg-primary/90 text-white rounded-xl px-6 transition-all hover:scale-105 shadow-lg shadow-primary/25 font-medium"
                             >
                                 <Edit3 size={16} className="mr-2" />
                                 Write Review
@@ -364,66 +344,102 @@ const AdventureNexusReviews = () => {
 
             {/* Write Review Section */}
             {showWriteReview && (
-                <section ref={writeReviewRef} className="py-8 bg-muted/20 border-b border-border">
+                <section ref={writeReviewRef} className="py-8 bg-zinc-900/50 border-b border-white/10">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                        <Card className="bg-card border-border">
+                        <Card className="bg-black/40 border-white/10 backdrop-blur-sm max-w-3xl mx-auto shadow-2xl">
                             <CardHeader>
-                                <CardTitle className="text-foreground flex items-center">
-                                    <Edit3 className="mr-2" size={20} />
+                                <CardTitle className="text-white flex items-center text-2xl">
+                                    <Edit3 className="mr-2 text-primary" size={24} />
                                     Share Your Adventure
                                 </CardTitle>
-                                <CardDescription className="text-muted-foreground">
-                                    Help fellow travelers by sharing your experience with AdventureNexus
+                                <CardDescription className="text-slate-400">
+                                    Help fellow travelers by sharing your experience.
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <Input
-                                        placeholder="Trip destination"
-                                        className="bg-input border-input text-foreground"
+                                        placeholder="Trip destination (e.g. Tokyo, Japan)"
+                                        value={newReview.location}
+                                        onChange={(e) => setNewReview({ ...newReview, location: e.target.value })}
+                                        className="h-10 bg-white/10 border-white/10 text-white placeholder:text-zinc-500 rounded-xl focus:bg-white/15 transition-all"
                                     />
                                     <Input
-                                        placeholder="Trip duration"
-                                        className="bg-input border-input text-foreground"
+                                        placeholder="Trip duration (e.g. 10 days)"
+                                        value={newReview.tripDuration}
+                                        onChange={(e) => setNewReview({ ...newReview, tripDuration: e.target.value })}
+                                        className="h-10 bg-white/10 border-white/10 text-white placeholder:text-zinc-500 rounded-xl focus:bg-white/15 transition-all"
                                     />
+                                    <Select
+                                        value={newReview.tripType}
+                                        onValueChange={(val) => setNewReview({ ...newReview, tripType: val })}
+                                    >
+                                        <SelectTrigger className="h-10 bg-white/10 border-white/10 text-white rounded-xl hover:bg-white/15 transition-colors">
+                                            <SelectValue placeholder="Trip Type" />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-zinc-900 border-white/10 text-white">
+                                            <SelectItem value="solo">Solo</SelectItem>
+                                            <SelectItem value="couple">Couple</SelectItem>
+                                            <SelectItem value="family">Family</SelectItem>
+                                            <SelectItem value="adventure">Adventure</SelectItem>
+                                            <SelectItem value="business">Business</SelectItem>
+                                            <SelectItem value="cultural">Cultural</SelectItem>
+                                            <SelectItem value="nature">Nature</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <Select
+                                        value={newReview.travelers}
+                                        onValueChange={(val) => setNewReview({ ...newReview, travelers: val })}
+                                    >
+                                        <SelectTrigger className="h-10 bg-white/10 border-white/10 text-white rounded-xl hover:bg-white/15 transition-colors">
+                                            <SelectValue placeholder="Travelers" />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-zinc-900 border-white/10 text-white">
+                                            <SelectItem value="Solo">Solo</SelectItem>
+                                            <SelectItem value="Couple">Couple</SelectItem>
+                                            <SelectItem value="Family">Family</SelectItem>
+                                            <SelectItem value="Group">Group</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                 </div>
 
                                 <div>
-                                    <label className="text-foreground mb-2 block">Your Rating</label>
+                                    <label className="text-slate-300 mb-2 block text-sm font-medium">Your Rating</label>
                                     <div className="flex space-x-1">
-                                        {[...Array(5)].map((_, i) => (
+                                        {[1, 2, 3, 4, 5].map((star) => (
                                             <Star
-                                                key={i}
-                                                size={24}
-                                                className="text-muted-foreground hover:text-yellow-400 cursor-pointer transition-colors"
+                                                key={star}
+                                                size={32}
+                                                onClick={() => setNewReview({ ...newReview, rating: star })}
+                                                className={`cursor-pointer transition-transform hover:scale-110 ${star <= newReview.rating ? 'text-yellow-400 fill-current' : 'text-slate-700'}`}
                                             />
                                         ))}
                                     </div>
                                 </div>
 
                                 <Textarea
-                                    placeholder="Tell us about your experience with AdventureNexus. How did our AI recommendations work out? What made your trip special?"
-                                    className="bg-input border-input text-foreground min-h-[120px]"
+                                    placeholder="Tell us about your experience..."
+                                    value={newReview.comment}
+                                    onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
+                                    className="bg-white/5 border-white/10 text-white min-h-[120px]"
                                 />
 
-                                <div className="flex justify-between items-center">
-                                    <Button variant="outline" className="border-input text-muted-foreground hover:bg-muted hover:text-foreground">
-                                        <ImageIcon size={16} className="mr-2" />
-                                        Add Photos
+                                <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
+                                    <Button
+                                        variant="ghost"
+                                        onClick={() => setShowWriteReview(false)}
+                                        className="text-slate-400 hover:text-white hover:bg-white/5"
+                                    >
+                                        Cancel
                                     </Button>
-                                    <div className="flex gap-2">
-                                        <Button
-                                            variant="ghost"
-                                            onClick={() => setShowWriteReview(false)}
-                                            className="text-muted-foreground hover:text-foreground"
-                                        >
-                                            Cancel
-                                        </Button>
-                                        <Button className="bg-gradient-to-r from-primary to-secondary text-primary-foreground">
-                                            <Send size={16} className="mr-2" />
-                                            Submit Review
-                                        </Button>
-                                    </div>
+                                    <Button
+                                        onClick={handleReviewSubmit}
+                                        disabled={submitting}
+                                        className="bg-primary text-white"
+                                    >
+                                        {submitting ? <Loader2 className="animate-spin mr-2" /> : <Send size={16} className="mr-2" />}
+                                        Submit Review
+                                    </Button>
                                 </div>
                             </CardContent>
                         </Card>
@@ -432,103 +448,123 @@ const AdventureNexusReviews = () => {
             )}
 
             {/* Reviews Section */}
-            <section ref={reviewsRef} className="py-12 bg-background">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="space-y-6">
-                        {filteredReviews.map((review, index) => (
-                            <Card key={review.id} className="review-card bg-card border-border hover:border-primary/50 transition-all duration-300">
-                                <CardContent className="p-6">
-                                    <div className="flex justify-between items-start mb-4">
-                                        <div className="flex items-start space-x-4">
-                                            <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-primary-foreground font-bold">
-                                                {review.avatar}
-                                            </div>
-                                            <div>
-                                                <div className="flex items-center space-x-2">
-                                                    <h3 className="font-semibold text-foreground">{review.user}</h3>
-                                                    {review.verified && (
-                                                        <Badge className="bg-green-500/10 text-green-500 border-green-500/20">
-                                                            <CheckCircle size={12} className="mr-1" />
-                                                            Verified
-                                                        </Badge>
+            <section ref={reviewsRef} className="py-12 min-h-[600px] relative">
+                <div className="absolute inset-0 bg-gradient-to-b from-black via-zinc-950 to-black pointer-events-none"></div>
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
+                    {loading ? (
+                        <div className="flex justify-center items-center h-64">
+                            <Loader2 className="h-10 w-10 text-primary animate-spin" />
+                        </div>
+                    ) : (
+                        <div className="space-y-6">
+                            {reviews.map((review, index) => (
+                                <Card key={review._id || index} className="review-card backdrop-blur-xl bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all duration-300 group overflow-hidden shadow-lg shadow-black/20">
+                                    <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                    <CardContent className="p-6 md:p-8 relative">
+                                        <div className="flex flex-col md:flex-row gap-6">
+                                            {/* User Info */}
+                                            <div className="flex-shrink-0 flex md:flex-col items-center md:items-start gap-4 md:w-48">
+                                                <div className="relative">
+                                                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 p-[2px] shadow-lg shadow-indigo-500/20">
+                                                        <div className="w-full h-full rounded-full bg-black overflow-hidden relative">
+                                                            {review.userAvatar ? (
+                                                                <img src={review.userAvatar} alt={review.userName} className="w-full h-full object-cover" />
+                                                            ) : (
+                                                                <div className="w-full h-full flex items-center justify-center text-xl font-bold text-white uppercase bg-zinc-800">
+                                                                    {review.userName.substring(0, 2)}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    {review.isVerified && (
+                                                        <div className="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-1 border-2 border-black shadow-sm">
+                                                            <CheckCircle size={10} className="text-white" fill="currentColor" />
+                                                        </div>
                                                     )}
                                                 </div>
-                                                <div className="flex items-center space-x-4 text-sm text-muted-foreground mt-1">
-                                                    <span className="flex items-center">
-                                                        <MapPin size={14} className="mr-1" />
-                                                        {review.location}
-                                                    </span>
-                                                    <span className="flex items-center">
-                                                        <Clock size={14} className="mr-1" />
-                                                        {review.date}
-                                                    </span>
+                                                <div className="text-center md:text-left">
+                                                    <h3 className="font-semibold text-white text-lg tracking-tight">{review.userName}</h3>
+                                                    <div className="flex items-center justify-center md:justify-start text-xs text-zinc-400 mt-1 font-medium">
+                                                        <span>{new Date(review.createdAt).toLocaleDateString()}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Review Content */}
+                                            <div className="flex-1 space-y-4">
+                                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                                                    <div className="flex items-center space-x-2 text-zinc-300">
+                                                        <MapPin size={16} className="text-primary" />
+                                                        <span className="font-medium">{review.location}</span>
+                                                    </div>
+                                                    <div className="flex items-center bg-white/5 px-3 py-1 rounded-full border border-white/10 backdrop-blur-sm">
+                                                        <div className="flex mr-2">
+                                                            {renderStars(review.rating)}
+                                                        </div>
+                                                        <span className="text-sm font-bold text-white">{review.rating}.0</span>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex flex-wrap gap-2">
+                                                    <Badge variant="secondary" className="bg-indigo-500/10 text-indigo-300 border-indigo-500/20 hover:bg-indigo-500/20 transition-colors px-3 py-1">
+                                                        <Compass size={12} className="mr-1.5" />
+                                                        {review.tripType}
+                                                    </Badge>
+                                                    <Badge variant="secondary" className="bg-purple-500/10 text-purple-300 border-purple-500/20 hover:bg-purple-500/20 transition-colors px-3 py-1">
+                                                        <Calendar size={12} className="mr-1.5" />
+                                                        {review.tripDuration}
+                                                    </Badge>
+                                                    <Badge variant="secondary" className="bg-pink-500/10 text-pink-300 border-pink-500/20 hover:bg-pink-500/20 transition-colors px-3 py-1">
+                                                        <Users size={12} className="mr-1.5" />
+                                                        {review.travelers}
+                                                    </Badge>
+                                                </div>
+
+                                                <p className="text-zinc-300 leading-relaxed text-lg font-light italic border-l-2 border-primary/30 pl-4 py-1">
+                                                    "{review.comment}"
+                                                </p>
+
+                                                <div className="flex items-center gap-6 pt-4 mt-2 border-t border-white/5">
+                                                    <button
+                                                        onClick={() => handleLike(review._id)}
+                                                        className="flex items-center space-x-2 text-zinc-400 hover:text-primary transition-colors group"
+                                                    >
+                                                        <ThumbsUp size={18} className="group-hover:scale-110 transition-transform" />
+                                                        <span className="text-sm font-medium">Helpful ({review.helpfulCount || 0})</span>
+                                                    </button>
+                                                    <button className="flex items-center space-x-2 text-zinc-400 hover:text-pink-500 transition-colors text-sm font-medium">
+                                                        <Heart size={18} />
+                                                        <span>Save</span>
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="flex items-center space-x-1">
-                                            {renderStars(review.rating)}
-                                        </div>
-                                    </div>
-
-                                    <div className="mb-4">
-                                        <h4 className="font-semibold text-foreground mb-2">{review.trip}</h4>
-                                        <div className="flex flex-wrap gap-2 mb-3">
-                                            <Badge variant="secondary" className="bg-muted text-muted-foreground">
-                                                <Calendar size={12} className="mr-1" />
-                                                {review.duration}
-                                            </Badge>
-                                            <Badge variant="secondary" className="bg-muted text-muted-foreground">
-                                                <Users size={12} className="mr-1" />
-                                                {review.travelers}
-                                            </Badge>
-                                            {review.images > 0 && (
-                                                <Badge variant="secondary" className="bg-muted text-muted-foreground">
-                                                    <Camera size={12} className="mr-1" />
-                                                    {review.images} photos
-                                                </Badge>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    <p className="text-muted-foreground leading-relaxed mb-4">
-                                        {review.content}
-                                    </p>
-
-                                    <div className="flex justify-between items-center pt-4 border-t border-border">
-                                        <div className="flex space-x-4">
-                                            <button className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors">
-                                                <ThumbsUp size={16} />
-                                                <span className="text-sm">Helpful ({review.helpful})</span>
-                                            </button>
-                                            <button className="flex items-center space-x-2 text-muted-foreground hover:text-red-500 transition-colors">
-                                                <Heart size={16} />
-                                                <span className="text-sm">Save</span>
-                                            </button>
-                                            <button className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors">
-                                                <Share2 size={16} />
-                                                <span className="text-sm">Share</span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))}
-                    </div>
-
-                    {filteredReviews.length === 0 && (
-                        <div className="text-center py-12">
-                            <div className="text-muted-foreground mb-4">
-                                <Search size={48} className="mx-auto mb-4" />
-                                <h3 className="text-xl font-semibold text-foreground mb-2">No reviews found</h3>
-                                <p>Try adjusting your filters or search terms</p>
-                            </div>
+                                    </CardContent>
+                                </Card>
+                            ))}
                         </div>
                     )}
 
-                    {filteredReviews.length > 0 && (
-                        <div className="text-center mt-12">
-                            <Button variant="outline" className="border-input text-foreground hover:bg-muted">
-                                Load More Reviews
+                    {!loading && reviews.length === 0 && (
+                        <div className="text-center py-20 bg-white/5 rounded-3xl border border-white/10 border-dashed">
+                            <div className="text-slate-500 mb-4 inline-block p-6 rounded-full bg-white/5">
+                                <Search size={48} />
+                            </div>
+                            <h3 className="text-2xl font-semibold text-white mb-2">No reviews found</h3>
+                            <p className="text-slate-400 max-w-md mx-auto">
+                                We couldn't find any reviews matching your criteria. Try adjusting your filters or be the first to write one!
+                            </p>
+                            <Button
+                                variant="outline"
+                                onClick={() => {
+                                    setSearchQuery('');
+                                    setSelectedFilter('all');
+                                    setSelectedRating('all');
+                                }}
+                                className="mt-6 border-white/20 text-white hover:bg-white/10"
+                            >
+                                Clear all filters
                             </Button>
                         </div>
                     )}
