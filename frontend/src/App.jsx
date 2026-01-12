@@ -18,6 +18,8 @@ import TripBuilderPage from './pages/TripBuilderPage';
 import AccommodationsPage from './pages/HotelPage';
 import MyTripsPage from './pages/MyTripPage';
 import FlightsPage from './pages/FlightsPage';
+import ExperiencesPage from './pages/ExperiencesPage';
+import ToursPage from './pages/ToursPage';
 import ChatAssistant from './components/ChatAssistant'; // Floating chat assistant
 import { ChatProvider } from './context/ChatContext'; // Chat context provider
 
@@ -66,6 +68,8 @@ const AppContent = () => {
         <Route path='/hotels' element={<AccommodationsPage />} />
         <Route path='/flights' element={<FlightsPage />} />
         <Route path='/my-trips' element={<MyTripsPage />} />
+        <Route path='/experiences' element={<ExperiencesPage />} />
+        <Route path='/tours' element={<ToursPage />} />
 
         {/* --- Dynamic Routes (Routes with parameters) --- */}
         <Route path="/destination/:country/:city" element={<IndividualDestinationPage />} />

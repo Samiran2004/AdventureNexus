@@ -687,14 +687,22 @@ const SearchPage = () => {
                         <Button
                           size="sm"
                           variant="secondary"
-                          className="bg-background/90 hover:bg-background"
+                          className="bg-white/90 hover:bg-white text-red-500 hover:text-red-600 shadow-sm hover:shadow-md transition-all rounded-full w-8 h-8 p-0"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // Add love logic here
+                          }}
                         >
-                          <Heart size={16} />
+                          <Heart size={16} className="fill-current" />
                         </Button>
                         <Button
                           size="sm"
                           variant="secondary"
-                          className="bg-background/90 hover:bg-background"
+                          className="bg-white/90 hover:bg-white text-primary hover:text-primary/80 shadow-sm hover:shadow-md transition-all rounded-full w-8 h-8 p-0"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // Add share logic here
+                          }}
                         >
                           <Share size={16} />
                         </Button>

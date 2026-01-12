@@ -242,7 +242,7 @@ export default function Footer() {
         <div className="mt-8 pt-8 border-t border-border">
           <div className="flex flex-wrap justify-center items-center gap-8 opacity-60">
             <div className="text-muted-foreground text-xs text-center">
-              <div className="font-semibold">✈️ 50K+ Trips Planned</div>
+              <div className="font-semibold">✈️ 5+ Trips Planned</div>
             </div>
             <div className="text-muted-foreground text-xs text-center">
               <div className="font-semibold">🌍 200+ Destinations</div>
