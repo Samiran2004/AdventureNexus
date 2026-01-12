@@ -20,6 +20,15 @@ import MyTripsPage from './pages/MyTripPage';
 import FlightsPage from './pages/FlightsPage';
 import ExperiencesPage from './pages/ExperiencesPage';
 import ToursPage from './pages/ToursPage';
+import PressPage from './pages/PressPage';
+import PartnersPage from './pages/PartnersPage';
+import HelpPage from './pages/HelpPage';
+import SafetyPage from './pages/SafetyPage';
+import CommunityPage from './pages/CommunityPage';
+import TermsPage from './pages/TermsPage';
+import PrivacyPage from './pages/PrivacyPage';
+import CookiesPage from './pages/CookiesPage';
+import AccessibilityPage from './pages/AccessibilityPage';
 import ChatAssistant from './components/ChatAssistant'; // Floating chat assistant
 import { ChatProvider } from './context/ChatContext'; // Chat context provider
 
@@ -70,6 +79,15 @@ const AppContent = () => {
         <Route path='/my-trips' element={<MyTripsPage />} />
         <Route path='/experiences' element={<ExperiencesPage />} />
         <Route path='/tours' element={<ToursPage />} />
+        <Route path='/press' element={<PressPage />} />
+        <Route path='/partners' element={<PartnersPage />} />
+        <Route path='/help' element={<HelpPage />} />
+        <Route path='/safety' element={<SafetyPage />} />
+        <Route path='/community' element={<CommunityPage />} />
+        <Route path='/terms' element={<TermsPage />} />
+        <Route path='/privacy' element={<PrivacyPage />} />
+        <Route path='/cookies' element={<CookiesPage />} />
+        <Route path='/accessibility' element={<AccessibilityPage />} />
 
         {/* --- Dynamic Routes (Routes with parameters) --- */}
         <Route path="/destination/:country/:city" element={<IndividualDestinationPage />} />
