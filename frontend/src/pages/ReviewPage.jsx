@@ -32,7 +32,9 @@ import {
     Image as ImageIcon,
     StarIcon,
     Clock,
-    Loader2
+    Loader2,
+    ChevronLeft,
+    ChevronRight
 } from 'lucide-react';
 
 // GSAP Imports
@@ -56,6 +58,8 @@ const AdventureNexusReviews = () => {
     const [selectedRating, setSelectedRating] = useState('all');
     const [searchQuery, setSearchQuery] = useState('');
     const [sortBy, setSortBy] = useState('newest');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
     const [showWriteReview, setShowWriteReview] = useState(false);
     const [submitting, setSubmitting] = useState(false);
 
@@ -82,11 +86,14 @@ const AdventureNexusReviews = () => {
                 category: selectedFilter,
                 rating: selectedRating,
                 search: searchQuery,
-                sortBy: sortBy
+                sortBy: sortBy,
+                page: currentPage,
+                limit: 3 // Show 3 reviews per batch as requested
             };
             const response = await reviewService.getReviews(filters);
             if (response.success) {
                 setReviews(response.data);
+                setTotalPages(response.totalPages);
             }
         } catch (error) {
             console.error(error);
@@ -97,8 +104,16 @@ const AdventureNexusReviews = () => {
     };
 
     useEffect(() => {
-        fetchReviews();
+        setCurrentPage(1); // Reset to page 1 when filters change
     }, [selectedFilter, selectedRating, searchQuery, sortBy]);
+
+    useEffect(() => {
+        fetchReviews();
+        // Scroll to top of reviews section when page changes
+        if (reviewsRef.current && currentPage > 1) {
+            reviewsRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [currentPage, selectedFilter, selectedRating, searchQuery, sortBy]);
 
     useEffect(() => {
         let ctx = gsap.context(() => {
@@ -543,6 +558,31 @@ const AdventureNexusReviews = () => {
                                     </CardContent>
                                 </Card>
                             ))}
+                        </div>
+                    )}
+
+                    {/* Load More / Pagination Controls */}
+                    {!loading && totalPages > 1 && (
+                        <div className="flex justify-center items-center mt-12 gap-6">
+                            {currentPage > 1 && (
+                                <button
+                                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                    className="px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all font-medium flex items-center gap-2 group"
+                                >
+                                    <ChevronLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+                                    Previous Batch
+                                </button>
+                            )}
+
+                            {currentPage < totalPages && (
+                                <button
+                                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                    className="px-8 py-3 rounded-xl bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25 transition-all font-bold flex items-center gap-2 group hover:scale-105"
+                                >
+                                    Load Next 3 Reviews
+                                    <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                                </button>
+                            )}
                         </div>
                     )}
 

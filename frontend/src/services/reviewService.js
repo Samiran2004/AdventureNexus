@@ -12,6 +12,8 @@ const getReviews = async (filters = {}) => {
         if (filters.rating && filters.rating !== 'all') params.append('rating', filters.rating);
         if (filters.search) params.append('search', filters.search);
         if (filters.sortBy) params.append('sortBy', filters.sortBy);
+        params.append('page', filters.page || 1);
+        params.append('limit', filters.limit || 6);
 
         const response = await axios.get(`${API_URL}?${params.toString()}`);
         return response.data;

@@ -37,8 +37,21 @@ export const getAllReviews = async (req: Request, res: Response) => {
             sortOption = { helpfulCount: -1 };
         }
 
-        const reviews = await Review.find(query).sort(sortOption);
-        res.status(StatusCodes.OK).json({ success: true, count: reviews.length, data: reviews });
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 6;
+        const skip = (page - 1) * limit;
+
+        const reviews = await Review.find(query).sort(sortOption).skip(skip).limit(limit);
+        const total = await Review.countDocuments(query);
+
+        res.status(StatusCodes.OK).json({
+            success: true,
+            count: reviews.length,
+            total,
+            totalPages: Math.ceil(total / limit),
+            currentPage: page,
+            data: reviews
+        });
     } catch (error) {
         console.error('Error fetching reviews:', error);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Server Error' });
