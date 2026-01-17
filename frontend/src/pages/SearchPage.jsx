@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import HighlightMap from "@/components/HighlightMap"; // Import Map component
 import {
   Select,
   SelectContent,
@@ -47,9 +48,13 @@ import {
   TrendingUp,
   Users,
   Utensils,
-  X
+  X,
+  Image as ImageIcon,
+  ChevronLeft,
+  ChevronRight,
+  Maximize2
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "@clerk/clerk-react"
 
@@ -63,6 +68,12 @@ const SearchPage = () => {
   const [sortBy, setSortBy] = useState("recommended");
   const [selectedDestination, setSelectedDestination] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [galleryImages, setGalleryImages] = useState([]);
+  const [isGalleryLoading, setIsGalleryLoading] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(null); // Lightbox state
+  const [selectedHighlight, setSelectedHighlight] = useState(null); // State for map modal
+
   const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 
@@ -77,12 +88,84 @@ const SearchPage = () => {
   const handleViewDetails = (result) => {
     setSelectedDestination(result);
     setIsModalOpen(true);
+    setGalleryImages([]); // Reset images
+    // Optional: Fetch images immediately or wait for tab click. 
+    // Let's wait for tab click or just pre-fetch lightly. 
+    // For now, I'll attach it to the tab change handler or just a useEffect on selectedDestination.
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setTimeout(() => setSelectedDestination(null), 300);
+    setGalleryImages([]);
   };
+
+  const fetchGalleryImages = async (destinationName) => {
+    if (!destinationName || galleryImages.length > 0) return; // Don't refetch if already have images
+
+    try {
+      setIsGalleryLoading(true);
+      const token = await getToken();
+      const response = await axios.post(
+        `${VITE_BACKEND_URL}/api/v1/plans/search/destination-images`,
+        { query: destinationName, count: 12 },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.status === "Ok") {
+        setGalleryImages(response.data.data);
+      }
+      setIsGalleryLoading(false);
+    } catch (error) {
+      console.error("Error fetching gallery images:", error);
+      setIsGalleryLoading(false);
+      toast.error("Failed to load gallery images");
+    }
+  };
+
+  // Lightbox Handlers
+  const openLightbox = (index) => {
+    setLightboxIndex(index);
+  };
+
+  const closeLightbox = () => {
+    setLightboxIndex(null);
+  };
+
+  const nextImage = (e) => {
+    e?.stopPropagation();
+    if (lightboxIndex !== null && lightboxIndex < galleryImages.length - 1) {
+      setLightboxIndex(lightboxIndex + 1);
+    } else if (lightboxIndex !== null) {
+      setLightboxIndex(0); // Loop back
+    }
+  };
+
+  const prevImage = (e) => {
+    e?.stopPropagation();
+    if (lightboxIndex !== null && lightboxIndex > 0) {
+      setLightboxIndex(lightboxIndex - 1);
+    } else if (lightboxIndex !== null) {
+      setLightboxIndex(galleryImages.length - 1); // Loop to end
+    }
+  };
+
+  // Keyboard Navigation for Lightbox
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (lightboxIndex === null) return;
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowRight") nextImage();
+      if (e.key === "ArrowLeft") prevImage();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [lightboxIndex, galleryImages]);
 
 
   // Sample search results data - Updated to match API structure
@@ -211,13 +294,41 @@ const SearchPage = () => {
 
       const token = await getToken();
 
+
+      // Calculate duration in days
+      const start = new Date(fromDate);
+      const end = new Date(toDate);
+      const diffTime = Math.abs(end - start);
+      const duration = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include both start and end dates
+
+      if (!toDate) {
+        toast.error("Please select a return date");
+        return;
+      }
+
+      if (end < start) {
+        toast.error("Return date must be after departure date");
+        return;
+      }
+
+      // Map budget tiers to approximate upper limits (INR)
+      const budgetMap = {
+        "budget": 15000,
+        "mid": 45000,
+        "luxury": 150000
+      };
+
+      // Default to mid if not found, or use a custom logic if "Any" is an option
+      const budgetLimit = budgetMap[budget] || 30000;
+
       const payload = {
         to,
         from,
         date: fromDate,
         travelers: Number(travelers),
-        budget: 250000,
-        budget_range: budget,
+        budget: budgetLimit,
+        budget_range: budget, // This sends "budget", "mid", or "luxury" string
+        duration: duration
       };
 
       const response = await axios.post(
@@ -230,8 +341,9 @@ const SearchPage = () => {
         }
       );
 
-      setSearchResults([response.data.data]);
-      toast.success("Plan generated successfully");
+      // The backend now returns an array of plans
+      setSearchResults(response.data.data);
+      toast.success("Plans generated successfully");
       setIsLoading(false);
     } catch (error) {
       console.error("Search error:", error);
@@ -936,23 +1048,31 @@ const SearchPage = () => {
 
 
                   {/* Tabs for Detailed Info */}
-                  <Tabs defaultValue="highlights" className="w-full">
-                    <TabsList className="grid w-full grid-cols-4 bg-muted/50 backdrop-blur-sm mb-8 p-1 rounded-xl shadow-lg">
-                      <TabsTrigger value="highlights" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground cursor-pointer rounded-lg transition-all duration-300 data-[state=active]:shadow-lg font-medium">
-                        <Lightbulb className="mr-2" size={16} />
+                  <Tabs defaultValue="highlights" className="w-full" onValueChange={(value) => {
+                    if (value === "gallery" && galleryImages.length === 0) {
+                      fetchGalleryImages(selectedDestination.name);
+                    }
+                  }}>
+                    <TabsList className="grid w-full grid-cols-5 bg-muted/50 backdrop-blur-sm mb-8 p-1 rounded-xl shadow-lg">
+                      <TabsTrigger value="highlights" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground cursor-pointer rounded-lg transition-all duration-300 data-[state=active]:shadow-lg font-medium text-xs sm:text-sm">
+                        <Lightbulb className="mr-1 sm:mr-2" size={14} />
                         Highlights
                       </TabsTrigger>
-                      <TabsTrigger value="itinerary" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground cursor-pointer rounded-lg transition-all duration-300 data-[state=active]:shadow-lg font-medium">
-                        <CalendarDays className="mr-2" size={16} />
+                      <TabsTrigger value="itinerary" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground cursor-pointer rounded-lg transition-all duration-300 data-[state=active]:shadow-lg font-medium text-xs sm:text-sm">
+                        <CalendarDays className="mr-1 sm:mr-2" size={14} />
                         Itinerary
                       </TabsTrigger>
-                      <TabsTrigger value="budget" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground cursor-pointer rounded-lg transition-all duration-300 data-[state=active]:shadow-lg font-medium">
-                        <IndianRupee className="mr-2" size={16} />
+                      <TabsTrigger value="budget" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground cursor-pointer rounded-lg transition-all duration-300 data-[state=active]:shadow-lg font-medium text-xs sm:text-sm">
+                        <IndianRupee className="mr-1 sm:mr-2" size={14} />
                         Budget
                       </TabsTrigger>
-                      <TabsTrigger value="tips" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground cursor-pointer rounded-lg transition-all duration-300 data-[state=active]:shadow-lg font-medium">
-                        <Lightbulb className="mr-2" size={16} />
+                      <TabsTrigger value="tips" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground cursor-pointer rounded-lg transition-all duration-300 data-[state=active]:shadow-lg font-medium text-xs sm:text-sm">
+                        <Lightbulb className="mr-1 sm:mr-2" size={14} />
                         Tips
+                      </TabsTrigger>
+                      <TabsTrigger value="gallery" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground cursor-pointer rounded-lg transition-all duration-300 data-[state=active]:shadow-lg font-medium text-xs sm:text-sm">
+                        <ImageIcon className="mr-1 sm:mr-2" size={14} />
+                        Gallery
                       </TabsTrigger>
                     </TabsList>
 
@@ -961,15 +1081,20 @@ const SearchPage = () => {
                     <TabsContent value="highlights" className="space-y-4">
                       {selectedDestination.trip_highlights && selectedDestination.trip_highlights.length > 0 ? (
                         selectedDestination.trip_highlights.map((highlight, idx) => (
-                          <Card key={idx} className="bg-card border-border shadow-lg hover:shadow-xl transition-all duration-300 hover-lift">
+                          <Card
+                            key={idx}
+                            className="bg-card border-border shadow-lg hover:shadow-xl transition-all duration-300 hover-lift cursor-pointer group"
+                            onClick={() => setSelectedHighlight(highlight)}
+                          >
                             <CardContent className="p-5">
                               <div className="flex items-start space-x-4">
-                                <div className="bg-gradient-to-br from-primary/20 to-secondary/20 p-3 rounded-xl shadow-md">
+                                <div className="bg-gradient-to-br from-primary/20 to-secondary/20 p-3 rounded-xl shadow-md group-hover:bg-primary/30 transition-colors">
                                   <MapPinned className="text-primary" size={24} />
                                 </div>
                                 <div className="flex-1">
-                                  <h4 className="font-semibold text-card-foreground mb-2 text-lg font-outfit">
+                                  <h4 className="font-semibold text-card-foreground mb-2 text-lg font-outfit flex items-center justify-between">
                                     {highlight.name}
+                                    <MapPin size={16} className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                                   </h4>
                                   <p className="text-muted-foreground text-sm mb-3 leading-relaxed">
                                     {highlight.description}
@@ -1084,6 +1209,89 @@ const SearchPage = () => {
                         <p className="text-muted-foreground">No tips available</p>
                       )}
                     </TabsContent>
+
+                    {/* Gallery Tab (Pinterest Style) */}
+                    <TabsContent value="gallery" className="space-y-4">
+                      {isGalleryLoading ? (
+                        <div className="flex flex-col items-center justify-center py-20">
+                          <Spinner className="size-10 text-primary animate-spin mb-4" />
+                          <p className="text-muted-foreground text-sm">Curating gallery...</p>
+                        </div>
+                      ) : galleryImages && galleryImages.length > 0 ? (
+                        <>
+                          <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4 pr-2">
+                            {galleryImages.map((imgUrl, idx) => (
+                              <div
+                                key={idx}
+                                className="break-inside-avoid relative group rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-zoom-in"
+                                onClick={() => openLightbox(idx)}
+                              >
+                                <img
+                                  src={imgUrl}
+                                  alt={`Gallery ${idx}`}
+                                  className="w-full h-auto object-cover transform md:group-hover:scale-105 transition-transform duration-500"
+                                  loading="lazy"
+                                />
+                                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none flex items-center justify-center">
+                                  <Maximize2 className="text-white opacity-80" size={24} />
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Lightbox Overlay */}
+                          {lightboxIndex !== null && (
+                            <div
+                              className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm animate-in fade-in duration-200"
+                              onClick={closeLightbox}
+                            >
+                              {/* Close Button */}
+                              <button
+                                className="absolute top-4 right-4 text-white/70 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors z-50"
+                                onClick={closeLightbox}
+                              >
+                                <X size={32} />
+                              </button>
+
+                              {/* Navigation Buttons */}
+                              <button
+                                className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white p-3 rounded-full hover:bg-white/10 transition-colors z-50 hidden md:flex"
+                                onClick={prevImage}
+                              >
+                                <ChevronLeft size={40} />
+                              </button>
+
+                              <button
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white p-3 rounded-full hover:bg-white/10 transition-colors z-50 hidden md:flex"
+                                onClick={nextImage}
+                              >
+                                <ChevronRight size={40} />
+                              </button>
+
+                              {/* Image Container */}
+                              <div
+                                className="relative max-w-[90vw] max-h-[90vh] flex items-center justify-center"
+                                onClick={(e) => e.stopPropagation()} // Prevent closing when clicking image
+                              >
+                                <img
+                                  src={galleryImages[lightboxIndex]}
+                                  alt="Lightbox"
+                                  className="max-w-full max-h-[90vh] object-contain rounded-md shadow-2xl"
+                                />
+                                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white px-3 py-1 rounded-full text-sm backdrop-blur-md">
+                                  {lightboxIndex + 1} / {galleryImages.length}
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <div className="text-center py-10 text-muted-foreground">
+                          <ImageIcon size={48} className="mx-auto mb-3 opacity-30" />
+                          <p>No images found in gallery</p>
+                        </div>
+                      )}
+                    </TabsContent>
                   </Tabs>
 
 
@@ -1105,6 +1313,28 @@ const SearchPage = () => {
         </DialogContent>
       </Dialog>
 
+
+      {/* Map Modal */}
+      <Dialog open={!!selectedHighlight} onOpenChange={() => setSelectedHighlight(null)}>
+        <DialogContent className="max-w-4xl h-[70vh] bg-card border-border p-0 overflow-hidden shadow-2xl">
+          <div className="relative w-full h-full">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-4 right-4 z-50 bg-background/80 hover:bg-background rounded-full shadow-sm"
+              onClick={() => setSelectedHighlight(null)}
+            >
+              <X size={20} />
+            </Button>
+            {selectedHighlight && (
+              <HighlightMap
+                highlight={selectedHighlight}
+                destinationName={selectedDestination?.name}
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* AI Assistant CTA */}
       <section className="py-12 bg-gradient-to-r from-primary/10 to-secondary/10 border-y border-border">
