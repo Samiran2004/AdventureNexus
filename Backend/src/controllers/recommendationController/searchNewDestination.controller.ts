@@ -28,6 +28,7 @@ const searchNewDestination = async (req: Request, res: Response) => {
       budget_range,
       activities,
       travel_style,
+      duration // Extract duration
     } = req.body;
 
     // 🔐 1. Validate required fields
@@ -59,6 +60,7 @@ const searchNewDestination = async (req: Request, res: Response) => {
       budget_range,
       activities,
       travel_style,
+      duration, // Pass duration
     };
 
     const prompt = generateNewSearchDestinationPrompt(promptData);
@@ -66,68 +68,60 @@ const searchNewDestination = async (req: Request, res: Response) => {
     // 4. Call Groq AI Service
     const generatedData = await groqGeneratedData(prompt);
 
-    // 🧼 5. Clean and Parse AI response (Extract JSON object from string)
-    const startIndex = generatedData.indexOf("{");
-    const endIndex = generatedData.lastIndexOf("}");
+    // 🧼 5. Clean and Parse AI response (Extract JSON Array from string)
+    const startIndex = generatedData.indexOf("[");
+    const endIndex = generatedData.lastIndexOf("]");
     const cleanString = generatedData.substring(startIndex, endIndex + 1);
-    const aiResponse = JSON.parse(cleanString);
+    const aiResponseArray = JSON.parse(cleanString);
 
-    // 🌐 5.5 Fetch Image with Fallback Strategy
-    // Strategy: Wikipedia (Reliable/Specific) -> Unsplash (High Quality) -> AI (Fallback)
-    const searchQuery = aiResponse.name || to;
-
-    let destinationImage = await fetchWikipediaImage(searchQuery);
-
-    if (!destinationImage) {
-      console.log(chalk.yellow(`Wikipedia failed for ${searchQuery}, trying Unsplash...`));
-      destinationImage = await fetchUnsplashImage(searchQuery);
+    if (!Array.isArray(aiResponseArray)) {
+      throw new Error("AI response is not an array");
     }
 
-    // 🧩 6. Construct Plan Data Object (Merge Input + AI Output)
-    const planData: IPlan = {
-      clerkUserId,
-      to,
-      from,
-      date,
-      travelers,
-      budget,
-      budget_range,
-      activities,
-      travel_style,
+    // 🌐 5.5 Process each plan in the array (Fetch Images & Construct Objects)
+    const processedPlans = await Promise.all(aiResponseArray.map(async (aiResponse: any) => {
+      // Strategy: Wikipedia (Reliable/Specific) -> Unsplash (High Quality) -> AI (Fallback)
+      const searchQuery = aiResponse.name || to;
 
-      // AI generated fields
-      ai_score: aiResponse.ai_score,
-      image_url: destinationImage || aiResponse.image_url, // Use our fetched image, or fallback to AI's
-      name: aiResponse.name,
-      days: aiResponse.days,
-      cost: aiResponse.cost,
-      star: aiResponse.star,
-      total_reviews: aiResponse.total_reviews,
-      destination_overview: aiResponse.destination_overview,
-      perfect_for: aiResponse.perfect_for,
-      budget_breakdown: aiResponse.budget_breakdown,
-      trip_highlights: aiResponse.trip_highlights,
-      suggested_itinerary: aiResponse.suggested_itinerary,
-      local_tips: aiResponse.local_tips,
-    };
+      let destinationImage = await fetchWikipediaImage(searchQuery);
 
-    // 🔎 7. Check for Duplicate Plans (Prevent regenerating identical trips)
-    const existingPlan = await Plan.findOne({
-      clerkUserId,
-      to,
-      from,
-      date,
-      budget,
-    });
+      if (!destinationImage) {
+        console.log(chalk.yellow(`Wikipedia failed for ${searchQuery}, trying Unsplash...`));
+        destinationImage = await fetchUnsplashImage(searchQuery);
+      }
 
-    if (existingPlan) {
-      winstonLogger.info(`URL: ${fullUrl} - Plan already exists`);
-      return res.status(StatusCodes.OK).json({
-        status: "Ok",
-        message: "Plan already exists",
-        data: existingPlan,
-      });
-    }
+      // Construct Plan Data
+      const planData: IPlan = {
+        clerkUserId,
+        to,
+        from,
+        date,
+        travelers,
+        budget,
+        budget_range,
+        activities,
+        travel_style,
+
+        // AI generated fields
+        ai_score: aiResponse.ai_score,
+        image_url: destinationImage || aiResponse.image_url,
+        name: aiResponse.name,
+        days: aiResponse.days,
+        cost: aiResponse.cost,
+        star: aiResponse.star,
+        total_reviews: aiResponse.total_reviews,
+        destination_overview: aiResponse.destination_overview,
+        perfect_for: aiResponse.perfect_for,
+        budget_breakdown: aiResponse.budget_breakdown,
+        trip_highlights: aiResponse.trip_highlights,
+        suggested_itinerary: aiResponse.suggested_itinerary,
+        local_tips: aiResponse.local_tips,
+        userId: null // Will attach user below if needed, or we can look it up here
+      };
+
+      return planData;
+    }));
+
 
     // 8. Find User in DB to link plan
     const user = await User.findOne({ clerkUserId });
@@ -140,18 +134,32 @@ const searchNewDestination = async (req: Request, res: Response) => {
       });
     }
 
-    planData.userId = user._id;
+    // Save all plans and attach user ID
+    const savedPlans = await Promise.all(processedPlans.map(async (planData) => {
+      // Check for duplicates before saving (Plan level)
+      const existingPlan = await Plan.findOne({
+        clerkUserId,
+        name: planData.name, // check specific destination name
+        date,
+        budget
+      });
 
-    // 💾 9. Save New Plan to Database
-    const newPlan = new Plan(planData);
-    await newPlan.save();
+      if (existingPlan) {
+        return existingPlan;
+      }
+
+      planData.userId = user._id;
+      const newPlan = new Plan(planData);
+      await newPlan.save();
+      return newPlan;
+    }));
 
     // ✅ 10. Send Success Response
-    winstonLogger.info(`URL: ${fullUrl} - Plan generated successfully`);
+    winstonLogger.info(`URL: ${fullUrl} - Plans generated successfully`);
     return res.status(StatusCodes.OK).json({
       status: "Ok",
       message: "Generated",
-      data: newPlan,
+      data: savedPlans, // Return array of plans
     });
   } catch (error: any) {
     console.log(chalk.bgRed("Internal Server Error"));
