@@ -5,6 +5,7 @@ import bcryptjs from 'bcryptjs';
 import { userSchemaValidationLogin } from '../../utils/validators/joiLoginValidation';
 import createHttpError from 'http-errors';
 import { config } from '../../config/config';
+import logger from '../../utils/logger';
 
 /**
  * Controller for User Login.
@@ -93,7 +94,7 @@ const loginuser = async (
         }
     } catch (error) {
         if (config.env === 'development') {
-            console.error('Error during login:', error); // Log for debugging
+            logger.error('Error during login:', error); // Log for debugging
         }
         return next(createHttpError(500, 'Internal Server Error!'));
     }

@@ -13,18 +13,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
+const logger_1 = __importDefault(require("../utils/logger"));
 const connection = (url) => __awaiter(void 0, void 0, void 0, function* () {
     mongoose_1.default.connection.on('connected', () => {
-        console.log("Connected to database successfully");
+        logger_1.default.info("Connected to database successfully");
     });
     mongoose_1.default.connection.on('error', (err) => {
-        console.log("Error connecting to database", err);
+        logger_1.default.error("Error connecting to database", err);
     });
     try {
         yield mongoose_1.default.connect(url);
     }
     catch (error) {
-        console.error("Failed to connect to database:", error);
+        logger_1.default.error("Failed to connect to database:", error);
         process.exit(1);
     }
 });

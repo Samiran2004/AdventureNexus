@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.updatePlan = void 0;
 const planModel_1 = __importDefault(require("../../database/models/planModel"));
 const http_errors_1 = __importDefault(require("http-errors"));
+const logger_1 = __importDefault(require("../../utils/logger"));
 const updatePlan = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
@@ -35,6 +36,7 @@ const updatePlan = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
         });
     }
     catch (error) {
+        logger_1.default.error('Error updating plan:', error);
         return next((0, http_errors_1.default)(500, 'Internal Server Error!'));
     }
 });

@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const http_errors_1 = __importDefault(require("http-errors"));
 const config_1 = require("../../config/config");
+const logger_1 = __importDefault(require("../../utils/logger"));
 const names = [];
 const emails = [];
 const roles = [];
@@ -46,7 +47,7 @@ const splitCost = (req, res, next) => __awaiter(void 0, void 0, void 0, function
     }
     catch (err) {
         if (config_1.config.env == 'development') {
-            console.log(err);
+            logger_1.default.error('Error in split cost:', err);
         }
         return next((0, http_errors_1.default)(500, 'Internal Server Error!'));
     }

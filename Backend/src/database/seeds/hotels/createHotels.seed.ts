@@ -1,9 +1,9 @@
-import chalk from "chalk";
 import { Response } from "express"
 import { getReasonPhrase, StatusCodes } from "http-status-codes"
 import { generateHotelSearchPrompt } from "../../../utils/gemini/createHotelsPrompt";
 import { groqGeneratedData } from "../../../services/groq.service";
 import { generateHotelImage } from "../../../utils/gemini/generateHotelsImagePrompt";
+import logger from "../../../utils/logger";
 
 /**
  * Seed Function to generate and return Hotel Recommendations.
@@ -12,7 +12,7 @@ import { generateHotelImage } from "../../../utils/gemini/generateHotelsImagePro
  */
 const createHotels = async (req, res: Response) => {
     try {
-        console.log("Create Hotels seed...");
+        logger.info("Create Hotels seed...");
 
         // 1. Fetch request body parameters
         const {
@@ -24,7 +24,7 @@ const createHotels = async (req, res: Response) => {
 
         // 2. Validate Required Fields
         if (!destination || !duration || !budget || !currency_code) {
-            console.log(chalk.red("All fields are required..."));
+            logger.warn("All fields are required...");
             return res.status(StatusCodes.BAD_REQUEST).json({
                 status: 'Failed',
                 message: getReasonPhrase(StatusCodes.BAD_REQUEST)
@@ -41,7 +41,7 @@ const createHotels = async (req, res: Response) => {
 
         // 4. Generate AI Prompt for Hotel Search
         let prompt = await generateHotelSearchPrompt(dataPayload);
-        // console.log(chalk.bgGreen(prompt));
+        // logger.debug(prompt);
 
         // 5. Call AI Service to get Hotel Data
         const generatedData = await groqGeneratedData(prompt);
@@ -75,7 +75,7 @@ const createHotels = async (req, res: Response) => {
 
 
     } catch (error) {
-        console.log(chalk.red(`Internal Server Error for create hotels...\nError:${error.message}`));
+        logger.error(`Internal Server Error for create hotels...\nError:${error.message}`);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             status: 'Failed',
             message: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR)

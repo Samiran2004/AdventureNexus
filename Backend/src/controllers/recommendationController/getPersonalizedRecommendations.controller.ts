@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import winstonLogger from "../../services/winston.service";
+import logger from "../../utils/logger";
 import User from "../../database/models/userModel";
 import { getRecommendationsForUser } from "../../services/recommendation.service";
 import Plan from "../../database/models/planModel";
@@ -42,7 +42,7 @@ const getPersonalizedRecommendations = async (req: Request, res: Response) => {
         });
 
     } catch (error: any) {
-        winstonLogger.error(`Error fetching recommendations: ${error.message}`);
+        logger.error(`Error fetching recommendations: ${error.message}`);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             status: "Failed",
             message: "Internal Server Error",

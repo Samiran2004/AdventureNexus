@@ -38,6 +38,7 @@ import reviewRoute from './routes/review.routes';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerOptions } from './utils/swaggerOptions';
+import logger from './utils/logger';
 
 const app = express();
 
@@ -51,7 +52,7 @@ redis.on('connect', (): void => {
     figlet(
         'R e d i s   c o n n e c t e d',
         (err: Error | null, data: string | undefined): void =>
-            err ? console.log('Figlet error...') : console.log(data)
+            err ? logger.error('Figlet error...') : logger.info(data)
     );
 });
 
@@ -87,7 +88,15 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 // Logging
-app.use(morgan('dev'));
+const morganMiddleware = morgan(
+    ':method :url :status :res[content-length] - :response-time ms',
+    {
+        stream: {
+            write: (message: string) => logger.http(message.trim()),
+        },
+    }
+);
+app.use(morganMiddleware);
 
 // Authentication
 app.use(clerkMiddleware());
@@ -143,13 +152,13 @@ app.listen(config.port, (err?: Error): void =>
         ? figlet(
             `S e r v e r  c o n n e c t i o n  e r r o r`,
             (err: Error | null, data: string | undefined): void => {
-                err ? console.log('Figlet error') : console.log(data);
+                err ? logger.error('Figlet error') : logger.error(data);
             }
         )
         : figlet(
             `S e r v e r  c o n n e c t e d \n P O R T :  ${config.port}`,
             (err: Error | null, data: string | undefined): void => {
-                err ? console.log('Figlet error...') : console.log(data);
+                err ? logger.error('Figlet error...') : logger.info(data);
             }
         )
 );

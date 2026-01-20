@@ -1,6 +1,7 @@
 // Connect with mongoDb
 
 import mongoose from 'mongoose'; // Mongoose ODM for MongoDB
+import logger from '../utils/logger';
 
 /**
  * Establishes a connection to the MongoDB database.
@@ -9,12 +10,12 @@ import mongoose from 'mongoose'; // Mongoose ODM for MongoDB
 const connection = async (url: string) => {
     // Event listener for successful connection
     mongoose.connection.on('connected', () => {
-        console.log("Connected to database successfully");
+        logger.info("Connected to database successfully");
     });
 
     // Event listener for connection errors
     mongoose.connection.on('error', (err) => {
-        console.log("Error connecting to database", err);
+        logger.error("Error connecting to database", err);
     });
 
     try {
@@ -22,7 +23,7 @@ const connection = async (url: string) => {
         await mongoose.connect(url as string);
     } catch (error) {
         // Log critical connection failures
-        console.error("Failed to connect to database:", error);
+        logger.error("Failed to connect to database:", error);
         process.exit(1); // Exit process on DB failure
     }
 };

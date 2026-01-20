@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = __importDefault(require("dotenv"));
 const config_1 = require("../../config/config");
 const genai_1 = require("@google/genai");
+const logger_1 = __importDefault(require("../../utils/logger"));
 dotenv_1.default.config();
 const ai = new genai_1.GoogleGenAI({ apiKey: config_1.config.GEMINI_API_KEY });
 function generateRecommendation(prompt) {
@@ -26,13 +27,13 @@ function generateRecommendation(prompt) {
             });
             const text = response.text;
             if (!text) {
-                console.error("No text found in the response from the AI.");
+                logger_1.default.error("No text found in the response from the AI.");
                 return undefined;
             }
             return text;
         }
         catch (error) {
-            console.error('Error generating recommendation:', error);
+            logger_1.default.error('Error generating recommendation:', error);
         }
     });
 }

@@ -18,6 +18,7 @@ const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const joiLoginValidation_1 = require("../../utils/validators/joiLoginValidation");
 const http_errors_1 = __importDefault(require("http-errors"));
 const config_1 = require("../../config/config");
+const logger_1 = __importDefault(require("../../utils/logger"));
 const loginuser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { username, email, password } = req.body;
@@ -69,7 +70,7 @@ const loginuser = (req, res, next) => __awaiter(void 0, void 0, void 0, function
     }
     catch (error) {
         if (config_1.config.env === 'development') {
-            console.error('Error during login:', error);
+            logger_1.default.error('Error during login:', error);
         }
         return next((0, http_errors_1.default)(500, 'Internal Server Error!'));
     }

@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const userModel_1 = __importDefault(require("../../database/models/userModel"));
 const http_errors_1 = __importDefault(require("http-errors"));
+const logger_1 = __importDefault(require("../../utils/logger"));
 function userProfile(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -22,7 +23,6 @@ function userProfile(req, res, next) {
                 return next((0, http_errors_1.default)(404, 'User not found!'));
             }
             else {
-                console.log(userData);
                 return res.status(200).send({
                     status: 'Success',
                     userData: {
@@ -41,7 +41,7 @@ function userProfile(req, res, next) {
             }
         }
         catch (error) {
-            console.error("Error fetching user profile:", error);
+            logger_1.default.error("Error fetching user profile:", error);
             return next((0, http_errors_1.default)(500, 'Internal Server Error!'));
         }
     });

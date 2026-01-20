@@ -1,6 +1,7 @@
 import Plan from "../database/models/planModel";
 import User from "../database/models/userModel";
 import { IPlan } from "../dtos/PlansDTO";
+import logger from "../utils/logger";
 
 /**
  * Recommendation Service
@@ -130,7 +131,7 @@ export const getRecommendationsForUser = async (userId: string, limit: number = 
         // E. Vectorize User
         const userVector = itemToVector(userTokenWeights, vocabulary, idfMap);
 
-        console.log(`[RecSys] User ${userId} Profile Size: ${userTokenWeights.size} tokens`);
+        logger.debug(`[RecSys] User ${userId} Profile Size: ${userTokenWeights.size} tokens`);
 
         // F. Score Candidates
         const scoredPlans = allPlans.map(plan => {
@@ -139,7 +140,7 @@ export const getRecommendationsForUser = async (userId: string, limit: number = 
             const score = cosineSimilarity(userVector, planVector);
 
             if (score > 0.1) {
-                console.log(`[RecSys] Candidate: ${plan.name} | Score: ${score.toFixed(4)}`);
+                logger.debug(`[RecSys] Candidate: ${plan.name} | Score: ${score.toFixed(4)}`);
             }
 
             return { plan, score };
@@ -147,12 +148,12 @@ export const getRecommendationsForUser = async (userId: string, limit: number = 
 
         // G. Sort & Return
         scoredPlans.sort((a, b) => b.score - a.score);
-        console.log(`[RecSys] Top Match: ${scoredPlans[0]?.plan?.name} (${scoredPlans[0]?.score.toFixed(4)})`);
+        logger.info(`[RecSys] Top Match: ${scoredPlans[0]?.plan?.name} (${scoredPlans[0]?.score.toFixed(4)})`);
 
         return scoredPlans.slice(0, limit).map(item => item.plan);
 
     } catch (error) {
-        console.error("Error generating recommendations:", error);
+        logger.error("Error generating recommendations:", error);
         return [];
     }
 };

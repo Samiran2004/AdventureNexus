@@ -1,13 +1,11 @@
-import chalk from "chalk";
 import { getReasonPhrase, StatusCodes } from "http-status-codes"
-import mongoose from "mongoose";
 import SubscribeMail from "../../database/models/subscribeMail.model";
 import emailTemplates from "../../utils/email-templates";
 import sendMail from "../../services/mailService";
 import { generateDailyTips } from "../../utils/gemini/generateDailyTips.prompt";
 
 import { groqGeneratedData } from "../../services/groq.service";
-import winstonLogger from "../../services/winston.service";
+import logger from "../../utils/logger";
 import getFullURL from "../../services/getFullURL.service";
 
 /**
@@ -21,8 +19,7 @@ const subscribeDailyMailController = async (req, res) => {
 
         // 1. Verify Request: Ensure email is provided
         if (!userMail) {
-            winstonLogger.error(`URL: ${fullUrl}`);
-            winstonLogger.error(`User mail is not provided.`);
+            logger.error(`URL: ${fullUrl} - User mail is not provided.`);
             return res.status(StatusCodes.BAD_REQUEST).json({
                 status: "Failed",
                 message: "Required fields not exist!"
@@ -33,7 +30,7 @@ const subscribeDailyMailController = async (req, res) => {
         const existMail = await SubscribeMail.findOne({ mail: userMail });
 
         if (existMail) {
-            winstonLogger.info(`URL: ${fullUrl}`);
+            logger.info(`URL: ${fullUrl} - Already subscribed`);
             return res.status(StatusCodes.OK).json({
                 status: 'OK',
                 message: "Already subscribed!"
@@ -53,10 +50,9 @@ const subscribeDailyMailController = async (req, res) => {
         let mailData = emailTemplates.subscribeDailyMailEmailData(userMail);
 
         await sendMail(mailData, (mailError: Error | null) => {
-            winstonLogger.info(`URL: ${fullUrl}`);
+            logger.info(`URL: ${fullUrl}`);
             if (mailError) {
-                winstonLogger.error(`URL: ${fullUrl}`);
-                winstonLogger.debug(`Failed to send welcome mail, Error: ${mailError.message}`);
+                logger.error(`URL: ${fullUrl} - Failed to send welcome mail. Error: ${mailError.message}`);
                 // Note: We don't return here so execution continues to generate tip?
                 // Or should we fail?
                 return res.status(StatusCodes.EXPECTATION_FAILED).json({
@@ -81,10 +77,9 @@ const subscribeDailyMailController = async (req, res) => {
         mailData = emailTemplates.sendDailyTipEmailData(userMail, tipDataObject);
 
         await sendMail(mailData, (mailError: Error | null) => {
-            winstonLogger.info(`URL: ${fullUrl}`);
+            logger.info(`URL: ${fullUrl}`);
             if (mailError) {
-                winstonLogger.error(`URL: ${fullUrl}`);
-                winstonLogger.debug(`Failed to send first travel tips mail, Error: ${mailError.message}`);
+                logger.error(`URL: ${fullUrl} - Failed to send first travel tips mail. Error: ${mailError.message}`);
                 return res.status(StatusCodes.EXPECTATION_FAILED).json({
                     status: 'Failed',
                     message: "Mail sending error!"
@@ -93,14 +88,13 @@ const subscribeDailyMailController = async (req, res) => {
         });
 
         // 8. Success Response
-        winstonLogger.info(`URL: ${fullUrl}`);
+        logger.info(`URL: ${fullUrl} - Registered`);
         return res.status(StatusCodes.OK).json({
             status: "Ok",
             message: "Registered!",
         });
     } catch (error) {
-        winstonLogger.error(`URL: ${fullUrl}, error_message: ${error.message}`);
-        console.log(chalk.bgRed(getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR)));
+        logger.error(`URL: ${fullUrl}, error_message: ${error.message}`);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 }

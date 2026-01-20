@@ -1,5 +1,5 @@
-import chalk from "chalk";
 import cron from "node-cron";
+import logger from "../utils/logger";
 
 /**
  * Simple Runner Job for testing Cron functionality.
@@ -7,9 +7,9 @@ import cron from "node-cron";
  */
 const runnerCronJob = async () => {
     try {
-        console.log(chalk.bgCyan(`Runner is running...`));
+        logger.info(`Runner is running...`);
     } catch (error) {
-        console.log(chalk.red("Failed to run runner cron job..."));
+        logger.error("Failed to run runner cron job...");
     }
 }
 

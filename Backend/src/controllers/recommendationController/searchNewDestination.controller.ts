@@ -1,4 +1,3 @@
-import chalk from "chalk";
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
 import { Request, Response } from "express";
 
@@ -7,7 +6,7 @@ import generateNewSearchDestinationPrompt, {
   SearchNewDestinationPromptData,
 } from "../../utils/gemini/generatePromptForSearchNewDestinations";
 
-import winstonLogger from "../../services/winston.service";
+import logger from "../../utils/logger";
 import getFullURL from "../../services/getFullURL.service";
 import { fetchUnsplashImage } from "../../services/unsplash.service";
 import { fetchWikipediaImage } from "../../services/wikipedia.service";
@@ -33,7 +32,7 @@ const searchNewDestination = async (req: Request, res: Response) => {
 
     // 🔐 1. Validate required fields
     if (!to || !from || !date || !travelers || !budget) {
-      winstonLogger.error(`URL: ${fullUrl} - Missing required fields`);
+      logger.error(`URL: ${fullUrl} - Missing required fields`);
       return res.status(StatusCodes.BAD_REQUEST).json({
         status: "Failed",
         message: "Provide all required fields!",
@@ -86,7 +85,7 @@ const searchNewDestination = async (req: Request, res: Response) => {
       let destinationImage = await fetchWikipediaImage(searchQuery);
 
       if (!destinationImage) {
-        console.log(chalk.yellow(`Wikipedia failed for ${searchQuery}, trying Unsplash...`));
+        logger.warn(`Wikipedia failed for ${searchQuery}, trying Unsplash...`);
         destinationImage = await fetchUnsplashImage(searchQuery);
       }
 
@@ -127,7 +126,7 @@ const searchNewDestination = async (req: Request, res: Response) => {
     const user = await User.findOne({ clerkUserId });
 
     if (!user) {
-      winstonLogger.info(`URL: ${fullUrl} - User not found`);
+      logger.info(`URL: ${fullUrl} - User not found`);
       return res.status(StatusCodes.NOT_FOUND).json({
         status: "Failed",
         message: "User not found",
@@ -155,17 +154,16 @@ const searchNewDestination = async (req: Request, res: Response) => {
     }));
 
     // ✅ 10. Send Success Response
-    winstonLogger.info(`URL: ${fullUrl} - Plans generated successfully`);
+    logger.info(`URL: ${fullUrl} - Plans generated successfully`);
     return res.status(StatusCodes.OK).json({
       status: "Ok",
       message: "Generated",
       data: savedPlans, // Return array of plans
     });
   } catch (error: any) {
-    console.log(chalk.bgRed("Internal Server Error"));
-    console.log(error);
+    logger.error("Internal Server Error", error);
 
-    winstonLogger.error(
+    logger.error(
       `URL: ${fullUrl}, error_message: ${error.message}`
     );
 

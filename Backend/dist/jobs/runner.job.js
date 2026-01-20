@@ -12,14 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const chalk_1 = __importDefault(require("chalk"));
 const node_cron_1 = __importDefault(require("node-cron"));
+const logger_1 = __importDefault(require("../utils/logger"));
 const runnerCronJob = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log(chalk_1.default.bgCyan(`Runner is running...`));
+        logger_1.default.info(`Runner is running...`);
     }
     catch (error) {
-        console.log(chalk_1.default.red("Failed to run runner cron job..."));
+        logger_1.default.error("Failed to run runner cron job...");
     }
 });
 node_cron_1.default.schedule("*/10 * * * * *", runnerCronJob, { timezone: "Asia/Kolkata" });

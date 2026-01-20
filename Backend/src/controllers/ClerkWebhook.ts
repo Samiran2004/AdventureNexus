@@ -5,6 +5,7 @@ import { Request, Response } from 'express';
 import emailTemplates from '../utils/email-templates';
 import sendMail from '../services/mailService';
 import { config } from '../config/config';
+import logger from '../utils/logger';
 
 /**
  * Controller to handle Clerk Webhooks.
@@ -27,7 +28,7 @@ const clerkWebhook = async (req: Request, res: Response) => {
 
         // 4. Extract Data and Event Type
         const { data, type } = req.body;
-        console.log(`Webhook received: ${type} for user ${data.id}`);
+        logger.info(`Webhook received: ${type} for user ${data.id}`);
 
         // 5. Prepare User Data Object
         const userData = {
@@ -42,16 +43,16 @@ const clerkWebhook = async (req: Request, res: Response) => {
         // 6. Handle Specific Event Types
         switch (type) {
             case 'user.created': {
-                console.log('Creating user:', userData);
+                logger.info({ msg: 'Creating user:', userData });
 
                 try {
                     // Try to create the user first
                     const user = await User.create(userData);
-                    console.log('User created successfully:', user._id);
+                    logger.info(`User created successfully: ${user._id}`);
                 } catch (error: any) {
                     if (error.code === 11000) {
                         // If duplicate key error, try to update instead (Idempotency)
-                        console.log('User exists, updating...');
+                        logger.info('User exists, updating...');
                         const user = await User.findOneAndUpdate(
                             { clerkUserId: data.id },
                             userData,
@@ -62,10 +63,10 @@ const clerkWebhook = async (req: Request, res: Response) => {
                         const emailData = registerEmailData(userData.firstName, userData.email);
                         await sendMail(emailData, (mailError: Error | null) => {
                             if (mailError) {
-                                console.log("Mail sending error.");
+                                logger.error("Mail sending error.");
                             }
                         });
-                        console.log('User updated successfully:', user?._id);
+                        logger.info(`User updated successfully: ${user?._id}`);
                     } else {
                         throw error; // Re-throw other errors
                     }
@@ -74,7 +75,7 @@ const clerkWebhook = async (req: Request, res: Response) => {
             }
 
             case 'user.updated': {
-                console.log('Updating user:', data.id);
+                logger.info(`Updating user: ${data.id}`);
                 const updatedUser = await User.findOneAndUpdate(
                     { clerkUserId: data.id },
                     userData,
@@ -82,14 +83,14 @@ const clerkWebhook = async (req: Request, res: Response) => {
                         new: true,
                     }
                 );
-                console.log('User updated:', updatedUser ? 'Success' : 'Failed');
+                logger.info(`User updated: ${updatedUser ? 'Success' : 'Failed'}`);
                 break;
             }
 
             case 'user.deleted': {
-                console.log('Deleting user:', data.id);
+                logger.info(`Deleting user: ${data.id}`);
                 const deletedUser = await User.findOneAndDelete({ clerkUserId: data.id });
-                console.log('User deleted:', deletedUser ? 'Success' : 'Not found');
+                logger.info(`User deleted: ${deletedUser ? 'Success' : 'Not found'}`);
 
                 // Send Account Deletion Email
                 if (deletedUser) {
@@ -97,7 +98,7 @@ const clerkWebhook = async (req: Request, res: Response) => {
                     const emailData = deleteUserEmailData(deletedUser.firstName, deletedUser.email);
                     await sendMail(emailData, (mailError: Error | null) => {
                         if (mailError) {
-                            console.log("Mail sending error...");
+                            logger.error("Mail sending error...");
                         }
                     });
                 }
@@ -105,7 +106,7 @@ const clerkWebhook = async (req: Request, res: Response) => {
             }
 
             default:
-                console.log(`Unhandled webhook event: ${type}`);
+                logger.warn(`Unhandled webhook event: ${type}`);
                 break;
         }
 
@@ -117,7 +118,7 @@ const clerkWebhook = async (req: Request, res: Response) => {
         });
 
     } catch (error: any) {
-        console.error('Webhook error:', error);
+        logger.error('Webhook error:', error);
 
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             success: false,

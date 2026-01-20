@@ -12,22 +12,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const chalk_1 = __importDefault(require("chalk"));
 const http_status_codes_1 = require("http-status-codes");
 const subscribeMail_model_1 = __importDefault(require("../../database/models/subscribeMail.model"));
 const email_templates_1 = __importDefault(require("../../utils/email-templates"));
 const mailService_1 = __importDefault(require("../../services/mailService"));
 const generateDailyTips_prompt_1 = require("../../utils/gemini/generateDailyTips.prompt");
 const groq_service_1 = require("../../services/groq.service");
-const winston_service_1 = __importDefault(require("../../services/winston.service"));
+const logger_1 = __importDefault(require("../../utils/logger"));
 const getFullURL_service_1 = __importDefault(require("../../services/getFullURL.service"));
 const subscribeDailyMailController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const fullUrl = (0, getFullURL_service_1.default)(req);
     try {
         const { userMail } = req.body;
         if (!userMail) {
-            winston_service_1.default.error(`URL: ${fullUrl}`);
-            winston_service_1.default.error(`User mail is not provided.`);
+            logger_1.default.error(`URL: ${fullUrl} - User mail is not provided.`);
             return res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({
                 status: "Failed",
                 message: "Required fields not exist!"
@@ -35,7 +33,7 @@ const subscribeDailyMailController = (req, res) => __awaiter(void 0, void 0, voi
         }
         const existMail = yield subscribeMail_model_1.default.findOne({ mail: userMail });
         if (existMail) {
-            winston_service_1.default.info(`URL: ${fullUrl}`);
+            logger_1.default.info(`URL: ${fullUrl} - Already subscribed`);
             return res.status(http_status_codes_1.StatusCodes.OK).json({
                 status: 'OK',
                 message: "Already subscribed!"
@@ -47,10 +45,9 @@ const subscribeDailyMailController = (req, res) => __awaiter(void 0, void 0, voi
         yield newSubscribeMail.save();
         let mailData = email_templates_1.default.subscribeDailyMailEmailData(userMail);
         yield (0, mailService_1.default)(mailData, (mailError) => {
-            winston_service_1.default.info(`URL: ${fullUrl}`);
+            logger_1.default.info(`URL: ${fullUrl}`);
             if (mailError) {
-                winston_service_1.default.error(`URL: ${fullUrl}`);
-                winston_service_1.default.debug(`Failed to send welcome mail, Error: ${mailError.message}`);
+                logger_1.default.error(`URL: ${fullUrl} - Failed to send welcome mail. Error: ${mailError.message}`);
                 return res.status(http_status_codes_1.StatusCodes.EXPECTATION_FAILED).json({
                     status: 'Failed',
                     message: "Mail sending error!"
@@ -65,25 +62,23 @@ const subscribeDailyMailController = (req, res) => __awaiter(void 0, void 0, voi
         const tipDataObject = JSON.parse(cleanString);
         mailData = email_templates_1.default.sendDailyTipEmailData(userMail, tipDataObject);
         yield (0, mailService_1.default)(mailData, (mailError) => {
-            winston_service_1.default.info(`URL: ${fullUrl}`);
+            logger_1.default.info(`URL: ${fullUrl}`);
             if (mailError) {
-                winston_service_1.default.error(`URL: ${fullUrl}`);
-                winston_service_1.default.debug(`Failed to send first travel tips mail, Error: ${mailError.message}`);
+                logger_1.default.error(`URL: ${fullUrl} - Failed to send first travel tips mail. Error: ${mailError.message}`);
                 return res.status(http_status_codes_1.StatusCodes.EXPECTATION_FAILED).json({
                     status: 'Failed',
                     message: "Mail sending error!"
                 });
             }
         });
-        winston_service_1.default.info(`URL: ${fullUrl}`);
+        logger_1.default.info(`URL: ${fullUrl} - Registered`);
         return res.status(http_status_codes_1.StatusCodes.OK).json({
             status: "Ok",
             message: "Registered!",
         });
     }
     catch (error) {
-        winston_service_1.default.error(`URL: ${fullUrl}, error_message: ${error.message}`);
-        console.log(chalk_1.default.bgRed((0, http_status_codes_1.getReasonPhrase)(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR)));
+        logger_1.default.error(`URL: ${fullUrl}, error_message: ${error.message}`);
         return res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR);
     }
 });

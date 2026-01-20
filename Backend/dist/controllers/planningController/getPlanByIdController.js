@@ -16,6 +16,7 @@ exports.getPlanById = void 0;
 const planModel_1 = __importDefault(require("../../database/models/planModel"));
 const client_1 = __importDefault(require("../../redis/client"));
 const http_errors_1 = __importDefault(require("http-errors"));
+const logger_1 = __importDefault(require("../../utils/logger"));
 const getPlanById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
@@ -47,6 +48,7 @@ const getPlanById = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         }));
     }
     catch (_a) {
+        logger_1.default.error(`Error in getPlanByIdController: ${error}`);
         return next((0, http_errors_1.default)(500, 'Internal Server Error!'));
     }
 });

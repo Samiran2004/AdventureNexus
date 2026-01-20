@@ -1,5 +1,5 @@
 import axios from 'axios';
-import chalk from 'chalk';
+import logger from '../utils/logger';
 
 /**
  * Fetches a valid existing image URL from Wikipedia for a given place name.
@@ -49,15 +49,15 @@ export const fetchWikipediaImage = async (query: string): Promise<string | undef
         const imageUrl = page.thumbnail?.source;
 
         if (imageUrl) {
-            console.log(chalk.green(`Image fetched from Wikipedia for ${query}`));
+            logger.info(`Image fetched from Wikipedia for ${query}`);
             return imageUrl;
         } else {
-            console.log(chalk.yellow(`No image found on Wikipedia for ${query}`));
+            logger.warn(`No image found on Wikipedia for ${query}`);
             return undefined;
         }
 
     } catch (error) {
-        console.error(chalk.red(`Error fetching Wikipedia image for ${query}:`, error instanceof Error ? error.message : error));
+        logger.error(`Error fetching Wikipedia image for ${query}:`, error instanceof Error ? error.message : error);
         return undefined;
     }
 };

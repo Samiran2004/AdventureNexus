@@ -1,7 +1,7 @@
 import axios from 'axios';
-import chalk from 'chalk';
 import dotenv from 'dotenv';
 import { config } from '../config/config';
+import logger from '../utils/logger';
 
 dotenv.config();
 
@@ -16,7 +16,7 @@ export const fetchUnsplashImage = async (query: string): Promise<string | undefi
         const accessKey = config.UNSPLASH_ACCESS_KEY || process.env.UNSPLASH_ACCESS_KEY;
 
         if (!accessKey) {
-            console.error(chalk.red("Unsplash API Key is missing! Please set UNSPLASH_ACCESS_KEY in .env"));
+            logger.error("Unsplash API Key is missing! Please set UNSPLASH_ACCESS_KEY in .env");
             return undefined;
         }
 
@@ -34,21 +34,21 @@ export const fetchUnsplashImage = async (query: string): Promise<string | undefi
         const results = response.data?.results;
 
         if (!results || results.length === 0) {
-            console.log(chalk.yellow(`No image found on Unsplash for ${query}`));
+            logger.warn(`No image found on Unsplash for ${query}`);
             return undefined;
         }
 
         const imageUrl = results[0].urls?.regular;
 
         if (imageUrl) {
-            console.log(chalk.green(`Image fetched from Unsplash for ${query}`));
+            logger.info(`Image fetched from Unsplash for ${query}`);
             return imageUrl;
         } else {
             return undefined;
         }
 
     } catch (error) {
-        console.error(chalk.red(`Error fetching Unsplash image for ${query}:`, error instanceof Error ? error.message : error));
+        logger.error(`Error fetching Unsplash image for ${query}:`, error instanceof Error ? error.message : error);
         return undefined;
     }
 };
@@ -65,7 +65,7 @@ export const fetchUnsplashImages = async (query: string, count: number = 10): Pr
         const accessKey = config.UNSPLASH_ACCESS_KEY || process.env.UNSPLASH_ACCESS_KEY;
 
         if (!accessKey) {
-            console.error(chalk.red("Unsplash API Key is missing! Please set UNSPLASH_ACCESS_KEY in .env"));
+            logger.error("Unsplash API Key is missing! Please set UNSPLASH_ACCESS_KEY in .env");
             return [];
         }
 
@@ -83,7 +83,7 @@ export const fetchUnsplashImages = async (query: string, count: number = 10): Pr
         const results = response.data?.results;
 
         if (!results || results.length === 0) {
-            console.log(chalk.yellow(`No images found on Unsplash for ${query}`));
+            logger.warn(`No images found on Unsplash for ${query}`);
             return [];
         }
 
@@ -93,7 +93,7 @@ export const fetchUnsplashImages = async (query: string, count: number = 10): Pr
         return imageUrls;
 
     } catch (error) {
-        console.error(chalk.red(`Error fetching Unsplash images for ${query}:`, error instanceof Error ? error.message : error));
+        logger.error(`Error fetching Unsplash images for ${query}:`, error instanceof Error ? error.message : error);
         return [];
     }
 };
