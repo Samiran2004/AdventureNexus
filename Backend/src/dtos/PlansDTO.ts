@@ -20,7 +20,8 @@ export interface IPlan extends Document {
     travel_style?: string;
 
     // AI generated Content Fields
-    ai_score: string;
+    // AI generated Content Fields
+    ai_score: number; // Changed to number
     image_url: string;
     name: string;
     days: number;
@@ -29,8 +30,39 @@ export interface IPlan extends Document {
     total_reviews: number;
     destination_overview: string;
     perfect_for: string[];
-    budget_breakdown: Object;
-    trip_highlights: Array<any>;   // Using Array<any> or specific type if known
-    suggested_itinerary: Array<any>;
+
+    // Strict Budget Structure
+    budget_breakdown: {
+        flights: number;
+        accommodation: number;
+        activities: number;
+        food: number;
+        total: number;
+        currency?: string;
+    };
+
+    trip_highlights: {
+        name: string;
+        description: string;
+        match_reason: string;
+        geo_coordinates: {
+            lat: number;
+            lng: number;
+        };
+    }[];
+
+    // Strict Itinerary Structure
+    suggested_itinerary: {
+        day: number;
+        title: string;
+        description: string;
+        activities: {
+            name: string;
+            cost: string;
+            time: string;
+            description: string;
+        }[];
+    }[];
+
     local_tips: string[];
 }

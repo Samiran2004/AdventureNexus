@@ -49,6 +49,15 @@ const clerkWebhook = async (req: Request, res: Response) => {
                     // Try to create the user first
                     const user = await User.create(userData);
                     logger.info(`User created successfully: ${user._id}`);
+
+                    // Send Welcome Email for new user registration
+                    const { registerEmailData } = emailTemplates;
+                    const emailData = registerEmailData(userData.firstName, userData.email);
+                    await sendMail(emailData, (mailError: Error | null) => {
+                        if (mailError) {
+                            logger.error("Mail sending error.");
+                        }
+                    });
                 } catch (error: any) {
                     if (error.code === 11000) {
                         // If duplicate key error, try to update instead (Idempotency)

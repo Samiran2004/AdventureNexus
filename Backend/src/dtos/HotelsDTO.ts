@@ -11,7 +11,10 @@ export interface IHotel {
     starRating: number,
     location: IHotelLocation
     contact: IHotelContact
-    images?: string[]
+    images?: {
+        cloudinaryURL: string;
+        cloudinaryPublicId: string;
+    }[]
     amenities?: string[]
     checkInTime: string
     checkOutTime: string

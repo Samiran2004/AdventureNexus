@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const likedPlansController_1 = require("../controllers/likedPlansController");
+const authClerkTokenMiddleware_1 = require("../middlewares/authClerkTokenMiddleware");
+const router = (0, express_1.Router)();
+router.use(authClerkTokenMiddleware_1.protect);
+router.post('/:planId', likedPlansController_1.likePlan);
+router.delete('/:planId', likedPlansController_1.unlikePlan);
+router.get('/', likedPlansController_1.getLikedPlans);
+exports.default = router;

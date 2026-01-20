@@ -77,7 +77,10 @@ const hotelSchema: IHotel = new Schema<IHotel>({
             }
         }
     ],
-    amenities: [String],
+    amenities: {
+        type: [String],
+        default: []
+    },
     // Policies
     checkInTime: {
         type: String,
@@ -100,7 +103,7 @@ const hotelSchema: IHotel = new Schema<IHotel>({
             ref: 'Review'
         }
     ]
-}, { timestamps: true }); // Auto-timestamps
+}, { timestamps: true });
 
 const Hotel = mongoose.model('Hotel', hotelSchema);
 

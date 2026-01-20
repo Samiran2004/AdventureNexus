@@ -45,6 +45,13 @@ const clerkWebhook = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 try {
                     const user = yield userModel_1.default.create(userData);
                     logger_1.default.info(`User created successfully: ${user._id}`);
+                    const { registerEmailData } = email_templates_1.default;
+                    const emailData = registerEmailData(userData.firstName, userData.email);
+                    yield (0, mailService_1.default)(emailData, (mailError) => {
+                        if (mailError) {
+                            logger_1.default.error("Mail sending error.");
+                        }
+                    });
                 }
                 catch (error) {
                     if (error.code === 11000) {
