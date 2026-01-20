@@ -63,7 +63,15 @@ const planSchema = new Schema<IPlan>({
         }]
     }],
 
-    trip_highlights: [String],
+    trip_highlights: [{
+        name: String,
+        description: String,
+        match_reason: String,
+        geo_coordinates: {
+            lat: Number,
+            lng: Number
+        }
+    }],
     local_tips: [String],
 }, { timestamps: true });
 

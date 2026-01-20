@@ -89,6 +89,12 @@ const userSchema = new mongoose_1.Schema({
             ref: 'Plan',
         },
     ],
+    likedPlans: [
+        {
+            type: mongoose_1.default.Schema.Types.ObjectId,
+            ref: 'Plan',
+        },
+    ],
 }, {
     timestamps: true,
 });

@@ -102,7 +102,7 @@ const searchNewDestination = async (req: Request, res: Response) => {
         travel_style,
 
         // AI generated fields
-        ai_score: aiResponse.ai_score,
+        ai_score: typeof aiResponse.ai_score === 'string' ? parseFloat(aiResponse.ai_score.replace('%', '')) : aiResponse.ai_score,
         image_url: destinationImage || aiResponse.image_url,
         name: aiResponse.name,
         days: aiResponse.days,

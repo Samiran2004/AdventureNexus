@@ -73,6 +73,9 @@ const SearchPage = () => {
   const [isGalleryLoading, setIsGalleryLoading] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(null); // Lightbox state
   const [selectedHighlight, setSelectedHighlight] = useState(null); // State for map modal
+  const [likedPlans, setLikedPlans] = useState(new Set()); // Track liked plan IDs
+  const [likedPlansData, setLikedPlansData] = useState([]); // Full liked plans data
+  const [activeTab, setActiveTab] = useState("all"); // Track active tab: "all" or "liked"
 
   const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -213,6 +216,85 @@ const SearchPage = () => {
 
     fetchRecommendations();
   }, [getToken, VITE_BACKEND_URL]);
+
+  // Fetch Liked Plans on Mount
+  useEffect(() => {
+    const fetchLikedPlans = async () => {
+      try {
+        const token = await getToken();
+        if (!token) return;
+
+        const response = await axios.get(
+          `${VITE_BACKEND_URL}/api/v1/liked-plans`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        if (response.data.success) {
+          // Extract plan IDs from the response
+          const plans = response.data.likedPlans;
+          const likedIds = new Set(
+            plans.map((plan) => plan._id || plan)
+          );
+          setLikedPlans(likedIds);
+          setLikedPlansData(plans); // Store full plan objects
+        }
+      } catch (error) {
+        console.error("Failed to fetch liked plans:", error);
+      }
+    };
+
+    fetchLikedPlans();
+  }, [getToken, VITE_BACKEND_URL]);
+
+  // Handle Like/Unlike Plan
+  const handleLikePlan = async (planId, e) => {
+    if (e) e.stopPropagation();
+
+    try {
+      const token = await getToken();
+      if (!token) {
+        toast.error("Please login to like plans");
+        return;
+      }
+
+      const isLiked = likedPlans.has(planId);
+
+      if (isLiked) {
+        // Unlike
+        await axios.delete(
+          `${VITE_BACKEND_URL}/api/v1/liked-plans/${planId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        setLikedPlans((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(planId);
+          return newSet;
+        });
+
+        toast.success("Removed from liked plans");
+      } else {
+        // Like
+        await axios.post(
+          `${VITE_BACKEND_URL}/api/v1/liked-plans/${planId}`,
+          {},
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        setLikedPlans((prev) => new Set([...prev, planId]));
+        toast.success("Added to liked plans");
+      }
+    } catch (error) {
+      console.error("Error liking/unliking plan:", error);
+      toast.error(error.response?.data?.message || "Failed to update liked plans");
+    }
+  };
 
 
 
@@ -646,239 +728,421 @@ const SearchPage = () => {
       {/* Results Section */}
       <section className="py-8 bg-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Results Header */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-            <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2 font-outfit">
-                AI-Curated Travel Plans
-              </h2>
-              <p className="text-muted-foreground flex items-center gap-2">
-                <Sparkles size={16} className="text-primary" />
-                Found {searchResults?.length || 0} personalized adventures • Powered by AI
-              </p>
-            </div>
-
-            <div className="flex items-center space-x-4 w-full sm:w-auto">
-              <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-full sm:w-56 h-11 bg-input border-input text-foreground rounded-xl shadow-md hover:shadow-lg transition-all">
-                  <TrendingUp size={16} className="mr-2" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border-border">
-                  <SelectItem value="recommended">AI Recommended</SelectItem>
-                  <SelectItem value="price-low">Price: Low to High</SelectItem>
-                  <SelectItem value="price-high">Price: High to Low</SelectItem>
-                  <SelectItem value="rating">Highest Rated</SelectItem>
-                  <SelectItem value="duration">Duration</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-
-          {/* Loading State */}
-          {isLoading && (
-            <div className="flex flex-col items-center justify-center py-20">
-              <Spinner className="size-12 text-primary animate-spin mb-4" />
-              <p className="text-muted-foreground text-lg">Finding your perfect adventure...</p>
-            </div>
-          )}
-
-
-          {/* Empty State */}
-          {!isLoading && (!searchResults || searchResults.length === 0) && (
-            <div className="text-center py-20">
-              <div className="text-muted-foreground mb-4">
-                <Search size={64} className="mx-auto mb-4 opacity-50" />
-                <p className="text-xl">No results found</p>
-                <p className="text-sm mt-2">Try adjusting your search criteria</p>
+          {/* Tabs for All Plans vs Liked Plans */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+              <div className="flex-1">
+                <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4 font-outfit">
+                  Your Travel Plans
+                </h2>
+                <TabsList className="bg-muted/50 backdrop-blur-sm p-1 rounded-xl shadow-lg">
+                  <TabsTrigger
+                    value="all"
+                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground cursor-pointer rounded-lg transition-all duration-300 data-[state=active]:shadow-lg font-medium px-6"
+                  >
+                    <Sparkles size={16} className="mr-2" />
+                    All Plans ({searchResults?.length || 0})
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="liked"
+                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground cursor-pointer rounded-lg transition-all duration-300 data-[state=active]:shadow-lg font-medium px-6"
+                  >
+                    <Heart size={16} className="mr-2" />
+                    Liked Plans ({likedPlansData?.length || 0})
+                  </TabsTrigger>
+                </TabsList>
               </div>
+
+              {activeTab === "all" && (
+                <div className="flex items-center space-x-4 w-full sm:w-auto">
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger className="w-full sm:w-56 h-11 bg-input border-input text-foreground rounded-xl shadow-md hover:shadow-lg transition-all">
+                      <TrendingUp size={16} className="mr-2" />
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-popover border-border">
+                      <SelectItem value="recommended">AI Recommended</SelectItem>
+                      <SelectItem value="price-low">Price: Low to High</SelectItem>
+                      <SelectItem value="price-high">Price: High to Low</SelectItem>
+                      <SelectItem value="rating">Highest Rated</SelectItem>
+                      <SelectItem value="duration">Duration</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
-          )}
 
 
-          {/* Search Results Grid */}
-          {!isLoading && searchResults && searchResults.length > 0 && (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {searchResults.map((result, index) => (
-                <Card
-                  key={index}
-                  className="result-card bg-card border-border hover:border-primary/50 transition-all duration-300 group shadow-xl hover:shadow-2xl hover-lift"
-                >
-                  <div className="relative">
-                    <div className="relative h-56 overflow-hidden rounded-t-lg">
-                      <img
-                        src={result.image_url}
-                        alt={result.name}
-                        className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-110"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80";
-                        }}
-                        loading="lazy"
-                      />
-
-                      {/* Glassmorphism Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                      {/* AI Score Badge */}
-                      <Badge className="absolute top-4 left-4 bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-xl backdrop-blur-sm">
-                        <Bot className="mr-1 animate-pulse" size={14} />
-                        {result.ai_score}
-                      </Badge>
+            <TabsContent value="all" className="mt-0">
+              {/* Loading State */}
+              {isLoading && (
+                <div className="flex flex-col items-center justify-center py-20">
+                  <Spinner className="size-12 text-primary animate-spin mb-4" />
+                  <p className="text-muted-foreground text-lg">Finding your perfect adventure...</p>
+                </div>
+              )}
 
 
-                      {/* Action Buttons */}
-                      <div className="absolute top-3 right-3 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          className="bg-white/90 hover:bg-white text-red-500 hover:text-red-600 shadow-sm hover:shadow-md transition-all rounded-full w-8 h-8 p-0"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            // Add love logic here
-                          }}
-                        >
-                          <Heart size={16} className="fill-current" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          className="bg-white/90 hover:bg-white text-primary hover:text-primary/80 shadow-sm hover:shadow-md transition-all rounded-full w-8 h-8 p-0"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            // Add share logic here
-                          }}
-                        >
-                          <Share size={16} />
-                        </Button>
-                      </div>
-                    </div>
+              {/* Empty State */}
+              {!isLoading && (!searchResults || searchResults.length === 0) && (
+                <div className="text-center py-20">
+                  <div className="text-muted-foreground mb-4">
+                    <Search size={64} className="mx-auto mb-4 opacity-50" />
+                    <p className="text-xl">No results found</p>
+                    <p className="text-sm mt-2">Try adjusting your search criteria</p>
                   </div>
+                </div>
+              )}
 
 
-                  <CardContent className="p-6 space-y-4">
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <h3 className="text-xl font-bold text-card-foreground mb-2 font-outfit group-hover:text-primary transition-colors">
-                            {result.name}
-                          </h3>
-                          <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                              <Clock size={14} />
-                              {result.days} {result.days === 1 ? 'Day' : 'Days'}
-                            </span>
-                            <span className="w-1 h-1 rounded-full bg-muted-foreground"></span>
-                            <div className="flex items-center gap-1">
-                              {[...Array(5)].map((_, i) => (
-                                <Star
-                                  key={i}
-                                  size={14}
-                                  className="text-yellow-500"
-                                  fill={i < Math.floor(result.star) ? "currentColor" : "none"}
-                                />
-                              ))}
-                              <span className="ml-1 font-semibold text-card-foreground">{result.star}</span>
+              {/* Search Results Grid */}
+              {!isLoading && searchResults && searchResults.length > 0 && (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {searchResults.map((result, index) => (
+                    <Card
+                      key={index}
+                      className="result-card bg-card border-border hover:border-primary/50 transition-all duration-300 group shadow-xl hover:shadow-2xl hover-lift"
+                    >
+                      <div className="relative">
+                        <div className="relative h-56 overflow-hidden rounded-t-lg">
+                          <img
+                            src={result.image_url}
+                            alt={result.name}
+                            className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-110"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80";
+                            }}
+                            loading="lazy"
+                          />
+
+                          {/* Glassmorphism Overlay */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                          {/* AI Score Badge */}
+                          <Badge className="absolute top-4 left-4 bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-xl backdrop-blur-sm">
+                            <Bot className="mr-1 animate-pulse" size={14} />
+                            {result.ai_score}
+                          </Badge>
+
+
+                          {/* Action Buttons */}
+                          <div className="absolute top-3 right-3 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              className="bg-white/90 hover:bg-white text-red-500 hover:text-red-600 shadow-sm hover:shadow-md transition-all rounded-full w-8 h-8 p-0"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleLikePlan(result._id, e);
+                              }}
+                            >
+                              <Heart size={16} className={likedPlans.has(result._id) ? "fill-current" : ""} />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              className="bg-white/90 hover:bg-white text-primary hover:text-primary/80 shadow-sm hover:shadow-md transition-all rounded-full w-8 h-8 p-0"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                // Add share logic here
+                              }}
+                            >
+                              <Share size={16} />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+
+
+                      <CardContent className="p-6 space-y-4">
+                        <div className="space-y-4">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <h3 className="text-xl font-bold text-card-foreground mb-2 font-outfit group-hover:text-primary transition-colors">
+                                {result.name}
+                              </h3>
+                              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                                <span className="flex items-center gap-1">
+                                  <Clock size={14} />
+                                  {result.days} {result.days === 1 ? 'Day' : 'Days'}
+                                </span>
+                                <span className="w-1 h-1 rounded-full bg-muted-foreground"></span>
+                                <div className="flex items-center gap-1">
+                                  {[...Array(5)].map((_, i) => (
+                                    <Star
+                                      key={i}
+                                      size={14}
+                                      className="text-yellow-500"
+                                      fill={i < Math.floor(result.star) ? "currentColor" : "none"}
+                                    />
+                                  ))}
+                                  <span className="ml-1 font-semibold text-card-foreground">{result.star}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                                ₹{result.cost?.toLocaleString() || 'N/A'}
+                              </div>
+                              <div className="text-xs text-muted-foreground">per person</div>
+                            </div>
+                          </div>
+
+
+                          {/* Destination Overview */}
+                          {result.destination_overview && (
+                            <p className="text-muted-foreground text-sm line-clamp-2">
+                              {result.destination_overview}
+                            </p>
+                          )}
+
+
+                          {/* Trip Highlights */}
+                          {result.trip_highlights && result.trip_highlights.length > 0 && (
+                            <div className="space-y-2">
+                              <h4 className="text-card-foreground font-medium text-sm">
+                                Trip Highlights:
+                              </h4>
+                              <div className="flex flex-wrap gap-1">
+                                {result.trip_highlights.slice(0, 3).map((highlight, idx) => (
+                                  <Badge
+                                    key={idx}
+                                    variant="secondary"
+                                    className="bg-muted text-muted-foreground text-xs"
+                                  >
+                                    {highlight.name}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+
+                          {/* Perfect For / Activities */}
+                          {(result.perfect_for || result.activities) && (
+                            <div className="space-y-2">
+                              <h4 className="text-card-foreground font-medium text-sm">
+                                Perfect for:
+                              </h4>
+                              <div className="flex flex-wrap gap-1">
+                                {(result.perfect_for || result.activities)?.slice(0, 4).map((activity, idx) => (
+                                  <Badge
+                                    key={idx}
+                                    variant="outline"
+                                    className="border-primary/30 text-primary text-xs"
+                                  >
+                                    {activity}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+
+                          <div className="pt-4 border-t border-border">
+                            <div className="flex space-x-2">
+                              <Button
+                                className="flex-1 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 cursor-pointer text-primary-foreground shadow-lg hover:shadow-xl transition-all"
+                                onClick={() => handleViewDetails(result)}
+                              >
+                                View Details
+                              </Button>
+                              <Button
+                                variant="outline"
+                                className="border-input text-foreground hover:bg-accent hover:text-accent-foreground"
+                              >
+                                <Bot size={16} />
+                              </Button>
                             </div>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                            ₹{result.cost?.toLocaleString() || 'N/A'}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+
+
+              {/* Load More */}
+              {!isLoading && searchResults && searchResults.length > 0 && (
+                <div className="text-center mt-12">
+                  <Button
+                    variant="outline"
+                    className="border-input text-foreground hover:bg-accent hover:text-accent-foreground px-8"
+                    size="lg"
+                  >
+                    Load More Adventures
+                    <TrendingUp className="ml-2" size={18} />
+                  </Button>
+                </div>
+              )}
+            </TabsContent>
+
+            {/* Tab Content for Liked Plans */}
+            <TabsContent value="liked" className="mt-0">
+              {/* Empty State for Liked Plans */}
+              {likedPlansData.length === 0 && (
+                <div className="text-center py-20">
+                  <div className="text-muted-foreground mb-4">
+                    <Heart size={64} className="mx-auto mb-4 opacity-50" />
+                    <p className="text-xl">No liked plans yet</p>
+                    <p className="text-sm mt-2">Start exploring and like plans to save them here</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Liked Plans Grid */}
+              {likedPlansData.length > 0 && (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {likedPlansData.map((result, index) => (
+                    <Card
+                      key={index}
+                      className="result-card bg-card border-border hover:border-primary/50 transition-all duration-300 group shadow-xl hover:shadow-2xl hover-lift"
+                    >
+                      <div className="relative">
+                        <div className="relative h-56 overflow-hidden rounded-t-lg">
+                          <img
+                            src={result.image_url}
+                            alt={result.name}
+                            className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-110"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80";
+                            }}
+                            loading="lazy"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                          <Badge className="absolute top-4 left-4 bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-xl backdrop-blur-sm">
+                            <Bot className="mr-1 animate-pulse" size={14} />
+                            {result.ai_score}
+                          </Badge>
+                          <div className="absolute top-3 right-3 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              className="bg-white/90 hover:bg-white text-red-500 hover:text-red-600 shadow-sm hover:shadow-md transition-all rounded-full w-8 h-8 p-0"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleLikePlan(result._id, e);
+                              }}
+                            >
+                              <Heart size={16} className="fill-current" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              className="bg-white/90 hover:bg-white text-primary hover:text-primary/80 shadow-sm hover:shadow-md transition-all rounded-full w-8 h-8 p-0"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Share size={16} />
+                            </Button>
                           </div>
-                          <div className="text-xs text-muted-foreground">per person</div>
                         </div>
                       </div>
 
-
-                      {/* Destination Overview */}
-                      {result.destination_overview && (
-                        <p className="text-muted-foreground text-sm line-clamp-2">
-                          {result.destination_overview}
-                        </p>
-                      )}
-
-
-                      {/* Trip Highlights */}
-                      {result.trip_highlights && result.trip_highlights.length > 0 && (
-                        <div className="space-y-2">
-                          <h4 className="text-card-foreground font-medium text-sm">
-                            Trip Highlights:
-                          </h4>
-                          <div className="flex flex-wrap gap-1">
-                            {result.trip_highlights.slice(0, 3).map((highlight, idx) => (
-                              <Badge
-                                key={idx}
-                                variant="secondary"
-                                className="bg-muted text-muted-foreground text-xs"
-                              >
-                                {highlight.name}
-                              </Badge>
-                            ))}
+                      <CardContent className="p-6 space-y-4">
+                        <div className="space-y-4">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <h3 className="text-xl font-bold text-card-foreground mb-2 font-outfit group-hover:text-primary transition-colors">
+                                {result.name}
+                              </h3>
+                              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                                <span className="flex items-center gap-1">
+                                  <Clock size={14} />
+                                  {result.days} {result.days === 1 ? 'Day' : 'Days'}
+                                </span>
+                                <span className="w-1 h-1 rounded-full bg-muted-foreground"></span>
+                                <div className="flex items-center gap-1">
+                                  {[...Array(5)].map((_, i) => (
+                                    <Star
+                                      key={i}
+                                      size={14}
+                                      className="text-yellow-500"
+                                      fill={i < Math.floor(result.star) ? "currentColor" : "none"}
+                                    />
+                                  ))}
+                                  <span className="ml-1 font-semibold text-card-foreground">{result.star}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                                ₹{result.cost?.toLocaleString() || 'N/A'}
+                              </div>
+                              <div className="text-xs text-muted-foreground">per person</div>
+                            </div>
                           </div>
-                        </div>
-                      )}
 
+                          {result.destination_overview && (
+                            <p className="text-muted-foreground text-sm line-clamp-2">
+                              {result.destination_overview}
+                            </p>
+                          )}
 
-                      {/* Perfect For / Activities */}
-                      {(result.perfect_for || result.activities) && (
-                        <div className="space-y-2">
-                          <h4 className="text-card-foreground font-medium text-sm">
-                            Perfect for:
-                          </h4>
-                          <div className="flex flex-wrap gap-1">
-                            {(result.perfect_for || result.activities)?.slice(0, 4).map((activity, idx) => (
-                              <Badge
-                                key={idx}
+                          {result.trip_highlights && result.trip_highlights.length > 0 && (
+                            <div className="space-y-2">
+                              <h4 className="text-card-foreground font-medium text-sm">
+                                Trip Highlights:
+                              </h4>
+                              <div className="flex flex-wrap gap-1">
+                                {result.trip_highlights.slice(0, 3).map((highlight, idx) => (
+                                  <Badge
+                                    key={idx}
+                                    variant="secondary"
+                                    className="bg-muted text-muted-foreground text-xs"
+                                  >
+                                    {highlight.name}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {(result.perfect_for || result.activities) && (
+                            <div className="space-y-2">
+                              <h4 className="text-card-foreground font-medium text-sm">
+                                Perfect for:
+                              </h4>
+                              <div className="flex flex-wrap gap-1">
+                                {(result.perfect_for || result.activities)?.slice(0, 4).map((activity, idx) => (
+                                  <Badge
+                                    key={idx}
+                                    variant="outline"
+                                    className="border-primary/30 text-primary text-xs"
+                                  >
+                                    {activity}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          <div className="pt-4 border-t border-border">
+                            <div className="flex space-x-2">
+                              <Button
+                                className="flex-1 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 cursor-pointer text-primary-foreground shadow-lg hover:shadow-xl transition-all"
+                                onClick={() => handleViewDetails(result)}
+                              >
+                                View Details
+                              </Button>
+                              <Button
                                 variant="outline"
-                                className="border-primary/30 text-primary text-xs"
+                                className="border-input text-foreground hover:bg-accent hover:text-accent-foreground"
                               >
-                                {activity}
-                              </Badge>
-                            ))}
+                                <Bot size={16} />
+                              </Button>
+                            </div>
                           </div>
                         </div>
-                      )}
-
-
-                      <div className="pt-4 border-t border-border">
-                        <div className="flex space-x-2">
-                          <Button
-                            className="flex-1 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 cursor-pointer text-primary-foreground shadow-lg hover:shadow-xl transition-all"
-                            onClick={() => handleViewDetails(result)}
-                          >
-                            View Details
-                          </Button>
-                          <Button
-                            variant="outline"
-                            className="border-input text-foreground hover:bg-accent hover:text-accent-foreground"
-                          >
-                            <Bot size={16} />
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-
-
-          {/* Load More */}
-          {!isLoading && searchResults && searchResults.length > 0 && (
-            <div className="text-center mt-12">
-              <Button
-                variant="outline"
-                className="border-input text-foreground hover:bg-accent hover:text-accent-foreground px-8"
-                size="lg"
-              >
-                Load More Adventures
-                <TrendingUp className="ml-2" size={18} />
-              </Button>
-            </div>
-          )}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
         </div>
       </section>
 

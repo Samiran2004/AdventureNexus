@@ -49,7 +49,15 @@ const planSchema = new mongoose_1.Schema({
                     description: String
                 }]
         }],
-    trip_highlights: [String],
+    trip_highlights: [{
+            name: String,
+            description: String,
+            match_reason: String,
+            geo_coordinates: {
+                lat: Number,
+                lng: Number
+            }
+        }],
     local_tips: [String],
 }, { timestamps: true });
 const Plan = (0, mongoose_1.model)('Plan', planSchema);

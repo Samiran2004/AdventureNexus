@@ -15,6 +15,7 @@ export interface IUser extends Document {
     country?: string;     // User's country
     preferences?: string[]; // Travel preferences (e.g., 'adventure', 'luxury')
     plans?: string[];       // Array of Plan IDs created by the user
+    likedPlans?: string[];  // Array of Plan IDs liked by the user
     createdAt: Date;        // Timestamp
     updatedAt: Date;        // Timestamp
 }
@@ -73,6 +74,12 @@ const userSchema = new Schema<IUser>(
             default: [],
         },
         plans: [
+            {
+                type: mongoose.Schema.Types.ObjectId, // Reference to 'Plan' model
+                ref: 'Plan',
+            },
+        ],
+        likedPlans: [
             {
                 type: mongoose.Schema.Types.ObjectId, // Reference to 'Plan' model
                 ref: 'Plan',

@@ -41,7 +41,15 @@ export interface IPlan extends Document {
         currency?: string;
     };
 
-    trip_highlights: string[];
+    trip_highlights: {
+        name: string;
+        description: string;
+        match_reason: string;
+        geo_coordinates: {
+            lat: number;
+            lng: number;
+        };
+    }[];
 
     // Strict Itinerary Structure
     suggested_itinerary: {
