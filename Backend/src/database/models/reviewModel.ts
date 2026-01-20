@@ -2,8 +2,21 @@ import mongoose from "mongoose";
 
 const reviewSchema = new mongoose.Schema({
     userId: {
+        type: String, // Keeping as String for backward compatibility (Clerk ID)
+        required: true,
+        index: true
+    },
+    // Explicit Clerk ID field for clarity/future migration
+    clerkUserId: {
         type: String,
-        required: true
+        required: false, // Optional for old records, required for new
+        index: true
+    },
+    // Link review to a specific Trip/Plan
+    tripId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Plan',
+        required: false
     },
     userName: {
         type: String,

@@ -30,20 +30,42 @@ const planSchema = new Schema<IPlan>({
     travel_style: String, // e.g. "Relaxed", "Adventure"
 
     // AI-Generated Rich Content
-    ai_score: String, // Suitability score
-    image_url: String, // Destination hero image
-    name: String, // Plan/Trip Name
-    days: Number, // Duration
-    cost: Number, // Estimated cost
-    star: Number, // Rating
+    ai_score: { type: Number, index: true }, // Changed from String to Number for sorting
+    image_url: String,
+    name: String,
+    days: Number,
+    cost: Number,
+    star: Number,
     total_reviews: Number,
-    destination_overview: String, // AI summary
-    perfect_for: [String], // Target audience tags
-    budget_breakdown: Object, // Detailed cost analysis
-    trip_highlights: Array, // Key attractions
-    suggested_itinerary: Array, // Day-by-day plan
-    local_tips: [String], // Do's and Don'ts
-}, { timestamps: true }); // Auto-manage createdAt/updatedAt
+    destination_overview: String,
+    perfect_for: [String],
+
+    // Structured Budget
+    budget_breakdown: {
+        flights: Number,
+        accommodation: Number,
+        activities: Number,
+        food: Number,
+        total: Number,
+        currency: { type: String, default: 'USD' }
+    },
+
+    // Structured Itinerary
+    suggested_itinerary: [{
+        day: Number,
+        title: String,
+        description: String,
+        activities: [{
+            name: String,
+            cost: String,
+            time: String,
+            description: String
+        }]
+    }],
+
+    trip_highlights: [String],
+    local_tips: [String],
+}, { timestamps: true });
 
 
 const Plan = model<IPlan>('Plan', planSchema);

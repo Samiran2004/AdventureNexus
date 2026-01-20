@@ -7,7 +7,18 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const reviewSchema = new mongoose_1.default.Schema({
     userId: {
         type: String,
-        required: true
+        required: true,
+        index: true
+    },
+    clerkUserId: {
+        type: String,
+        required: false,
+        index: true
+    },
+    tripId: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        ref: 'Plan',
+        required: false
     },
     userName: {
         type: String,

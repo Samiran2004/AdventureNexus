@@ -21,7 +21,7 @@ const planSchema = new mongoose_1.Schema({
     budget_range: String,
     activities: [String],
     travel_style: String,
-    ai_score: String,
+    ai_score: { type: Number, index: true },
     image_url: String,
     name: String,
     days: Number,
@@ -30,9 +30,26 @@ const planSchema = new mongoose_1.Schema({
     total_reviews: Number,
     destination_overview: String,
     perfect_for: [String],
-    budget_breakdown: Object,
-    trip_highlights: Array,
-    suggested_itinerary: Array,
+    budget_breakdown: {
+        flights: Number,
+        accommodation: Number,
+        activities: Number,
+        food: Number,
+        total: Number,
+        currency: { type: String, default: 'USD' }
+    },
+    suggested_itinerary: [{
+            day: Number,
+            title: String,
+            description: String,
+            activities: [{
+                    name: String,
+                    cost: String,
+                    time: String,
+                    description: String
+                }]
+        }],
+    trip_highlights: [String],
     local_tips: [String],
 }, { timestamps: true });
 const Plan = (0, mongoose_1.model)('Plan', planSchema);

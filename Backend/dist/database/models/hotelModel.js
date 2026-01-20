@@ -101,7 +101,10 @@ const hotelSchema = new mongoose_1.Schema({
             }
         }
     ],
-    amenities: [String],
+    amenities: {
+        type: [String],
+        default: []
+    },
     checkInTime: {
         type: String,
         default: '14:00'
