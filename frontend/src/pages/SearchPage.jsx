@@ -168,111 +168,9 @@ const SearchPage = () => {
   }, [lightboxIndex, galleryImages]);
 
 
-  // Sample search results data - Updated to match API structure
-  const sampleSearchResults = [
-    {
-      ai_score: "98%",
-      image_url: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=800&q=80",
-      name: "Bali, Indonesia",
-      days: 7,
-      cost: 85000,
-      star: 4.8,
-      total_reviews: 124,
-      destination_overview: "Experience pristine beaches, ancient temples, and vibrant culture in this tropical paradise.",
-      perfect_for: ["Beach", "Culture", "Wellness", "Adventure"],
-      budget_breakdown: {
-        flights: "Approx 60% of budget",
-        accommodation: "Approx 20% of budget",
-        food: "Approx 10% of budget",
-        activities: "Approx 10% of budget"
-      },
-      trip_highlights: [
-        { name: "Surfing", description: "World-class waves at Uluwatu and Canggu", match_reason: "Perfect for adventure seekers" },
-        { name: "Temples", description: "Ancient sacred sites like Tanah Lot", match_reason: "Cultural immersion" },
-        { name: "Yoga", description: "Wellness retreats in Ubud", match_reason: "Relaxation and rejuvenation" }
-      ],
-      suggested_itinerary: [
-        { day: 1, morning: "Arrive in Bali, check-in", afternoon: "Beach relaxation", evening: "Sunset at Tanah Lot" },
-        { day: 2, morning: "Surfing lessons", afternoon: "Temple visit", evening: "Traditional dance show" },
-        { day: 3, morning: "Yoga session", afternoon: "Rice terrace tour", evening: "Spa treatment" }
-      ],
-      local_tips: [
-        "Best time to visit is April-October (dry season)",
-        "Rent a scooter for easy transportation",
-        "Try local warungs for authentic Indonesian food"
-      ],
-      activities: ["Surfing", "Yoga", "Temples"]
-    },
-    {
-      ai_score: "96%",
-      image_url: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=800&q=80",
-      name: "Kyoto, Japan",
-      days: 10,
-      cost: 180000,
-      star: 4.9,
-      total_reviews: 89,
-      destination_overview: "Immerse yourself in traditional Japanese culture with stunning temples and gardens.",
-      perfect_for: ["History", "Nature", "Food", "Culture"],
-      budget_breakdown: {
-        flights: "Approx 50% of budget",
-        accommodation: "Approx 25% of budget",
-        food: "Approx 15% of budget",
-        activities: "Approx 10% of budget"
-      },
-      trip_highlights: [
-        { name: "Fushimi Inari", description: "Thousand torii gates", match_reason: "Iconic experience" },
-        { name: "Tea Ceremony", description: "Traditional ritual", match_reason: "Cultural depth" },
-        { name: "Arashiyama Bamboo", description: "Enchanting bamboo grove", match_reason: "Natural beauty" }
-      ],
-      suggested_itinerary: [
-        { day: 1, morning: "Arrive Kyoto", afternoon: "Gion district walk", evening: "Kaiseki dinner" },
-        { day: 2, morning: "Fushimi Inari hike", afternoon: "Nishiki Market", evening: "Pontocho alley" }
-      ],
-      local_tips: [
-        "Purchase a JR Pass before arrival",
-        "Spring (cherry blossoms) and autumn are peak seasons",
-        "Reserve restaurants in advance"
-      ],
-      activities: ["Temples", "Tea Ceremony", "Hiking"]
-    },
-    {
-      ai_score: "94%",
-      image_url: "https://images.unsplash.com/photo-1476610182048-b716b8518aae?auto=format&fit=crop&w=800&q=80",
-      name: "Reykjavik, Iceland",
-      days: 5,
-      cost: 135000,
-      star: 4.7,
-      total_reviews: 56,
-      destination_overview: "Witness breathtaking natural wonders from northern lights to glaciers.",
-      perfect_for: ["Nature", "Adventure", "Photography"],
-      budget_breakdown: {
-        flights: "Approx 55% of budget",
-        accommodation: "Approx 20% of budget",
-        food: "Approx 15% of budget",
-        activities: "Approx 10% of budget"
-      },
-      trip_highlights: [
-        { name: "Northern Lights", description: "Aurora viewing tours", match_reason: "Once-in-lifetime experience" },
-        { name: "Blue Lagoon", description: "Geothermal spa", match_reason: "Relaxation in nature" },
-        { name: "Golden Circle", description: "Geysers and waterfalls", match_reason: "Scenic road trip" }
-      ],
-      suggested_itinerary: [
-        { day: 1, morning: "Arrive Reykjavik", afternoon: "City tour", evening: "Northern lights hunt" },
-        { day: 2, morning: "Golden Circle tour", afternoon: "Geyser viewing", evening: "Hot spring soak" }
-      ],
-      local_tips: [
-        "September-March best for Northern Lights",
-        "Rent a 4WD vehicle for Ring Road",
-        "Groceries are expensive, stock up in Reykjavik"
-      ],
-      activities: ["Northern Lights", "Glaciers", "Geysers"]
-    }
-  ];
-
-
-  // Initialize state with sample data - Now as an array
-  const [searchResults, setSearchResults] = useState(sampleSearchResults);
-  const [isLoading, setIsLoading] = useState(false);
+  // State
+  const [searchResults, setSearchResults] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // Start loading to fetch recommendations
   const [toDate, setToDate] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [to, setTo] = useState("");
@@ -280,6 +178,42 @@ const SearchPage = () => {
   const [travelers, setTravelers] = useState("2");
   const [budget, setBudget] = useState("mid");
   const { getToken } = useAuth();
+
+  // Fetch Recommendations on Mount
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      try {
+        const token = await getToken();
+        // If no token (not logged in), we might want to skip or handle gracefully.
+        // But for this app, we assume user is logged in or public access? 
+        // The backend requires a token for user history unless we made it optional.
+        if (!token) {
+          setIsLoading(false);
+          return;
+        }
+
+        const response = await axios.get(
+          `${VITE_BACKEND_URL}/api/v1/plans/recommendations`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        if (response.data.status === "Ok") {
+          setSearchResults(response.data.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch recommendations:", error);
+        // On error, leave empty or show toast. 
+        // We can just stop loading.
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchRecommendations();
+  }, [getToken, VITE_BACKEND_URL]);
+
 
 
 
