@@ -1,10 +1,10 @@
 import cron from 'node-cron';
 import SubscribeMail from '../database/models/subscribeMail.model';
-import chalk from 'chalk';
 import emailTemplates from '../utils/email-templates';
 import sendMail from '../services/mailService';
 import { groqGeneratedData } from '../services/groq.service';
 import { generateDailyTips } from '../utils/gemini/generateDailyTips.prompt';
+import logger from '../utils/logger';
 
 /**
  * Cron Job to send Daily Travel Tips to subscribers.
@@ -18,13 +18,13 @@ const sendAutoDailyTipsJob = async () => {
     let failureCount = 0;
 
     try {
-        console.log(chalk.green('Running daily tips cron job...'));
+        logger.info('Running daily tips cron job...');
 
         // 1. Fetch all subscribed users from database
         const userMails = await SubscribeMail.find();
 
         if (userMails.length === 0) {
-            console.log(chalk.yellow("No subscribers found."));
+            logger.warn("No subscribers found.");
             return { status: 'success', message: 'No subscribers to send to.' };
         }
 
@@ -33,7 +33,7 @@ const sendAutoDailyTipsJob = async () => {
         const generateDailyTipsContent = await groqGeneratedData(prompt);
 
         if (!generateDailyTipsContent) {
-            console.error(chalk.red("Failed to generate content from AI."));
+            logger.error("Failed to generate content from AI.");
             return { status: 'failed', message: 'AI generation failed' };
         }
 
@@ -48,7 +48,7 @@ const sendAutoDailyTipsJob = async () => {
             const cleanString = generateDailyTipsContent.substring(startIndex, endIndex + 1);
             tipDataObject = JSON.parse(cleanString);
         } catch (parseError) {
-            console.error(chalk.red("Error parsing AI response:"), generateDailyTipsContent);
+            logger.error(`Error parsing AI response: ${generateDailyTipsContent}`);
             return { status: 'failed', message: 'JSON handling error from AI response' };
         }
 
@@ -59,14 +59,14 @@ const sendAutoDailyTipsJob = async () => {
                 await new Promise<void>((resolve, reject) => {
                     sendMail(mailData, (mailError) => {
                         if (mailError) {
-                            console.error(`Mail sending failed for user ${userMail.mail}:`, mailError);
+                            logger.error(`Mail sending failed for user ${userMail.mail}: ${mailError}`);
                             reject(mailError);
                         } else {
                             resolve();
                         }
                     });
                 });
-                console.log(`Email sent to: ${userMail.mail}`);
+                logger.info(`Email sent to: ${userMail.mail}`);
                 successCount++;
             } catch (err) {
                 failureCount++;
@@ -75,11 +75,11 @@ const sendAutoDailyTipsJob = async () => {
 
         await Promise.allSettled(emailPromises);
 
-        console.log(chalk.green(`Daily tips job finished. Success: ${successCount}, Failed: ${failureCount}`));
+        logger.info(`Daily tips job finished. Success: ${successCount}, Failed: ${failureCount}`);
         return { status: 'success', sent: successCount, failed: failureCount };
 
     } catch (error) {
-        console.error(chalk.red(`Error in sending daily tips mail: ${error instanceof Error ? error.message : error}`));
+        logger.error(`Error in sending daily tips mail: ${error instanceof Error ? error.message : error}`);
         return { status: 'error', message: error instanceof Error ? error.message : "Unknown error" };
     }
 }

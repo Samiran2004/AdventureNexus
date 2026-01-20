@@ -18,6 +18,7 @@ const svix_1 = require("svix");
 const email_templates_1 = __importDefault(require("../utils/email-templates"));
 const mailService_1 = __importDefault(require("../services/mailService"));
 const config_1 = require("../config/config");
+const logger_1 = __importDefault(require("../utils/logger"));
 const clerkWebhook = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     try {
@@ -29,7 +30,7 @@ const clerkWebhook = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         };
         yield whook.verify(JSON.stringify(req.body), headers);
         const { data, type } = req.body;
-        console.log(`Webhook received: ${type} for user ${data.id}`);
+        logger_1.default.info(`Webhook received: ${type} for user ${data.id}`);
         const userData = {
             clerkUserId: data.id,
             email: ((_b = (_a = data.email_addresses) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.email_address) || null,
@@ -40,23 +41,23 @@ const clerkWebhook = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         };
         switch (type) {
             case 'user.created': {
-                console.log('Creating user:', userData);
+                logger_1.default.info({ msg: 'Creating user:', userData });
                 try {
                     const user = yield userModel_1.default.create(userData);
-                    console.log('User created successfully:', user._id);
+                    logger_1.default.info(`User created successfully: ${user._id}`);
                 }
                 catch (error) {
                     if (error.code === 11000) {
-                        console.log('User exists, updating...');
+                        logger_1.default.info('User exists, updating...');
                         const user = yield userModel_1.default.findOneAndUpdate({ clerkUserId: data.id }, userData, { new: true });
                         const { registerEmailData } = email_templates_1.default;
                         const emailData = registerEmailData(userData.firstName, userData.email);
                         yield (0, mailService_1.default)(emailData, (mailError) => {
                             if (mailError) {
-                                console.log("Mail sending error.");
+                                logger_1.default.error("Mail sending error.");
                             }
                         });
-                        console.log('User updated successfully:', user === null || user === void 0 ? void 0 : user._id);
+                        logger_1.default.info(`User updated successfully: ${user === null || user === void 0 ? void 0 : user._id}`);
                     }
                     else {
                         throw error;
@@ -65,30 +66,30 @@ const clerkWebhook = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 break;
             }
             case 'user.updated': {
-                console.log('Updating user:', data.id);
+                logger_1.default.info(`Updating user: ${data.id}`);
                 const updatedUser = yield userModel_1.default.findOneAndUpdate({ clerkUserId: data.id }, userData, {
                     new: true,
                 });
-                console.log('User updated:', updatedUser ? 'Success' : 'Failed');
+                logger_1.default.info(`User updated: ${updatedUser ? 'Success' : 'Failed'}`);
                 break;
             }
             case 'user.deleted': {
-                console.log('Deleting user:', data.id);
+                logger_1.default.info(`Deleting user: ${data.id}`);
                 const deletedUser = yield userModel_1.default.findOneAndDelete({ clerkUserId: data.id });
-                console.log('User deleted:', deletedUser ? 'Success' : 'Not found');
+                logger_1.default.info(`User deleted: ${deletedUser ? 'Success' : 'Not found'}`);
                 if (deletedUser) {
                     const { deleteUserEmailData } = email_templates_1.default;
                     const emailData = deleteUserEmailData(deletedUser.firstName, deletedUser.email);
                     yield (0, mailService_1.default)(emailData, (mailError) => {
                         if (mailError) {
-                            console.log("Mail sending error...");
+                            logger_1.default.error("Mail sending error...");
                         }
                     });
                 }
                 break;
             }
             default:
-                console.log(`Unhandled webhook event: ${type}`);
+                logger_1.default.warn(`Unhandled webhook event: ${type}`);
                 break;
         }
         return res.status(http_status_codes_1.StatusCodes.OK).json({
@@ -98,7 +99,7 @@ const clerkWebhook = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         });
     }
     catch (error) {
-        console.error('Webhook error:', error);
+        logger_1.default.error('Webhook error:', error);
         return res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
             success: false,
             message: 'Internal server error',

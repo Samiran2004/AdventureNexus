@@ -35,15 +35,17 @@ const subscribeDailyMail_controller_1 = __importDefault(require("./controllers/n
 const user_routes_1 = __importDefault(require("./routes/user.routes"));
 const planning_routes_1 = __importDefault(require("./routes/planning.routes"));
 const hotels_routes_1 = __importDefault(require("./routes/hotels.routes"));
+const review_routes_1 = __importDefault(require("./routes/review.routes"));
 const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const swaggerOptions_1 = require("./utils/swaggerOptions");
+const logger_1 = __importDefault(require("./utils/logger"));
 const app = (0, express_1.default)();
 (() => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, connection_1.default)(process.env.DB_URI);
 }))();
 client_1.default.on('connect', () => {
-    (0, figlet_1.default)('R e d i s   c o n n e c t e d', (err, data) => err ? console.log('Figlet error...') : console.log(data));
+    (0, figlet_1.default)('R e d i s   c o n n e c t e d', (err, data) => err ? logger_1.default.error('Figlet error...') : logger_1.default.info(data));
 });
 app.use(express_1.default.static('public'));
 app.use(express_1.default.static(path_1.default.resolve('./Public')));
@@ -64,7 +66,12 @@ app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use((0, cookie_parser_1.default)());
-app.use((0, morgan_1.default)('dev'));
+const morganMiddleware = (0, morgan_1.default)(':method :url :status :res[content-length] - :response-time ms', {
+    stream: {
+        write: (message) => logger_1.default.http(message.trim()),
+    },
+});
+app.use(morganMiddleware);
 app.use((0, express_2.clerkMiddleware)());
 const swaggerDocs = (0, swagger_jsdoc_1.default)(swaggerOptions_1.swaggerOptions);
 app.use('/api-docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerDocs));
@@ -73,6 +80,7 @@ app.use('/api/clerk', ClerkWebhook_1.default);
 app.use('/api/v1/users', user_routes_1.default);
 app.use('/api/v1/plans', planning_routes_1.default);
 app.use('/api/v1/hotels', hotels_routes_1.default);
+app.use('/api/v1/reviews', review_routes_1.default);
 const triggerDailyTips_controller_1 = __importDefault(require("./controllers/newsSubscriptionController/triggerDailyTips.controller"));
 app.post('/api/v1/mail/subscribe', subscribeDailyMail_controller_1.default);
 app.post('/api/v1/mail/trigger-daily-tips', triggerDailyTips_controller_1.default);
@@ -83,8 +91,8 @@ app.use(globalErrorHandler_1.default);
 exports.default = app;
 app.listen(config_1.config.port, (err) => err
     ? (0, figlet_1.default)(`S e r v e r  c o n n e c t i o n  e r r o r`, (err, data) => {
-        err ? console.log('Figlet error') : console.log(data);
+        err ? logger_1.default.error('Figlet error') : logger_1.default.error(data);
     })
     : (0, figlet_1.default)(`S e r v e r  c o n n e c t e d \n P O R T :  ${config_1.config.port}`, (err, data) => {
-        err ? console.log('Figlet error...') : console.log(data);
+        err ? logger_1.default.error('Figlet error...') : logger_1.default.info(data);
     }));

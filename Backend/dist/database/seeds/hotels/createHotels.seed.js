@@ -12,17 +12,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const chalk_1 = __importDefault(require("chalk"));
 const http_status_codes_1 = require("http-status-codes");
 const createHotelsPrompt_1 = require("../../../utils/gemini/createHotelsPrompt");
 const groq_service_1 = require("../../../services/groq.service");
 const generateHotelsImagePrompt_1 = require("../../../utils/gemini/generateHotelsImagePrompt");
+const logger_1 = __importDefault(require("../../../utils/logger"));
 const createHotels = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log("Create Hotels seed...");
+        logger_1.default.info("Create Hotels seed...");
         const { destination, duration, budget, currency_code } = req.body;
         if (!destination || !duration || !budget || !currency_code) {
-            console.log(chalk_1.default.red("All fields are required..."));
+            logger_1.default.warn("All fields are required...");
             return res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({
                 status: 'Failed',
                 message: (0, http_status_codes_1.getReasonPhrase)(http_status_codes_1.StatusCodes.BAD_REQUEST)
@@ -53,7 +53,7 @@ const createHotels = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         });
     }
     catch (error) {
-        console.log(chalk_1.default.red(`Internal Server Error for create hotels...\nError:${error.message}`));
+        logger_1.default.error(`Internal Server Error for create hotels...\nError:${error.message}`);
         return res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
             status: 'Failed',
             message: (0, http_status_codes_1.getReasonPhrase)(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR)

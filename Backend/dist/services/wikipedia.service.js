@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fetchWikipediaImage = void 0;
 const axios_1 = __importDefault(require("axios"));
-const chalk_1 = __importDefault(require("chalk"));
+const logger_1 = __importDefault(require("../utils/logger"));
 const fetchWikipediaImage = (query) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c;
     try {
@@ -44,16 +44,16 @@ const fetchWikipediaImage = (query) => __awaiter(void 0, void 0, void 0, functio
         const page = pages[pageId];
         const imageUrl = (_c = page.thumbnail) === null || _c === void 0 ? void 0 : _c.source;
         if (imageUrl) {
-            console.log(chalk_1.default.green(`Image fetched from Wikipedia for ${query}`));
+            logger_1.default.info(`Image fetched from Wikipedia for ${query}`);
             return imageUrl;
         }
         else {
-            console.log(chalk_1.default.yellow(`No image found on Wikipedia for ${query}`));
+            logger_1.default.warn(`No image found on Wikipedia for ${query}`);
             return undefined;
         }
     }
     catch (error) {
-        console.error(chalk_1.default.red(`Error fetching Wikipedia image for ${query}:`, error instanceof Error ? error.message : error));
+        logger_1.default.error(`Error fetching Wikipedia image for ${query}:`, error instanceof Error ? error.message : error);
         return undefined;
     }
 });

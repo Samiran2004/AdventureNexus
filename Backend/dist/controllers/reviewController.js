@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.likeReview = exports.createReview = exports.getAllReviews = void 0;
 const reviewModel_1 = __importDefault(require("../database/models/reviewModel"));
 const http_status_codes_1 = require("http-status-codes");
+const logger_1 = __importDefault(require("../utils/logger"));
 const getAllReviews = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { category, rating, search, sortBy } = req.query;
@@ -57,20 +58,19 @@ const getAllReviews = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         });
     }
     catch (error) {
-        console.error('Error fetching reviews:', error);
+        logger_1.default.error('Error fetching reviews:', error);
         res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Server Error' });
     }
 });
 exports.getAllReviews = getAllReviews;
 const createReview = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log("Received Review Data:", req.body);
         const { userName, userAvatar, location, tripType, tripDuration, travelers, rating, comment, images } = req.body;
         const review = yield reviewModel_1.default.create(req.body);
         res.status(http_status_codes_1.StatusCodes.CREATED).json({ success: true, data: review });
     }
     catch (error) {
-        console.error('Error creating review:', error);
+        logger_1.default.error('Error creating review:', error);
         res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ success: false, message: 'Invalid data', error });
     }
 });

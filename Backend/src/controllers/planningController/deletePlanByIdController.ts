@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import User from '../../database/models/userModel';
 import Plan from '../../database/models/planModel';
 import createHttpError from 'http-errors';
+import logger from '../../utils/logger';
 
 export interface CustomRequestDeletePlan extends Request {
     user: {
@@ -60,7 +61,7 @@ export const deletePlanById = async (
             message: 'Plan deleted successfully.',
         });
     } catch {
-        // console.log(`Error in deletePlanByIdController: ${error}`);  //For Debugging
+        logger.error(`Error in deletePlanByIdController: ${error}`);
 
         return next(createHttpError(500, 'Internal Server Error!'));
     }

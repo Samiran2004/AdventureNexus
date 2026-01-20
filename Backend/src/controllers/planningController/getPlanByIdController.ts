@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import Plan from '../../database/models/planModel';
 import redis from '../../redis/client';
 import createHttpError from 'http-errors';
+import logger from '../../utils/logger';
 
 /**
  * Controller to get a specific Plan by ID.
@@ -58,7 +59,7 @@ export const getPlanById = async (
             }
         });
     } catch {
-        // console.error(`Error in getPlanByIdController: ${error}`); // Log the error for debugging
+        logger.error(`Error in getPlanByIdController: ${error}`);
         return next(createHttpError(500, 'Internal Server Error!'));
     }
 };

@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import Plan from '../../database/models/planModel';
 import User from '../../database/models/userModel';
 import createHttpError from 'http-errors';
+import logger from '../../utils/logger';
 
 interface UpdatePlanRequestBody {
     destination?: string;
@@ -68,7 +69,7 @@ export const updatePlan = async (
             data: updatedPlan,
         });
     } catch (error) {
-        // console.error(error); // Log the error for debugging
+        logger.error('Error updating plan:', error);
         return next(createHttpError(500, 'Internal Server Error!'));
     }
 };

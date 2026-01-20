@@ -1,6 +1,6 @@
-import chalk from "chalk"
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
 import createHotels from "../../database/seeds/hotels/createHotels.seed";
+import logger from "../../utils/logger";
 
 /**
  * Controller to trigger the Hotel Seeding process.
@@ -11,14 +11,14 @@ import createHotels from "../../database/seeds/hotels/createHotels.seed";
  */
 const createHotelsController = async (req, res) => {
     try {
-        console.log(chalk.blue("Creating Hotels..."));
+        logger.info("Creating Hotels...");
 
         // Call Seed Function
         await createHotels(req, res);
 
-        console.log(chalk.green("Hotels Created..."));
+        logger.info("Hotels Created...");
     } catch (error) {
-        console.log(chalk.red(`Internal Server Error in Create Hotels controller...\nError: ${error.message}`));
+        logger.error(`Internal Server Error in Create Hotels controller...\nError: ${error.message}`);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             status: 'Failed',
             message: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR)

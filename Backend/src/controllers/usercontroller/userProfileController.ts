@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import User, { IUser } from '../../database/models/userModel';
 import createHttpError from 'http-errors';
+import logger from '../../utils/logger';
 
 // Interface extending Express Request to include user ID from auth middleware
 export interface CustomRequestUserProfileController<
@@ -36,7 +37,6 @@ async function userProfile(
             return next(createHttpError(404, 'User not found!'));
         } else {
             // 3. Send Success Response with filtered user data
-            console.log(userData);
             return res.status(200).send({
                 status: 'Success',
                 userData: {
@@ -54,7 +54,7 @@ async function userProfile(
             });
         }
     } catch (error: unknown) {
-        console.error("Error fetching user profile:", error); // Log error for debugging
+        logger.error("Error fetching user profile:", error); // Log error for debugging
         return next(createHttpError(500, 'Internal Server Error!'));
     }
 }

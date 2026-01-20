@@ -14,25 +14,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const node_cron_1 = __importDefault(require("node-cron"));
 const subscribeMail_model_1 = __importDefault(require("../database/models/subscribeMail.model"));
-const chalk_1 = __importDefault(require("chalk"));
 const email_templates_1 = __importDefault(require("../utils/email-templates"));
 const mailService_1 = __importDefault(require("../services/mailService"));
 const groq_service_1 = require("../services/groq.service");
 const generateDailyTips_prompt_1 = require("../utils/gemini/generateDailyTips.prompt");
+const logger_1 = __importDefault(require("../utils/logger"));
 const sendAutoDailyTipsJob = () => __awaiter(void 0, void 0, void 0, function* () {
     let successCount = 0;
     let failureCount = 0;
     try {
-        console.log(chalk_1.default.green('Running daily tips cron job...'));
+        logger_1.default.info('Running daily tips cron job...');
         const userMails = yield subscribeMail_model_1.default.find();
         if (userMails.length === 0) {
-            console.log(chalk_1.default.yellow("No subscribers found."));
+            logger_1.default.warn("No subscribers found.");
             return { status: 'success', message: 'No subscribers to send to.' };
         }
         const prompt = (0, generateDailyTips_prompt_1.generateDailyTips)();
         const generateDailyTipsContent = yield (0, groq_service_1.groqGeneratedData)(prompt);
         if (!generateDailyTipsContent) {
-            console.error(chalk_1.default.red("Failed to generate content from AI."));
+            logger_1.default.error("Failed to generate content from AI.");
             return { status: 'failed', message: 'AI generation failed' };
         }
         let tipDataObject;
@@ -46,7 +46,7 @@ const sendAutoDailyTipsJob = () => __awaiter(void 0, void 0, void 0, function* (
             tipDataObject = JSON.parse(cleanString);
         }
         catch (parseError) {
-            console.error(chalk_1.default.red("Error parsing AI response:"), generateDailyTipsContent);
+            logger_1.default.error(`Error parsing AI response: ${generateDailyTipsContent}`);
             return { status: 'failed', message: 'JSON handling error from AI response' };
         }
         const emailPromises = userMails.map((userMail) => __awaiter(void 0, void 0, void 0, function* () {
@@ -55,7 +55,7 @@ const sendAutoDailyTipsJob = () => __awaiter(void 0, void 0, void 0, function* (
                 yield new Promise((resolve, reject) => {
                     (0, mailService_1.default)(mailData, (mailError) => {
                         if (mailError) {
-                            console.error(`Mail sending failed for user ${userMail.mail}:`, mailError);
+                            logger_1.default.error(`Mail sending failed for user ${userMail.mail}: ${mailError}`);
                             reject(mailError);
                         }
                         else {
@@ -63,7 +63,7 @@ const sendAutoDailyTipsJob = () => __awaiter(void 0, void 0, void 0, function* (
                         }
                     });
                 });
-                console.log(`Email sent to: ${userMail.mail}`);
+                logger_1.default.info(`Email sent to: ${userMail.mail}`);
                 successCount++;
             }
             catch (err) {
@@ -71,11 +71,11 @@ const sendAutoDailyTipsJob = () => __awaiter(void 0, void 0, void 0, function* (
             }
         }));
         yield Promise.allSettled(emailPromises);
-        console.log(chalk_1.default.green(`Daily tips job finished. Success: ${successCount}, Failed: ${failureCount}`));
+        logger_1.default.info(`Daily tips job finished. Success: ${successCount}, Failed: ${failureCount}`);
         return { status: 'success', sent: successCount, failed: failureCount };
     }
     catch (error) {
-        console.error(chalk_1.default.red(`Error in sending daily tips mail: ${error instanceof Error ? error.message : error}`));
+        logger_1.default.error(`Error in sending daily tips mail: ${error instanceof Error ? error.message : error}`);
         return { status: 'error', message: error instanceof Error ? error.message : "Unknown error" };
     }
 });

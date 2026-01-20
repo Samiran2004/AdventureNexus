@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { fetchUnsplashImages } from "../../services/unsplash.service";
-import winstonLogger from "../../services/winston.service";
+import logger from "../../utils/logger";
 
 const getDestinationImages = async (req: Request, res: Response) => {
     try {
@@ -21,7 +21,7 @@ const getDestinationImages = async (req: Request, res: Response) => {
             data: images,
         });
     } catch (error: any) {
-        winstonLogger.error(`Error fetching destination images: ${error.message}`);
+        logger.error(`Error fetching destination images: ${error.message}`);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             status: "Failed",
             message: "Internal Server Error",

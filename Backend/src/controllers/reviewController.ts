@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import Review from '../database/models/reviewModel';
 import { StatusCodes } from 'http-status-codes';
+import logger from '../utils/logger';
 
 // Get all reviews with optional filtering and sorting
 export const getAllReviews = async (req: Request, res: Response) => {
@@ -53,7 +54,7 @@ export const getAllReviews = async (req: Request, res: Response) => {
             data: reviews
         });
     } catch (error) {
-        console.error('Error fetching reviews:', error);
+        logger.error('Error fetching reviews:', error);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Server Error' });
     }
 };
@@ -61,7 +62,6 @@ export const getAllReviews = async (req: Request, res: Response) => {
 // Create a new review
 export const createReview = async (req: Request, res: Response) => {
     try {
-        console.log("Received Review Data:", req.body);
         const { userName, userAvatar, location, tripType, tripDuration, travelers, rating, comment, images } = req.body;
 
         // Assuming user is attached to req by auth middleware, if available. 
@@ -96,7 +96,7 @@ export const createReview = async (req: Request, res: Response) => {
         const review = await Review.create(req.body);
         res.status(StatusCodes.CREATED).json({ success: true, data: review });
     } catch (error) {
-        console.error('Error creating review:', error);
+        logger.error('Error creating review:', error);
         res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: 'Invalid data', error });
     }
 };

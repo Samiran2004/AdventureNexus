@@ -16,6 +16,7 @@ exports.deletePlanById = void 0;
 const userModel_1 = __importDefault(require("../../database/models/userModel"));
 const planModel_1 = __importDefault(require("../../database/models/planModel"));
 const http_errors_1 = __importDefault(require("http-errors"));
+const logger_1 = __importDefault(require("../../utils/logger"));
 const deletePlanById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.id;
@@ -40,6 +41,7 @@ const deletePlanById = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
         });
     }
     catch (_a) {
+        logger_1.default.error(`Error in deletePlanByIdController: ${error}`);
         return next((0, http_errors_1.default)(500, 'Internal Server Error!'));
     }
 });

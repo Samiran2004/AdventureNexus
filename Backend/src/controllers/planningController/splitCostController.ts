@@ -2,6 +2,7 @@ import { NextFunction, Response, Request } from 'express';
 import createHttpError from 'http-errors';
 import { config } from '../../config/config';
 import Plan, { IPlan } from '../../database/models/planModel';
+import logger from '../../utils/logger';
 
 export interface CustomRequestSplitCost extends Request {
     planId?: string;
@@ -70,7 +71,7 @@ const splitCost = async (
         });
     } catch (err) {
         if (config.env == 'development') {
-            console.log(err);
+            logger.error('Error in split cost:', err);
         }
         return next(createHttpError(500, 'Internal Server Error!'));
     }
