@@ -26,7 +26,9 @@ const colors = {
 winston_1.default.addColors(colors);
 const format = winston_1.default.format.combine(winston_1.default.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }), winston_1.default.format.colorize({ all: true }), winston_1.default.format.printf((info) => `${info.timestamp} ${info.level}: ${info.message}`));
 const transports = [
-    new winston_1.default.transports.Console(),
+    new winston_1.default.transports.Console({
+        level: level()
+    }),
     new winston_1.default.transports.File({
         filename: 'logs/error.log',
         level: 'error',
@@ -34,11 +36,12 @@ const transports = [
     }),
     new winston_1.default.transports.File({
         filename: 'logs/combined.log',
+        level: 'debug',
         format: winston_1.default.format.combine(winston_1.default.format.uncolorize(), winston_1.default.format.timestamp(), winston_1.default.format.json()),
     }),
 ];
 const logger = winston_1.default.createLogger({
-    level: level(),
+    level: 'debug',
     levels,
     format,
     transports,

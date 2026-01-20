@@ -33,7 +33,9 @@ const format = winston.format.combine(
 );
 
 const transports = [
-    new winston.transports.Console(),
+    new winston.transports.Console({
+        level: level() // Use environment-based level for console
+    }),
     new winston.transports.File({
         filename: 'logs/error.log',
         level: 'error',
@@ -45,6 +47,7 @@ const transports = [
     }),
     new winston.transports.File({
         filename: 'logs/combined.log',
+        level: 'debug', // Always save all logs to file
         format: winston.format.combine(
             winston.format.uncolorize(),
             winston.format.timestamp(),
@@ -54,7 +57,7 @@ const transports = [
 ];
 
 const logger = winston.createLogger({
-    level: level(),
+    level: 'debug', // Allow all logs to pass through to transports
     levels,
     format,
     transports,
