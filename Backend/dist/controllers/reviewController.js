@@ -16,6 +16,7 @@ exports.likeReview = exports.createReview = exports.getAllReviews = void 0;
 const reviewModel_1 = __importDefault(require("../database/models/reviewModel"));
 const http_status_codes_1 = require("http-status-codes");
 const logger_1 = __importDefault(require("../utils/logger"));
+const cacheService_1 = require("../utils/cacheService");
 const getAllReviews = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { category, rating, search, sortBy } = req.query;
@@ -67,6 +68,7 @@ const createReview = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     try {
         const { userName, userAvatar, location, tripType, tripDuration, travelers, rating, comment, images } = req.body;
         const review = yield reviewModel_1.default.create(req.body);
+        yield cacheService_1.cacheService.invalidatePattern(cacheService_1.CACHE_CONFIG.PREFIX.REVIEWS + ':*');
         res.status(http_status_codes_1.StatusCodes.CREATED).json({ success: true, data: review });
     }
     catch (error) {
@@ -82,6 +84,7 @@ const likeReview = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         if (!review) {
             return res.status(http_status_codes_1.StatusCodes.NOT_FOUND).json({ success: false, message: 'Review not found' });
         }
+        yield cacheService_1.cacheService.invalidatePattern(cacheService_1.CACHE_CONFIG.PREFIX.REVIEWS + ':*');
         res.status(http_status_codes_1.StatusCodes.OK).json({ success: true, data: review });
     }
     catch (error) {

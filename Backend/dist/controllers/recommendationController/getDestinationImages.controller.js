@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const http_status_codes_1 = require("http-status-codes");
 const unsplash_service_1 = require("../../services/unsplash.service");
 const logger_1 = __importDefault(require("../../utils/logger"));
+const cacheService_1 = require("../../utils/cacheService");
 const getDestinationImages = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { query, count } = req.body;
@@ -24,7 +25,17 @@ const getDestinationImages = (req, res) => __awaiter(void 0, void 0, void 0, fun
                 message: "Query parameter is required",
             });
         }
+        const prefix = CACHE_CONFIG.PREFIX.IMAGES;
+        const identifier = `${query}:${count || 12}`;
+        const cachedImages = yield cacheService_1.cacheService.get(prefix, identifier);
+        if (cachedImages) {
+            return res.status(http_status_codes_1.StatusCodes.OK).json({
+                status: "Ok",
+                data: cachedImages,
+            });
+        }
         const images = yield (0, unsplash_service_1.fetchUnsplashImages)(query, count || 12);
+        yield cacheService_1.cacheService.set(prefix, identifier, images);
         return res.status(http_status_codes_1.StatusCodes.OK).json({
             status: "Ok",
             data: images,

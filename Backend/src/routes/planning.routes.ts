@@ -4,6 +4,8 @@ import getDestinationImages from '../controllers/recommendationController/getDes
 import getPersonalizedRecommendations from '../controllers/recommendationController/getPersonalizedRecommendations.controller';
 import { getPlanById } from '../controllers/planningController/getPlanByIdController';
 import protect from '../middlewares/authClerkTokenMiddleware';
+import { cacheMiddleware } from '../middlewares/cacheMiddleware';
+import { CACHE_CONFIG } from '../config/cache.config';
 
 const route = express.Router();
 
@@ -18,7 +20,7 @@ route.post("/search/destination", searchNewDestination);
  * @route GET /api/v1/plans/recommendations
  * @desc Get personalized travel recommendations based on user history
  */
-route.get("/recommendations", getPersonalizedRecommendations);
+route.get("/recommendations", cacheMiddleware({ prefix: CACHE_CONFIG.PREFIX.RECOMMENDATIONS, useUserPrefix: true }), getPersonalizedRecommendations);
 
 /**
  * @route POST /api/v1/plans/search/destination-images
@@ -30,6 +32,6 @@ route.post("/search/destination-images", getDestinationImages);
  * @route GET /api/v1/plans/public/:id
  * @desc Fetch a plan by ID publicly (for shared links).
  */
-route.get("/public/:id", getPlanById);
+route.get("/public/:id", cacheMiddleware({ prefix: CACHE_CONFIG.PREFIX.PLAN }), getPlanById);
 
 export default route;
