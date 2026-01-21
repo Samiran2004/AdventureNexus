@@ -2,6 +2,7 @@ import express from 'express';
 import searchNewDestination from '../controllers/recommendationController/searchNewDestination.controller';
 import getDestinationImages from '../controllers/recommendationController/getDestinationImages.controller';
 import getPersonalizedRecommendations from '../controllers/recommendationController/getPersonalizedRecommendations.controller';
+import { getPlanById } from '../controllers/planningController/getPlanByIdController';
 import protect from '../middlewares/authClerkTokenMiddleware';
 
 const route = express.Router();
@@ -24,5 +25,11 @@ route.get("/recommendations", getPersonalizedRecommendations);
  * @desc Fetch a batch of images for a destination from Unsplash.
  */
 route.post("/search/destination-images", getDestinationImages);
+
+/**
+ * @route GET /api/v1/plans/public/:id
+ * @desc Fetch a plan by ID publicly (for shared links).
+ */
+route.get("/public/:id", getPlanById);
 
 export default route;

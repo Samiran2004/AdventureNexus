@@ -96,18 +96,38 @@ export const swaggerOptions = {
                     type: 'object',
                     required: ['to', 'from', 'date', 'travelers', 'budget'],
                     properties: {
+                        _id: { type: 'string', example: '60d0fe4f5311236168a109ca' },
                         to: { type: 'string', example: 'Paris, France' },
                         from: { type: 'string', example: 'New York, USA' },
                         date: { type: 'string', format: 'date', example: '2023-12-25' },
                         travelers: { type: 'number', example: 2 },
                         budget: { type: 'number', example: 2000 },
                         budget_range: { type: 'string', example: 'mid-range' },
+                        image_url: { type: 'string', example: 'https://...' },
+                        days: { type: 'number', example: 5 },
+                        cost: { type: 'number', example: 1800 },
+                        ai_score: { type: 'number', example: 95 },
+                        destination_overview: { type: 'string' },
                         activities: {
                             type: 'array',
                             items: { type: 'string' },
                             example: ['museums', 'food']
                         },
-                        travel_style: { type: 'string', example: 'relaxed' }
+                        travel_style: { type: 'string', example: 'relaxed' },
+                        suggested_itinerary: {
+                            type: 'array',
+                            items: {
+                                type: 'object',
+                                properties: {
+                                    day: { type: 'number' },
+                                    morning: { type: 'string' },
+                                    afternoon: { type: 'string' },
+                                    evening: { type: 'string' }
+                                }
+                            }
+                        },
+                        trip_highlights: { type: 'array', items: { type: 'object' } },
+                        local_tips: { type: 'array', items: { type: 'string' } }
                     }
                 },
                 PlanResponse: {
@@ -116,14 +136,64 @@ export const swaggerOptions = {
                         status: { type: 'string', example: 'Ok' },
                         message: { type: 'string', example: 'Generated' },
                         data: {
-                            type: 'object',
-                            properties: {
-                                ai_score: { type: 'string', example: '95' },
-                                days: { type: 'number', example: 5 },
-                                cost: { type: 'number', example: 1800 },
-                                suggested_itinerary: { type: 'array', items: { type: 'object' } },
-                                local_tips: { type: 'array', items: { type: 'string' } }
-                            }
+                            oneOf: [
+                                { $ref: '#/components/schemas/Plan' },
+                                { type: 'array', items: { $ref: '#/components/schemas/Plan' } }
+                            ]
+                        }
+                    }
+                },
+                Review: {
+                    type: 'object',
+                    required: ['userName', 'location', 'tripType', 'tripDuration', 'travelers', 'rating', 'comment'],
+                    properties: {
+                        _id: { type: 'string' },
+                        userName: { type: 'string', example: 'Alice Smith' },
+                        userAvatar: { type: 'string' },
+                        location: { type: 'string', example: 'Bali, Indonesia' },
+                        tripType: { type: 'string', enum: ['solo', 'family', 'couple', 'adventure', 'cultural', 'business', 'nature'] },
+                        tripDuration: { type: 'string', example: '10 days' },
+                        travelers: { type: 'string', example: '2 Adults' },
+                        rating: { type: 'number', minimum: 1, maximum: 5, example: 5 },
+                        comment: { type: 'string', example: 'Amazing trip!' },
+                        images: { type: 'array', items: { type: 'string' } },
+                        helpfulCount: { type: 'number', example: 12 },
+                        isVerified: { type: 'boolean', example: true },
+                        createdAt: { type: 'string', format: 'date-time' }
+                    }
+                },
+                ReviewResponse: {
+                    type: 'object',
+                    properties: {
+                        success: { type: 'boolean' },
+                        data: {
+                            oneOf: [
+                                { $ref: '#/components/schemas/Review' },
+                                { type: 'array', items: { $ref: '#/components/schemas/Review' } }
+                            ]
+                        },
+                        total: { type: 'number' },
+                        totalPages: { type: 'number' },
+                        currentPage: { type: 'number' }
+                    }
+                },
+                DestinationImagesResponse: {
+                    type: 'object',
+                    properties: {
+                        status: { type: 'string', example: 'Ok' },
+                        data: {
+                            type: 'array',
+                            items: { type: 'string', example: 'https://images.unsplash.com/...' }
+                        }
+                    }
+                },
+                LikedPlanResponse: {
+                    type: 'object',
+                    properties: {
+                        success: { type: 'boolean' },
+                        likedPlans: {
+                            type: 'array',
+                            items: { $ref: '#/components/schemas/Plan' }
                         }
                     }
                 },

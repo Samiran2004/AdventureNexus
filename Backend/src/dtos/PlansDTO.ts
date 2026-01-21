@@ -54,8 +54,11 @@ export interface IPlan extends Document {
     // Strict Itinerary Structure
     suggested_itinerary: {
         day: number;
-        title: string;
-        description: string;
+        morning: string;
+        afternoon: string;
+        evening: string;
+        title?: string;
+        description?: string;
         activities: {
             name: string;
             cost: string;

@@ -14,6 +14,7 @@ import ProfilePage from './pages/ProfilePage';
 import DestinationsPage from './pages/DestinationPage';
 import IndividualDestinationPage from './pages/IndividualDestinationPage';
 import TripInspirationPage from './pages/TripInspirationPage';
+import SharedPlanPage from './pages/SharedPlanPage';
 import TripBuilderPage from './pages/TripBuilderPage';
 import AccommodationsPage from './pages/HotelPage';
 import MyTripsPage from './pages/MyTripPage';
@@ -88,6 +89,7 @@ const AppContent = () => {
         <Route path='/privacy' element={<PrivacyPage />} />
         <Route path='/cookies' element={<CookiesPage />} />
         <Route path='/accessibility' element={<AccessibilityPage />} />
+        <Route path='/shared-plan/:id' element={<SharedPlanPage />} />
 
         {/* --- Dynamic Routes (Routes with parameters) --- */}
         <Route path="/destination/:country/:city" element={<IndividualDestinationPage />} />

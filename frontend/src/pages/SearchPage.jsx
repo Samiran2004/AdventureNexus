@@ -1,5 +1,6 @@
 import Footer from "@/components/mvpblocks/footer-newsletter";
 import NavBar from "@/components/NavBar";
+import ShareModal from "@/components/ShareModal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -63,7 +64,7 @@ import { useAuth } from "@clerk/clerk-react"
 const SearchPage = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
-  const [budgetRange, setBudgetRange] = useState([1000, 5000]);
+  const [budgetRange, setBudgetRange] = useState([15000, 45000]);
   const [selectedActivities, setSelectedActivities] = useState([]);
   const [sortBy, setSortBy] = useState("recommended");
   const [selectedDestination, setSelectedDestination] = useState(null);
@@ -76,6 +77,8 @@ const SearchPage = () => {
   const [likedPlans, setLikedPlans] = useState(new Set()); // Track liked plan IDs
   const [likedPlansData, setLikedPlansData] = useState([]); // Full liked plans data
   const [activeTab, setActiveTab] = useState("all"); // Track active tab: "all" or "liked"
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [selectedSharePlan, setSelectedSharePlan] = useState(null);
 
   const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -297,6 +300,11 @@ const SearchPage = () => {
   };
 
 
+  const handleSharePlan = (plan, e) => {
+    if (e) e.stopPropagation();
+    setSelectedSharePlan(plan);
+    setIsShareModalOpen(true);
+  };
 
 
   const handleSearchResult = async () => {
@@ -329,9 +337,9 @@ const SearchPage = () => {
 
       // Map budget tiers to approximate upper limits (INR)
       const budgetMap = {
-        "budget": 15000,
-        "mid": 45000,
-        "luxury": 150000
+        "budget": 25000,
+        "mid": 65000,
+        "luxury": 200000
       };
 
       // Default to mid if not found, or use a custom logic if "Any" is an option
@@ -552,13 +560,13 @@ const SearchPage = () => {
                         </SelectTrigger>
                         <SelectContent className="bg-popover border-border cursor-pointer">
                           <SelectItem value="budget" className="cursor-pointer">
-                            Budget (₹5000-₹15000)
+                            Budget (₹15000-₹25000)
                           </SelectItem>
                           <SelectItem value="mid" className="cursor-pointer">
-                            Mid-range (₹15000-₹30000)
+                            Mid-range (₹25000-₹65000)
                           </SelectItem>
                           <SelectItem value="luxury" className="cursor-pointer">
-                            Luxury (₹30000+)
+                            Luxury (₹65000+)
                           </SelectItem>
                         </SelectContent>
                       </Select>
@@ -845,7 +853,7 @@ const SearchPage = () => {
                               className="bg-white/90 hover:bg-white text-primary hover:text-primary/80 shadow-sm hover:shadow-md transition-all rounded-full w-8 h-8 p-0"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                // Add share logic here
+                                handleSharePlan(result, e);
                               }}
                             >
                               <Share size={16} />
@@ -1033,7 +1041,10 @@ const SearchPage = () => {
                               size="sm"
                               variant="secondary"
                               className="bg-white/90 hover:bg-white text-primary hover:text-primary/80 shadow-sm hover:shadow-md transition-all rounded-full w-8 h-8 p-0"
-                              onClick={(e) => e.stopPropagation()}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSharePlan(result, e);
+                              }}
                             >
                               <Share size={16} />
                             </Button>
@@ -1499,7 +1510,11 @@ const SearchPage = () => {
                       <Heart className="mr-2" size={18} />
                       Save to Favorites
                     </Button>
-                    <Button variant="outline" className="flex-1 border-input text-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer">
+                    <Button
+                      variant="outline"
+                      className="flex-1 border-input text-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer"
+                      onClick={(e) => handleSharePlan(selectedDestination, e)}
+                    >
                       <Share className="mr-2" size={18} />
                       Share Trip
                     </Button>
@@ -1560,6 +1575,16 @@ const SearchPage = () => {
         </div>
       </section>
       <Footer />
+
+      {/* Share Modal */}
+      {selectedSharePlan && (
+        <ShareModal
+          isOpen={isShareModalOpen}
+          onClose={() => setIsShareModalOpen(false)}
+          planId={selectedSharePlan._id}
+          planName={selectedSharePlan.name}
+        />
+      )}
     </div>
   );
 };

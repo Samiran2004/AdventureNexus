@@ -18,48 +18,44 @@ export const getPlanById = async (
 ) => {
     try {
         const { id } = req.params;
-
-        // Define Redis key (Using simple ID, might conflict if other entities share ID space, but MongoIDs are unique)
         const redisKey = `${id}`;
 
-        // 1. Check Redis cache
-        redis.get(redisKey, async (err, cacheData) => {
-            if (err) {
-                // Return 200 with normal DB fetch instead? Or error? Choosing error for now.
-                return next(
-                    createHttpError(500, 'Internal Redis Server Error!')
-                );
-            }
+        // 1. Try to fetch from Redis cache
+        try {
+            const cacheData = await redis.get(redisKey);
             if (cacheData) {
-                // Cache HIT
                 return res.status(200).json({
                     status: 'Success',
                     data: JSON.parse(cacheData),
                 });
             }
+        } catch (redisErr) {
+            // Log Redis error but don't fail the request - fall back to DB
+            logger.error(`Redis error in getPlanById: ${redisErr}`);
+        }
 
-            // 2. Cache MISS: Find the plan in the database
+        // 2. Cache MISS or Redis Error: Find the plan in the database
+        const plan = await Plan.findById(id);
+        if (plan) {
+            // 3. Attempt to cache the plan data in Redis (TTL: 60 seconds)
             try {
-                const plan = await Plan.findById(id);
-                if (plan) {
-                    // 3. Cache the plan data in Redis (TTL: 60 seconds)
-                    redis.setex(redisKey, 60, JSON.stringify(plan));
-                    return res.status(200).json({
-                        status: 'Success',
-                        data: plan,
-                    });
-                }
-                return next(
-                    createHttpError(404, 'Plan Not Found or The id is Invalid.')
-                );
-            } catch {
-                return next(
-                    createHttpError(400, 'Plan Not Found or The ID is Invalid.')
-                );
+                await redis.setex(redisKey, 60, JSON.stringify(plan));
+            } catch (redisErr) {
+                logger.error(`Redis setex error in getPlanById: ${redisErr}`);
             }
-        });
-    } catch {
-        logger.error(`Error in getPlanByIdController: ${error}`);
+
+            return res.status(200).json({
+                status: 'Success',
+                data: plan,
+            });
+        }
+
+        return next(
+            createHttpError(404, 'Plan Not Found or The ID is Invalid.')
+        );
+
+    } catch (err: any) {
+        logger.error(`Error in getPlanByIdController: ${err.message || err}`);
         return next(createHttpError(500, 'Internal Server Error!'));
     }
 };
