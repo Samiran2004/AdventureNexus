@@ -44,16 +44,18 @@ graph TD
 
 ---
 
-## 🔑 Key API Modules
+## 🏗️ Key API Modules
 
 | Module | Base Route | Description |
 | :--- | :--- | :--- |
 | **Auth & Users** | `/api/v1/users` | User profile management and Clerk webhook handling. |
-| **Planning** | `/api/v1/plans` | Core AI itinerary generation and budget calculations. |
-| **Hotels** | `/api/v1/hotels` | Real-time hotel search and filtering via Booking.com. |
-| **Subscriptions**| `/api/v1/mail` | Newsletter and daily travel tips subscription. |
+| **Planning** | `/api/v1/plans` | Core AI itinerary generation, recommendations, and galleries. |
+| **Reviews** | `/api/v1/reviews` | Trip feedback management with filtering and likes. |
+| **Liked Plans** | `/api/v1/liked-plans` | Management of user's favorite travel itineraries. |
+| **Hotels** | `/api/v1/hotels` | AI-powered hotel recommendations for travel plans. |
+| **Mail** | `/api/v1/mail` | Newsletter and daily travel tips automated delivery. |
 
-> 📘 **Interactive Documentation**: Host the server and visit `http://localhost:3000/api-docs` to explore endpoints via Swagger UI.
+> 📘 **Interactive Documentation**: AdventureNexus is fully documented using **Swagger/OpenAPI**. Host the server and visit `/api-docs` to explore live endpoints.
 
 ---
 
@@ -77,12 +79,13 @@ Backend/src
 
 ---
 
-## 🛡️ Security & Performance
-
-- **Helmet**: Secures HTTP headers.
-- **Rate Limiting**: Prevents abuse of AI and Booking APIs.
-- **Sanitization**: Input cleansing to prevent injection attacks.
-- **Redis Caching**: Caches expensive API responses (flight/hotel data) to reduce latency and API planning costs.
+- **Helmet**: Secures HTTP headers against common vulnerabilities.
+- **Rate Limiting**: Intelligent limits to prevent abuse of AI and image services.
+- **Professional Caching**: 
+    - **Namespaced Keys**: Organised via `nexus:v1:<prefix>:<id>` for strict isolation.
+    - **Key Normalization**: Alphabetical query sorting to ensure consistent cache hits.
+    - **Proactive Invalidation**: Automated cache clearing (e.g. clearing review lists when a new like is added).
+    - **Middleware Integration**: Efficient, non-intrusive caching for all high-traffic GET routes.
 
 ---
 
