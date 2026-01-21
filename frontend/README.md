@@ -21,6 +21,9 @@ The **AdventureNexus Client** is a cutting-edge web interface designed to immers
 
 | Component | Description | Tech Stack |
 | :--- | :--- | :--- |
+| **Shared Plan Tabs**| Multi-tab interface (Highlights, Map, Gallery, Stays) for a comprehensive trip view. | `Framer Motion`, `Lucide` |
+| **Interactive Map** | Real-time map visualization of destinations and highlights. | `Mapbox` / `Leaflet` |
+| **Image Gallery** | Stunning masonry grid layout for destination visuals with zoom functionality. | `React Photo Album` |
 | **Bento Grid** | A modern, grid-based layout for displaying features and travel stats. | `CSS Grid`, `Framer Motion` |
 | **Interactive Globe** | A stunning 3D globe visualization that users can rotate. | `cobe`, `React Spring` |
 | **Velocity Scroll** | Text and elements that react to scroll speed for a dynamic feel. | `ScrollTrigger`, `GSAP` |

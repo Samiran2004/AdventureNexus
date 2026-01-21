@@ -40,6 +40,9 @@ const planSchema = new mongoose_1.Schema({
     },
     suggested_itinerary: [{
             day: Number,
+            morning: String,
+            afternoon: String,
+            evening: String,
             title: String,
             description: String,
             activities: [{

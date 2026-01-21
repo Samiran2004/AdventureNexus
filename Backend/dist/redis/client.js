@@ -11,5 +11,7 @@ const redis = new ioredis_1.Redis({
     host: config_1.config.REDIS_HOST,
     port: Number(config_1.config.REDIS_PORT),
     password: config_1.config.REDIS_PASSWORD,
+    commandTimeout: 2000,
+    enableOfflineQueue: false,
 });
 exports.default = redis;

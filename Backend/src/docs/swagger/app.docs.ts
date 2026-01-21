@@ -64,3 +64,15 @@
  *       417:
  *         description: Mail sending error
  */
+
+/**
+ * @swagger
+ * /api/v1/mail/trigger-daily-tips:
+ *   post:
+ *     summary: Trigger Daily Tips Manually
+ *     tags: [Mail]
+ *     description: Manually trigger the daily tips email delivery for all subscribers.
+ *     responses:
+ *       200:
+ *         description: Daily tips triggered successfully
+ */

@@ -21,6 +21,7 @@ const unsplash_service_1 = require("../../services/unsplash.service");
 const wikipedia_service_1 = require("../../services/wikipedia.service");
 const planModel_1 = __importDefault(require("../../database/models/planModel"));
 const userModel_1 = __importDefault(require("../../database/models/userModel"));
+const cacheService_1 = require("../../utils/cacheService");
 const searchNewDestination = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const fullUrl = (0, getFullURL_service_1.default)(req);
@@ -38,6 +39,17 @@ const searchNewDestination = (req, res) => __awaiter(void 0, void 0, void 0, fun
             return res.status(http_status_codes_1.StatusCodes.UNAUTHORIZED).json({
                 status: "Failed",
                 message: "Unauthorized: Clerk user not found",
+            });
+        }
+        const prefix = cacheService_1.CACHE_CONFIG.PREFIX.SEARCH;
+        const identifier = `${to}:${from}:${date}:${travelers}:${budget}:${budget_range}:${duration || 'standard'}`;
+        const cachedPlans = yield cacheService_1.cacheService.get(prefix, identifier);
+        if (cachedPlans) {
+            logger_1.default.info(`URL: ${fullUrl} - Cache HIT for search`);
+            return res.status(http_status_codes_1.StatusCodes.OK).json({
+                status: "Ok",
+                message: "Generated (Cached)",
+                data: cachedPlans,
             });
         }
         const promptData = {
@@ -117,6 +129,7 @@ const searchNewDestination = (req, res) => __awaiter(void 0, void 0, void 0, fun
             yield newPlan.save();
             return newPlan;
         })));
+        yield cacheService_1.cacheService.set(prefix, identifier, savedPlans);
         logger_1.default.info(`URL: ${fullUrl} - Plans generated successfully`);
         return res.status(http_status_codes_1.StatusCodes.OK).json({
             status: "Ok",

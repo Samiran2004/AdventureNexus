@@ -39,6 +39,13 @@
  *     responses:
  *       200:
  *         description: Hotels created successfully (Logs to console)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status: { type: 'string', example: 'Ok' }
+ *                 data: { type: 'array', items: { type: 'object' } }
  *       500:
  *         description: Internal Server Error
  *         content:

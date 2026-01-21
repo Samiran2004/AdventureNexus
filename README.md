@@ -55,12 +55,13 @@
 | :--- | :--- |
 | 🧠 **AI Match Score** | Intelligent destination scoring (0–100%) based on your profile using **Groq API**. |
 | 📅 **Smart Itineraries** | Day-by-day auto-generated plans including activities, locations, and timings. |
+| 🗺️ **Interactive Maps** | Real-time map visualizations of your trip highlights and routes. |
+| 🖼️ **Visual Gallery** | High-quality masonry grid for destination images with lightbox support. |
 | 💰 **Budget Optimizer** | Detailed cost breakdown for flights, stays, food, and activities. |
-| ✈️ **Flight Search** | integrated **Amadeus API** for real-time flight availability and pricing. |
-| 🏨 **Hotel Finder** | **Booking.com** integration to find the best places to stay. |
+| 🏨 **Hotel Finder** | AI-generated hotel recommendations with location-specific descriptions. |
 | 🔐 **Secure Access** | Enterprise-grade authentication via **Clerk**. |
-| 🛡️ **Robust Security** | Redis caching, Rate limiting, and CORS protection. |
-| 📊 **Dashboard** | Save, manage, and share your travel plans easily. |
+| 🛡️ **Professional Caching** | Advanced Redis layer with deterministic key normalization and proactive invalidation. |
+| 📊 **Dashboard** | Save, manage, and share your travel plans with a stunning glassmorphism UI. |
 
 ---
 
@@ -97,10 +98,11 @@
 - **Animations**: [Framer Motion](https://www.framer.com/motion/)
 
 ### ⚙️ Backend (Server)
-- **Runtime**: [Node.js](https://nodejs.org/) &amp; [Express.js](https://expressjs.com/)
-- **Database**: [MongoDB](https://www.mongodb.com/) (NoSQL)
-- **Caching**: [Redis](https://redis.io/) (via IOredis)
-- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Runtime**: [Node.js](https://nodejs.org/) & [Express.js](https://expressjs.com/)
+- **Database**: [MongoDB](https://www.mongodb.com/) (NoSQL with Mongoose)
+- **Caching**: [Redis](https://redis.io/) (Professional layer with IOredis)
+- **Language**: [TypeScript](https://www.typescriptlang.org/) (Strictly Typed)
+- **Docs**: [Swagger/OpenAPI](https://swagger.io/) (Fully Documented)
 
 ### 🤖 AI & APIs
 - **LLM Engine**: [Groq SDK](https://groq.com/)

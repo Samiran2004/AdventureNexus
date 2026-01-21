@@ -13,6 +13,7 @@ import { fetchWikipediaImage } from "../../services/wikipedia.service";
 import Plan from "../../database/models/planModel";
 import { IPlan } from "../../dtos/PlansDTO";
 import User from "../../database/models/userModel";
+import { cacheService, CACHE_CONFIG } from "../../utils/cacheService";
 
 const searchNewDestination = async (req: Request, res: Response) => {
   const fullUrl = getFullURL(req);
@@ -46,6 +47,20 @@ const searchNewDestination = async (req: Request, res: Response) => {
       return res.status(StatusCodes.UNAUTHORIZED).json({
         status: "Failed",
         message: "Unauthorized: Clerk user not found",
+      });
+    }
+
+    // 🕒 2.5 Check Cache
+    const prefix = CACHE_CONFIG.PREFIX.SEARCH;
+    const identifier = `${to}:${from}:${date}:${travelers}:${budget}:${budget_range}:${duration || 'standard'}`;
+
+    const cachedPlans = await cacheService.get<any[]>(prefix, identifier);
+    if (cachedPlans) {
+      logger.info(`URL: ${fullUrl} - Cache HIT for search`);
+      return res.status(StatusCodes.OK).json({
+        status: "Ok",
+        message: "Generated (Cached)",
+        data: cachedPlans,
       });
     }
 
@@ -152,6 +167,9 @@ const searchNewDestination = async (req: Request, res: Response) => {
       await newPlan.save();
       return newPlan;
     }));
+
+    // 🕒 9.5 Store in Cache (TTL: 1 hour)
+    await cacheService.set(prefix, identifier, savedPlans);
 
     // ✅ 10. Send Success Response
     logger.info(`URL: ${fullUrl} - Plans generated successfully`);

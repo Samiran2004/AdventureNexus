@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Review from '../database/models/reviewModel';
 import { StatusCodes } from 'http-status-codes';
 import logger from '../utils/logger';
+import { cacheService, CACHE_CONFIG } from '../utils/cacheService';
 
 // Get all reviews with optional filtering and sorting
 export const getAllReviews = async (req: Request, res: Response) => {
@@ -94,6 +95,10 @@ export const createReview = async (req: Request, res: Response) => {
         // Use a placeholder or passed ID for now.
 
         const review = await Review.create(req.body);
+
+        // 🕒 Invalidate all review related cache
+        await cacheService.invalidatePattern(CACHE_CONFIG.PREFIX.REVIEWS + ':*');
+
         res.status(StatusCodes.CREATED).json({ success: true, data: review });
     } catch (error) {
         logger.error('Error creating review:', error);
@@ -113,6 +118,10 @@ export const likeReview = async (req: Request, res: Response) => {
         if (!review) {
             return res.status(StatusCodes.NOT_FOUND).json({ success: false, message: 'Review not found' });
         }
+
+        // 🕒 Invalidate all review related cache
+        await cacheService.invalidatePattern(CACHE_CONFIG.PREFIX.REVIEWS + ':*');
+
         res.status(StatusCodes.OK).json({ success: true, data: review });
     } catch (error) {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Server Error' });

@@ -33,10 +33,11 @@ const generateNewSearchDestinationPrompt = (data: SearchNewDestinationPromptData
         
         Generate a strictly formatted **JSON Array** containing exactly 3 objects.
 
-        **IMPORTANT: BUDGET RULE**
-        - The "cost" field MUST be a realistic estimate for the destination and duration.
-        - Do NOT simply default to the Total Budget. If the trip can be done cheaper, show the cheaper price.
-        - Example: A 3-day trip to a nearby city might only cost 5000-10000 INR, even if the user's budget is 45000. Provide the REALISTIC cost. 
+        **IMPORTANT: BUDGET REALISM RULE**
+        - The "cost" field MUST be a realistic estimate for the destination and duration, considering the origin (**${data.from}**) and destination (**${data.to}**).
+        - **FLIGHTS/TRANSPORT:** You MUST include estimated flight or long-distance transport costs in the breakdown and total cost. For example, a trip to an island (Andaman, Maldives) or a distant country MUST reflect current market rates for flights.
+        - **REALISM TRUMPS BUDGET:** If the user's budget (${data.budget} INR) is too low for a realistic trip to that destination, you MUST provide the **ACTUAL MINIMUM REALISTIC COST** instead of trying to fit into the budget. It is better to be expensive and honest than cheap and impossible.
+        - Example: A 5-day trip to Andaman from Kolkata rarely costs less than 25,000-30,000 INR per person including flights. Do NOT return a cost like 12,000 INR if it's impossible.
 
         **IMPORTANT: IMAGE URL RULE**
         For the "image_url" field, do NOT try to find a real URL. Instead, construct a dynamic URL using this exact format:

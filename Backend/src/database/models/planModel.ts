@@ -53,6 +53,9 @@ const planSchema = new Schema<IPlan>({
     // Structured Itinerary
     suggested_itinerary: [{
         day: Number,
+        morning: String,
+        afternoon: String,
+        evening: String,
         title: String,
         description: String,
         activities: [{
