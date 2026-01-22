@@ -13,12 +13,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const node_cron_1 = __importDefault(require("node-cron"));
-const subscribeMail_model_1 = __importDefault(require("../database/models/subscribeMail.model"));
-const email_templates_1 = __importDefault(require("../utils/email-templates"));
-const mailService_1 = __importDefault(require("../services/mailService"));
-const groq_service_1 = require("../services/groq.service");
-const generateDailyTips_prompt_1 = require("../utils/gemini/generateDailyTips.prompt");
-const logger_1 = __importDefault(require("../utils/logger"));
+const subscribeMail_model_1 = __importDefault(require("../shared/database/models/subscribeMail.model"));
+const email_templates_1 = __importDefault(require("../shared/utils/email-templates"));
+const mailService_1 = __importDefault(require("../shared/services/mailService"));
+const groq_service_1 = require("../shared/services/groq.service");
+const generateDailyTips_prompt_1 = require("../shared/utils/gemini/generateDailyTips.prompt");
+const logger_1 = __importDefault(require("../shared/utils/logger"));
 const sendAutoDailyTipsJob = () => __awaiter(void 0, void 0, void 0, function* () {
     let successCount = 0;
     let failureCount = 0;

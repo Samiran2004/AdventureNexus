@@ -21,27 +21,35 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const helmet_1 = __importDefault(require("helmet"));
 const path_1 = __importDefault(require("path"));
 const figlet_1 = __importDefault(require("figlet"));
+const http_1 = __importDefault(require("http"));
 dotenv_1.default.config();
-const config_1 = require("./config/config");
-const connection_1 = __importDefault(require("./database/connection"));
-const client_1 = __importDefault(require("./redis/client"));
+const config_1 = require("./shared/config/config");
+const connection_1 = __importDefault(require("./shared/database/connection"));
+const client_1 = __importDefault(require("./shared/redis/client"));
 require("./jobs/dailyTips.job");
 require("./jobs/runner.job");
-const globalErrorHandler_1 = __importDefault(require("./middlewares/globalErrorHandler"));
-const sanitization_1 = __importDefault(require("./middlewares/sanitization"));
+const userModel_1 = __importDefault(require("./shared/database/models/userModel"));
+const globalErrorHandler_1 = __importDefault(require("./shared/middleware/globalErrorHandler"));
+const sanitization_1 = __importDefault(require("./shared/middleware/sanitization"));
 const express_2 = require("@clerk/express");
-const ClerkWebhook_1 = __importDefault(require("./controllers/ClerkWebhook"));
-const subscribeDailyMail_controller_1 = __importDefault(require("./controllers/newsSubscriptionController/subscribeDailyMail.controller"));
-const user_routes_1 = __importDefault(require("./routes/user.routes"));
-const planning_routes_1 = __importDefault(require("./routes/planning.routes"));
-const hotels_routes_1 = __importDefault(require("./routes/hotels.routes"));
-const review_routes_1 = __importDefault(require("./routes/review.routes"));
-const likedPlans_routes_1 = __importDefault(require("./routes/likedPlans.routes"));
+const maintenanceMiddleware_1 = require("./shared/middleware/maintenanceMiddleware");
+const telemetryMiddleware_1 = require("./shared/middleware/telemetryMiddleware");
+const ClerkWebhook_1 = __importDefault(require("./modules/auth/controllers/ClerkWebhook"));
+const subscribeDailyMail_controller_1 = __importDefault(require("./modules/newsletter/controllers/subscribeDailyMail.controller"));
+const user_routes_1 = __importDefault(require("./modules/users/routes/user.routes"));
+const planning_routes_1 = __importDefault(require("./modules/planning/routes/planning.routes"));
+const hotels_routes_1 = __importDefault(require("./modules/hotels/routes/hotels.routes"));
+const review_routes_1 = __importDefault(require("./modules/reviews/routes/review.routes"));
+const likedPlans_routes_1 = __importDefault(require("./modules/planning/routes/likedPlans.routes"));
+const booking_routes_1 = __importDefault(require("./modules/bookings/routes/booking.routes"));
 const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
-const swaggerOptions_1 = require("./utils/swaggerOptions");
-const logger_1 = __importDefault(require("./utils/logger"));
+const swaggerOptions_1 = require("./shared/utils/swaggerOptions");
+const logger_1 = __importDefault(require("./shared/utils/logger"));
+const socket_1 = require("./shared/socket/socket");
 const app = (0, express_1.default)();
+const server = http_1.default.createServer(app);
+(0, socket_1.initSocket)(server);
 (() => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, connection_1.default)(process.env.DB_URI);
 }))();
@@ -73,28 +81,43 @@ const morganMiddleware = (0, morgan_1.default)(':method :url :status :res[conten
     },
 });
 app.use(morganMiddleware);
+app.use(telemetryMiddleware_1.telemetryMiddleware);
 app.use((0, express_2.clerkMiddleware)());
 const swaggerDocs = (0, swagger_jsdoc_1.default)(swaggerOptions_1.swaggerOptions);
 app.use('/api-docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerDocs));
 app.use(sanitization_1.default);
+app.use((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        if ((_a = req.auth) === null || _a === void 0 ? void 0 : _a.userId) {
+            userModel_1.default.updateOne({ clerkUserId: req.auth.userId }, { lastActive: new Date() }).exec();
+        }
+    }
+    catch (error) {
+        logger_1.default.warn('Failed to update user activity');
+    }
+    next();
+}));
 app.use('/api/clerk', ClerkWebhook_1.default);
+app.use(maintenanceMiddleware_1.checkMaintenance);
 app.use('/api/v1/users', user_routes_1.default);
 app.use('/api/v1/plans', planning_routes_1.default);
 app.use('/api/v1/hotels', hotels_routes_1.default);
 app.use('/api/v1/reviews', review_routes_1.default);
+app.use('/api/v1/bookings', booking_routes_1.default);
 app.use('/api/v1/liked-plans', likedPlans_routes_1.default);
-const triggerDailyTips_controller_1 = __importDefault(require("./controllers/newsSubscriptionController/triggerDailyTips.controller"));
+const triggerDailyTips_controller_1 = __importDefault(require("./modules/newsletter/controllers/triggerDailyTips.controller"));
 app.post('/api/v1/mail/subscribe', subscribeDailyMail_controller_1.default);
 app.post('/api/v1/mail/trigger-daily-tips', triggerDailyTips_controller_1.default);
+const admin_routes_1 = __importDefault(require("./modules/admin/routes/admin.routes"));
+app.use('/api/v1/admin', admin_routes_1.default);
 app.use((req, res, next) => {
     next((0, http_errors_1.default)(404));
 });
 app.use(globalErrorHandler_1.default);
 exports.default = app;
-app.listen(config_1.config.port, (err) => err
-    ? (0, figlet_1.default)(`S e r v e r  c o n n e c t i o n  e r r o r`, (err, data) => {
-        err ? logger_1.default.error('Figlet error') : logger_1.default.error(data);
-    })
-    : (0, figlet_1.default)(`S e r v e r  c o n n e c t e d \n P O R T :  ${config_1.config.port}`, (err, data) => {
+server.listen(config_1.config.port, () => {
+    (0, figlet_1.default)(`S e r v e r  c o n n e c t e d \n P O R T :  ${config_1.config.port}`, (err, data) => {
         err ? logger_1.default.error('Figlet error...') : logger_1.default.info(data);
-    }));
+    });
+});

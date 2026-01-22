@@ -32,6 +32,11 @@ const getPersonalizedRecommendations = async (req: Request, res: Response) => {
         // This ensures the UI is never empty
         if (recommendations.length === 0) {
             recommendations = await Plan.find({ userId: { $ne: user._id } })
+                .populate({
+                    path: 'hotels',
+                    populate: { path: 'rooms' }
+                })
+                .populate('flights')
                 .sort({ createdAt: -1 })
                 .limit(3);
         }

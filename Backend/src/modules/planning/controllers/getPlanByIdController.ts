@@ -15,7 +15,12 @@ export const getPlanById = async (
     try {
         const { id } = req.params;
 
-        const plan = await Plan.findById(id);
+        const plan = await Plan.findById(id)
+            .populate({
+                path: 'hotels',
+                populate: { path: 'rooms' }
+            })
+            .populate('flights');
 
         if (!plan) {
             return next(

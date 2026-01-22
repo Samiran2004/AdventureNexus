@@ -13,6 +13,9 @@ import { fetchWikipediaImage } from "../../../shared/services/wikipedia.service"
 import Plan from "../../../shared/database/models/planModel";
 import { IPlan } from "../../../shared/dtos/PlansDTO";
 import User from "../../../shared/database/models/userModel";
+import Hotel from "../../../shared/database/models/hotelModel";
+import Room from "../../../shared/database/models/roomModel";
+import Flight from "../../../shared/database/models/flightModel";
 import { cacheService, CACHE_CONFIG } from "../../../shared/utils/cacheService";
 
 const searchNewDestination = async (req: Request, res: Response) => {
@@ -130,6 +133,8 @@ const searchNewDestination = async (req: Request, res: Response) => {
         trip_highlights: aiResponse.trip_highlights,
         suggested_itinerary: aiResponse.suggested_itinerary,
         local_tips: aiResponse.local_tips,
+        hotel_options: aiResponse.hotel_options, // Temporary storage for processing
+        flight_options: aiResponse.flight_options, // Temporary storage for processing
         userId: null // Will attach user below if needed, or we can look it up here
       };
 
@@ -163,7 +168,66 @@ const searchNewDestination = async (req: Request, res: Response) => {
       }
 
       planData.userId = user._id;
-      const newPlan = new Plan(planData);
+
+      // --- SAVE HOTELS & ROOMS ---
+      const hotelRefs = [];
+      if (planData.hotel_options) {
+        for (const hotelData of (planData as any).hotel_options) {
+          // Save Rooms first
+          const roomRefs = [];
+          if (hotelData.rooms) {
+            for (const roomData of hotelData.rooms) {
+              const newRoom = new Room({
+                ...roomData,
+                capacity: roomData.capacity || { adults: 2, children: 0 }
+              });
+              const savedRoom = await newRoom.save();
+              roomRefs.push(savedRoom._id);
+            }
+          }
+
+          // Normalize Location
+          let location = hotelData.location;
+          if (typeof location === 'string') {
+            location = { address: location, city: planData.to, country: planData.to };
+          }
+
+          const newHotel = new Hotel({
+            ...hotelData,
+            location: {
+              address: location?.address || "Street Address",
+              city: location?.city || planData.to,
+              state: location?.state || "N/A",
+              country: location?.country || planData.to,
+              zipCode: location?.zipCode || "12345",
+              geo: { type: 'Point', coordinates: [0, 0] }
+            },
+            rooms: roomRefs
+          });
+          const savedHotel = await newHotel.save();
+          hotelRefs.push(savedHotel._id);
+        }
+      }
+
+      // --- SAVE FLIGHTS ---
+      const flightRefs = [];
+      if (planData.flight_options) {
+        for (const flightData of (planData as any).flight_options) {
+          const newFlight = new Flight({
+            ...flightData,
+            from: planData.from,
+            to: planData.to
+          });
+          const savedFlight = await newFlight.save();
+          flightRefs.push(savedFlight._id);
+        }
+      }
+
+      const newPlan = new Plan({
+        ...planData,
+        hotels: hotelRefs,
+        flights: flightRefs
+      });
       await newPlan.save();
       return newPlan;
     }));

@@ -376,6 +376,48 @@ const SearchPage = () => {
     }
   };
 
+  const handleBooking = async (type, item, subItem = null) => {
+    try {
+      const token = await getToken();
+      if (!token) {
+        toast.error("Please login to book");
+        return;
+      }
+
+      const bookingData = {
+        type,
+        referenceId: item._id,
+        roomId: subItem?._id,
+        totalPrice: subItem ? subItem.pricePerNight : item.price,
+        paxCount: Number(travelers),
+        bookingDetails: subItem ? { roomType: subItem.roomType } : { airline: item.airline, flight_number: item.flight_number },
+        travelDates: {
+          from: fromDate,
+          to: toDate
+        }
+      };
+
+      const loadingToast = toast.loading(`Processing ${type} booking...`);
+
+      const response = await axios.post(
+        `${VITE_BACKEND_URL}/api/v1/bookings`,
+        bookingData,
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+
+      toast.dismiss(loadingToast);
+
+      if (response.data.status === "Ok") {
+        toast.success(`${type} booked successfully!`);
+      }
+    } catch (error) {
+      console.error("Booking error:", error);
+      toast.error(error.response?.data?.message || "Failed to process booking");
+    }
+  };
+
 
 
   const activities = [
@@ -1260,7 +1302,7 @@ const SearchPage = () => {
                       fetchGalleryImages(selectedDestination.name);
                     }
                   }}>
-                    <TabsList className="grid w-full grid-cols-5 bg-muted/50 backdrop-blur-sm mb-8 p-1 rounded-xl shadow-lg">
+                    <TabsList className="grid w-full grid-cols-6 bg-muted/50 backdrop-blur-sm mb-8 p-1 rounded-xl shadow-lg">
                       <TabsTrigger value="highlights" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground cursor-pointer rounded-lg transition-all duration-300 data-[state=active]:shadow-lg font-medium text-xs sm:text-sm">
                         <Lightbulb className="mr-1 sm:mr-2" size={14} />
                         Highlights
@@ -1268,6 +1310,10 @@ const SearchPage = () => {
                       <TabsTrigger value="itinerary" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground cursor-pointer rounded-lg transition-all duration-300 data-[state=active]:shadow-lg font-medium text-xs sm:text-sm">
                         <CalendarDays className="mr-1 sm:mr-2" size={14} />
                         Itinerary
+                      </TabsTrigger>
+                      <TabsTrigger value="bookings" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground cursor-pointer rounded-lg transition-all duration-300 data-[state=active]:shadow-lg font-medium text-xs sm:text-sm">
+                        <Plane className="mr-1 sm:mr-2" size={14} />
+                        Bookings
                       </TabsTrigger>
                       <TabsTrigger value="budget" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground cursor-pointer rounded-lg transition-all duration-300 data-[state=active]:shadow-lg font-medium text-xs sm:text-sm">
                         <IndianRupee className="mr-1 sm:mr-2" size={14} />
@@ -1363,6 +1409,125 @@ const SearchPage = () => {
                       ) : (
                         <p className="text-muted-foreground">No itinerary available</p>
                       )}
+                    </TabsContent>
+
+                    {/* Bookings Tab */}
+                    <TabsContent value="bookings" className="space-y-8">
+                      {/* Flights Section */}
+                      <div className="space-y-4">
+                        <h3 className="text-xl font-bold flex items-center text-foreground font-outfit">
+                          <Plane className="mr-2 text-primary" size={24} />
+                          Available Flights
+                        </h3>
+                        {selectedDestination.flights?.length > 0 ? (
+                          selectedDestination.flights.map((flight, idx) => (
+                            <Card key={idx} className="bg-card border-border hover:border-primary/30 transition-all p-5 shadow-lg">
+                              <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+                                <div className="flex items-center gap-4">
+                                  <div className="bg-primary/10 p-3 rounded-full">
+                                    <Plane className="text-primary" size={28} />
+                                  </div>
+                                  <div>
+                                    <h4 className="font-bold text-lg">{flight.airline}</h4>
+                                    <p className="text-sm text-muted-foreground">{flight.flight_number} • {flight.class}</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-8">
+                                  <div className="text-center">
+                                    <p className="text-xl font-bold">{flight.departure_time}</p>
+                                    <p className="text-xs text-muted-foreground">{flight.departure_airport || from}</p>
+                                  </div>
+                                  <div className="relative flex flex-col items-center min-w-[100px]">
+                                    <p className="text-[10px] text-muted-foreground mb-1">{flight.duration}</p>
+                                    <div className="h-[2px] w-full bg-border relative">
+                                      <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary"></div>
+                                    </div>
+                                    <p className="text-[10px] text-muted-foreground mt-1">Non-stop</p>
+                                  </div>
+                                  <div className="text-center">
+                                    <p className="text-xl font-bold">{flight.arrival_time}</p>
+                                    <p className="text-xs text-muted-foreground">{flight.arrival_airport || selectedDestination.name}</p>
+                                  </div>
+                                </div>
+                                <div className="flex flex-col items-end gap-2 text-right">
+                                  <p className="text-2xl font-bold text-green-600 dark:text-green-400">₹{flight.price}</p>
+                                  <Button
+                                    className="bg-primary hover:bg-primary/90 text-primary-foreground min-w-[120px]"
+                                    onClick={() => handleBooking('Flight', flight)}
+                                  >
+                                    Book Flight
+                                  </Button>
+                                </div>
+                              </div>
+                            </Card>
+                          ))
+                        ) : (
+                          <div className="text-center py-8 bg-muted/20 rounded-xl border border-dashed">
+                            <p className="text-muted-foreground">No flights found for this plan.</p>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Hotels Section */}
+                      <div className="space-y-4">
+                        <h3 className="text-xl font-bold flex items-center text-foreground font-outfit">
+                          <Hotel className="mr-2 text-primary" size={24} />
+                          Recommended Stays
+                        </h3>
+                        <div className="grid md:grid-cols-2 gap-6">
+                          {selectedDestination.hotels?.length > 0 ? (
+                            selectedDestination.hotels.map((hotel, idx) => (
+                              <Card key={idx} className="bg-card border-border hover:border-primary/30 transition-all overflow-hidden flex flex-col shadow-lg">
+                                <div className="h-48 bg-muted relative">
+                                  <img
+                                    src={hotel.images?.[0]?.cloudinaryURL || "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800"}
+                                    className="w-full h-full object-cover"
+                                    alt={hotel.hotel_name}
+                                  />
+                                  <Badge className="absolute top-4 right-4 bg-background/80 backdrop-blur-sm text-foreground">
+                                    <Star className="mr-1 text-yellow-500 fill-yellow-500" size={14} />
+                                    {hotel.starRating}
+                                  </Badge>
+                                </div>
+                                <CardContent className="p-5 flex-1 flex flex-col">
+                                  <h4 className="font-bold text-lg mb-2">{hotel.hotel_name}</h4>
+                                  <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{hotel.description}</p>
+                                  <div className="mt-auto space-y-4">
+                                    <div className="flex flex-wrap gap-1">
+                                      {hotel.amenities?.slice(0, 3).map((a, i) => (
+                                        <Badge key={i} variant="secondary" className="text-[10px]">{a}</Badge>
+                                      ))}
+                                    </div>
+                                    <div className="border-t pt-4">
+                                      <h5 className="text-sm font-bold mb-3">Available Rooms:</h5>
+                                      {hotel.rooms?.map((room, ridx) => (
+                                        <div key={ridx} className="flex justify-between items-center mb-3 last:mb-0 bg-muted/30 p-2 rounded-lg">
+                                          <div>
+                                            <p className="text-xs font-bold">{room.roomType}</p>
+                                            <p className="text-[10px] text-muted-foreground">₹{room.pricePerNight} / night</p>
+                                          </div>
+                                          <Button
+                                            size="sm"
+                                            variant="secondary"
+                                            className="text-[10px] h-7 px-3 bg-primary/20 hover:bg-primary/30 text-primary"
+                                            onClick={() => handleBooking('Hotel', hotel, room)}
+                                          >
+                                            Book Room
+                                          </Button>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            ))
+                          ) : (
+                            <div className="col-span-full text-center py-8 bg-muted/20 rounded-xl border border-dashed">
+                              <p className="text-muted-foreground">No hotels found for this plan.</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </TabsContent>
 
 
