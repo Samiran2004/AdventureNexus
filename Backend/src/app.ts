@@ -26,6 +26,7 @@ import User from './shared/database/models/userModel';
 import errorHandler from './shared/middleware/globalErrorHandler'; // Global error handler
 import sanitizeInput from './shared/middleware/sanitization';
 import { clerkMiddleware } from '@clerk/express';
+import { checkMaintenance } from './shared/middleware/maintenanceMiddleware';
 
 // Controllers
 import cleckWebhook from './modules/auth/controllers/ClerkWebhook';
@@ -136,6 +137,9 @@ app.use(async (req: any, res: Response, next: NextFunction) => {
 
 // Clerk Webhook Route
 app.use('/api/clerk', cleckWebhook);
+
+// Maintenance Check (Phase 4 - Blocks public access if enabled)
+app.use(checkMaintenance);
 
 // User Management Routes
 app.use('/api/v1/users', userRoute);

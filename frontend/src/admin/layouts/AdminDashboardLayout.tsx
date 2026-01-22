@@ -12,7 +12,8 @@ import {
     X,
     Bell,
     Search,
-    Settings
+    Settings,
+    History
 } from 'lucide-react';
 
 const DashboardLayout: React.FC = () => {
@@ -29,6 +30,7 @@ const DashboardLayout: React.FC = () => {
         { to: '/admin/users', icon: Users, label: 'Community' },
         { to: '/admin/plans', icon: Map, label: 'Travel Plans' },
         { to: '/admin/reviews', icon: MessageSquare, label: 'Reviews' },
+        { to: '/admin/audit', icon: History, label: 'Audit Trails' },
         { to: '/admin/settings', icon: Settings, label: 'Settings' },
     ];
 

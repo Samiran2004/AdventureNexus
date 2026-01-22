@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { io, Socket } from 'socket.io-client';
+import { toast } from 'react-hot-toast';
 
 interface SocketContextType {
     socket: Socket | null;
@@ -11,9 +12,28 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const [socket, setSocket] = useState<Socket | null>(null);
 
     useEffect(() => {
-        // Assuming Backend runs on port 5000
+        // Assuming Backend runs on port 8000
         const newSocket = io(import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000');
+        console.log('[DEBUG] Admin socket connecting to:', import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000');
+
         setSocket(newSocket);
+
+        newSocket.on('connect', () => {
+            console.log('[DEBUG] Admin socket connected:', newSocket.id);
+        });
+
+        newSocket.on('system:announcement', (data) => {
+            console.log('[DEBUG] Announcement received on admin side:', data);
+            toast(data.message, {
+                icon: '⚡',
+                duration: 6000,
+                style: {
+                    background: '#111',
+                    color: '#fff',
+                    border: '1px solid #4f46e5',
+                }
+            });
+        });
 
         return () => {
             newSocket.close();

@@ -16,7 +16,7 @@ export const initSocket = (server: HttpServer): Server => {
     });
 
     io.on('connection', (socket) => {
-        // logger.info(`New client connected: ${socket.id}`);
+        console.log(`[DEBUG] New client connected: ${socket.id}`);
 
         socket.on('identity', (userId: string) => {
             if (!userId) return;

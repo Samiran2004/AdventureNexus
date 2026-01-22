@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'; // Hooks for state and side effects
-import { Toaster } from 'react-hot-toast'; // Component for toast notifications
+import { Toaster, toast } from 'react-hot-toast'; // Component for toast notifications
 import { Route, Routes } from 'react-router-dom'; // Components for defining routes
 import CircularText from './components/CircularText'; // Loading spinner component
 import ProtectedRoute from './components/ProtectedRoute'; // Component to protect private routes
@@ -41,6 +41,8 @@ import AdminDashboard from './admin/pages/Dashboard';
 import AdminUsers from './admin/pages/Users';
 import AdminPlans from './admin/pages/Plans';
 import AdminReviews from './admin/pages/Reviews';
+import AdminAuditLogs from './admin/pages/AuditLogs';
+import AdminSettings from './admin/pages/Settings';
 import AdminLogin from './admin/pages/Login';
 import AdminProtectedRoute from './admin/components/AdminProtectedRoute';
 import { Navigate } from 'react-router-dom';
@@ -66,8 +68,28 @@ const AppContent = () => {
     if (isSignedIn && user) {
       import('socket.io-client').then(({ io }) => {
         socket = io(import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000');
+        console.log('[DEBUG] User socket connecting to:', import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000');
+
         socket.on('connect', () => {
+          console.log('[DEBUG] User socket connected:', socket.id);
           socket.emit('identity', user.id);
+        });
+
+        socket.on('connect_error', (err) => {
+          console.error('[DEBUG] User socket connection error:', err);
+        });
+
+        socket.on('system:announcement', (data) => {
+          console.log('[DEBUG] Announcement received on user side:', data);
+          toast(data.message, {
+            icon: '⚡',
+            duration: 6000,
+            style: {
+              background: '#111',
+              color: '#fff',
+              border: '1px solid #4f46e5',
+            }
+          });
         });
       });
     }
@@ -152,6 +174,8 @@ const AppContent = () => {
                   <Route path="users" element={<AdminUsers />} />
                   <Route path="plans" element={<AdminPlans />} />
                   <Route path="reviews" element={<AdminReviews />} />
+                  <Route path="audit" element={<AdminAuditLogs />} />
+                  <Route path="settings" element={<AdminSettings />} />
                   <Route index element={<Navigate to="dashboard" replace />} />
                 </Route>
               </Route>
