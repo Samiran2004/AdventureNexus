@@ -8,6 +8,8 @@ import cookieParser from 'cookie-parser'; // Parse Cookie header
 import helmet from 'helmet'; // Security headers
 import path from 'path'; // File path utilities
 import figlet from 'figlet'; // ASCII art for console logs
+import http from 'http';
+import { Server } from 'socket.io';
 
 // Load env vars
 dotenv.config();
@@ -18,11 +20,13 @@ import connection from './shared/database/connection'; // DB connection function
 import redis from './shared/redis/client'; // Redis client
 import "./jobs/dailyTips.job"; // Cron job for daily tips
 import "./jobs/runner.job"; // Other background jobs
+import User from './shared/database/models/userModel';
 
 // Middlewares
 import errorHandler from './shared/middleware/globalErrorHandler'; // Global error handler
 import sanitizeInput from './shared/middleware/sanitization';
 import { clerkMiddleware } from '@clerk/express';
+import { checkMaintenance } from './shared/middleware/maintenanceMiddleware';
 
 // Controllers
 import cleckWebhook from './modules/auth/controllers/ClerkWebhook';
@@ -41,7 +45,13 @@ import swaggerUi from 'swagger-ui-express';
 import { swaggerOptions } from './shared/utils/swaggerOptions';
 import logger from './shared/utils/logger';
 
+import { initSocket } from './shared/socket/socket';
+
 const app = express();
+const server = http.createServer(app);
+
+// Initialize Socket.IO
+initSocket(server);
 
 // --- Database Connection ---
 (async () => {
@@ -109,11 +119,27 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 // Input Sanitization (Applies to all routes below)
 app.use(sanitizeInput);
 
+// Activity Tracking Middleware (Updates lastActive)
+app.use(async (req: any, res: Response, next: NextFunction) => {
+    try {
+        if (req.auth?.userId) {
+            // Fire and forget update (don't await to avoid latency)
+            User.updateOne({ clerkUserId: req.auth.userId }, { lastActive: new Date() }).exec();
+        }
+    } catch (error) {
+        // Ignore errors here to not block request
+        logger.warn('Failed to update user activity');
+    }
+    next();
+});
 
 // --- Routes Definition ---
 
 // Clerk Webhook Route
 app.use('/api/clerk', cleckWebhook);
+
+// Maintenance Check (Phase 4 - Blocks public access if enabled)
+app.use(checkMaintenance);
 
 // User Management Routes
 app.use('/api/v1/users', userRoute);
@@ -135,6 +161,10 @@ import triggerDailyTips from './modules/newsletter/controllers/triggerDailyTips.
 app.post('/api/v1/mail/subscribe', subscribeDailyMailController);
 app.post('/api/v1/mail/trigger-daily-tips', triggerDailyTips);
 
+// Admin Routes
+import adminRoutes from './modules/admin/routes/admin.routes';
+app.use('/api/v1/admin', adminRoutes);
+
 
 
 // --- Error Handling ---
@@ -147,22 +177,15 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 // Global Error Handler
 app.use(errorHandler);
 
-// Export app instance
+// Export app instance (optional, mainly server is used now)
 export default app;
 
 // --- Server Start ---
-app.listen(config.port, (err?: Error): void =>
-    err
-        ? figlet(
-            `S e r v e r  c o n n e c t i o n  e r r o r`,
-            (err: Error | null, data: string | undefined): void => {
-                err ? logger.error('Figlet error') : logger.error(data);
-            }
-        )
-        : figlet(
-            `S e r v e r  c o n n e c t e d \n P O R T :  ${config.port}`,
-            (err: Error | null, data: string | undefined): void => {
-                err ? logger.error('Figlet error...') : logger.info(data);
-            }
-        )
-);
+server.listen(config.port, () => {
+    figlet(
+        `S e r v e r  c o n n e c t e d \n P O R T :  ${config.port}`,
+        (err: Error | null, data: string | undefined): void => {
+            err ? logger.error('Figlet error...') : logger.info(data);
+        }
+    );
+});
