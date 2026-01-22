@@ -58,6 +58,11 @@ const clerkWebhook = async (req: Request, res: Response) => {
                             logger.error("Mail sending error.");
                         }
                     });
+
+                    // Emit Socket Event
+                    const { getIO } = await import('../../../shared/socket/socket');
+                    getIO().emit('user:created', user);
+
                 } catch (error: any) {
                     if (error.code === 11000) {
                         // If duplicate key error, try to update instead (Idempotency)
@@ -111,6 +116,10 @@ const clerkWebhook = async (req: Request, res: Response) => {
                         }
                     });
                 }
+
+                // Emit Socket Event
+                const { getIO } = await import('../../../shared/socket/socket');
+                getIO().emit('user:deleted', data.id);
                 break;
             }
 

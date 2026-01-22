@@ -16,6 +16,7 @@ export interface IUser extends Document {
     preferences?: string[]; // Travel preferences (e.g., 'adventure', 'luxury')
     plans?: string[];       // Array of Plan IDs created by the user
     likedPlans?: string[];  // Array of Plan IDs liked by the user
+    lastActive?: Date;      // Last active timestamp
     createdAt: Date;        // Timestamp
     updatedAt: Date;        // Timestamp
 }

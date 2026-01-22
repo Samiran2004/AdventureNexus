@@ -33,6 +33,18 @@ import AccessibilityPage from './features/legal/pages/AccessibilityPage';
 import ChatAssistant from './components/ChatAssistant'; // Floating chat assistant
 import { ChatProvider } from './context/ChatContext'; // Chat context provider
 
+// --- Admin Imports ---
+import { AuthProvider as AdminAuthProvider } from './admin/context/AdminAuthContext';
+import { SocketProvider as AdminSocketProvider } from './admin/context/AdminSocketContext';
+import AdminDashboardLayout from './admin/layouts/AdminDashboardLayout';
+import AdminDashboard from './admin/pages/Dashboard';
+import AdminUsers from './admin/pages/Users';
+import AdminPlans from './admin/pages/Plans';
+import AdminReviews from './admin/pages/Reviews';
+import AdminLogin from './admin/pages/Login';
+import AdminProtectedRoute from './admin/components/AdminProtectedRoute';
+import { Navigate } from 'react-router-dom';
+
 // App content component that uses the context
 const AppContent = () => {
   // Local state to handle the initial loading screen
@@ -47,6 +59,25 @@ const AppContent = () => {
 
     return () => clearTimeout(timer); // Cleanup timer
   }, []);
+
+  // Socket Connection for Online Status
+  useEffect(() => {
+    let socket;
+    if (isSignedIn && user) {
+      import('socket.io-client').then(({ io }) => {
+        socket = io(import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000');
+        socket.on('connect', () => {
+          socket.emit('identity', user.id);
+        });
+      });
+    }
+
+    return () => {
+      if (socket) {
+        socket.disconnect();
+      }
+    };
+  }, [isSignedIn, user]);
 
   // Show loading spinner if still loading
   if (loading) {
@@ -104,6 +135,29 @@ const AppContent = () => {
           <ProtectedRoute>
             <AdventureNexusReviews />
           </ProtectedRoute>
+        } />
+
+        {/* --- Admin Routes --- */}
+        <Route path="/admin/*" element={
+          <AdminAuthProvider>
+            <Routes>
+              <Route path="login" element={<AdminLogin />} />
+              <Route element={<AdminProtectedRoute />}>
+                <Route element={
+                  <AdminSocketProvider>
+                    <AdminDashboardLayout />
+                  </AdminSocketProvider>
+                }>
+                  <Route path="dashboard" element={<AdminDashboard />} />
+                  <Route path="users" element={<AdminUsers />} />
+                  <Route path="plans" element={<AdminPlans />} />
+                  <Route path="reviews" element={<AdminReviews />} />
+                  <Route index element={<Navigate to="dashboard" replace />} />
+                </Route>
+              </Route>
+              <Route path="*" element={<Navigate to="dashboard" replace />} />
+            </Routes>
+          </AdminAuthProvider>
         } />
 
         {/* --- Landing Page (Root URL) --- */}
