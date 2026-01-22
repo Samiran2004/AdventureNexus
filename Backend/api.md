@@ -1,153 +1,166 @@
 # 🚀 AdventureNexus API Documentation
 
 ## 📖 Introduction
-Welcome to the **AdventureNexus** API documentation. This API powers the AdventureNexus backend, providing services for user management, travel planning, hotel management, reviews, and email subscriptions.
+Welcome to the *AdventureNexus* API documentation. This API serves as the backbone for the AdventureNexus platform, handling everything from AI-powered travel planning and user profile management to community reviews and newsletter subscriptions.
 
 ## 🔗 Base URL
 All API requests should be made to:
-`http://<domain>/api/v1` (unless otherwise specified, e.g., Webhooks)
+`http://<domain>/api/v1`
 
 ## 🔐 Authentication
 Authentication is handled via **Clerk**.
+Most private routes require a valid **Bearer Token** from a Clerk session.
 - **Header:** `Authorization: Bearer <token>`
-- **Middleware:** `protect` (verifies the Clerk session token)
-
-> [!IMPORTANT]
-> - **User Profile endpoint (GET /users/profile)**: STRICTLY requires a valid Clerk token. The `protect` middleware attaches the user to `req.user`.
-> - **Search Plan endpoint (POST /plans/search/destination)**: Checks `req.auth().userId` manually. Requires a signed-in user.
-
-## ⚠️ Error Handling
-The API generally returns errors in the following format:
-```json
-{
-  "status": "Failed",
-  "message": "Error description"
-}
-```
+- **Middleware Mechanism:**
+  1. `clerkMiddleware()`: Validates the token signature.
+  2. `protect`: Middleware that extracts `clerkUserId`, verifies the user exists in our MongoDB, and attaches the user object to `req.user`.
 
 ---
 
 ## 1. 👤 User Routes
 **Base Path:** `/users`
 
-![User System Architecture](./Images/UserRouter%20HLD%20Post.png)
-
 ### Get User Profile
-Retrieves the profile details of the currently authenticated user.
+Retrieves the full profile details of the currently authenticated user.
 
 - **Endpoint:** `/profile`
-- **Method:** ![GET](https://img.shields.io/badge/GET-blue?style=for-the-badge&logo=appveyor)
-- **Auth Required:** ![Yes](https://img.shields.io/badge/Auth-Required-red?style=flat-square)
-- **Request Body:** None.
-- **Success Response:**
-  - **Code:** `200 OK`
-  - **Content:**
-    ```json
-    {
-       "status": "Success",
-       "userData": {
-           "fullname": "John Doe",
-           "firstname": "John",
-           "lastname": "Doe",
-           "email": "user@example.com",
-           "phonenumber": 1234567890,
-           "username": "johndoe",
-           "profilepicture": "https://...",
-           "preference": ["adventure"],
-           "country": "USA"
-       }
-    }
-    ```
-- **Error Responses:**
-  - `401 Unauthorized`: Token missing or invalid.
-  - `404 Not Found`: "User not found!" (if token is valid but user not in DB)
+- **Method:** `GET`
+- **Auth Required:** ✅ Yes
+
+#### How it works:
+1. Middleware extracts the `clerkUserId` from the token.
+2. Controller queries the `users` collection for a match.
+3. Returns a filtered object containing personal details and preferences.
+
+#### Response (`200 OK`):
+```json
+{
+   "status": "Success",
+   "userData": {
+       "fullname": "John Doe",
+       "firstname": "John",
+       "lastname": "Doe",
+       "email": "user@example.com",
+       "username": "johndoe",
+       "profilepicture": "https://img.clerk.com/...",
+       "preference": ["adventure", "budget"],
+       "country": "USA",
+       "gender": "male"
+   }
+}
+```
 
 ---
 
 ## 2. ✈️ Planning Routes
 **Base Path:** `/plans`
 
-![Planning System Architecture](./Images/PlanningRouter%20System%20Architecture.png)
+The core of AdventureNexus, powered by AI (Groq/Gemini) and external data sources (Wikipedia/Unsplash).
 
-### Search & Generate Destination Plan
-Generates a detailed travel plan using AI based on user input.
+### 1. Search & Generate Destination Plan
+Generates a detailed, AI-curated travel plan based on user inputs.
 
 - **Endpoint:** `/search/destination`
-- **Method:** ![POST](https://img.shields.io/badge/POST-success?style=for-the-badge&logo=appveyor)
-- **Auth Required:** ![Yes](https://img.shields.io/badge/Auth-Required-red?style=flat-square)
-- **Request Body:** (All fields below are **REQUIRED**)
-  ```json
-  {
-      "to": "Paris, France",        // Required
-      "from": "New York, USA",      // Required
-      "date": "2023-12-25",         // Required
-      "travelers": 2,               // Required
-      "budget": 2000,               // Required
-      "budget_range": "mid-range",  // Optional
-      "activities": ["museums"],    // Optional
-      "travel_style": "relaxed"     // Optional
-  }
-  ```
-- **Success Response:**
-  - **Code:** `200 OK`
-  - **Content:**
-    ```json
-    {
-      "status": "Ok",
-      "message": "Generated", // or "Plan already exists"
-      "data": { ... }
-    }
-    ```
+- **Method:** `POST`
+- **Auth Required:** ✅ Yes
 
-### Get Personalized Recommendations
-Get personalized travel recommendations based on user history and preferences.
+#### How it works:
+1. **Validation**: Checks if all required fields are present.
+2. **Caching**: Checks Redis for an identical search query (same dates, budget, travelers). Returns cached result if found.
+3. **AI Generation**: Sends a prompt to the Groq AI service to generate a JSON structure.
+4. **Data Enrichment**:
+   - Fetches a specialized image for the destination (Wikipedia first, then Unsplash).
+   - Calculates custom AI scores.
+5. **Storage**: Saves the plan to MongoDB linked to the user.
+6. **Caching**: Stores the result in Redis for 1 hour.
+
+#### Request Body:
+```json
+{
+    "to": "Kyoto, Japan",         // Target destination
+    "from": "London, UK",         // Starting point
+    "date": "2024-05-15",         // Travel date
+    "travelers": 2,               // Number of people
+    "budget": 3000,               // Total budget in USD
+    "budget_range": "Luxury",     // "Budget", "Mid-range", "Luxury"
+    "activities": ["Temples", "Food"],
+    "travel_style": "Cultural",
+    "duration": "7 days"          // Length of stay
+}
+```
+
+#### Response (`200 OK`):
+Returns an array of generated plan options.
+```json
+{
+  "status": "Ok",
+  "message": "Generated",
+  "data": [
+    {
+      "name": "Kyoto Cultural Immersion",
+      "ai_score": 95,
+      "cost": 2800,
+      "days": 7,
+      "destination_overview": "A historical journey...",
+      "budget_breakdown": { ... },
+      "suggested_itinerary": [ ... ],
+      "image_url": "https://..."
+    }
+  ]
+}
+```
+
+### 2. Get Personalized Recommendations
+Fetches recommended plans based on the user's past history and preferences (Content-Based Filtering).
 
 - **Endpoint:** `/recommendations`
-- **Method:** ![GET](https://img.shields.io/badge/GET-blue?style=for-the-badge&logo=appveyor)
-- **Auth Required:** ![Yes](https://img.shields.io/badge/Auth-Required-red?style=flat-square)
-- **Success Response:** `200 OK` with list of recommended plans.
+- **Method:** `GET`
+- **Auth Required:** ✅ Yes
 
-### Search Destination Images
-Fetch a batch of images for a destination (Proxy to Unsplash).
+#### How it works:
+1. Fetches the user's profile and past liked/generated plans.
+2. Uses **TF-IDF & Cosine Similarity** to compare user preferences against all available plans in the database.
+3. Returns the top matches. If the user is new, falls back to the latest popular plans.
+
+### 3. Search Destination Images
+Fetch high-quality images for a location name.
 
 - **Endpoint:** `/search/destination-images`
-- **Method:** ![POST](https://img.shields.io/badge/POST-success?style=for-the-badge&logo=appveyor)
-- **Request Body:** `{ "query": "Start City, Country" }`
-- **Success Response:** `200 OK` with list of image URLs.
+- **Method:** `POST`
+- **Request Body:** `{ "query": "Bali", "count": 12 }`
+- **Logic**: Proxies requests to Unsplash API and caches results for 24 hours to save API quota.
 
-### Get Public Plan
-Fetch a specific travel plan by ID (Public access).
+### 4. Get Public Plan
+Fetch details of a specific plan by its ID. Useful for shared links.
 
 - **Endpoint:** `/public/:id`
-- **Method:** ![GET](https://img.shields.io/badge/GET-blue?style=for-the-badge&logo=appveyor)
-- **Auth Required:** ![No](https://img.shields.io/badge/Auth-None-green?style=flat-square)
-- **Success Response:** `200 OK` with plan details.
+- **Method:** `GET`
+- **Auth Required:** ❌ No
 
 ---
 
 ## 3. ❤️ Liked Plans Routes
 **Base Path:** `/liked-plans`
 
-### Get All Liked Plans
-Retrieves all plans liked by the current user.
+Manages the user's "Wishlist" or saved trips.
 
+### Get All Liked Plans
 - **Endpoint:** `/`
-- **Method:** ![GET](https://img.shields.io/badge/GET-blue?style=for-the-badge&logo=appveyor)
-- **Auth Required:** ![Yes](https://img.shields.io/badge/Auth-Required-red?style=flat-square)
+- **Method:** `GET`
+- **Auth Required:** ✅ Yes
+- **Logic**: Returns the `likedPlans` array from the User document, populated with full Plan details.
 
 ### Like a Plan
-Adds a plan to user's liked list.
-
 - **Endpoint:** `/:planId`
-- **Method:** ![POST](https://img.shields.io/badge/POST-success?style=for-the-badge&logo=appveyor)
-- **Auth Required:** ![Yes](https://img.shields.io/badge/Auth-Required-red?style=flat-square)
+- **Method:** `POST`
+- **Auth Required:** ✅ Yes
+- **Logic**: push the `planId` to the user's `likedPlans` array (preventing duplicates).
 
 ### Unlike a Plan
-Removes a plan from user's liked list.
-
 - **Endpoint:** `/:planId`
-- **Method:** ![DELETE](https://img.shields.io/badge/DELETE-red?style=for-the-badge&logo=appveyor)
-- **Auth Required:** ![Yes](https://img.shields.io/badge/Auth-Required-red?style=flat-square)
+- **Method:** `DELETE`
+- **Auth Required:** ✅ Yes
+- **Logic**: Filters out the `planId` from the user's `likedPlans` array.
 
 ---
 
@@ -155,24 +168,33 @@ Removes a plan from user's liked list.
 **Base Path:** `/reviews`
 
 ### Get All Reviews
-Fetch all reviews for the platform.
+Fetch community reviews with powerful filtering and sorting.
 
 - **Endpoint:** `/`
-- **Method:** ![GET](https://img.shields.io/badge/GET-blue?style=for-the-badge&logo=appveyor)
+- **Method:** `GET`
+- **Auth Required:** ❌ No
+
+#### Query Parameters:
+| Param | Description | Example |
+|-------|-------------|---------|
+| `page` | Page number for pagination | `1` |
+| `limit` | Number of items per page | `6` |
+| `category` | Filter by trip type | `Family`, `Solo`, `Adventure` |
+| `rating` | Filter by minimum star rating | `4` (returns 4 stars and up) |
+| `sortBy` | Sort order | `newest`, `oldest`, `highest` (rating), `helpful` |
+| `search` | Search text in comments or location | `Paris` |
 
 ### Create Review
-Submit a new review.
-
 - **Endpoint:** `/`
-- **Method:** ![POST](https://img.shields.io/badge/POST-success?style=for-the-badge&logo=appveyor)
-- **Auth Required:** ![Yes](https://img.shields.io/badge/Auth-Required-red?style=flat-square)
-- **Request Body:** `{ "rating": 5, "comment": "Great app!" }`
+- **Method:** `POST`
+- **Auth Required:** ✅ Yes
+- **Body**: `{ "rating": 5, "comment": "Amazing!", "location": "Paris", "tripType": "Solo", ... }`
+- **Logic**: Creates a review and invalidates the reviews cache.
 
 ### Like a Review
-Like a specific review.
-
 - **Endpoint:** `/:id/like`
-- **Method:** ![PUT](https://img.shields.io/badge/PUT-orange?style=for-the-badge&logo=appveyor)
+- **Method:** `PUT`
+- **Logic**: Increments the `helpfulCount` of a review. Useful for ranking reviews.
 
 ---
 
@@ -180,12 +202,10 @@ Like a specific review.
 **Base Path:** `/hotels`
 
 ### Create/Seed Hotels
-Triggers a seeding script. This is a utility endpoint.
-
+**Utility Endpoint** to populate the database with initial hotel data.
 - **Endpoint:** `/create`
-- **Method:** ![GET](https://img.shields.io/badge/GET-blue?style=for-the-badge&logo=appveyor)
-- **Auth Required:** ![No](https://img.shields.io/badge/Auth-None-green?style=flat-square)
-- **Success Response:** `200 OK` (Logs to console)
+- **Method:** `GET`
+- **Logic**: Reads a JSON seed file and inserts documents into the `hotels` collection.
 
 ---
 
@@ -193,36 +213,16 @@ Triggers a seeding script. This is a utility endpoint.
 **Base Path:** `/mail`
 
 ### Subscribe to Daily Tips
-Subscribes an email address to receive daily travel tips.
-
 - **Endpoint:** `/subscribe`
-- **Method:** ![POST](https://img.shields.io/badge/POST-success?style=for-the-badge&logo=appveyor)
-- **Auth Required:** ![No](https://img.shields.io/badge/Auth-None-green?style=flat-square)
-- **Request Body:**
-  ```json
-  {
-      "userMail": "user@example.com" // REQUIRED
-  }
-  ```
-- **Success Response:**
-  - **Code:** `200 OK`
-  - **Content:** `{ "status": "Ok", "message": "Registered!" }`
+- **Method:** `POST`
+- **Body**: `{ "userMail": "email@example.com" }`
+- **Logic**:
+  1. Checks if email exists.
+  2. Saves to `SubscribeMail` collection.
+  3. Sends a Welcome Email immediately.
+  4. Generates and sends the **first daily tip** immediately using AI.
 
 ### Trigger Daily Tips
-Manually trigger the daily tips cron job.
-
 - **Endpoint:** `/trigger-daily-tips`
-- **Method:** ![POST](https://img.shields.io/badge/POST-success?style=for-the-badge&logo=appveyor)
-- **Auth Required:** ![No](https://img.shields.io/badge/Auth-None-green?style=flat-square) (Ideally should be protected)
-
----
-
-## 7. 🪝 Webhooks
-**Base Path:** `/api/clerk`
-
-### Clerk Webhook
-Receives events from Clerk.
-
-- **Endpoint:** `/`
-- **Method:** ![POST](https://img.shields.io/badge/POST-success?style=for-the-badge&logo=appveyor)
-- **Auth Required:** ![Signature](https://img.shields.io/badge/Auth-Signature-orange?style=flat-square)
+- **Method:** `POST`
+- **Logic**: Manually triggers the Cron Job that sends daily tips to ALL subscribers. Useful for testing or external schedulers.
