@@ -4,32 +4,32 @@ import { Route, Routes } from 'react-router-dom'; // Components for defining rou
 import CircularText from './components/CircularText'; // Loading spinner component
 import ProtectedRoute from './components/ProtectedRoute'; // Component to protect private routes
 import { AppProvider, useAppContext } from './context/appContext.jsx'; // Context for accessing global state
-import HowItWorks from './pages/HowItWorksPage'; // Page components
-import AdventureNexusLanding from './pages/LandingPage';
-import PageNotFound from './pages/PageNotFound';
-import AdventureNexusReviews from './pages/ReviewPage';
-import SearchPage from './pages/SearchPage';
-import AboutPage from './pages/AboutPage';
-import ProfilePage from './pages/ProfilePage';
-import DestinationsPage from './pages/DestinationPage';
-import IndividualDestinationPage from './pages/IndividualDestinationPage';
-import TripInspirationPage from './pages/TripInspirationPage';
-import SharedPlanPage from './pages/SharedPlanPage';
-import TripBuilderPage from './pages/TripBuilderPage';
-import AccommodationsPage from './pages/HotelPage';
-import MyTripsPage from './pages/MyTripPage';
-import FlightsPage from './pages/FlightsPage';
-import ExperiencesPage from './pages/ExperiencesPage';
-import ToursPage from './pages/ToursPage';
-import PressPage from './pages/PressPage';
-import PartnersPage from './pages/PartnersPage';
-import HelpPage from './pages/HelpPage';
-import SafetyPage from './pages/SafetyPage';
-import CommunityPage from './pages/CommunityPage';
-import TermsPage from './pages/TermsPage';
-import PrivacyPage from './pages/PrivacyPage';
-import CookiesPage from './pages/CookiesPage';
-import AccessibilityPage from './pages/AccessibilityPage';
+import HowItWorks from './features/marketing/pages/HowItWorksPage'; // Page components
+import AdventureNexusLanding from './features/marketing/pages/LandingPage';
+import PageNotFound from './features/shared/pages/PageNotFound';
+import AdventureNexusReviews from './features/reviews/pages/ReviewPage';
+import SearchPage from './features/planning/pages/SearchPage';
+import AboutPage from './features/marketing/pages/AboutPage';
+import ProfilePage from './features/user/pages/ProfilePage';
+import DestinationsPage from './features/planning/pages/DestinationPage';
+import IndividualDestinationPage from './features/planning/pages/IndividualDestinationPage';
+import TripInspirationPage from './features/planning/pages/TripInspirationPage';
+import SharedPlanPage from './features/planning/pages/SharedPlanPage';
+import TripBuilderPage from './features/planning/pages/TripBuilderPage';
+import AccommodationsPage from './features/planning/pages/HotelPage';
+import MyTripsPage from './features/user/pages/MyTripPage';
+import FlightsPage from './features/planning/pages/FlightsPage';
+import ExperiencesPage from './features/planning/pages/ExperiencesPage';
+import ToursPage from './features/planning/pages/ToursPage';
+import PressPage from './features/marketing/pages/PressPage';
+import PartnersPage from './features/marketing/pages/PartnersPage';
+import HelpPage from './features/support/pages/HelpPage';
+import SafetyPage from './features/legal/pages/SafetyPage';
+import CommunityPage from './features/marketing/pages/CommunityPage';
+import TermsPage from './features/legal/pages/TermsPage';
+import PrivacyPage from './features/legal/pages/PrivacyPage';
+import CookiesPage from './features/legal/pages/CookiesPage';
+import AccessibilityPage from './features/legal/pages/AccessibilityPage';
 import ChatAssistant from './components/ChatAssistant'; // Floating chat assistant
 import { ChatProvider } from './context/ChatContext'; // Chat context provider
 

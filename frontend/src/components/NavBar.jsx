@@ -5,27 +5,7 @@ import { Link } from 'react-router-dom'; // Navigation link
 import { useTheme } from 'next-themes';
 import AnimatedLogo from './AnimatedLogo';
 
-// Reusable Button component with variant support
-const Button = ({ children, variant = 'default', className = '', ...props }) => {
-    // Base styles common to all buttons
-    const baseClasses = 'px-4 py-2 rounded-lg font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-ring';
-
-    // Styles specific to different variants
-    const variantClasses = {
-        default: 'bg-primary text-primary-foreground hover:bg-primary/90', // Primary theme button
-        ghost: 'bg-transparent text-foreground hover:bg-accent hover:text-accent-foreground', // Transparent button with hover effect
-        outline: 'border border-input bg-background hover:bg-accent hover:text-accent-foreground'
-    };
-
-    return (
-        <button
-            className={`${baseClasses} ${variantClasses[variant]} ${className}`}
-            {...props}
-        >
-            {children}
-        </button>
-    );
-};
+import { Button } from '@/components/ui/button';
 
 function NavBar() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -208,7 +188,7 @@ function NavBar() {
                         >
                             <AnimatedLogo size={scrolled ? 36 : 42} />
                             <span className={`font-bold font-outfit tracking-tight transition-all duration-300 ${scrolled ? 'text-xl' : 'text-2xl drop-shadow-md'}`}>
-                                <span className={scrolled ? 'text-foreground' : 'text-foreground'}>Adventure</span>
+                                <span className="text-foreground">Adventure</span>
                                 <span className="text-primary">Nexus</span>
                             </span>
                         </Link>
