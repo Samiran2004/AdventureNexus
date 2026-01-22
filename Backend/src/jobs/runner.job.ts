@@ -1,5 +1,5 @@
 import cron from "node-cron";
-import logger from "../utils/logger";
+import logger from "../shared/utils/logger";
 
 /**
  * Simple Runner Job for testing Cron functionality.

@@ -1,10 +1,10 @@
 import cron from 'node-cron';
-import SubscribeMail from '../database/models/subscribeMail.model';
-import emailTemplates from '../utils/email-templates';
-import sendMail from '../services/mailService';
-import { groqGeneratedData } from '../services/groq.service';
-import { generateDailyTips } from '../utils/gemini/generateDailyTips.prompt';
-import logger from '../utils/logger';
+import SubscribeMail from '../shared/database/models/subscribeMail.model';
+import emailTemplates from '../shared/utils/email-templates';
+import sendMail from '../shared/services/mailService';
+import { groqGeneratedData } from '../shared/services/groq.service';
+import { generateDailyTips } from '../shared/utils/gemini/generateDailyTips.prompt';
+import logger from '../shared/utils/logger';
 
 /**
  * Cron Job to send Daily Travel Tips to subscribers.

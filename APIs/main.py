@@ -3,7 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
-from app.routes import user_routes, hotels_routes, planning_routes, subscription_routes, webhook_routes
+from app.modules.users.routes import user_routes
+from app.modules.hotels.routes import hotels_routes
+from app.modules.planning.routes import planning_routes
+from app.modules.newsletter.routes import subscription_routes
+from app.modules.auth.routes import webhook_routes
 from app.config.config import config
 from app.database.models.user_model import User
 from app.database.models.hotel_model import Hotel

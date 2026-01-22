@@ -13,33 +13,33 @@ import figlet from 'figlet'; // ASCII art for console logs
 dotenv.config();
 
 // Config & Database
-import { config } from './config/config'; // App configuration
-import connection from './database/connection'; // DB connection function
-import redis from './redis/client'; // Redis client
+import { config } from './shared/config/config'; // App configuration
+import connection from './shared/database/connection'; // DB connection function
+import redis from './shared/redis/client'; // Redis client
 import "./jobs/dailyTips.job"; // Cron job for daily tips
 import "./jobs/runner.job"; // Other background jobs
 
 // Middlewares
-import errorHandler from './middlewares/globalErrorHandler'; // Global error handler
-import sanitizeInput from './middlewares/sanitization';
+import errorHandler from './shared/middleware/globalErrorHandler'; // Global error handler
+import sanitizeInput from './shared/middleware/sanitization';
 import { clerkMiddleware } from '@clerk/express';
 
 // Controllers
-import cleckWebhook from './controllers/ClerkWebhook';
-import subscribeDailyMailController from './controllers/newsSubscriptionController/subscribeDailyMail.controller';
+import cleckWebhook from './modules/auth/controllers/ClerkWebhook';
+import subscribeDailyMailController from './modules/newsletter/controllers/subscribeDailyMail.controller';
 
 // Routes
-import userRoute from './routes/user.routes';
-import planningRoute from './routes/planning.routes';
-import hotelsRoute from './routes/hotels.routes';
-import reviewRoute from './routes/review.routes';
-import likedPlansRoute from './routes/likedPlans.routes';
+import userRoute from './modules/users/routes/user.routes';
+import planningRoute from './modules/planning/routes/planning.routes';
+import hotelsRoute from './modules/hotels/routes/hotels.routes';
+import reviewRoute from './modules/reviews/routes/review.routes';
+import likedPlansRoute from './modules/planning/routes/likedPlans.routes';
 
 // Swagger
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import { swaggerOptions } from './utils/swaggerOptions';
-import logger from './utils/logger';
+import { swaggerOptions } from './shared/utils/swaggerOptions';
+import logger from './shared/utils/logger';
 
 const app = express();
 
@@ -131,7 +131,7 @@ app.use('/api/v1/reviews', reviewRoute);
 app.use('/api/v1/liked-plans', likedPlansRoute);
 
 // Newsletter Subscription Route
-import triggerDailyTips from './controllers/newsSubscriptionController/triggerDailyTips.controller';
+import triggerDailyTips from './modules/newsletter/controllers/triggerDailyTips.controller';
 app.post('/api/v1/mail/subscribe', subscribeDailyMailController);
 app.post('/api/v1/mail/trigger-daily-tips', triggerDailyTips);
 
