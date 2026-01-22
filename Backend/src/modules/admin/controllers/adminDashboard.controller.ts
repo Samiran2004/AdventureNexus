@@ -6,6 +6,7 @@ import { StatusCodes } from 'http-status-codes';
 import logger from '../../../shared/utils/logger';
 import os from 'os';
 import AuditLog from '../../../shared/database/models/auditLogModel';
+import ApiLog from '../../../shared/database/models/apiLogModel';
 
 // --- Stats ---
 export const getDashboardStats = async (req: Request, res: Response) => {
@@ -27,7 +28,43 @@ export const getDashboardStats = async (req: Request, res: Response) => {
             }
         });
     } catch (error) {
-        logger.error('Error fetching admin stats:', error);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Server Error' });
+    }
+};
+
+export const getGrowthStats = async (req: Request, res: Response) => {
+    try {
+        const last7Days = Array.from({ length: 7 }, (_, i) => {
+            const date = new Date();
+            date.setDate(date.getDate() - i);
+            date.setHours(0, 0, 0, 0);
+            return date;
+        }).reverse();
+
+        const growthData = await Promise.all(last7Days.map(async (date) => {
+            const nextDay = new Date(date);
+            nextDay.setDate(nextDay.getDate() + 1);
+
+            const userCount = await User.countDocuments({
+                createdAt: { $gte: date, $lt: nextDay }
+            });
+            const planCount = await Plan.countDocuments({
+                createdAt: { $gte: date, $lt: nextDay }
+            });
+
+            return {
+                date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                users: userCount,
+                plans: planCount
+            };
+        }));
+
+        res.status(StatusCodes.OK).json({
+            status: 'Success',
+            data: growthData
+        });
+    } catch (error) {
+        logger.error('Error fetching growth stats:', error);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Server Error' });
     }
 };
@@ -167,7 +204,68 @@ export const getAuditLogs = async (req: Request, res: Response) => {
         const logs = await AuditLog.find().sort({ timestamp: -1 }).limit(100);
         res.status(StatusCodes.OK).json({ status: 'Success', data: logs });
     } catch (error) {
-        logger.error('Error fetching audit logs:', error);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Server Error' });
+    }
+};
+
+// --- API Analytics (Phase 5) ---
+export const getApiAnalytics = async (req: Request, res: Response) => {
+    try {
+        const last7Days = new Date();
+        last7Days.setDate(last7Days.getDate() - 7);
+
+        // 1. Status Distribution
+        const statusDistribution = await ApiLog.aggregate([
+            { $match: { timestamp: { $gte: last7Days } } },
+            {
+                $group: {
+                    _id: {
+                        $cond: [
+                            { $lt: ["$statusCode", 300] }, "Success",
+                            { $cond: [{ $lt: ["$statusCode", 400] }, "Redirect", "Error"] }
+                        ]
+                    },
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+
+        // 2. Latency Trends (Daily average)
+        const latencyTrends = await ApiLog.aggregate([
+            { $match: { timestamp: { $gte: last7Days } } },
+            {
+                $group: {
+                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$timestamp" } },
+                    avgDuration: { $avg: "$duration" },
+                    count: { $sum: 1 }
+                }
+            },
+            { $sort: { _id: 1 } }
+        ]);
+
+        // 3. Top Error Endpoints
+        const topErrors = await ApiLog.aggregate([
+            { $match: { timestamp: { $gte: last7Days }, statusCode: { $gte: 400 } } },
+            {
+                $group: {
+                    _id: { endpoint: "$endpoint", method: "$method" },
+                    errorCount: { $sum: 1 }
+                }
+            },
+            { $sort: { errorCount: -1 } },
+            { $limit: 10 }
+        ]);
+
+        res.status(StatusCodes.OK).json({
+            status: 'Success',
+            data: {
+                distribution: statusDistribution,
+                latency: latencyTrends.map(d => ({ date: d._id, value: Math.round(d.avgDuration) })),
+                errors: topErrors.map(e => ({ endpoint: e._id.endpoint, method: e._id.method, count: e.errorCount }))
+            }
+        });
+    } catch (error) {
+        logger.error('Error fetching API analytics:', error);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Server Error' });
     }
 };

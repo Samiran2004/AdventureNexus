@@ -43,6 +43,7 @@ import AdminPlans from './admin/pages/Plans';
 import AdminReviews from './admin/pages/Reviews';
 import AdminAuditLogs from './admin/pages/AuditLogs';
 import AdminSettings from './admin/pages/Settings';
+import AdminApiAnalytics from './admin/pages/ApiAnalytics';
 import AdminLogin from './admin/pages/Login';
 import AdminProtectedRoute from './admin/components/AdminProtectedRoute';
 import { Navigate } from 'react-router-dom';
@@ -176,6 +177,7 @@ const AppContent = () => {
                   <Route path="reviews" element={<AdminReviews />} />
                   <Route path="audit" element={<AdminAuditLogs />} />
                   <Route path="settings" element={<AdminSettings />} />
+                  <Route path="analytics" element={<AdminApiAnalytics />} />
                   <Route index element={<Navigate to="dashboard" replace />} />
                 </Route>
               </Route>
