@@ -21,6 +21,7 @@ import MyTripsPage from './features/user/pages/MyTripPage';
 import FlightsPage from './features/planning/pages/FlightsPage';
 import ExperiencesPage from './features/planning/pages/ExperiencesPage';
 import ToursPage from './features/planning/pages/ToursPage';
+import MyBookingsPage from './features/planning/pages/MyBookingsPage';
 import PressPage from './features/marketing/pages/PressPage';
 import PartnersPage from './features/marketing/pages/PartnersPage';
 import HelpPage from './features/support/pages/HelpPage';
@@ -144,6 +145,11 @@ const AppContent = () => {
         <Route path='/cookies' element={<CookiesPage />} />
         <Route path='/accessibility' element={<AccessibilityPage />} />
         <Route path='/shared-plan/:id' element={<SharedPlanPage />} />
+        <Route path='/my-bookings' element={
+          <ProtectedRoute>
+            <MyBookingsPage />
+          </ProtectedRoute>
+        } />
 
         {/* --- Dynamic Routes (Routes with parameters) --- */}
         <Route path="/destination/:country/:city" element={<IndividualDestinationPage />} />

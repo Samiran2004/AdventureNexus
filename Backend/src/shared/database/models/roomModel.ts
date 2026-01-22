@@ -3,10 +3,7 @@ import mongoose from "mongoose";
 const roomSchema = new mongoose.Schema({
     roomType: {
         type: String,
-        default: "Standard",
-        enum: [
-            "Standard", "Deluxe", "Suite", "Family", "Penthouse"
-        ]
+        default: "Standard"
     },
     description: {
         type: String
@@ -25,7 +22,7 @@ const roomSchema = new mongoose.Schema({
         }
     },
     amenities: [String],
-    bookDates:[
+    bookDates: [
         {
             from: {
                 type: String

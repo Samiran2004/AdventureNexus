@@ -17,8 +17,7 @@ const hotelSchema: IHotel = new Schema<IHotel>({
     },
     category: {
         type: String,
-        required: true,
-        enum: ["Hotel", "Resort", "Apartment", "Villa", "Hostel"] // Allowed categories
+        required: true
     },
     starRating: {
         type: Number,
@@ -29,24 +28,19 @@ const hotelSchema: IHotel = new Schema<IHotel>({
     // Detailed Location Data
     location: {
         address: {
-            type: String,
-            required: true
+            type: String
         },
         city: {
-            type: String,
-            required: true
+            type: String
         },
         state: {
-            type: String,
-            required: true
+            type: String
         },
         country: {
-            type: String,
-            required: true
+            type: String
         },
         zipCode: {
-            type: String,
-            required: true
+            type: String
         },
         // GeoJSON for spatial queries
         geo: {

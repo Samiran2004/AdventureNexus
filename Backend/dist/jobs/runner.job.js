@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const node_cron_1 = __importDefault(require("node-cron"));
-const logger_1 = __importDefault(require("../utils/logger"));
+const logger_1 = __importDefault(require("../shared/utils/logger"));
 const runnerCronJob = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         logger_1.default.info(`Runner is running...`);

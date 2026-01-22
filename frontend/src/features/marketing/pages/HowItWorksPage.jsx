@@ -22,6 +22,205 @@ import {
   Zap
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { useScroll, useTransform, useSpring } from 'framer-motion';
+
+const ProNexus3D = () => {
+  return (
+    <div className="relative w-full h-full flex items-center justify-center py-24 bg-gray-950 overflow-hidden">
+      {/* Deep Space Background */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(67,56,202,0.2),transparent_60%)]"></div>
+
+      {/* Holographic Grid Floor */}
+      <div className="absolute inset-0 [perspective:1000px] pointer-events-none">
+        <div
+          className="absolute bottom-0 w-full h-full bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [transform:rotateX(75deg)_translateZ(-200px)] opacity-20"
+        />
+      </div>
+
+      <div className="relative w-80 h-80 [perspective:1200px] [transform-style:preserve-3d]">
+        {/* The Core Nexus Globe (Holographic) */}
+        <div className="absolute inset-0 m-auto w-48 h-48 rounded-full border border-indigo-500/30 [transform-style:preserve-3d] animate-slow-spin">
+          <div className="absolute inset-0 border border-indigo-400/20 rounded-full [transform:rotateY(90deg)]"></div>
+          <div className="absolute inset-0 border border-indigo-400/20 rounded-full [transform:rotateX(90deg)]"></div>
+
+          {/* Internal Glow */}
+          <div className="absolute inset-0 m-auto w-24 h-24 bg-indigo-500/20 rounded-full blur-[40px] animate-pulse"></div>
+        </div>
+
+        {/* Dynamic 3D Flight Paths */}
+        {[0, 120, 240].map((rotation, i) => (
+          <div
+            key={i}
+            className="absolute inset-0 [transform-style:preserve-3d]"
+            style={{ transform: `rotateY(${rotation}deg)` }}
+          >
+            <div className="absolute inset-0 border border-emerald-500/10 rounded-full [transform:rotateX(80deg)]">
+              {/* The "Pro" Plane - CSS/SVG Hybrid */}
+              <div
+                className="absolute top-0 left-1/2 -translate-x-1/2 animate-flight-pro"
+                style={{ animationDelay: `${i * -4}s` }}
+              >
+                <div className="relative [transform-style:preserve-3d]">
+                  {/* Plane Icon */}
+                  <div className="text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.8)] [transform:rotateX(-90deg)_scale(1.5)]">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
+                    </svg>
+                  </div>
+                  {/* Engine Flare */}
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 w-1 h-8 bg-gradient-to-t from-transparent via-cyan-500/40 to-cyan-400 blur-[2px]"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {/* AI Scanning Beam */}
+        <div className="absolute inset-0 [transform-style:preserve-3d] animate-scan-sweep">
+          <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-indigo-400 to-transparent shadow-[0_0_20px_rgba(99,102,241,0.8)]"></div>
+          <div className="absolute top-0 left-0 w-full h-48 bg-gradient-to-b from-indigo-500/10 to-transparent [transform:rotateX(10deg)]"></div>
+        </div>
+
+        {/* Global Travel Data Points */}
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div
+            key={`hub-${i}`}
+            className="absolute inset-0 [transform-style:preserve-3d]"
+            style={{ transform: `rotateY(${i * 45}deg) rotateX(${30 + i * 5}deg)` }}
+          >
+            <div className="absolute top-0 left-1/2 w-3 h-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-sm flex items-center justify-center animate-hub-flicker">
+              <div className="w-1 h-1 bg-indigo-400 rounded-full shadow-[0_0_8px_rgba(129,140,248,1)]"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <style>{`
+        @keyframes slow-spin {
+          from { transform: rotateY(0deg) rotateX(15deg); }
+          to { transform: rotateY(360deg) rotateX(15deg); }
+        }
+        
+        @keyframes flight-pro {
+          0% { transform: translateX(-50%) rotate(0deg) translate(120px) rotate(0deg); }
+          100% { transform: translateX(-50%) rotate(360deg) translate(120px) rotate(-360deg); }
+        }
+        
+        @keyframes scan-sweep {
+          0%, 100% { transform: translateY(-50%) rotateX(-20deg); opacity: 0; }
+          40%, 60% { opacity: 1; }
+          50% { transform: translateY(150%) rotateX(20deg); }
+        }
+        
+        @keyframes hub-flicker {
+          0%, 100% { opacity: 0.3; transform: scale(0.9); }
+          50% { opacity: 1; transform: scale(1.1); }
+        }
+      `}</style>
+    </div>
+  );
+};
+
+const VideoShowcase = () => {
+  const containerRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+
+  const rotateX = useTransform(scrollYProgress, [0, 0.5, 1], [15, 0, -15]);
+  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.8, 1, 0.8]);
+  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
+
+  const springRotateX = useSpring(rotateX, { stiffness: 100, damping: 30 });
+  const springScale = useSpring(scale, { stiffness: 100, damping: 30 });
+
+  return (
+    <section ref={containerRef} className="py-32 px-4 relative overflow-hidden bg-background">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(99,102,241,0.1),transparent_70%)] opacity-50"></div>
+
+      <motion.div
+        style={{
+          perspective: "1000px",
+          opacity
+        }}
+        className="max-w-6xl mx-auto text-center"
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-16 space-y-4"
+        >
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-black uppercase tracking-widest">
+            <Zap className="w-3 h-3" />
+            Visual Intelligence
+          </div>
+          <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter">
+            Experience the Future <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-emerald-400">of Travel Planning</span>
+          </h2>
+        </motion.div>
+
+        <motion.div
+          style={{
+            rotateX: springRotateX,
+            scale: springScale,
+            transformStyle: "preserve-3d"
+          }}
+          className="relative group mt-12"
+        >
+          {/* Decorative Elements */}
+          <div className="absolute -inset-4 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+
+          <div className="relative aspect-video rounded-3xl overflow-hidden border border-white/10 bg-gray-900 shadow-2xl">
+            {/* Pure CSS 3D Visual Centerpiece */}
+            <ProNexus3D />
+
+            {/* Custom 3D Background Overlay */}
+            <div
+              className="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-30"
+              style={{ backgroundImage: "url('/home/zephyrus/.gemini/antigravity/brain/89310916-f9c4-4ed0-b191-8abe1fbe94cb/futuristic_3d_travel_showcase_1769093668054.png')" }}
+            ></div>
+            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-gray-950/80 via-transparent to-transparent"></div>
+
+            <div className="absolute bottom-8 left-8 right-8 flex items-end justify-between">
+              <div className="text-left space-y-2">
+                <div className="text-indigo-400 font-mono text-xs uppercase tracking-[0.3em]">Neural Engine v2.0</div>
+                <div className="text-white text-xl font-bold">Scanning Global Destinations...</div>
+              </div>
+              <div className="flex gap-2">
+                <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
+                <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse delay-75"></div>
+                <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse delay-150"></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Floater Icons */}
+          <motion.div
+            initial={{ x: 0, y: 0 }}
+            animate={{ y: [0, -20, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute -top-10 -right-10 p-6 bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl hidden md:block"
+          >
+            <Bot className="w-8 h-8 text-emerald-400" />
+          </motion.div>
+
+          <motion.div
+            initial={{ x: 0, y: 0 }}
+            animate={{ y: [0, 20, 0] }}
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            className="absolute -bottom-10 -left-10 p-6 bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl hidden md:block"
+          >
+            <Sparkles className="w-8 h-8 text-indigo-400" />
+          </motion.div>
+        </motion.div>
+      </motion.div>
+    </section>
+  );
+};
 
 const HowItWorks = () => {
   const [activeStep, setActiveStep] = useState(0);
@@ -216,6 +415,8 @@ const HowItWorks = () => {
           </motion.div>
         </div>
       </section>
+
+      <VideoShowcase />
 
       {/* Steps Section */}
       <section className="py-20 px-4 bg-muted/20">

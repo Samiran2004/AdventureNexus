@@ -68,4 +68,12 @@ export interface IPlan extends Document {
     }[];
 
     local_tips: string[];
+
+    // Integrated Booking Data (References)
+    hotels?: Schema.Types.ObjectId[]; // Ref to Hotel
+    flights?: Schema.Types.ObjectId[]; // Ref to Flight
+
+    // raw AI response data for processing
+    hotel_options?: any[];
+    flight_options?: any[];
 }

@@ -76,6 +76,8 @@ const planSchema = new Schema<IPlan>({
         }
     }],
     local_tips: [String],
+    hotels: [{ type: Schema.Types.ObjectId, ref: 'Hotel' }],
+    flights: [{ type: Schema.Types.ObjectId, ref: 'Flight' }],
 }, { timestamps: true });
 
 
