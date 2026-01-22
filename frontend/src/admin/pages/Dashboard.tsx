@@ -16,6 +16,12 @@ interface Stats {
     recentPlans: any[];
 }
 
+interface GrowthPoint {
+    date: string;
+    users: number;
+    plans: number;
+}
+
 interface Health {
     cpuLoad: number;
     memory: {
@@ -40,6 +46,7 @@ interface ActivityEvent {
 const Dashboard: React.FC = () => {
     const [stats, setStats] = useState<Stats | null>(null);
     const [health, setHealth] = useState<Health | null>(null);
+    const [growth, setGrowth] = useState<GrowthPoint[]>([]);
     const [activities, setActivities] = useState<ActivityEvent[]>([]);
     const [loading, setLoading] = useState(true);
     const [broadcastMsg, setBroadcastMsg] = useState('');
@@ -49,12 +56,14 @@ const Dashboard: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [statsRes, healthRes] = await Promise.all([
+                const [statsRes, healthRes, growthRes] = await Promise.all([
                     api.get('/stats'),
-                    api.get('/health')
+                    api.get('/health'),
+                    api.get('/growth')
                 ]);
                 setStats(statsRes.data.data);
                 setHealth(healthRes.data.data);
+                setGrowth(growthRes.data.data);
             } catch (error) {
                 console.error('Failed to fetch data', error);
             } finally {
@@ -252,7 +261,7 @@ const Dashboard: React.FC = () => {
                                     className={`p-4 rounded-2xl bg-white/5 border border-white/5 flex items-start gap-4 hover:bg-white/10 transition-colors`}
                                 >
                                     <div className={`mt-1 h-2 w-2 rounded-full shrink-0 ${ev.severity === 'critical' ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' :
-                                            ev.severity === 'warning' ? 'bg-orange-500' : 'bg-blue-500'
+                                        ev.severity === 'warning' ? 'bg-orange-500' : 'bg-blue-500'
                                         }`}></div>
                                     <div className="flex-1 space-y-1">
                                         <p className="text-xs text-gray-300 font-bold tracking-wide">{ev.message}</p>
@@ -270,6 +279,125 @@ const Dashboard: React.FC = () => {
                                 <p className="text-xs uppercase font-black tracking-[0.2em]">Awaiting system signals...</p>
                             </div>
                         )}
+                    </div>
+                </motion.div>
+            </div>
+
+            {/* INTELLIGENCE GRAPHS (NEW) */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                {/* System Growth - AreaChart */}
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="bg-gray-800/10 backdrop-blur-md p-8 rounded-[2.5rem] border border-white/5 shadow-2xl"
+                >
+                    <div className="flex items-center justify-between mb-8">
+                        <div className="space-y-1">
+                            <h3 className="text-xl font-bold text-white flex items-center gap-3">
+                                <span className="p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/20">
+                                    <TrendingUp className="w-5 h-5 text-indigo-400" />
+                                </span>
+                                System Growth
+                            </h3>
+                            <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest pl-11">User Acquisition (Last 7 Days)</p>
+                        </div>
+                    </div>
+
+                    <div className="h-[250px] w-full mt-4">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={growth}>
+                                <defs>
+                                    <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
+                                        <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
+                                <XAxis
+                                    dataKey="date"
+                                    stroke="#555"
+                                    fontSize={10}
+                                    tickLine={false}
+                                    axisLine={false}
+                                    tick={{ fill: '#555' }}
+                                />
+                                <YAxis
+                                    stroke="#555"
+                                    fontSize={10}
+                                    tickLine={false}
+                                    axisLine={false}
+                                    tickFormatter={(v) => `${v}`}
+                                    tick={{ fill: '#555' }}
+                                />
+                                <Tooltip
+                                    contentStyle={{ background: '#0a0a0a', border: '1px solid #333', borderRadius: '12px' }}
+                                    itemStyle={{ color: '#fff', fontSize: '12px' }}
+                                />
+                                <Area
+                                    type="monotone"
+                                    dataKey="users"
+                                    stroke="#6366f1"
+                                    strokeWidth={3}
+                                    fillOpacity={1}
+                                    fill="url(#colorUsers)"
+                                />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                    </div>
+                </motion.div>
+
+                {/* Operational Volume - BarChart */}
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="bg-gray-800/10 backdrop-blur-md p-8 rounded-[2.5rem] border border-white/5 shadow-2xl"
+                >
+                    <div className="flex items-center justify-between mb-8">
+                        <div className="space-y-1">
+                            <h3 className="text-xl font-bold text-white flex items-center gap-3">
+                                <span className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                                    <Activity className="w-5 h-5 text-emerald-400" />
+                                </span>
+                                Operational Volume
+                            </h3>
+                            <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest pl-11">Expeditions Created (Last 7 Days)</p>
+                        </div>
+                    </div>
+
+                    <div className="h-[250px] w-full mt-4">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={growth}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
+                                <XAxis
+                                    dataKey="date"
+                                    stroke="#555"
+                                    fontSize={10}
+                                    tickLine={false}
+                                    axisLine={false}
+                                    tick={{ fill: '#555' }}
+                                />
+                                <YAxis
+                                    stroke="#555"
+                                    fontSize={10}
+                                    tickLine={false}
+                                    axisLine={false}
+                                    tick={{ fill: '#555' }}
+                                />
+                                <Tooltip
+                                    cursor={{ fill: 'rgba(255,255,255,0.02)' }}
+                                    contentStyle={{ background: '#0a0a0a', border: '1px solid #333', borderRadius: '12px' }}
+                                    itemStyle={{ color: '#fff', fontSize: '12px' }}
+                                />
+                                <Bar
+                                    dataKey="plans"
+                                    fill="#10b981"
+                                    radius={[6, 6, 0, 0]}
+                                    barSize={40}
+                                />
+                            </BarChart>
+                        </ResponsiveContainer>
                     </div>
                 </motion.div>
             </div>

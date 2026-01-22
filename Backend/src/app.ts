@@ -27,6 +27,7 @@ import errorHandler from './shared/middleware/globalErrorHandler'; // Global err
 import sanitizeInput from './shared/middleware/sanitization';
 import { clerkMiddleware } from '@clerk/express';
 import { checkMaintenance } from './shared/middleware/maintenanceMiddleware';
+import { telemetryMiddleware } from './shared/middleware/telemetryMiddleware';
 
 // Controllers
 import cleckWebhook from './modules/auth/controllers/ClerkWebhook';
@@ -108,6 +109,9 @@ const morganMiddleware = morgan(
     }
 );
 app.use(morganMiddleware);
+
+// --- Telemetry & Analytics ---
+app.use(telemetryMiddleware);
 
 // Authentication
 app.use(clerkMiddleware());

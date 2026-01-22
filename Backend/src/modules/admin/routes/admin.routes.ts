@@ -9,7 +9,9 @@ import {
     getAllReviews,
     deleteReview,
     getSystemHealth,
-    getAuditLogs
+    getAuditLogs,
+    getGrowthStats,
+    getApiAnalytics
 } from '../controllers/adminDashboard.controller';
 import { broadcastMessage } from '../controllers/adminCommunication.controller';
 import {
@@ -41,6 +43,8 @@ router.delete('/reviews/:id', deleteReview);
 
 // Phase 4 Routes
 router.get('/health', getSystemHealth);
+router.get('/growth', getGrowthStats);
+router.get('/analytics', getApiAnalytics);
 router.get('/audit-logs', getAuditLogs);
 router.post('/broadcast', broadcastMessage);
 
