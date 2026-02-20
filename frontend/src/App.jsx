@@ -27,6 +27,9 @@ import PartnersPage from './features/marketing/pages/PartnersPage';
 import HelpPage from './features/support/pages/HelpPage';
 import SafetyPage from './features/legal/pages/SafetyPage';
 import CommunityPage from './features/marketing/pages/CommunityPage';
+import PublicProfilePage from './features/user/pages/PublicProfilePage';
+import TravelStoriesPage from './features/marketing/pages/TravelStoriesPage';
+import SocialHub from './components/SocialHub';
 import TermsPage from './features/legal/pages/TermsPage';
 import PrivacyPage from './features/legal/pages/PrivacyPage';
 import CookiesPage from './features/legal/pages/CookiesPage';
@@ -140,6 +143,8 @@ const AppContent = () => {
         <Route path='/help' element={<HelpPage />} />
         <Route path='/safety' element={<SafetyPage />} />
         <Route path='/community' element={<CommunityPage />} />
+        <Route path='/stories' element={<TravelStoriesPage />} />
+        <Route path='/user/profile/:clerkUserId' element={<PublicProfilePage />} />
         <Route path='/terms' element={<TermsPage />} />
         <Route path='/privacy' element={<PrivacyPage />} />
         <Route path='/cookies' element={<CookiesPage />} />
@@ -201,6 +206,9 @@ const AppContent = () => {
 
       {/* Floating Chat Assistant - Available on all pages */}
       <ChatAssistant />
+
+      {/* Global Social Hub for Notifications & Messaging */}
+      <SocialHub />
     </>
   );
 };

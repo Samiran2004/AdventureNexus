@@ -113,4 +113,35 @@ export const protect = async (req: Request, res: Response, next: NextFunction): 
     }
 };
 
+/**
+ * Middleware that optionally extracts user ID but doesn't block the request.
+ * Useful for public routes that change behavior if a user is logged in.
+ */
+export const optionalProtect = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        if (!req.headers?.authorization || !req.headers.authorization.startsWith("Bearer ")) {
+            return next();
+        }
+
+        const token = req.headers.authorization.split(" ")[1];
+        const decoded = JWT.decode(token) as ClerkJWTPayload;
+
+        if (decoded && decoded.sub) {
+            const user: IUser | null = await User.findOne({ clerkUserId: decoded.sub });
+            if (user) {
+                req.user = {
+                    _id: user._id.toString(),
+                    clerkUserId: user.clerkUserId,
+                    role: user.role || "user",
+                    email: user.email,
+                    username: user.username,
+                };
+            }
+        }
+    } catch (error) {
+        logger.warn("⚠️ Optional Auth failed, continuing as guest");
+    }
+    next();
+};
+
 export default protect;

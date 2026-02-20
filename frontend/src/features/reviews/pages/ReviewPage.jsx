@@ -40,7 +40,7 @@ import {
 // GSAP Imports
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/mvpblocks/footer-newsletter';
 import toast from 'react-hot-toast';
@@ -50,6 +50,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 // AdventureNexusReviews component displays user reviews and testimonials from travelers
 const AdventureNexusReviews = () => {
+    const navigate = useNavigate();
     const { user } = useUser();
     const { getToken } = useAuth();
     const [reviews, setReviews] = useState([]);
@@ -166,7 +167,8 @@ const AdventureNexusReviews = () => {
                 ...newReview,
                 userName: user.fullName || user.username || 'Traveler',
                 userAvatar: user.imageUrl,
-                userId: user.id
+                userId: user.id, // Clerk ID stored as string in this model
+                clerkUserId: user.id
             };
 
             const token = await getToken();
@@ -481,7 +483,10 @@ const AdventureNexusReviews = () => {
                                             {/* User Info */}
                                             <div className="flex-shrink-0 flex md:flex-col items-center md:items-start gap-4 md:w-48">
                                                 <div className="relative">
-                                                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 p-[2px] shadow-lg shadow-indigo-500/20">
+                                                    <div
+                                                        className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 p-[2px] shadow-lg shadow-indigo-500/20 cursor-pointer overflow-hidden transform hover:scale-105 transition-transform"
+                                                        onClick={() => navigate(`/user/profile/${review.clerkUserId || review.userId}`)}
+                                                    >
                                                         <div className="w-full h-full rounded-full bg-black overflow-hidden relative">
                                                             {review.userAvatar ? (
                                                                 <img src={review.userAvatar} alt={review.userName} className="w-full h-full object-cover" />
@@ -499,7 +504,12 @@ const AdventureNexusReviews = () => {
                                                     )}
                                                 </div>
                                                 <div className="text-center md:text-left">
-                                                    <h3 className="font-semibold text-white text-lg tracking-tight">{review.userName}</h3>
+                                                    <h3
+                                                        className="font-semibold text-white text-lg tracking-tight cursor-pointer hover:text-primary transition-colors"
+                                                        onClick={() => navigate(`/user/profile/${review.clerkUserId || review.userId}`)}
+                                                    >
+                                                        {review.userName}
+                                                    </h3>
                                                     <div className="flex items-center justify-center md:justify-start text-xs text-zinc-400 mt-1 font-medium">
                                                         <span>{new Date(review.createdAt).toLocaleDateString()}</span>
                                                     </div>

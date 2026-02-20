@@ -15,7 +15,9 @@ export interface IUser extends Document {
     country?: string;     // User's country
     preferences?: string[]; // Travel preferences (e.g., 'adventure', 'luxury')
     plans?: string[];       // Array of Plan IDs created by the user
-    likedPlans?: string[];  // Array of Plan IDs liked by the user
+    likedPlans?: string[];  // Array of Plan IDs liked by the user (IDs)
+    followers?: string[];   // Array of clerkUserIds following this user
+    following?: string[];   // Array of clerkUserIds this user is following
     lastActive?: Date;      // Last active timestamp
     createdAt: Date;        // Timestamp
     updatedAt: Date;        // Timestamp
@@ -80,12 +82,9 @@ const userSchema = new Schema<IUser>(
                 ref: 'Plan',
             },
         ],
-        likedPlans: [
-            {
-                type: mongoose.Schema.Types.ObjectId, // Reference to 'Plan' model
-                ref: 'Plan',
-            },
-        ],
+        likedPlans: [{ type: String }],
+        followers: [{ type: String, ref: 'User' }], // Clerk User IDs
+        following: [{ type: String, ref: 'User' }], // Clerk User IDs
     },
     {
         timestamps: true, // Automatically manage createdAt and updatedAt
