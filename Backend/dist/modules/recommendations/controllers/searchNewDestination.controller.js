@@ -136,12 +136,23 @@ const searchNewDestination = (req, res) => __awaiter(void 0, void 0, void 0, fun
                     const roomRefs = [];
                     if (hotelData.rooms) {
                         for (const roomData of hotelData.rooms) {
-                            const newRoom = new roomModel_1.default(roomData);
+                            const newRoom = new roomModel_1.default(Object.assign(Object.assign({}, roomData), { capacity: roomData.capacity || { adults: 2, children: 0 } }));
                             const savedRoom = yield newRoom.save();
                             roomRefs.push(savedRoom._id);
                         }
                     }
-                    const newHotel = new hotelModel_1.default(Object.assign(Object.assign({}, hotelData), { location: Object.assign(Object.assign({}, hotelData.location), { geo: { type: 'Point', coordinates: [0, 0] } }), rooms: roomRefs }));
+                    let location = hotelData.location;
+                    if (typeof location === 'string') {
+                        location = { address: location, city: planData.to, country: planData.to };
+                    }
+                    const newHotel = new hotelModel_1.default(Object.assign(Object.assign({}, hotelData), { location: {
+                            address: (location === null || location === void 0 ? void 0 : location.address) || "Street Address",
+                            city: (location === null || location === void 0 ? void 0 : location.city) || planData.to,
+                            state: (location === null || location === void 0 ? void 0 : location.state) || "N/A",
+                            country: (location === null || location === void 0 ? void 0 : location.country) || planData.to,
+                            zipCode: (location === null || location === void 0 ? void 0 : location.zipCode) || "12345",
+                            geo: { type: 'Point', coordinates: [0, 0] }
+                        }, rooms: roomRefs }));
                     const savedHotel = yield newHotel.save();
                     hotelRefs.push(savedHotel._id);
                 }

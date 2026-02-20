@@ -45,8 +45,7 @@ const hotelSchema = new mongoose_1.Schema({
     },
     category: {
         type: String,
-        required: true,
-        enum: ["Hotel", "Resort", "Apartment", "Villa", "Hostel"]
+        required: true
     },
     starRating: {
         type: Number,
@@ -56,24 +55,19 @@ const hotelSchema = new mongoose_1.Schema({
     },
     location: {
         address: {
-            type: String,
-            required: true
+            type: String
         },
         city: {
-            type: String,
-            required: true
+            type: String
         },
         state: {
-            type: String,
-            required: true
+            type: String
         },
         country: {
-            type: String,
-            required: true
+            type: String
         },
         zipCode: {
-            type: String,
-            required: true
+            type: String
         },
         geo: {
             type: {
