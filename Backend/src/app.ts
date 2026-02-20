@@ -60,7 +60,11 @@ initSocket(server);
     await connection(process.env.DB_URI as string);
 })();
 
-// --- Redis Connection Event ---
+// --- Redis Connection (lazy — won't crash if unavailable) ---
+redis.connect().catch(() => {
+    logger.warn('Redis is unavailable on startup. Caching will be disabled until Redis reconnects.');
+});
+
 redis.on('connect', (): void => {
     figlet(
         'R e d i s   c o n n e c t e d',
