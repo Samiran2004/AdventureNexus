@@ -66,3 +66,25 @@ export const getIO = (): Server => {
     }
     return io;
 };
+
+/**
+ * Helper to emit a notification to a specific user if they are online.
+ */
+export const sendRealtimeNotification = (recipientClerkUserId: string, notification: any) => {
+    if (onlineUsers.has(recipientClerkUserId)) {
+        onlineUsers.get(recipientClerkUserId)?.forEach(socketId => {
+            io.to(socketId).emit('notification', notification);
+        });
+    }
+};
+
+/**
+ * Helper to emit a message to a specific user if they are online.
+ */
+export const sendRealtimeMessage = (recipientClerkUserId: string, message: any) => {
+    if (onlineUsers.has(recipientClerkUserId)) {
+        onlineUsers.get(recipientClerkUserId)?.forEach(socketId => {
+            io.to(socketId).emit('message:direct', message);
+        });
+    }
+};

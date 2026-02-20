@@ -177,6 +177,10 @@ app.post('/api/v1/mail/trigger-daily-tips', triggerDailyTips);
 import adminRoutes from './modules/admin/routes/admin.routes';
 app.use('/api/v1/admin', adminRoutes);
 
+// Community Hub Routes
+import communityRoutes from './modules/community/community.routes';
+app.use('/api/v1/community', communityRoutes);
+
 
 
 // --- Error Handling ---
