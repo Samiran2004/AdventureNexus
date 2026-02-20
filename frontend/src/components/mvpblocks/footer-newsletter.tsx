@@ -1,11 +1,12 @@
 'use client';
 
-import axios from 'axios';
 import { Instagram, Linkedin, Twitter, Youtube, MapPin, Phone, Mail } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import toast from 'react-hot-toast';
-import { Link, useMatch } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import AnimatedLogo from '../AnimatedLogo';
+import FooterScene from '../FooterScene';
+
 const vite_backend_url = import.meta.env.VITE_BACKEND_URL;
 // const vite_backend_url = "http://localhost:8000"
 
@@ -63,7 +64,6 @@ const socialIcons = [
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   const [userMail, setUserMail] = useState("");
-
   // Handle newsletter subscription
   const onClickSubscribeButton = async () => {
     console.log(userMail);
@@ -101,7 +101,14 @@ export default function Footer() {
   }
 
   return (
-    <footer className="bg-background text-foreground relative w-full pt-20 pb-10 border-t border-border">
+    <footer className="bg-background text-foreground relative w-full pb-10 border-t border-border">
+      {/* ── Custom 3D Animated Footer Scene ── */}
+      <div className="relative w-full overflow-hidden" style={{ height: '480px' }}>
+        <FooterScene />
+        {/* Fade-to-footer gradient at the bottom edge */}
+        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-background to-transparent" />
+      </div>
+
       {/* Background Effects */}
       <div className="pointer-events-none absolute top-0 left-0 z-0 h-full w-full overflow-hidden">
         <div className="bg-primary/20 absolute top-1/3 left-1/4 h-64 w-64 rounded-full opacity-5 blur-3xl" />

@@ -37,6 +37,11 @@ const getPersonalizedRecommendations = (req, res) => __awaiter(void 0, void 0, v
         let recommendations = yield (0, recommendation_service_1.getRecommendationsForUser)(user._id);
         if (recommendations.length === 0) {
             recommendations = yield planModel_1.default.find({ userId: { $ne: user._id } })
+                .populate({
+                path: 'hotels',
+                populate: { path: 'rooms' }
+            })
+                .populate('flights')
                 .sort({ createdAt: -1 })
                 .limit(3);
         }

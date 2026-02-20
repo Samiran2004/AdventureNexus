@@ -7,7 +7,7 @@ const flightSchema = new mongoose_1.Schema({
     departure_time: { type: String, required: true },
     arrival_time: { type: String, required: true },
     price: { type: String, required: true },
-    class: { type: String, enum: ['Economy', 'Business', 'First Class'], default: 'Economy' },
+    class: { type: String, default: 'Economy' },
     duration: { type: String, required: true },
     from: { type: String, required: true },
     to: { type: String, required: true },
