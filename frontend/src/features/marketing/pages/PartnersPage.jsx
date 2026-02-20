@@ -52,15 +52,15 @@ const PartnersPage = () => {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
       <NavBar />
-      
+
       {/* Hero Section */}
       <div className="relative py-24 lg:py-32 overflow-hidden bg-black text-white">
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center opacity-60"
           style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=1600&auto=format&fit=crop&q=80")' }}
         ></div>
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
-        
+
         <div className="container relative z-10 mx-auto px-4 text-center">
           <Badge className="mb-6 bg-white/10 text-white border-white/20 hover:bg-white/20 px-4 py-1.5 text-sm uppercase tracking-wider backdrop-blur-md">
             Partnership Program
@@ -76,7 +76,7 @@ const PartnersPage = () => {
             <Button size="lg" className="bg-primary hover:bg-primary/90 text-white rounded-full px-8 text-lg h-14">
               Become a Partner
             </Button>
-            <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10 rounded-full px-8 text-lg h-14">
+            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:!text-black rounded-full px-8 text-lg h-14 bg-white/10 backdrop-blur-sm">
               Login to Portal
             </Button>
           </div>
@@ -108,7 +108,7 @@ const PartnersPage = () => {
             We provide the tools, technology, and audience you need to scale your travel business in the digital age.
           </p>
         </div>
-        
+
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {benefits.map((benefit, index) => (
             <Card key={index} className="border-border hover:border-primary/50 transition-colors group">
@@ -135,7 +135,7 @@ const PartnersPage = () => {
               <p className="text-lg text-muted-foreground">
                 Whether you manage a boutique hotel, run a local tour agency, or operate a global airline, we have a tailored solution for you.
               </p>
-              
+
               <div className="space-y-4">
                 <div className="flex gap-4 items-start">
                   <div className="mt-1 bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg text-blue-600 dark:text-blue-400">
@@ -166,25 +166,25 @@ const PartnersPage = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="lg:w-1/2">
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary to-blue-600 rounded-3xl transform rotate-3 scale-105 opacity-20 blur-lg"></div>
-                <img 
-                  src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&auto=format&fit=crop&q=80" 
-                  alt="Business Meeting" 
+                <img
+                  src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&auto=format&fit=crop&q=80"
+                  alt="Business Meeting"
                   className="relative rounded-3xl shadow-2xl border border-white/10"
                 />
-                
+
                 <Card className="absolute -bottom-6 -left-6 w-64 shadow-xl border-border animate-in fade-in slide-in-from-bottom-10 duration-1000">
                   <CardContent className="p-4 flex items-center gap-4">
-                     <div className="bg-green-100 text-green-600 p-2 rounded-full">
-                        <CheckCircle2 size={24} />
-                     </div>
-                     <div>
-                        <div className="font-bold text-lg">Partner Success</div>
-                        <div className="text-sm text-muted-foreground">+128% Bookings</div>
-                     </div>
+                    <div className="bg-green-100 text-green-600 p-2 rounded-full">
+                      <CheckCircle2 size={24} />
+                    </div>
+                    <div>
+                      <div className="font-bold text-lg">Partner Success</div>
+                      <div className="text-sm text-muted-foreground">+128% Bookings</div>
+                    </div>
                   </CardContent>
                 </Card>
               </div>

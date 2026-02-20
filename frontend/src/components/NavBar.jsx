@@ -187,9 +187,9 @@ function NavBar() {
                             className="flex items-center space-x-2 hover:scale-105 transition-transform duration-300"
                         >
                             <AnimatedLogo size={scrolled ? 36 : 42} />
-                            <span className={`font-bold font-outfit tracking-tight transition-all duration-300 ${scrolled ? 'text-xl' : 'text-2xl drop-shadow-md'}`}>
-                                <span className="text-foreground">Adventure</span>
-                                <span className="text-primary">Nexus</span>
+                            <span className={`font-bold font-outfit tracking-tight transition-all duration-300 ${scrolled ? 'text-xl' : 'text-2xl'}`}>
+                                <span className="text-foreground drop-shadow-[0_1px_6px_rgba(0,0,0,0.7)]">Adventure</span>
+                                <span className="text-primary drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)]">Nexus</span>
                             </span>
                         </Link>
 
