@@ -7,10 +7,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const roomSchema = new mongoose_1.default.Schema({
     roomType: {
         type: String,
-        default: "Standard",
-        enum: [
-            "Standard", "Deluxe", "Suite", "Family", "Penthouse"
-        ]
+        default: "Standard"
     },
     description: {
         type: String

@@ -51,8 +51,9 @@ const generateNewSearchDestinationPrompt = (data) => {
         
         **Booking Specific Fields (MANDATORY):**
         14. **hotel_options**: An array of 3 realistic hotel objects with:
-            - "hotel_name", "description", "starRating" (1-5), "amenities", "category" (Hotel, Resort, etc.), "location" (city, country, address).
-            - "rooms": An array of 2 room objects with "roomType" (Standard, Deluxe, etc.), "pricePerNight" (INR), "amenities", "description", "capacity" (adults, children).
+            - "hotel_name", "description", "starRating" (1-5), "amenities", "category" (Hotel, Resort, etc.).
+            - "location": An object with "address", "city", "state", "country", "zipCode".
+            - "rooms": An array of 2 room objects with "roomType" (Standard, Deluxe, etc.), "pricePerNight" (INR), "amenities", "description", "capacity": {"adults": number, "children": number}.
         15. **flight_options**: An array of 3 realistic flight objects with:
             - "airline", "flight_number", "departure_time", "arrival_time", "price" (INR), "class", "duration", "departure_airport", "arrival_airport".
 

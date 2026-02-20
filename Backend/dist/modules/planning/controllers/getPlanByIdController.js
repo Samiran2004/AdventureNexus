@@ -19,7 +19,12 @@ const logger_1 = __importDefault(require("../../../shared/utils/logger"));
 const getPlanById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
-        const plan = yield planModel_1.default.findById(id);
+        const plan = yield planModel_1.default.findById(id)
+            .populate({
+            path: 'hotels',
+            populate: { path: 'rooms' }
+        })
+            .populate('flights');
         if (!plan) {
             return next((0, http_errors_1.default)(404, 'Plan Not Found or The ID is Invalid.'));
         }
