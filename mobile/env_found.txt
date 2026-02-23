@@ -1,0 +1,1 @@
+/home/zephyrus/projects/AdventureNexus/frontend/.env

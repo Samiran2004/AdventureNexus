@@ -1,0 +1,105 @@
+import api from './api';
+
+export const planService = {
+    // GET AI recommendations for logged-in user
+    async getRecommendations(token: string) {
+        const res = await api.get('/plans/recommendations', {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return res.data;
+    },
+
+    // POST search with AI
+    async searchDestination(token: string, payload: {
+        to: string;
+        from: string;
+        date: string;
+        travelers: number;
+        budget: number;
+        budget_range: string;
+        duration: number;
+    }) {
+        const res = await api.post('/plans/search/destination', payload, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return res.data;
+    },
+
+    // GET a public plan by ID
+    async getPublicPlan(id: string) {
+        const res = await api.get(`/plans/public/${id}`);
+        return res.data;
+    },
+};
+
+export const likedPlansService = {
+    // GET all liked plans
+    async getLikedPlans(token: string) {
+        const res = await api.get('/liked-plans', {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return res.data;
+    },
+
+    // POST like a plan
+    async likePlan(token: string, planId: string) {
+        const res = await api.post(`/liked-plans/${planId}`, {}, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return res.data;
+    },
+
+    // DELETE unlike a plan
+    async unlikePlan(token: string, planId: string) {
+        const res = await api.delete(`/liked-plans/${planId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return res.data;
+    },
+};
+
+export const reviewService = {
+    // GET all reviews with filters
+    async getReviews(params?: {
+        page?: number;
+        limit?: number;
+        category?: string;
+        rating?: number;
+        sortBy?: string;
+        search?: string;
+    }) {
+        const res = await api.get('/reviews', { params });
+        return res.data;
+    },
+
+    // POST create a review
+    async createReview(token: string, body: {
+        rating: number;
+        comment: string;
+        location: string;
+        tripType: string;
+    }) {
+        const res = await api.post('/reviews', body, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return res.data;
+    },
+
+    // PUT like a review
+    async likeReview(token: string, id: string) {
+        const res = await api.put(`/reviews/${id}/like`, {}, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return res.data;
+    },
+};
+
+export const userService = {
+    // GET user profile
+    async getProfile(token: string) {
+        const res = await api.get('/users/profile', {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return res.data;
+    },
+};
