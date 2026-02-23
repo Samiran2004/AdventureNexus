@@ -1,0 +1,22 @@
+Starting project at /home/zephyrus/projects/AdventureNexus/mobile
+Starting Metro Bundler
+warning: Bundler cache is empty, rebuilding (this may take a minute)
+Failed to resolve the Android SDK path. Default install location not found: /home/zephyrus/Android/sdk. Use ANDROID_HOME to set the Android SDK location.
+Failed to resolve the Android SDK path. Default install location not found: /home/zephyrus/Android/sdk. Use ANDROID_HOME to set the Android SDK location.
+Failed to resolve the Android SDK path. Default install location not found: /home/zephyrus/Android/sdk. Use ANDROID_HOME to set the Android SDK location.
+Failed to resolve the Android SDK path. Default install location not found: /home/zephyrus/Android/sdk. Use ANDROID_HOME to set the Android SDK location.
+Failed to resolve the Android SDK path. Default install location not found: /home/zephyrus/Android/sdk. Use ANDROID_HOME to set the Android SDK location.
+Failed to resolve the Android SDK path. Default install location not found: /home/zephyrus/Android/sdk. Use ANDROID_HOME to set the Android SDK location.
+Failed to resolve the Android SDK path. Default install location not found: /home/zephyrus/Android/sdk. Use ANDROID_HOME to set the Android SDK location.
+Failed to resolve the Android SDK path. Default install location not found: /home/zephyrus/Android/sdk. Use ANDROID_HOME to set the Android SDK location.
+› Opening exp://10.221.215.221:8081 on RMX3561
+Failed to resolve the Android SDK path. Default install location not found: /home/zephyrus/Android/sdk. Use ANDROID_HOME to set the Android SDK location.
+Failed to resolve the Android SDK path. Default install location not found: /home/zephyrus/Android/sdk. Use ANDROID_HOME to set the Android SDK location.
+Failed to resolve the Android SDK path. Default install location not found: /home/zephyrus/Android/sdk. Use ANDROID_HOME to set the Android SDK location.
+Failed to resolve the Android SDK path. Default install location not found: /home/zephyrus/Android/sdk. Use ANDROID_HOME to set the Android SDK location.
+Failed to resolve the Android SDK path. Default install location not found: /home/zephyrus/Android/sdk. Use ANDROID_HOME to set the Android SDK location.
+Failed to resolve the Android SDK path. Default install location not found: /home/zephyrus/Android/sdk. Use ANDROID_HOME to set the Android SDK location.
+Failed to resolve the Android SDK path. Default install location not found: /home/zephyrus/Android/sdk. Use ANDROID_HOME to set the Android SDK location.
+Failed to resolve the Android SDK path. Default install location not found: /home/zephyrus/Android/sdk. Use ANDROID_HOME to set the Android SDK location.
+Waiting on http://localhost:8081
+Logs for your project will appear below.

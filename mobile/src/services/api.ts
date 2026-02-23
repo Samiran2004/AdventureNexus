@@ -1,16 +1,20 @@
 import axios from 'axios';
-import { Platform } from 'react-native';
-
-// For local development, change this to your machine's local IP address
-// if testing on a physical device.
-// For physical device over USB, we use adb reverse to map localhost:8000 to the backend
-const BASE_URL = 'http://localhost:8000/api/v1';
 
 const api = axios.create({
-    baseURL: BASE_URL,
+    baseURL: 'https://adventurenexus.onrender.com/api/v1',
     headers: {
         'Content-Type': 'application/json',
     },
+    timeout: 30000,
 });
+
+// Helper to set auth token for requests
+export const setAuthToken = (token: string | null) => {
+    if (token) {
+        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    } else {
+        delete api.defaults.headers.common['Authorization'];
+    }
+};
 
 export default api;

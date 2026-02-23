@@ -1,8 +1,8 @@
 export const theme = {
     colors: {
-        background: '#F2F4E8', // Light Sage Green/Off-white
-        primary: '#1A3C34',    // Dark Green accent
-        secondary: '#DCE1C1',  // Soft organic green
+        background: '#F2F4E8',
+        primary: '#1A3C34',
+        secondary: '#4A5D4E',
         text: {
             primary: '#1A3C34',
             secondary: '#4A5D4E',
@@ -10,7 +10,7 @@ export const theme = {
         },
         card: {
             background: '#FFFFFF',
-            shadow: 'rgba(0, 0, 0, 0.05)',
+            shadow: 'rgba(0, 0, 0, 0.08)',
         },
         accent: '#E6EAD3',
         star: '#FFD700',
@@ -27,15 +27,21 @@ export const theme = {
         sm: 8,
         md: 16,
         lg: 24,
-        xl: 40, // Premium 'pill'/'circle' radius
+        xl: 40,
         round: 999,
     },
     typography: {
         fontFamily: {
-            regular: 'Montserrat-Regular',
-            medium: 'Montserrat-Medium',
-            semiBold: 'Montserrat-SemiBold',
-            bold: 'Montserrat-Bold',
+            regular: undefined,      // system default
+            medium: undefined,
+            semiBold: undefined,
+            bold: undefined,
+        },
+        fontWeight: {
+            regular: '400' as const,
+            medium: '500' as const,
+            semiBold: '600' as const,
+            bold: '700' as const,
         },
         fontSize: {
             xs: 12,

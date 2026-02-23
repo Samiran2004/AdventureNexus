@@ -1,0 +1,22 @@
+{
+    "cli": {
+        "version": ">= 16.0.0",
+        "appVersionSource": "local"
+    },
+    "build": {
+        "preview": {
+            "android": {
+                "buildType": "apk",
+                "gradleCommand": ":app:assembleRelease"
+            }
+        },
+        "production": {
+            "android": {
+                "buildType": "app-bundle"
+            }
+        }
+    },
+    "submit": {
+        "production": {}
+    }
+}
