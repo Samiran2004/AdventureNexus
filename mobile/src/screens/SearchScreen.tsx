@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import {
     View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity,
-    ActivityIndicator, Alert, SafeAreaView, Image,
+    ActivityIndicator, Alert, Image, Platform,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@clerk/clerk-expo';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { theme } from '../styles/theme';
 import { MapPin, Plane, Calendar, Users, DollarSign, Search, Star, Heart } from 'lucide-react-native';
 import { planService, likedPlansService } from '../services/planService';
@@ -21,17 +23,58 @@ export default function SearchScreen({ navigation }: any) {
     const { getToken } = useAuth();
     const [to, setTo] = useState('');
     const [from, setFrom] = useState('');
-    const [departDate, setDepartDate] = useState('');
-    const [returnDate, setReturnDate] = useState('');
+    const [departDate, setDepartDate] = useState(new Date());
+    const [returnDate, setReturnDate] = useState(new Date(Date.now() + 7 * 86400000));
+    const [showDepartPicker, setShowDepartPicker] = useState(false);
+    const [showReturnPicker, setShowReturnPicker] = useState(false);
     const [travelers, setTravelers] = useState('2');
     const [budget, setBudget] = useState('mid');
     const [isLoading, setIsLoading] = useState(false);
     const [results, setResults] = useState<any[]>([]);
     const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
 
+    React.useEffect(() => {
+        const init = async () => {
+            const token = await getToken();
+            if (token) {
+                fetchRecommendations(token);
+                fetchLikedPlans(token);
+            }
+        };
+        init();
+    }, []);
+
+    const fetchRecommendations = async (token: string) => {
+        try {
+            const data = await planService.getRecommendations(token);
+            if (data?.data) {
+                setResults(data.data);
+            }
+        } catch (err) {
+            console.error('Failed to fetch recommendations:', err);
+        }
+    };
+
+    const fetchLikedPlans = async (token: string) => {
+        try {
+            const data = await likedPlansService.getLikedPlans(token);
+            if (data?.likedPlans) {
+                const ids = new Set<string>(data.likedPlans.map((p: any) => p._id || p));
+                setLikedIds(ids);
+            }
+        } catch (err) {
+            console.error('Failed to fetch liked plans:', err);
+        }
+    };
+
     const handleSearch = async () => {
-        if (!to.trim() || !from.trim() || !departDate.trim()) {
-            Alert.alert('Missing Info', 'Please fill in destination, origin, and departure date.');
+        if (!to.trim() || !from.trim()) {
+            Alert.alert('Missing Info', 'Please fill in destination and origin.');
+            return;
+        }
+
+        if (returnDate <= departDate) {
+            Alert.alert('Invalid Dates', 'Return date must be after departure date.');
             return;
         }
 
@@ -39,16 +82,14 @@ export default function SearchScreen({ navigation }: any) {
             setIsLoading(true);
             setResults([]);
 
-            const start = new Date(departDate);
-            const end = returnDate ? new Date(returnDate) : new Date(start.getTime() + 7 * 86400000);
-            const duration = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / 86400000) + 1);
+            const duration = Math.max(1, Math.ceil((returnDate.getTime() - departDate.getTime()) / (1000 * 60 * 60 * 24)));
             const budgetLimit = BUDGET_OPTIONS.find(b => b.value === budget)?.limit ?? 65000;
 
             const token = await getToken() ?? '';
             const data = await planService.searchDestination(token, {
                 to: to.trim(),
                 from: from.trim(),
-                date: departDate,
+                date: departDate.toISOString().split('T')[0],
                 travelers: isNaN(parseInt(travelers)) ? 2 : parseInt(travelers),
                 budget: budgetLimit,
                 budget_range: budget,
@@ -67,12 +108,29 @@ export default function SearchScreen({ navigation }: any) {
         }
     };
 
-    const toggleLike = (id: string) => {
-        setLikedIds(prev => {
-            const next = new Set(prev);
-            next.has(id) ? next.delete(id) : next.add(id);
-            return next;
-        });
+    const toggleLike = async (id: string) => {
+        try {
+            const token = await getToken();
+            if (!token) {
+                Alert.alert('Sign In', 'Please sign in to like plans.');
+                return;
+            }
+
+            const isLiked = likedIds.has(id);
+            if (isLiked) {
+                await likedPlansService.unlikePlan(token, id);
+                setLikedIds(prev => {
+                    const next = new Set(prev);
+                    next.delete(id);
+                    return next;
+                });
+            } else {
+                await likedPlansService.likePlan(token, id);
+                setLikedIds(prev => new Set([...prev, id]));
+            }
+        } catch (err) {
+            console.error('Failed to toggle like:', err);
+        }
     };
 
     const renderResult = ({ item }: any) => (
@@ -162,30 +220,48 @@ export default function SearchScreen({ navigation }: any) {
                     <View style={styles.divider} />
 
                     {/* Departure date */}
-                    <View style={styles.fieldRow}>
+                    <TouchableOpacity style={styles.fieldRow} onPress={() => setShowDepartPicker(true)}>
                         <Calendar size={16} color={theme.colors.primary} />
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Departure date (YYYY-MM-DD)"
-                            placeholderTextColor={theme.colors.text.secondary}
+                        <Text style={[styles.input, !departDate && { color: theme.colors.text.secondary }]}>
+                            {departDate ? departDate.toDateString() : 'Departure date'}
+                        </Text>
+                    </TouchableOpacity>
+
+                    {showDepartPicker && (
+                        <DateTimePicker
                             value={departDate}
-                            onChangeText={setDepartDate}
+                            mode="date"
+                            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                            onChange={(event, selectedDate) => {
+                                setShowDepartPicker(false);
+                                if (selectedDate) setDepartDate(selectedDate);
+                            }}
+                            minimumDate={new Date()}
                         />
-                    </View>
+                    )}
 
                     <View style={styles.divider} />
 
                     {/* Return date */}
-                    <View style={styles.fieldRow}>
+                    <TouchableOpacity style={styles.fieldRow} onPress={() => setShowReturnPicker(true)}>
                         <Calendar size={16} color={theme.colors.text.secondary} />
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Return date (YYYY-MM-DD)"
-                            placeholderTextColor={theme.colors.text.secondary}
+                        <Text style={[styles.input, !returnDate && { color: theme.colors.text.secondary }]}>
+                            {returnDate ? returnDate.toDateString() : 'Return date'}
+                        </Text>
+                    </TouchableOpacity>
+
+                    {showReturnPicker && (
+                        <DateTimePicker
                             value={returnDate}
-                            onChangeText={setReturnDate}
+                            mode="date"
+                            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                            onChange={(event, selectedDate) => {
+                                setShowReturnPicker(false);
+                                if (selectedDate) setReturnDate(selectedDate);
+                            }}
+                            minimumDate={departDate}
                         />
-                    </View>
+                    )}
 
                     {/* Travelers */}
                     <Text style={styles.fieldLabel}>

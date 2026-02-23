@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -7,25 +7,75 @@ import {
     ScrollView,
     TouchableOpacity,
     Dimensions,
-    SafeAreaView,
+    ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../styles/theme';
 import BentoCard from '../components/common/BentoCard';
-import { ChevronLeft, Star, Clock, MapPin } from 'lucide-react-native';
+import { ChevronLeft, Star, Clock, MapPin, Sparkles } from 'lucide-react-native';
+import { useAuth } from '@clerk/clerk-expo';
+import { planService } from '../services/planService';
 
 const { width } = Dimensions.get('window');
 
-export default function DetailsScreen({ navigation }: any) {
+export default function DetailsScreen({ navigation, route }: any) {
+    const { plan } = route.params || {};
+    const { getToken } = useAuth();
+    const [images, setImages] = useState<string[]>([]);
+    const [isLoadingImages, setIsLoadingImages] = useState(false);
+
+    useEffect(() => {
+        if (plan?.name) {
+            loadImages();
+        }
+    }, [plan?.name]);
+
+    const loadImages = async () => {
+        try {
+            setIsLoadingImages(true);
+            const token = await getToken();
+            if (token) {
+                const res = await planService.getDestinationImages(token, plan.name);
+                if (res?.data) {
+                    setImages(res.data);
+                }
+            }
+        } catch (err) {
+            console.error('Failed to load images:', err);
+        } finally {
+            setIsLoadingImages(false);
+        }
+    };
+
+    if (!plan) {
+        return (
+            <SafeAreaView style={styles.safeArea}>
+                <View style={styles.errorContainer}>
+                    <Text style={styles.errorText}>Plan not found</Text>
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                        <Text style={styles.backLink}>Go Back</Text>
+                    </TouchableOpacity>
+                </View>
+            </SafeAreaView>
+        );
+    }
+
+    const mainImage = images.length > 0 ? images[0] : plan.image_url;
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <ScrollView showsVerticalScrollIndicator={false}>
                 {/* ── Immersive Photo with Curved Mask ── */}
                 <View style={styles.imageContainer}>
-                    <Image
-                        source={{ uri: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1000' }}
-                        style={styles.mainImage}
-                        resizeMode="cover"
-                    />
+                    {mainImage ? (
+                        <Image
+                            source={{ uri: mainImage }}
+                            style={styles.mainImage}
+                            resizeMode="cover"
+                        />
+                    ) : (
+                        <View style={[styles.mainImage, { backgroundColor: theme.colors.accent }]} />
+                    )}
                     {/* Dark overlay */}
                     <View style={styles.imageOverlay} />
 
@@ -34,17 +84,16 @@ export default function DetailsScreen({ navigation }: any) {
                         <ChevronLeft size={24} color="#FFF" />
                     </TouchableOpacity>
 
-                    {/* Weather badge */}
-                    <View style={styles.weatherBadge}>
-                        <Text style={styles.weatherBadgeText}>☀️  15 °C</Text>
-                    </View>
-
-                    {/* Alt tag + Title */}
-                    <View style={styles.imageInfo}>
-                        <View style={styles.altBadge}>
-                            <Text style={styles.altBadgeText}>2,665m</Text>
+                    {/* AI Score badge */}
+                    {plan.ai_score && (
+                        <View style={styles.weatherBadge}>
+                            <Text style={styles.weatherBadgeText}>✨ {plan.ai_score} AI Score</Text>
                         </View>
-                        <Text style={styles.imageTitle}>Tyrolean{'\n'}Alps</Text>
+                    )}
+
+                    {/* Title */}
+                    <View style={styles.imageInfo}>
+                        <Text style={styles.imageTitle}>{plan.name}</Text>
                     </View>
 
                     {/* Curved mask */}
@@ -53,64 +102,56 @@ export default function DetailsScreen({ navigation }: any) {
 
                 {/* ── Detail Content ── */}
                 <View style={styles.content}>
-                    {/* Country */}
+                    {/* Country/Category */}
                     <View style={styles.countryRow}>
-                        <Text style={styles.countryFlag}>🇦🇹</Text>
-                        <Text style={styles.country}>AUSTRIA</Text>
+                        <Sparkles size={14} color={theme.colors.primary} />
+                        <Text style={styles.country}>AI GENERATED PLAN</Text>
                     </View>
 
-                    <Text style={styles.mainTitle}>Discovering the Magic of Austrian Mountains</Text>
+                    <Text style={styles.mainTitle}>{plan.destination_overview || plan.name}</Text>
 
                     {/* Quick stats */}
                     <View style={styles.statsRow}>
                         <View style={styles.statChip}>
                             <Clock size={14} color={theme.colors.primary} />
-                            <Text style={styles.statChipText}>7 days</Text>
+                            <Text style={styles.statChipText}>{plan.days || plan.duration || '?'} days</Text>
                         </View>
-                        <View style={styles.statChip}>
-                            <MapPin size={14} color={theme.colors.primary} />
-                            <Text style={styles.statChipText}>10 km</Text>
-                        </View>
+                        {plan.cost && (
+                            <View style={styles.statChip}>
+                                <Text style={styles.statChipText}>💰 ${plan.cost.toLocaleString()}</Text>
+                            </View>
+                        )}
                         <View style={styles.statChip}>
                             <Star size={14} color={theme.colors.primary} />
-                            <Text style={styles.statChipText}>8/10</Text>
+                            <Text style={styles.statChipText}>{plan.rating || '4.8'}/5</Text>
                         </View>
                     </View>
 
-                    {/* Popular dates */}
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.dateScroll}>
-                        {['27/03 – 7/04', '7/04 – 17/04', '17/04 – 27/04'].map((d) => (
-                            <View key={d} style={styles.datePill}>
-                                <Text style={styles.datePillText}>📅 {d}</Text>
-                            </View>
-                        ))}
-                    </ScrollView>
+                    {/* Photo Gallery */}
+                    <Text style={styles.sectionLabel}>Photo Gallery</Text>
+                    {isLoadingImages ? (
+                        <ActivityIndicator color={theme.colors.primary} style={{ marginVertical: 20 }} />
+                    ) : (
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.dateScroll}>
+                            {images.map((img, idx) => (
+                                <View key={idx} style={styles.galleryItem}>
+                                    <Image source={{ uri: img }} style={styles.galleryImage} />
+                                </View>
+                            ))}
+                        </ScrollView>
+                    )}
 
-                    {/* Hotel Bento Card */}
-                    <Text style={styles.sectionLabel}>Where to Stay</Text>
-                    <BentoCard style={styles.hotelCard}>
-                        <Image
-                            source={{ uri: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600' }}
-                            style={styles.hotelImage}
-                            resizeMode="cover"
-                        />
-                        <View style={styles.hotelBody}>
-                            <Text style={styles.hotelName}>Lenas Donau Hotel</Text>
-                            <View style={styles.hotelMeta}>
-                                <MapPin size={12} color={theme.colors.text.secondary} />
-                                <Text style={styles.hotelLocation}>22nd district, Vienna</Text>
-                            </View>
-                            <View style={styles.ratingRow}>
-                                <Star size={12} color={theme.colors.star} fill={theme.colors.star} />
-                                <Text style={styles.ratingText}>7.4 (Reviews)</Text>
-                            </View>
-                            <Text style={styles.price}>$89.00 / night</Text>
-                        </View>
+                    {/* Itinerary/Overview */}
+                    <Text style={styles.sectionLabel}>Plan Overview</Text>
+                    <BentoCard style={{ padding: 20, marginBottom: 24 }}>
+                        <Text style={{ fontSize: 14, color: theme.colors.text.secondary, lineHeight: 22 }}>
+                            {plan.itinerary || plan.destination_overview || 'No detailed itinerary available for this plan.'}
+                        </Text>
                     </BentoCard>
 
                     {/* CTA */}
                     <TouchableOpacity style={styles.bookBtn}>
-                        <Text style={styles.bookBtnText}>Book This Trip ✨</Text>
+                        <Text style={styles.bookBtnText}>Save to My Trips ✨</Text>
                     </TouchableOpacity>
                 </View>
             </ScrollView>
@@ -120,6 +161,9 @@ export default function DetailsScreen({ navigation }: any) {
 
 const styles = StyleSheet.create({
     safeArea: { flex: 1, backgroundColor: theme.colors.background },
+    errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+    errorText: { fontSize: 18, color: theme.colors.text.primary, marginBottom: 10 },
+    backLink: { color: theme.colors.primary, fontWeight: '700' },
 
     // Image Section
     imageContainer: { height: 480, width: '100%' },
@@ -138,6 +182,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0,0,0,0.3)',
         justifyContent: 'center',
         alignItems: 'center',
+        zIndex: 10,
     },
     weatherBadge: {
         position: 'absolute',
@@ -149,21 +194,12 @@ const styles = StyleSheet.create({
         borderRadius: 20,
     },
     weatherBadgeText: { color: '#FFF', fontWeight: '700', fontSize: 13 },
-    imageInfo: { position: 'absolute', bottom: 80, left: 24 },
-    altBadge: {
-        backgroundColor: 'rgba(255,255,255,0.2)',
-        paddingVertical: 4,
-        paddingHorizontal: 12,
-        borderRadius: 20,
-        alignSelf: 'flex-start',
-        marginBottom: 10,
-    },
-    altBadgeText: { color: '#FFF', fontSize: 12, fontWeight: '700' },
+    imageInfo: { position: 'absolute', bottom: 80, left: 24, right: 24 },
     imageTitle: {
-        fontSize: 46,
+        fontSize: 38,
         fontWeight: '900',
         color: '#FFF',
-        lineHeight: 48,
+        lineHeight: 42,
     },
     curvedMask: {
         position: 'absolute',
@@ -177,19 +213,18 @@ const styles = StyleSheet.create({
 
     // Content
     content: { paddingHorizontal: 24, paddingBottom: 40 },
-    countryRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
-    countryFlag: { fontSize: 16, marginRight: 8 },
+    countryRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12, gap: 8 },
     country: { fontSize: 12, fontWeight: '800', color: theme.colors.primary, letterSpacing: 2 },
     mainTitle: {
-        fontSize: 26,
+        fontSize: 22,
         fontWeight: '800',
         color: theme.colors.text.primary,
         marginBottom: 20,
-        lineHeight: 32,
+        lineHeight: 28,
     },
 
     // Stats
-    statsRow: { flexDirection: 'row', gap: 10, marginBottom: 20 },
+    statsRow: { flexDirection: 'row', gap: 10, marginBottom: 24 },
     statChip: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -200,39 +235,29 @@ const styles = StyleSheet.create({
         gap: 6,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.06,
-        shadowRadius: 6,
+        shadowOpacity: 0.05,
+        shadowRadius: 4,
         elevation: 2,
     },
     statChipText: { fontSize: 12, fontWeight: '700', color: theme.colors.text.primary },
 
-    // Dates
+    // Gallery
     dateScroll: { marginBottom: 24 },
-    datePill: {
-        backgroundColor: theme.colors.accent,
-        paddingVertical: 10,
-        paddingHorizontal: 16,
+    galleryItem: {
+        width: 150,
+        height: 200,
         borderRadius: 20,
-        marginRight: 10,
+        marginRight: 12,
+        overflow: 'hidden',
     },
-    datePillText: { fontSize: 12, fontWeight: '600', color: theme.colors.text.primary },
+    galleryImage: { width: '100%', height: '100%' },
 
-    // Hotel
     sectionLabel: {
         fontSize: 18,
         fontWeight: '800',
         color: theme.colors.text.primary,
         marginBottom: 14,
     },
-    hotelCard: { padding: 0, marginBottom: 24, borderRadius: 28 },
-    hotelImage: { width: '100%', height: 160, borderTopLeftRadius: 28, borderTopRightRadius: 28 },
-    hotelBody: { padding: 16 },
-    hotelName: { fontSize: 16, fontWeight: '800', color: theme.colors.text.primary, marginBottom: 6 },
-    hotelMeta: { flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 6 },
-    hotelLocation: { fontSize: 12, color: theme.colors.text.secondary },
-    ratingRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 10 },
-    ratingText: { fontSize: 12, color: theme.colors.text.secondary },
-    price: { fontSize: 18, fontWeight: '800', color: theme.colors.text.primary },
 
     // CTA
     bookBtn: {
