@@ -85,14 +85,29 @@ const searchNewDestination = async (req: Request, res: Response) => {
     // 4. Call Groq AI Service
     const generatedData = await groqGeneratedData(prompt);
 
-    // 🧼 5. Clean and Parse AI response (Extract JSON Array from string)
-    const startIndex = generatedData.indexOf("[");
-    const endIndex = generatedData.lastIndexOf("]");
-    const cleanString = generatedData.substring(startIndex, endIndex + 1);
-    const aiResponseArray = JSON.parse(cleanString);
+    // 🧼 5. Clean and Parse AI response (Extract JSON Object)
+    let aiResponseArray: any[] = [];
+    try {
+      const startIndex = generatedData.indexOf("{");
+      const endIndex = generatedData.lastIndexOf("}");
+      if (startIndex === -1 || endIndex === -1) {
+        throw new Error("No JSON object found in AI response");
+      }
+      const cleanString = generatedData.substring(startIndex, endIndex + 1);
+      const aiResponseObject = JSON.parse(cleanString);
 
-    if (!Array.isArray(aiResponseArray)) {
-      throw new Error("AI response is not an array");
+      aiResponseArray = aiResponseObject.plans || [];
+      if (!Array.isArray(aiResponseArray)) {
+        // Fallback if AI returned array directly despite prompt
+        aiResponseArray = Array.isArray(aiResponseObject) ? aiResponseObject : [];
+      }
+    } catch (parseError: any) {
+      logger.error(`JSON Parse Error: ${parseError.message}. Content: ${generatedData.substring(0, 100)}...`);
+      throw new Error("Failed to parse AI response as JSON");
+    }
+
+    if (aiResponseArray.length === 0) {
+      throw new Error("AI response contains no plans");
     }
 
     // 🌐 5.5 Process each plan in the array (Fetch Images & Construct Objects)
@@ -128,11 +143,11 @@ const searchNewDestination = async (req: Request, res: Response) => {
         star: aiResponse.star,
         total_reviews: aiResponse.total_reviews,
         destination_overview: aiResponse.destination_overview,
-        perfect_for: aiResponse.perfect_for,
+        perfect_for: Array.isArray(aiResponse.perfect_for) ? aiResponse.perfect_for : [],
         budget_breakdown: aiResponse.budget_breakdown,
-        trip_highlights: aiResponse.trip_highlights,
-        suggested_itinerary: aiResponse.suggested_itinerary,
-        local_tips: aiResponse.local_tips,
+        trip_highlights: Array.isArray(aiResponse.trip_highlights) ? aiResponse.trip_highlights : [],
+        suggested_itinerary: Array.isArray(aiResponse.suggested_itinerary) ? aiResponse.suggested_itinerary : [],
+        local_tips: Array.isArray(aiResponse.local_tips) ? aiResponse.local_tips : [],
         hotel_options: aiResponse.hotel_options, // Temporary storage for processing
         flight_options: aiResponse.flight_options, // Temporary storage for processing
         userId: null // Will attach user below if needed, or we can look it up here

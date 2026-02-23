@@ -31,7 +31,7 @@ const generateNewSearchDestinationPrompt = (data: SearchNewDestinationPromptData
 
         Act as an expert travel planner. Create **3 DISTINCT** travel plan options for a trip to **${data.to}** (or nearby regions if ${data.to} is a country/broad region).
         
-        Generate a strictly formatted **JSON Array** containing exactly 3 objects.
+        Generate a strictly formatted **JSON Object** with a key "plans" containing exactly 3 objects.
 
         **IMPORTANT: BUDGET REALISM RULE**
         - The "cost" field MUST be a realistic estimate for the destination and duration, considering the origin (**${data.from}**) and destination (**${data.to}**).
@@ -51,7 +51,7 @@ const generateNewSearchDestinationPrompt = (data: SearchNewDestinationPromptData
         - Each of the 3 plans must be slightly different (e.g., different focus, different specific location if applicable, or different itinerary vibe).
         - Ensure they aren't duplicates.
 
-        The JSON Array must contain objects with the following keys exactly:
+        The JSON Object must contain a "plans" key, which is an array of objects with the following keys exactly:
         1. **ai_score**: An estimated match score (e.g., "98%").
         2. **image_url**: The dynamic URL constructed using the rule above.
         3. **name**: The destination name (e.g., "Tokyo, Japan").
@@ -79,20 +79,16 @@ const generateNewSearchDestinationPrompt = (data: SearchNewDestinationPromptData
         - Ensure all prices are realistic estimates in INR.
 
         **Example Output Format:**
-        [
-            {
-                "ai_score": "98%",
-                "image_url": "...",
-                "name": "Tokyo, Japan",
-                 ...
-            },
-            {
-                "ai_score": "95%",
-                "image_url": "...",
-                "name": "Kyoto, Japan",
-                 ...
-            }
-        ]
+        {
+            "plans": [
+                {
+                    "ai_score": "98%",
+                    "image_url": "...",
+                    "name": "Tokyo, Japan",
+                     ...
+                }
+            ]
+        }
     `;
 }
 

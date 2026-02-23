@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
@@ -142,7 +143,9 @@ export default function App() {
             publishableKey={CLERK_PUBLISHABLE_KEY}
             tokenCache={tokenCache}
         >
-            <RootNavigator />
+            <SafeAreaProvider>
+                <RootNavigator />
+            </SafeAreaProvider>
         </ClerkProvider>
     );
 }

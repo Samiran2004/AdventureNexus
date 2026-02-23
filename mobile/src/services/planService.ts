@@ -30,6 +30,17 @@ export const planService = {
         const res = await api.get(`/plans/public/${id}`);
         return res.data;
     },
+
+    // GET images for a destination
+    async getDestinationImages(token: string, destinationName: string) {
+        const res = await api.post('/plans/search/destination-images', {
+            query: destinationName,
+            count: 12
+        }, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return res.data;
+    },
 };
 
 export const likedPlansService = {
