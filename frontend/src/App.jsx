@@ -36,6 +36,7 @@ import CookiesPage from './features/legal/pages/CookiesPage';
 import AccessibilityPage from './features/legal/pages/AccessibilityPage';
 import ChatAssistant from './components/ChatAssistant'; // Floating chat assistant
 import { ChatProvider } from './context/ChatContext'; // Chat context provider
+import ContactPage from './features/marketing/pages/ContactPage';
 
 // --- Admin Imports ---
 import { AuthProvider as AdminAuthProvider } from './admin/context/AdminAuthContext';
@@ -149,6 +150,7 @@ const AppContent = () => {
         <Route path='/privacy' element={<PrivacyPage />} />
         <Route path='/cookies' element={<CookiesPage />} />
         <Route path='/accessibility' element={<AccessibilityPage />} />
+        <Route path='/contact' element={<ContactPage />} />
         <Route path='/shared-plan/:id' element={<SharedPlanPage />} />
         <Route path='/my-bookings' element={
           <ProtectedRoute>
