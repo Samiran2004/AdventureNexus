@@ -13,6 +13,7 @@ import SearchScreen from './src/screens/SearchScreen';
 import DetailsScreen from './src/screens/DetailsScreen';
 import ReviewsScreen from './src/screens/ReviewsScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
+import UserProfileScreen from './src/screens/UserProfileScreen';
 import SignInScreen from './src/screens/SignInScreen';
 import SignUpScreen from './src/screens/SignUpScreen';
 import { theme } from './src/styles/theme';
@@ -114,7 +115,6 @@ function RootNavigator() {
             <View style={styles.loadingScreen}>
                 <Text style={styles.loadingEmoji}>🧭</Text>
                 <Text style={styles.loadingBrand}>AdventureNexus</Text>
-                <ActivityIndicator color={theme.colors.primary} style={{ marginTop: 24 }} size="large" />
             </View>
         );
     }
@@ -127,6 +127,7 @@ function RootNavigator() {
                     <>
                         <Stack.Screen name="Main" component={HomeTabs} />
                         <Stack.Screen name="Details" component={DetailsScreen} />
+                        <Stack.Screen name="UserProfile" component={UserProfileScreen} />
                     </>
                 ) : (
                     <Stack.Screen name="Auth" component={AuthNavigator} />

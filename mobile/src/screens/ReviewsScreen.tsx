@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     View, Text, StyleSheet, FlatList, TouchableOpacity,
     SafeAreaView, ActivityIndicator, TextInput, Alert,
 } from 'react-native';
 import { theme } from '../styles/theme';
-import { Star, ThumbsUp, Search } from 'lucide-react-native';
+import { Star, ThumbsUp, Search, MapPin, Users, Clock, CheckCircle2, SlidersHorizontal, Image as ImageIcon } from 'lucide-react-native';
 import { reviewService } from '../services/planService';
 import BentoCard from '../components/common/BentoCard';
+import { Image, ScrollView } from 'react-native';
 
 const TRIP_TYPES = ['All', 'Solo', 'Family', 'Adventure', 'Romance', 'Group'];
 const SORT_OPTIONS = [
@@ -30,7 +31,7 @@ function StarRating({ count }: { count: number }) {
     );
 }
 
-export default function ReviewsScreen() {
+export default function ReviewsScreen({ navigation }: any) {
     const [reviews, setReviews] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeType, setActiveType] = useState('All');
@@ -73,7 +74,9 @@ export default function ReviewsScreen() {
         }
     };
 
-    useEffect(() => { fetchReviews(true); }, [activeType, sortBy]);
+    useEffect(() => {
+        fetchReviews(true);
+    }, [activeType, sortBy]);
 
     const handleLike = async (id: string) => {
         try {
@@ -105,35 +108,100 @@ export default function ReviewsScreen() {
         }
     };
 
-    const renderReview = ({ item }: any) => (
+    const renderReview = ({ item, index }: any) => (
         <BentoCard style={styles.reviewCard}>
             <View style={styles.reviewHeader}>
-                <View style={styles.avatarCircle}>
-                    <Text style={styles.avatarText}>
-                        {(item.user?.username || item.location || 'U')[0].toUpperCase()}
-                    </Text>
+                <TouchableOpacity
+                    style={styles.avatarContainer}
+                    onPress={() => {
+                        const cid = item.clerkUserId || item.userId;
+                        if (cid) navigation.navigate('UserProfile', { clerkUserId: cid });
+                    }}
+                    activeOpacity={0.7}
+                >
+                    {item.userAvatar ? (
+                        <Image source={{ uri: item.userAvatar }} style={styles.avatarImage} />
+                    ) : (
+                        <View style={styles.avatarCircle}>
+                            <Text style={styles.avatarText}>
+                                {(item.userName || item.location || 'U')[0].toUpperCase()}
+                            </Text>
+                        </View>
+                    )}
+                    {item.isVerified && (
+                        <View style={styles.verifiedBadge}>
+                            <CheckCircle2 size={12} color="#FFF" />
+                        </View>
+                    )}
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={{ flex: 1 }}
+                    onPress={() => {
+                        const cid = item.clerkUserId || item.userId;
+                        if (cid) navigation.navigate('UserProfile', { clerkUserId: cid });
+                    }}
+                    activeOpacity={0.7}
+                >
+                    <Text style={styles.reviewerName}>{item.userName || 'Traveler'}</Text>
+                    <View style={styles.metaRow}>
+                        <MapPin size={10} color={theme.colors.text.secondary} />
+                        <Text style={styles.reviewMeta}>{item.location}</Text>
+                    </View>
+                </TouchableOpacity>
+                <View style={styles.ratingBox}>
+                    <StarRating count={item.rating} />
+                    <Text style={styles.ratingText}>{item.rating.toFixed(1)}</Text>
                 </View>
-                <View style={{ flex: 1 }}>
-                    <Text style={styles.reviewerName}>{item.user?.username || 'Traveler'}</Text>
-                    <Text style={styles.reviewMeta}>📍 {item.location}  •  🌍 {item.tripType}</Text>
-                </View>
-                <StarRating count={item.rating} />
             </View>
+
+            {/* Achievement / Stats Badges */}
+            <View style={styles.statsBadges}>
+                <View style={styles.statBadge}>
+                    <Clock size={10} color={theme.colors.primary} />
+                    <Text style={styles.statBadgeText}>{item.tripDuration || '3 Days'}</Text>
+                </View>
+                <View style={styles.statBadge}>
+                    <Users size={10} color={theme.colors.primary} />
+                    <Text style={styles.statBadgeText}>{item.travelers || '2'} Travelers</Text>
+                </View>
+                <View style={[styles.statBadge, { backgroundColor: 'rgba(56, 189, 248, 0.1)' }]}>
+                    <Text style={[styles.statBadgeText, { color: '#0EA5E9' }]}>{item.tripType || 'Adventure'}</Text>
+                </View>
+            </View>
+
             <Text style={styles.reviewComment}>{item.comment}</Text>
-            <TouchableOpacity style={styles.likeRow} onPress={() => handleLike(item._id)}>
-                <ThumbsUp size={14} color={theme.colors.text.secondary} />
-                <Text style={styles.likeCount}>{item.helpfulCount || 0} helpful</Text>
-            </TouchableOpacity>
+
+            {/* Review Images */}
+            {item.images && item.images.length > 0 && (
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.imagesScroll}>
+                    {item.images.map((img: string, i: number) => (
+                        <Image key={i} source={{ uri: img }} style={styles.reviewImage} />
+                    ))}
+                </ScrollView>
+            )}
+
+            <View style={styles.reviewFooter}>
+                <TouchableOpacity style={styles.likeBtn} onPress={() => handleLike(item._id)}>
+                    <ThumbsUp size={14} color={theme.colors.primary} />
+                    <Text style={styles.likeBtnText}>{item.helpfulCount || 0} Helpful</Text>
+                </TouchableOpacity>
+                <Text style={styles.dateText}>{new Date(item.createdAt || Date.now()).toLocaleDateString()}</Text>
+            </View>
         </BentoCard>
     );
 
     return (
         <SafeAreaView style={styles.safeArea}>
             {/* Header */}
-            <View style={styles.header}>
-                <Text style={styles.title}>Community{'\n'}Reviews</Text>
+            <View style={styles.heroSection}>
+                <View style={styles.heroRow}>
+                    <View style={{ flex: 1 }}>
+                        <Text style={styles.title}>Traveler{'\n'}Community</Text>
+                        <Text style={styles.subtitle}>Insights from fellow adventurers</Text>
+                    </View>
+                </View>
                 <TouchableOpacity style={styles.writeBtn} onPress={() => setShowForm(v => !v)}>
-                    <Text style={styles.writeBtnText}>{showForm ? 'Cancel' : '+ Write Review'}</Text>
+                    <Text style={styles.writeBtnText}>{showForm ? 'Cancel' : 'Share Your Trip ✨'}</Text>
                 </TouchableOpacity>
             </View>
 
@@ -204,16 +272,19 @@ export default function ReviewsScreen() {
             </View>
 
             {/* Sort */}
-            <View style={styles.sortRow}>
-                {SORT_OPTIONS.map(s => (
-                    <TouchableOpacity
-                        key={s.value}
-                        style={[styles.sortBtn, sortBy === s.value && styles.sortBtnActive]}
-                        onPress={() => setSortBy(s.value)}
-                    >
-                        <Text style={[styles.sortText, sortBy === s.value && styles.sortTextActive]}>{s.label}</Text>
-                    </TouchableOpacity>
-                ))}
+            <View style={styles.sortContainer}>
+                <SlidersHorizontal size={14} color={theme.colors.text.secondary} />
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.sortScroll}>
+                    {SORT_OPTIONS.map(s => (
+                        <TouchableOpacity
+                            key={s.value}
+                            style={[styles.sortBtn, sortBy === s.value && styles.sortBtnActive]}
+                            onPress={() => setSortBy(s.value)}
+                        >
+                            <Text style={[styles.sortText, sortBy === s.value && styles.sortTextActive]}>{s.label}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </ScrollView>
             </View>
 
             {/* List */}
@@ -241,17 +312,18 @@ export default function ReviewsScreen() {
 
 const styles = StyleSheet.create({
     safeArea: { flex: 1, backgroundColor: theme.colors.background },
-    header: {
-        flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end',
-        paddingHorizontal: 20, paddingTop: 20, marginBottom: 16,
-    },
-    title: { fontSize: 32, fontWeight: '900', color: theme.colors.text.primary },
+    heroSection: { paddingHorizontal: 20, paddingTop: 20, marginBottom: 20 },
+    heroRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
+    headerIllustration: { marginRight: -10 },
+    title: { fontSize: 36, fontWeight: '900', color: theme.colors.text.primary, letterSpacing: -1 },
+    subtitle: { fontSize: 14, color: theme.colors.text.secondary, marginTop: 4 },
     writeBtn: {
-        backgroundColor: theme.colors.primary, paddingVertical: 10, paddingHorizontal: 16, borderRadius: 40,
+        backgroundColor: theme.colors.primary, paddingVertical: 14, borderRadius: 16, alignItems: 'center',
+        shadowColor: theme.colors.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 4,
     },
-    writeBtnText: { color: '#FFF', fontSize: 13, fontWeight: '700' },
+    writeBtnText: { color: '#FFF', fontSize: 14, fontWeight: '800' },
 
-    formCard: { marginHorizontal: 20, marginBottom: 16, padding: 16 },
+    formCard: { marginHorizontal: 20, marginBottom: 16, padding: 16, borderRadius: 24 },
     formLabel: { fontSize: 12, fontWeight: '700', color: theme.colors.text.primary, marginBottom: 6, marginTop: 12 },
     formInput: {
         backgroundColor: theme.colors.accent, borderRadius: 12, padding: 12,
@@ -264,22 +336,23 @@ const styles = StyleSheet.create({
 
     searchBar: {
         flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF',
-        borderRadius: 40, paddingHorizontal: 16, paddingVertical: 12, marginHorizontal: 20,
-        marginBottom: 14, gap: 10, elevation: 2,
+        borderRadius: 20, paddingHorizontal: 16, paddingVertical: 12, marginHorizontal: 20,
+        marginBottom: 16, gap: 10, elevation: 4, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 10,
     },
-    searchInput: { flex: 1, fontSize: 14, color: theme.colors.text.primary },
+    searchInput: { flex: 1, fontSize: 14, color: theme.colors.text.primary, fontWeight: '500' },
 
-    tagsRow: { flexDirection: 'row', paddingLeft: 20, marginBottom: 12, gap: 8 },
+    tagsRow: { flexDirection: 'row', paddingLeft: 20, marginBottom: 16, gap: 8 },
     tag: {
-        paddingVertical: 8, paddingHorizontal: 16, borderRadius: 40,
+        paddingVertical: 10, paddingHorizontal: 20, borderRadius: 16,
         backgroundColor: '#FFF', borderWidth: 1, borderColor: 'rgba(0,0,0,0.05)',
     },
-    tagActive: { backgroundColor: theme.colors.primary },
-    tagText: { fontSize: 12, fontWeight: '600', color: theme.colors.text.primary },
+    tagActive: { backgroundColor: theme.colors.primary, borderColor: theme.colors.primary },
+    tagText: { fontSize: 13, fontWeight: '600', color: theme.colors.text.primary },
     tagTextActive: { color: '#FFF' },
 
-    sortRow: { flexDirection: 'row', paddingLeft: 20, marginBottom: 16, gap: 8 },
-    sortBtn: { paddingVertical: 6, paddingHorizontal: 14, borderRadius: 20, backgroundColor: theme.colors.accent },
+    sortContainer: { flexDirection: 'row', alignItems: 'center', paddingLeft: 20, marginBottom: 20, gap: 12 },
+    sortScroll: { gap: 8, paddingRight: 20 },
+    sortBtn: { paddingVertical: 6, paddingHorizontal: 14, borderRadius: 12, backgroundColor: 'rgba(0,0,0,0.03)' },
     sortBtnActive: { backgroundColor: theme.colors.secondary },
     sortText: { fontSize: 12, fontWeight: '600', color: theme.colors.text.primary },
     sortTextActive: { fontWeight: '800' },
@@ -288,16 +361,42 @@ const styles = StyleSheet.create({
     list: { paddingHorizontal: 20, paddingBottom: 100 },
     emptyText: { textAlign: 'center', color: theme.colors.text.secondary, marginTop: 60, fontSize: 15 },
 
-    reviewCard: { padding: 18, marginBottom: 14, borderRadius: 28 },
-    reviewHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 },
+    reviewCard: { padding: 20, marginBottom: 16, borderRadius: 32, borderWidth: 1, borderColor: 'rgba(0,0,0,0.03)' },
+    reviewHeader: { flexDirection: 'row', alignItems: 'center', gap: 14, marginBottom: 16 },
+    avatarContainer: { position: 'relative' },
+    avatarImage: { width: 48, height: 48, borderRadius: 24 },
     avatarCircle: {
-        width: 40, height: 40, borderRadius: 20, backgroundColor: theme.colors.primary,
+        width: 48, height: 48, borderRadius: 24, backgroundColor: theme.colors.primary,
         justifyContent: 'center', alignItems: 'center',
     },
-    avatarText: { color: '#FFF', fontWeight: '800', fontSize: 16 },
-    reviewerName: { fontSize: 14, fontWeight: '800', color: theme.colors.text.primary },
-    reviewMeta: { fontSize: 11, color: theme.colors.text.secondary, marginTop: 2 },
-    reviewComment: { fontSize: 13, color: theme.colors.text.primary, lineHeight: 20, marginBottom: 12 },
-    likeRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-    likeCount: { fontSize: 12, color: theme.colors.text.secondary },
+    avatarText: { color: '#FFF', fontWeight: '800', fontSize: 18 },
+    verifiedBadge: {
+        position: 'absolute', bottom: -2, right: -2, width: 18, height: 18, borderRadius: 9,
+        backgroundColor: '#22C55E', justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: '#FFF',
+    },
+    reviewerName: { fontSize: 16, fontWeight: '800', color: theme.colors.text.primary, marginBottom: 2 },
+    metaRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+    reviewMeta: { fontSize: 12, color: theme.colors.text.secondary, fontWeight: '500' },
+    ratingBox: { alignItems: 'flex-end', gap: 4 },
+    ratingText: { fontSize: 14, fontWeight: '800', color: theme.colors.text.primary },
+
+    statsBadges: { flexDirection: 'row', gap: 8, marginBottom: 14, flexWrap: 'wrap' },
+    statBadge: {
+        flexDirection: 'row', alignItems: 'center', gap: 4,
+        backgroundColor: 'rgba(26,60,52,0.05)', paddingVertical: 4, paddingHorizontal: 8, borderRadius: 8
+    },
+    statBadgeText: { fontSize: 11, fontWeight: '700', color: theme.colors.primary },
+
+    reviewComment: { fontSize: 14, color: theme.colors.text.primary, lineHeight: 22, marginBottom: 16, opacity: 0.9 },
+
+    imagesScroll: { marginBottom: 16, marginHorizontal: -4 },
+    reviewImage: { width: 120, height: 120, borderRadius: 16, marginHorizontal: 4 },
+
+    reviewFooter: {
+        flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+        paddingTop: 16, borderTopWidth: 1, borderTopColor: 'rgba(0,0,0,0.04)'
+    },
+    likeBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: 'rgba(26,60,52,0.08)', paddingVertical: 6, paddingHorizontal: 12, borderRadius: 20 },
+    likeBtnText: { fontSize: 12, fontWeight: '700', color: theme.colors.primary },
+    dateText: { fontSize: 11, color: theme.colors.text.secondary, fontWeight: '500' },
 });

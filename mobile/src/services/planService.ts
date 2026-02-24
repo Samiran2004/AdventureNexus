@@ -41,6 +41,14 @@ export const planService = {
         });
         return res.data;
     },
+
+    // POST save an AI-generated plan to user's personal list
+    async savePlan(token: string, planId: string) {
+        const res = await api.post(`/plans/${planId}/save`, {}, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return res.data;
+    },
 };
 
 export const likedPlansService = {
@@ -109,6 +117,24 @@ export const userService = {
     // GET user profile
     async getProfile(token: string) {
         const res = await api.get('/users/profile', {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return res.data;
+    },
+};
+
+export const communityService = {
+    // GET user profile by clerk ID
+    async getUserProfile(token: string, clerkUserId: string) {
+        const res = await api.get(`/community/profile/${clerkUserId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return res.data;
+    },
+
+    // POST toggle follow
+    async toggleFollow(token: string, targetClerkUserId: string) {
+        const res = await api.post('/community/follow', { targetClerkUserId }, {
             headers: { Authorization: `Bearer ${token}` },
         });
         return res.data;

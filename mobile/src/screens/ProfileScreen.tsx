@@ -1,301 +1,250 @@
 import React, { useState, useEffect } from 'react';
 import {
-    View, Text, StyleSheet, Image, SafeAreaView, ScrollView,
-    TouchableOpacity, ActivityIndicator, Alert,
+    View, Text, StyleSheet, Image, ScrollView,
+    TouchableOpacity, ActivityIndicator, Alert, ImageBackground
 } from 'react-native';
 import { useUser, useAuth } from '@clerk/clerk-expo';
 import { theme } from '../styles/theme';
-import { likedPlansService } from '../services/planService';
+import { likedPlansService, communityService } from '../services/planService';
 import BentoCard from '../components/common/BentoCard';
-import { MapPin, Heart, Star, Globe, LogOut, User, Edit3 } from 'lucide-react-native';
+import { MapPin, Star, Globe, LogOut, User, Clock, Grid, List } from 'lucide-react-native';
+import { StatusBar } from 'expo-status-bar';
 
 export default function ProfileScreen({ navigation }: any) {
-    const { user, isLoaded: userLoaded } = useUser();
-    const { getToken, signOut } = useAuth();
+    const { user, isLoaded } = useUser();
+    const { signOut, getToken } = useAuth();
+
     const [likedPlans, setLikedPlans] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<'stats' | 'liked'>('stats');
-    const [signingOut, setSigningOut] = useState(false);
+    const [profileStats, setProfileStats] = useState<any>(null); // Added profileStats state
+    const [loadingPlans, setLoadingPlans] = useState(true);
+    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
     useEffect(() => {
-        if (!userLoaded || !user) { setLoading(false); return; }
-
-        const load = async () => {
+        const fetchProfileAndPlans = async () => { // Renamed function
             try {
                 const token = await getToken();
-                if (token) {
-                    const likedData = await likedPlansService.getLikedPlans(token);
-                    setLikedPlans(likedData?.likedPlans || likedData?.data || []);
-                }
-            } catch { /* silently fail — user data from Clerk is enough */ }
-            setLoading(false);
-        };
-        load();
-    }, [userLoaded, user]);
+                if (token && user) {
+                    // Fetch real stats
+                    const profileRes = await communityService.getUserProfile(token, user.id);
+                    if (profileRes.success) {
+                        setProfileStats(profileRes.data.profile);
+                    }
 
-    const handleSignOut = async () => {
-        Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
-            { text: 'Cancel', style: 'cancel' },
-            {
-                text: 'Sign Out', style: 'destructive',
-                onPress: async () => {
-                    setSigningOut(true);
-                    await signOut();
-                    setSigningOut(false);
-                },
-            },
+                    // Fetch liked plans
+                    const plansRes = await likedPlansService.getLikedPlans(token);
+                    // The backend returns { success: true, likedPlans: [...] }
+                    setLikedPlans(plansRes.likedPlans || []);
+                }
+            } catch (error) {
+                console.error("Error fetching profile data:", error); // Updated error message
+            } finally {
+                setLoadingPlans(false);
+            }
+        };
+
+        if (isLoaded && user) {
+            fetchProfileAndPlans();
+        }
+    }, [isLoaded, user]);
+
+    const handleSignOut = () => {
+        Alert.alert("Sign Out", "Are you sure you want to log out?", [
+            { text: "Cancel", style: "cancel" },
+            { text: "Log Out", onPress: () => signOut(), style: "destructive" }
         ]);
     };
 
-    if (!userLoaded || loading) {
-        return (
-            <SafeAreaView style={styles.safeArea}>
-                <View style={styles.loadingBox}>
-                    <ActivityIndicator size="large" color={theme.colors.primary} />
-                </View>
-            </SafeAreaView>
-        );
-    }
-
-    const fullName = user?.fullName || `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || 'Adventure Seeker';
-    const username = user?.username || user?.primaryEmailAddress?.emailAddress?.split('@')[0] || 'traveler';
-    const email = user?.primaryEmailAddress?.emailAddress || '';
-    const avatarUrl = user?.imageUrl;
+    if (!isLoaded || !user) return null;
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+            <StatusBar style="light" />
+
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
+                {/* ─── 1. HEADER MASK (CURVED) ─────────────────────────────────── */}
+                <View style={styles.headerContainer}>
+                    <ImageBackground
+                        source={{ uri: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&q=80' }}
+                        style={styles.coverImage}
+                        imageStyle={styles.coverImageStyle}
+                        resizeMode="cover"
+                    >
+                        <View style={styles.headerOverlay} />
+                        <View style={styles.navRow}>
+                            <TouchableOpacity style={styles.headerBtn} onPress={() => navigation.goBack()}>
+                                <User size={20} color="#FFF" />
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.headerBtn} onPress={handleSignOut}>
+                                <LogOut size={20} color="#FFF" />
+                            </TouchableOpacity>
+                        </View>
+                    </ImageBackground>
+                </View>
 
-                {/* Sign Out button */}
-                <TouchableOpacity style={styles.signOutBtn} onPress={handleSignOut} disabled={signingOut}>
-                    {signingOut
-                        ? <ActivityIndicator size="small" color="#FFF" />
-                        : <><LogOut size={14} color="#FFF" /><Text style={styles.signOutText}>Sign Out</Text></>
-                    }
-                </TouchableOpacity>
-
-                {/* Profile Hero */}
-                <View style={styles.hero}>
+                {/* ─── 2. SQUIRCLE AVATAR (borderRadius: 40) ────────────────────── */}
+                <View style={styles.avatarRow}>
                     <View style={styles.avatarWrapper}>
-                        {avatarUrl ? (
-                            <Image source={{ uri: avatarUrl }} style={styles.avatar} />
+                        {user.imageUrl ? (
+                            <Image source={{ uri: user.imageUrl }} style={styles.avatar} />
                         ) : (
                             <View style={styles.avatarFallback}>
                                 <User size={40} color="#FFF" />
                             </View>
                         )}
-                        {/* Verified badge */}
-                        {user?.primaryEmailAddress?.verification?.status === 'verified' && (
-                            <View style={styles.verifiedBadge}>
-                                <Text style={{ fontSize: 12 }}>✓</Text>
-                            </View>
-                        )}
+                        <View style={styles.verifiedBadge}>
+                            <Text style={{ fontSize: 9, color: '#FFF' }}>✓</Text>
+                        </View>
                     </View>
-                    <Text style={styles.name}>{fullName}</Text>
-                    <Text style={styles.username}>@{username}</Text>
-                    <Text style={styles.email}>{email}</Text>
-                    {user?.createdAt && (
-                        <View style={styles.joinedRow}>
-                            <Star size={12} color={theme.colors.primary} />
-                            <Text style={styles.joinedText}>
-                                Joined {new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-                            </Text>
+                </View>
+
+                {/* ─── 3. USER INFO ──────────────────────────────────────────────── */}
+                <View style={styles.infoSection}>
+                    <Text style={styles.name}>{user.fullName || user.username}</Text>
+                    <View style={styles.locationRow}>
+                        <MapPin size={14} color="#6B7280" />
+                        <Text style={styles.locationText}>Traveler • Explorer</Text>
+                    </View>
+                    <Text style={styles.bioText}>Adventuring through the world one plan at a time. Nature lover & story seeker.</Text>
+                </View>
+
+                {/* ─── 4. USER STATS (Dividers & Space-Evenly) ──────────────────── */}
+                <View style={styles.statsRow}>
+                    <View style={styles.statCol}>
+                        <Text style={styles.statVal}>{likedPlans.length}</Text>
+                        <Text style={styles.statLab}>Plans</Text>
+                    </View>
+                    <View style={styles.divider} />
+                    <View style={styles.statCol}>
+                        <Text style={styles.statVal}>{profileStats?.followingCount || 0}</Text>
+                        <Text style={styles.statLab}>Friends</Text>
+                    </View>
+                    <View style={styles.divider} />
+                    <View style={styles.statCol}>
+                        <Text style={styles.statVal}>{profileStats?.followersCount || 0}</Text>
+                        <Text style={styles.statLab}>Followers</Text>
+                    </View>
+                </View>
+
+                {/* ─── 5. GRID GALLERY (Activity Cards) ─────────────────────────── */}
+                <View style={styles.gridSection}>
+                    <View style={styles.gridHeader}>
+                        <Text style={styles.gridTitle}>Liked Activity</Text>
+                        <View style={styles.viewToggle}>
+                            <TouchableOpacity onPress={() => setViewMode('list')}>
+                                <List size={20} color={viewMode === 'list' ? '#1A3C34' : '#D1D5DB'} />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => setViewMode('grid')}>
+                                <Grid size={20} color={viewMode === 'grid' ? '#1A3C34' : '#D1D5DB'} />
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+
+                    {loadingPlans ? (
+                        <ActivityIndicator color="#1A3C34" />
+                    ) : likedPlans.length === 0 ? (
+                        <View style={styles.emptyContainer}>
+                            <Text style={styles.emptyText}>No liked plans yet.</Text>
+                        </View>
+                    ) : (
+                        <View style={styles.plansGrid}>
+                            {likedPlans.map((plan: any, idx: number) => (
+                                <TouchableOpacity key={plan._id || idx} style={styles.planCard}>
+                                    <Image
+                                        source={{ uri: plan.destinationImage || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=400&q=80' }}
+                                        style={styles.planThumb}
+                                    />
+                                    <View style={styles.planCardOverlay}>
+                                        <Text style={styles.planName} numberOfLines={1}>{plan.destination}</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            ))}
                         </View>
                     )}
                 </View>
 
-                {/* Tabs */}
-                <View style={styles.tabs}>
-                    <TouchableOpacity
-                        style={[styles.tab, activeTab === 'stats' && styles.tabActive]}
-                        onPress={() => setActiveTab('stats')}
-                    >
-                        <Text style={[styles.tabText, activeTab === 'stats' && styles.tabTextActive]}>Overview</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={[styles.tab, activeTab === 'liked' && styles.tabActive]}
-                        onPress={() => setActiveTab('liked')}
-                    >
-                        <Heart size={14} color={activeTab === 'liked' ? '#FFF' : theme.colors.text.primary} />
-                        <Text style={[styles.tabText, activeTab === 'liked' && styles.tabTextActive]}>
-                            Liked ({likedPlans.length})
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-
-                {/* Tab Content */}
-                {activeTab === 'stats' ? (
-                    <View style={styles.bentoGrid}>
-                        <BentoCard style={styles.statCard}>
-                            <Heart size={28} color="#FF4E6A" fill="#FF4E6A" />
-                            <Text style={styles.statNumber}>{likedPlans.length}</Text>
-                            <Text style={styles.statLabel}>Liked Trips</Text>
-                        </BentoCard>
-                        <BentoCard style={styles.statCard}>
-                            <Star size={28} color="#FFD700" fill="#FFD700" />
-                            <Text style={styles.statNumber}>4.9</Text>
-                            <Text style={styles.statLabel}>Avg Rating</Text>
-                        </BentoCard>
-                        <BentoCard style={styles.statCard}>
-                            <Globe size={28} color={theme.colors.primary} />
-                            <Text style={styles.statNumber}>12</Text>
-                            <Text style={styles.statLabel}>Destinations</Text>
-                        </BentoCard>
-                        <BentoCard style={styles.statCard}>
-                            <MapPin size={28} color={theme.colors.primary} />
-                            <Text style={styles.statNumber}>5</Text>
-                            <Text style={styles.statLabel}>Trips Planned</Text>
-                        </BentoCard>
-                    </View>
-                ) : (
-                    <View style={styles.likedList}>
-                        {likedPlans.length === 0 ? (
-                            <View style={styles.emptyBox}>
-                                <Heart size={48} color={theme.colors.text.secondary} />
-                                <Text style={styles.emptyText}>No liked trips yet.</Text>
-                                <Text style={styles.emptySubText}>Search and heart plans to save them here.</Text>
-                                <TouchableOpacity
-                                    style={styles.searchNowBtn}
-                                    onPress={() => navigation.navigate('Search')}
-                                >
-                                    <Text style={styles.searchNowText}>Search Destinations →</Text>
-                                </TouchableOpacity>
-                            </View>
-                        ) : (
-                            likedPlans.map((plan: any, idx: number) => (
-                                <BentoCard
-                                    key={plan._id || idx}
-                                    style={styles.likedCard}
-                                    onPress={() => navigation.navigate('Details', { plan })}
-                                >
-                                    {plan.image_url ? (
-                                        <Image
-                                            source={{ uri: plan.image_url }}
-                                            style={styles.likedImage}
-                                            resizeMode="cover"
-                                        />
-                                    ) : (
-                                        <View style={[styles.likedImage, styles.imagePlaceholder]}>
-                                            <Text style={{ fontSize: 32 }}>🌍</Text>
-                                        </View>
-                                    )}
-                                    <View style={styles.likedOverlay} />
-                                    <View style={styles.likedContent}>
-                                        <Text style={styles.likedTitle} numberOfLines={2}>{plan.name}</Text>
-                                        <Text style={styles.likedMeta}>📅 {plan.days} days</Text>
-                                    </View>
-                                </BentoCard>
-                            ))
-                        )}
-                    </View>
-                )}
-
-                {/* Auth info card */}
-                <BentoCard style={styles.authCard}>
-                    <View style={styles.authCardHeader}>
-                        <Text style={styles.authCardTitle}>🔒 Authentication</Text>
-                        <View style={styles.authBadge}>
-                            <Text style={styles.authBadgeText}>Clerk</Text>
-                        </View>
-                    </View>
-                    <Text style={styles.authCardDesc}>
-                        Your account is secured with Clerk. Tokens are stored securely on device.
-                    </Text>
-                    <View style={styles.authCardRow}>
-                        <Text style={styles.authCardLabel}>Status</Text>
-                        <View style={styles.authStatus}>
-                            <View style={styles.authDot} />
-                            <Text style={styles.authStatusText}>Verified & Active</Text>
-                        </View>
-                    </View>
-                </BentoCard>
-
                 <View style={{ height: 100 }} />
             </ScrollView>
-        </SafeAreaView>
+        </View>
     );
 }
 
-const C = theme.colors;
 const styles = StyleSheet.create({
-    safeArea: { flex: 1, backgroundColor: C.background },
-    scroll: { paddingHorizontal: 20, paddingTop: 20 },
-    loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+    container: { flex: 1, backgroundColor: '#F5F7F0' },
+    scroll: { flexGrow: 1 },
+    loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F5F7F0' },
 
-    signOutBtn: {
-        flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-end',
-        backgroundColor: '#EF4444', paddingVertical: 8, paddingHorizontal: 14, borderRadius: 40,
-        marginBottom: 16,
+    // Header Mask
+    headerContainer: {
+        height: 240,
+        borderBottomLeftRadius: 100,
+        overflow: 'hidden',
+        backgroundColor: '#1A3C34'
     },
-    signOutText: { color: '#FFF', fontSize: 12, fontWeight: '700' },
+    coverImage: { width: '100%', height: '100%' },
+    coverImageStyle: { opacity: 0.9 },
+    headerOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.15)' },
+    navRow: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 50 },
+    headerBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.2)', justifyContent: 'center', alignItems: 'center' },
 
-    hero: { alignItems: 'center', marginBottom: 24 },
-    avatarWrapper: { marginBottom: 14 },
-    avatar: { width: 90, height: 90, borderRadius: 45 },
-    avatarFallback: {
-        width: 90, height: 90, borderRadius: 45,
-        backgroundColor: C.primary, justifyContent: 'center', alignItems: 'center',
+    // Avatar
+    avatarRow: { alignItems: 'center', marginTop: -60, zIndex: 10 },
+    avatarWrapper: {
+        width: 120, height: 120,
+        borderRadius: 40, // Modern Squircle
+        backgroundColor: '#FFFFFF',
+        padding: 5,
+        shadowColor: '#000', shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.1, shadowRadius: 12, elevation: 8,
     },
+    avatar: { width: '100%', height: '100%', borderRadius: 36 },
+    avatarFallback: { flex: 1, backgroundColor: '#1A3C34', borderRadius: 36, justifyContent: 'center', alignItems: 'center' },
     verifiedBadge: {
-        position: 'absolute', bottom: 0, right: 0,
-        width: 24, height: 24, borderRadius: 12, backgroundColor: '#22C55E',
-        justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: '#FFF',
+        position: 'absolute', bottom: -2, right: -2, width: 22, height: 22,
+        borderRadius: 11, backgroundColor: '#4ADE80', borderWidth: 3, borderColor: '#FFF',
+        justifyContent: 'center', alignItems: 'center',
     },
-    name: { fontSize: 26, fontWeight: '900', color: C.text.primary },
-    username: { fontSize: 14, color: C.text.secondary, marginTop: 2 },
-    email: { fontSize: 12, color: C.text.secondary, marginTop: 4 },
-    joinedRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 8 },
-    joinedText: { fontSize: 12, color: C.primary, fontWeight: '600' },
 
-    tabs: { flexDirection: 'row', gap: 10, marginBottom: 20 },
-    tab: {
-        flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 6,
-        paddingVertical: 12, borderRadius: 40, backgroundColor: '#FFF',
-        borderWidth: 1, borderColor: 'rgba(0,0,0,0.05)',
-    },
-    tabActive: { backgroundColor: C.primary },
-    tabText: { fontSize: 13, fontWeight: '700', color: C.text.primary },
-    tabTextActive: { color: '#FFF' },
+    // Info
+    infoSection: { alignItems: 'center', marginTop: 15, paddingHorizontal: 40 },
+    name: { fontSize: 24, fontWeight: '700', color: '#1A2421', letterSpacing: -0.5 },
+    locationRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 4 },
+    locationText: { fontSize: 14, color: '#6B7280', fontWeight: '500' },
+    bioText: { fontSize: 14, color: '#6B7280', textAlign: 'center', marginTop: 15, lineHeight: 20 },
 
-    bentoGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginBottom: 20 },
-    statCard: {
-        width: '47%', aspectRatio: 1.1, justifyContent: 'center', alignItems: 'center',
+    // Stats
+    statsRow: {
+        flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly',
+        marginTop: 30, paddingVertical: 15,
     },
-    statNumber: { fontSize: 30, fontWeight: '900', color: C.text.primary, marginTop: 8 },
-    statLabel: { fontSize: 12, color: C.text.secondary, marginTop: 4, fontWeight: '600' },
+    statCol: { alignItems: 'center' },
+    statVal: { fontSize: 20, fontWeight: '700', color: '#1A2421' },
+    statLab: { fontSize: 12, color: '#6B7280', fontWeight: '600', marginTop: 2 },
+    divider: { width: 1, height: 30, backgroundColor: '#E5E7EB' },
 
-    likedList: {},
-    emptyBox: { alignItems: 'center', paddingVertical: 50 },
-    emptyText: { fontSize: 18, fontWeight: '800', color: C.text.primary, marginTop: 16 },
-    emptySubText: { fontSize: 13, color: C.text.secondary, marginTop: 6, textAlign: 'center' },
-    searchNowBtn: {
-        backgroundColor: C.primary, paddingVertical: 12, paddingHorizontal: 28,
-        borderRadius: 40, marginTop: 16,
-    },
-    searchNowText: { color: '#FFF', fontWeight: '700', fontSize: 14 },
+    // Grid Gallery
+    gridSection: { marginTop: 20, paddingHorizontal: 20 },
+    gridHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
+    gridTitle: { fontSize: 13, fontWeight: '800', color: '#1A2421', textTransform: 'uppercase', letterSpacing: 1 },
+    viewToggle: { flexDirection: 'row', gap: 12 },
 
-    likedCard: { height: 200, padding: 0, marginBottom: 14, borderRadius: 28 },
-    likedImage: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: 28 },
-    imagePlaceholder: { backgroundColor: C.accent, justifyContent: 'center', alignItems: 'center' },
-    likedOverlay: {
-        position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-        borderRadius: 28, backgroundColor: 'rgba(0,0,0,0.38)',
+    plansGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, justifyContent: 'space-between' },
+    planCard: {
+        width: '48%',
+        height: 180,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 24,
+        overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: '#F0F2EB',
+        marginBottom: 10
     },
-    likedContent: { flex: 1, justifyContent: 'flex-end', padding: 18 },
-    likedTitle: { fontSize: 18, fontWeight: '800', color: '#FFF', marginBottom: 4 },
-    likedMeta: { fontSize: 12, color: 'rgba(255,255,255,0.8)', fontWeight: '600' },
+    planThumb: { width: '100%', height: '100%', backgroundColor: '#F3F4F6' },
+    planCardOverlay: {
+        position: 'absolute', bottom: 0, left: 0, right: 0,
+        padding: 12, backgroundColor: 'rgba(255,255,255,0.85)'
+    },
+    planName: { fontSize: 12, fontWeight: '700', color: '#1A2421', textAlign: 'center' },
 
-    authCard: { padding: 20, marginTop: 4, marginBottom: 10 },
-    authCardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
-    authCardTitle: { fontSize: 14, fontWeight: '800', color: C.text.primary },
-    authBadge: {
-        backgroundColor: C.primary, paddingVertical: 4, paddingHorizontal: 12, borderRadius: 20,
-    },
-    authBadgeText: { color: '#FFF', fontSize: 11, fontWeight: '700' },
-    authCardDesc: { fontSize: 12, color: C.text.secondary, lineHeight: 18, marginBottom: 12 },
-    authCardRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-    authCardLabel: { fontSize: 12, color: C.text.secondary },
-    authStatus: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-    authDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#22C55E' },
-    authStatusText: { fontSize: 12, color: '#22C55E', fontWeight: '700' },
+    emptyContainer: { paddingVertical: 40, alignItems: 'center' },
+    emptyText: { color: '#6B7280', fontSize: 14 },
 });
