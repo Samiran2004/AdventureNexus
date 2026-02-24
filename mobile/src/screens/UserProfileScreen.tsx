@@ -56,10 +56,13 @@ export default function UserProfileScreen({ route, navigation }: any) {
                             ? prev.followersCount + 1
                             : prev.followersCount - 1
                     }));
+                } else {
+                    Alert.alert("Error", res.message || "Failed to update follow status.");
                 }
             }
-        } catch (error) {
-            Alert.alert("Error", "Failed to update follow status.");
+        } catch (error: any) {
+            const errorMsg = error.response?.data?.message || error.message || "Failed to update follow status.";
+            Alert.alert("Error", errorMsg);
         } finally {
             setTogglingFollow(false);
         }

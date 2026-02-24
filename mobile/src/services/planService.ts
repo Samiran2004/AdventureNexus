@@ -148,8 +148,8 @@ export const communityService = {
     },
 
     // POST toggle follow
-    async toggleFollow(token: string, clerkUserId: string) {
-        const res = await api.post(`/community/follow/${clerkUserId}`, {}, {
+    async toggleFollow(token: string, targetClerkUserId: string) {
+        const res = await api.post('/community/follow', { targetClerkUserId }, {
             headers: { Authorization: `Bearer ${token}` }
         });
         return res.data;

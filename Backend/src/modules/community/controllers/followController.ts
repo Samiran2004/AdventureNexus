@@ -25,13 +25,57 @@ export const toggleFollow = async (req: Request, res: Response) => {
             });
         }
 
-        const targetUser = await User.findOne({ clerkUserId: targetClerkUserId });
-        const followerUser = await User.findOne({ clerkUserId: followerClerkUserId });
+        let targetUser = await User.findOne({ clerkUserId: targetClerkUserId });
+        let followerUser = await User.findOne({ clerkUserId: followerClerkUserId });
+
+        // --- REAL-TIME SYNC FALLBACK ---
+        if (!targetUser) {
+            try {
+                const clerkUser = await clerkClient.users.getUser(targetClerkUserId);
+                if (clerkUser) {
+                    targetUser = await User.findOneAndUpdate(
+                        { clerkUserId: targetClerkUserId },
+                        {
+                            clerkUserId: clerkUser.id,
+                            email: clerkUser.emailAddresses[0]?.emailAddress,
+                            username: clerkUser.username || clerkUser.externalAccounts[0]?.username || `traveler_${clerkUser.id.substring(0, 5)}`,
+                            firstName: clerkUser.firstName,
+                            lastName: clerkUser.lastName,
+                            fullname: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || clerkUser.username || 'Traveler',
+                            profilepicture: clerkUser.imageUrl,
+                        },
+                        { upsert: true, new: true }
+                    );
+                }
+            } catch (e) { }
+        }
+
+        if (!followerUser && followerClerkUserId) {
+            try {
+                const clerkUser = await clerkClient.users.getUser(followerClerkUserId);
+                if (clerkUser) {
+                    followerUser = await User.findOneAndUpdate(
+                        { clerkUserId: followerClerkUserId },
+                        {
+                            clerkUserId: clerkUser.id,
+                            email: clerkUser.emailAddresses[0]?.emailAddress,
+                            username: clerkUser.username || clerkUser.externalAccounts[0]?.username || `traveler_${clerkUser.id.substring(0, 5)}`,
+                            firstName: clerkUser.firstName,
+                            lastName: clerkUser.lastName,
+                            fullname: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || clerkUser.username || 'Traveler',
+                            profilepicture: clerkUser.imageUrl,
+                        },
+                        { upsert: true, new: true }
+                    );
+                }
+            } catch (e) { }
+        }
 
         if (!targetUser || !followerUser) {
+            logger.warn(`❌ Follow failed: Target(${targetClerkUserId}:${!!targetUser}) or Follower(${followerClerkUserId}:${!!followerUser}) not in DB`);
             return res.status(StatusCodes.NOT_FOUND).json({
                 success: false,
-                message: 'User not found'
+                message: 'User not found in database'
             });
         }
 

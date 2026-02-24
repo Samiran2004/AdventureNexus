@@ -10,7 +10,7 @@ import BentoCard from '../components/common/BentoCard';
 import { Image, ScrollView } from 'react-native';
 import { useUser, useAuth } from '@clerk/clerk-expo';
 
-const TRIP_TYPES = ['All', 'Solo', 'Family', 'Adventure', 'Romance', 'Group'];
+const TRIP_TYPES = ['All', 'Solo', 'Family', 'Couple', 'Adventure', 'Cultural', 'Business', 'Nature'];
 const SORT_OPTIONS = [
     { label: 'Newest', value: 'newest' },
     { label: 'Highest', value: 'highest' },
@@ -95,32 +95,40 @@ export default function ReviewsScreen({ navigation }: any) {
             Alert.alert('Missing Info', 'Please fill in comment and location.');
             return;
         }
+
         try {
             const token = await getToken();
-            if (!token) {
+            if (!token || !user) {
                 Alert.alert('Sign In', 'Please sign in to share a review.');
                 return;
             }
 
-            await reviewService.createReview(token, {
+            const res = await reviewService.createReview(token, {
                 rating: newRating,
                 comment: newComment.trim(),
                 location: newLocation.trim(),
                 tripType: newType.toLowerCase() as any,
-                userName: user?.fullName || 'Traveler',
-                userAvatar: user?.imageUrl || '',
-                userId: user?.id || '',
-                clerkUserId: user?.id || '',
-                tripDuration: '3 Days', // Defualt as it's mandatory in schema
-                travelers: '1',        // Default as it's mandatory in schema
+                userName: user.fullName || 'Traveler',
+                userAvatar: user.imageUrl || '',
+                userId: user.id || '',
+                clerkUserId: user.id || '',
+                tripDuration: '3 Days',
+                travelers: '1',
             });
-            Alert.alert('Success ✨', 'Your journey has been shared!');
-            setShowForm(false);
-            setNewComment(''); setNewLocation('');
-            fetchReviews(true);
+
+            if (res.success) {
+                Alert.alert('Success ✨', 'Your journey has been shared!');
+                setShowForm(false);
+                setNewComment('');
+                setNewLocation('');
+                fetchReviews(true);
+            } else {
+                Alert.alert('Error', res.message || 'Failed to submit review.');
+            }
         } catch (error: any) {
             console.error("Submit error:", error);
-            Alert.alert('Error', 'Failed to submit review. Please try again.');
+            const errorMsg = error.response?.data?.message || error.message || 'Failed to submit review.';
+            Alert.alert('Error', errorMsg);
         }
     };
 
