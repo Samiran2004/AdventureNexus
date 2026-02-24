@@ -73,21 +73,21 @@ const generateNewSearchDestinationPrompt = (data: SearchNewDestinationPromptData
             - "arrival_tips": array of strings (e.g., "Pre-paid taxis are available at the airport").
 
         **Rules:**
-        - Return **ONLY** the valid JSON Array. Do not include markdown formatting (like request \`\`\`json) or extra text.
+        - Return **ONLY** the valid JSON Object. Do not include markdown formatting (like \`\`\`json) or extra text.
         - Ensure all prices are realistic estimates in INR.
 
-        **Example Output Format:**
+        ** Example Output Format:**
         {
             "plans": [
                 {
                     "ai_score": "98%",
                     "image_url": "...",
                     "name": "Tokyo, Japan",
-                     ...
+                    ...
                 }
             ]
         }
-    `;
+            `;
 }
 
 export default generateNewSearchDestinationPrompt;

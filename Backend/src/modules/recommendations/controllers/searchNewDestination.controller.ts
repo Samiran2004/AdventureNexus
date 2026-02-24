@@ -104,8 +104,9 @@ const searchNewDestination = async (req: Request, res: Response) => {
         return match;
       });
 
-      // 2. Fix unescaped single quotes in values (very common in names like O'Hare)
-      // This is a bit tricky, but we can try to wrap unquoted strings
+      // 2. Fix missing commas between properties (Common LLM error)
+      // Matches a value (quote, digit) followed by a newline/space and then a new key, without a comma
+      cleanString = cleanString.replace(/("|\d|true|false|null|\]|\})\s*(?!\s*,)(\n\s*)"([^"]+)":/g, '$1,$2"$3":');
 
       try {
         const aiResponseObject = JSON.parse(cleanString);
@@ -117,7 +118,12 @@ const searchNewDestination = async (req: Request, res: Response) => {
         logger.warn(`Search: First parse failed, trying aggressive cleaning...`);
         // Remove trailing commas before closing braces/brackets
         const ultraClean = cleanString.replace(/,\s*([}\]])/g, '$1');
-        const aiResponseObject = JSON.parse(ultraClean);
+        // Final attempt: fix unescaped quotes in middle of strings (Dangerous but sometimes works)
+        const finalClean = ultraClean.replace(/:\s*"(.+?)"\s*(,|})/g, (match, p1, p2) => {
+          return `: "${p1.replace(/"/g, '\\"')}"${p2}`;
+        });
+
+        const aiResponseObject = JSON.parse(finalClean);
         aiResponseArray = aiResponseObject.plans || [];
       }
     } catch (parseError: any) {
