@@ -67,6 +67,10 @@ const generateNewSearchDestinationPrompt = (data: SearchNewDestinationPromptData
         13. "local_tips": array of strings.
         14. "hotel_options": array of 3 objects with "hotel_name", "description", "starRating", "amenities" (array), "category", "location" (object with "address", "city", "state", "country", "zipCode"), and "rooms" (array of 2 objects with "roomType", "pricePerNight", "amenities", "description", "capacity": {"adults": number, "children": number}).
         15. "flight_options": array of 3 objects with "airline", "flight_number", "departure_time", "arrival_time", "price", "class", "duration", "departure_airport", "arrival_airport".
+        16. "how_to_reach": object with:
+            - "best_way": string (recommendation, e.g., "Direct flight from Kolkata is the most convenient").
+            - "modes": array of objects with "type" (e.g., "Flight", "Train", "Bus", "Car"), "description", "estimated_cost" (string), "duration" (string).
+            - "arrival_tips": array of strings (e.g., "Pre-paid taxis are available at the airport").
 
         **Rules:**
         - Return **ONLY** the valid JSON Array. Do not include markdown formatting (like request \`\`\`json) or extra text.

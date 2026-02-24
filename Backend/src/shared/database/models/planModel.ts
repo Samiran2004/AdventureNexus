@@ -75,6 +75,16 @@ const planSchema = new Schema<IPlan>({
             lng: Number
         }
     }],
+    how_to_reach: {
+        best_way: String,
+        modes: [{
+            type: { type: String },
+            description: String,
+            estimated_cost: String,
+            duration: String
+        }],
+        arrival_tips: [String]
+    },
     local_tips: [String],
     hotels: [{ type: Schema.Types.ObjectId, ref: 'Hotel' }],
     flights: [{ type: Schema.Types.ObjectId, ref: 'Flight' }],

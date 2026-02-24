@@ -201,6 +201,7 @@ const searchNewDestination = async (req: Request, res: Response) => {
         trip_highlights: Array.isArray(aiResponse.trip_highlights) ? aiResponse.trip_highlights : [],
         suggested_itinerary: Array.isArray(aiResponse.suggested_itinerary) ? aiResponse.suggested_itinerary : [],
         local_tips: Array.isArray(aiResponse.local_tips) ? aiResponse.local_tips : [],
+        how_to_reach: aiResponse.how_to_reach,
         hotel_options: aiResponse.hotel_options, // Temporary storage for processing
         flight_options: aiResponse.flight_options, // Temporary storage for processing
         userId: null // Will attach user below if needed, or we can look it up here

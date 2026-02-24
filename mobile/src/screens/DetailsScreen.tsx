@@ -15,7 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { theme } from '../styles/theme';
 import BentoCard from '../components/common/BentoCard';
-import { ChevronLeft, Star, Clock, MapPin, Sparkles, X, Info, CheckCircle2, Sunrise, Sun, Sunset } from 'lucide-react-native';
+import { ChevronLeft, Star, Clock, MapPin, Sparkles, X, Info, CheckCircle2, Sunrise, Sun, Sunset, Plane, Train, Bus, Car, ArrowRight } from 'lucide-react-native';
 import { useAuth } from '@clerk/clerk-expo';
 import { planService } from '../services/planService';
 
@@ -29,6 +29,7 @@ export default function DetailsScreen({ navigation, route }: any) {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [selectedLocation, setSelectedLocation] = useState<any>(null);
     const [isMapVisible, setIsMapVisible] = useState(false);
+    const [activeDayIndex, setActiveDayIndex] = useState(0);
 
     useEffect(() => {
         if (plan?.name) {
@@ -159,6 +160,49 @@ export default function DetailsScreen({ navigation, route }: any) {
                         </View>
                     )}
 
+                    {/* How to Reach / Transport Section */}
+                    {plan.how_to_reach && (
+                        <>
+                            <Text style={styles.sectionLabel}>🚉 How to Get There</Text>
+                            <BentoCard style={styles.transportCard}>
+                                <Text style={styles.transportBestWay}>💡 {plan.how_to_reach.best_way}</Text>
+
+                                <View style={styles.transportModesContainer}>
+                                    {plan.how_to_reach.modes?.map((mode: any, idx: number) => {
+                                        const ModeIcon = mode.type === 'Flight' ? Plane : mode.type === 'Train' ? Train : mode.type === 'Bus' ? Bus : Car;
+                                        return (
+                                            <View key={idx} style={styles.transportModeItem}>
+                                                <View style={styles.transportIconBox}>
+                                                    <ModeIcon size={20} color={theme.colors.primary} />
+                                                </View>
+                                                <View style={{ flex: 1 }}>
+                                                    <Text style={styles.transportModeTitle}>{mode.type}</Text>
+                                                    <Text style={styles.transportModeDesc}>{mode.description}</Text>
+                                                    <View style={styles.transportStatsRow}>
+                                                        {mode.duration && <Text style={styles.transportStat}>⏱️ {mode.duration}</Text>}
+                                                        {mode.estimated_cost && <Text style={styles.transportStat}>💰 {mode.estimated_cost}</Text>}
+                                                    </View>
+                                                </View>
+                                            </View>
+                                        );
+                                    })}
+                                </View>
+
+                                {plan.how_to_reach.arrival_tips && (
+                                    <View style={styles.arrivalTipsBox}>
+                                        <Text style={styles.arrivalTipsTitle}>Arrival Tips:</Text>
+                                        {plan.how_to_reach.arrival_tips.map((tip: string, idx: number) => (
+                                            <View key={idx} style={styles.tipRow}>
+                                                <Info size={14} color={theme.colors.primary} style={{ marginTop: 2 }} />
+                                                <Text style={styles.arrivalTipText}>{tip}</Text>
+                                            </View>
+                                        ))}
+                                    </View>
+                                )}
+                            </BentoCard>
+                        </>
+                    )}
+
                     {/* Day by Day Itinerary */}
                     {plan.suggested_itinerary && plan.suggested_itinerary.length > 0 && (
                         <>
@@ -170,23 +214,45 @@ export default function DetailsScreen({ navigation, route }: any) {
                                 </TouchableOpacity>
                             </View>
 
-                            <View style={styles.timelineContainer}>
-                                {plan.suggested_itinerary.map((day: any, idx: number) => (
-                                    <View key={idx} style={styles.timelineItem}>
-                                        {/* Timeline Left: Massive Day Indicator */}
-                                        <View style={styles.timelineLeftColumn}>
-                                            <View style={styles.dayCircle}>
-                                                <Text style={styles.dayCircleLabel}>DAY</Text>
-                                                <Text style={styles.dayCircleNumber}>{idx + 1}</Text>
-                                            </View>
-                                            {idx < plan.suggested_itinerary.length - 1 && <View style={styles.timelineVerticalLine} />}
-                                        </View>
+                            {/* Horizontal Day Selector */}
+                            <ScrollView
+                                horizontal
+                                showsHorizontalScrollIndicator={false}
+                                style={styles.daySelectorScroll}
+                                contentContainerStyle={{ paddingRight: 20 }}
+                            >
+                                {plan.suggested_itinerary.map((_: any, idx: number) => (
+                                    <TouchableOpacity
+                                        key={idx}
+                                        style={[
+                                            styles.dayTab,
+                                            activeDayIndex === idx && styles.dayTabActive
+                                        ]}
+                                        onPress={() => setActiveDayIndex(idx)}
+                                    >
+                                        <Text style={[
+                                            styles.dayTabText,
+                                            activeDayIndex === idx && styles.dayTabTextActive
+                                        ]}>Day {idx + 1}</Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </ScrollView>
 
-                                        {/* Timeline Right: Content */}
-                                        <View style={styles.timelineRightColumn}>
+                            <View style={styles.timelineContainer}>
+                                {(() => {
+                                    const day = plan.suggested_itinerary[activeDayIndex];
+                                    if (!day) return null;
+
+                                    return (
+                                        <View style={styles.activeDayContainer}>
                                             <View style={styles.dayHeader}>
-                                                <Text style={styles.dayTitleText}>{day.title || `Exploring ${plan.to}`}</Text>
-                                                <Text style={styles.dayBriefText} numberOfLines={2}>{day.description}</Text>
+                                                <View style={styles.dayTitleRow}>
+                                                    <View style={styles.dayBadgeLarge}>
+                                                        <Text style={styles.dayBadgeText}>Day {activeDayIndex + 1}</Text>
+                                                    </View>
+                                                    <Text style={styles.dayTitleTextLarge}>{day.title || `Exploring ${plan.to}`}</Text>
+                                                </View>
+                                                <Text style={styles.dayBriefTextLarge}>{day.description}</Text>
                                             </View>
 
                                             <View style={styles.slotsWrapper}>
@@ -197,21 +263,31 @@ export default function DetailsScreen({ navigation, route }: any) {
                                                     const iconColor = slot === 'morning' ? '#EA580C' : slot === 'afternoon' ? '#CA8A04' : '#9333EA';
 
                                                     return (
-                                                        <View key={slot} style={[styles.premiumSlotCard, { backgroundColor: '#FFF' }]}>
-                                                            <View style={[styles.slotIconBox, { backgroundColor: bgColor }]}>
-                                                                <Icon size={18} color={iconColor} />
+                                                        <BentoCard key={slot} style={styles.modernSlotCard}>
+                                                            <View style={[styles.slotIconBoxLarge, { backgroundColor: bgColor }]}>
+                                                                <Icon size={24} color={iconColor} />
                                                             </View>
                                                             <View style={styles.slotContentBox}>
-                                                                <Text style={[styles.slotTimeLabel, { color: iconColor }]}>{slot}</Text>
+                                                                <View style={styles.slotHeaderRow}>
+                                                                    <Text style={[styles.slotTimeLabel, { color: iconColor }]}>{slot}</Text>
+                                                                    <ArrowRight size={14} color="#CBD5E1" />
+                                                                </View>
                                                                 <Text style={styles.slotDescriptionText}>{day[slot]}</Text>
+
+                                                                {day.activities?.filter((a: any) => a.time?.toLowerCase() === slot).map((act: any, aIdx: number) => (
+                                                                    <View key={aIdx} style={styles.subActivityBox}>
+                                                                        <Text style={styles.subActivityName}>• {act.name}</Text>
+                                                                        {act.cost && <Text style={styles.subActivityCost}>{act.cost}</Text>}
+                                                                    </View>
+                                                                ))}
                                                             </View>
-                                                        </View>
+                                                        </BentoCard>
                                                     );
                                                 })}
                                             </View>
                                         </View>
-                                    </View>
-                                ))}
+                                    );
+                                })()}
                             </View>
                         </>
                     )}
@@ -471,68 +547,50 @@ const styles = StyleSheet.create({
     },
     tagText: { fontSize: 13, color: theme.colors.primary, fontWeight: '700' },
 
-    // Extreme Timeline
+    // Extreme Timeline Styles (Restored and Integrated)
     sectionHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, marginTop: 10 },
     mapTrigger: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: 'rgba(26, 60, 52, 0.05)', paddingVertical: 8, paddingHorizontal: 16, borderRadius: 20 },
     mapTriggerText: { fontSize: 13, fontWeight: '700', color: theme.colors.primary },
 
-    timelineContainer: { marginBottom: 40 },
-    timelineItem: { flexDirection: 'row' },
-    timelineLeftColumn: { alignItems: 'center', width: 60 },
-    dayCircle: {
-        width: 54,
-        height: 54,
-        borderRadius: 18,
-        backgroundColor: theme.colors.primary,
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 10,
-        shadowColor: theme.colors.primary,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-        elevation: 6,
-    },
-    dayCircleLabel: { color: 'rgba(255,255,255,0.7)', fontSize: 9, fontWeight: '800', marginBottom: -2 },
-    dayCircleNumber: { color: '#FFF', fontSize: 20, fontWeight: '900' },
-    timelineVerticalLine: {
-        flex: 1,
-        width: 3,
-        backgroundColor: 'rgba(26, 60, 52, 0.12)',
-        marginVertical: 4,
-        borderRadius: 2,
-    },
-    timelineRightColumn: { flex: 1, paddingLeft: 12, paddingBottom: 40 },
-    dayHeader: { marginBottom: 16 },
-    dayTitleText: { fontSize: 19, fontWeight: '900', color: theme.colors.text.primary, marginBottom: 4 },
-    dayBriefText: { fontSize: 13, color: theme.colors.text.secondary, lineHeight: 20 },
+    // Transport Section
+    transportCard: { padding: 20, marginBottom: 24, backgroundColor: '#FFF' },
+    transportBestWay: { fontSize: 14, fontWeight: '700', color: theme.colors.primary, marginBottom: 16, lineHeight: 20 },
+    transportModesContainer: { gap: 16, marginBottom: 16 },
+    transportModeItem: { flexDirection: 'row', gap: 14 },
+    transportIconBox: { width: 40, height: 40, borderRadius: 12, backgroundColor: 'rgba(26, 60, 52, 0.05)', justifyContent: 'center', alignItems: 'center' },
+    transportModeTitle: { fontSize: 13, fontWeight: '800', color: theme.colors.text.primary, marginBottom: 2 },
+    transportModeDesc: { fontSize: 12, color: theme.colors.text.secondary, lineHeight: 18 },
+    transportStatsRow: { flexDirection: 'row', gap: 12, marginTop: 4 },
+    transportStat: { fontSize: 11, fontWeight: '700', color: theme.colors.primary },
+    arrivalTipsBox: { borderTopWidth: 1, borderTopColor: 'rgba(0,0,0,0.05)', paddingTop: 16 },
+    arrivalTipsTitle: { fontSize: 14, fontWeight: '800', color: theme.colors.text.primary, marginBottom: 10 },
+    arrivalTipText: { fontSize: 13, color: theme.colors.text.secondary, lineHeight: 18, flex: 1 },
 
-    slotsWrapper: { gap: 12 },
-    premiumSlotCard: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 14,
-        borderRadius: 20,
-        backgroundColor: '#FFF',
-        borderWidth: 1,
-        borderColor: 'rgba(0,0,0,0.03)',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.04,
-        shadowRadius: 10,
-        elevation: 1,
-    },
-    slotIconBox: {
-        width: 44,
-        height: 44,
-        borderRadius: 14,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: 14,
-    },
+    // Day Selector
+    daySelectorScroll: { marginBottom: 20 },
+    dayTab: { paddingHorizontal: 20, paddingVertical: 10, borderRadius: 25, backgroundColor: 'rgba(0,0,0,0.03)', marginRight: 10, borderWidth: 1, borderColor: 'transparent' },
+    dayTabActive: { backgroundColor: theme.colors.primary, borderColor: theme.colors.primary },
+    dayTabText: { fontSize: 14, fontWeight: '700', color: theme.colors.text.secondary },
+    dayTabTextActive: { color: '#FFF' },
+
+    // Timeline Container Redesign
+    timelineContainer: { marginBottom: 30 },
+    activeDayContainer: { opacity: 1 },
+    dayTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 8 },
+    dayBadgeLarge: { backgroundColor: 'rgba(26, 60, 52, 0.1)', paddingVertical: 4, paddingHorizontal: 10, borderRadius: 8 },
+    dayBadgeText: { fontSize: 12, fontWeight: '900', color: theme.colors.primary, textTransform: 'uppercase' },
+    dayTitleTextLarge: { fontSize: 24, fontWeight: '900', color: theme.colors.text.primary, flex: 1 },
+    dayBriefTextLarge: { fontSize: 14, color: theme.colors.text.secondary, lineHeight: 22, marginBottom: 20 },
+
+    modernSlotCard: { padding: 18, marginBottom: 14, flexDirection: 'row', gap: 16, backgroundColor: '#FFF' },
+    slotIconBoxLarge: { width: 56, height: 56, borderRadius: 18, justifyContent: 'center', alignItems: 'center' },
+    slotHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 },
+    slotTimeLabel: { fontSize: 11, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 1.5 },
+    slotDescriptionText: { fontSize: 15, color: theme.colors.text.primary, fontWeight: '600', lineHeight: 22, marginBottom: 8 },
+    subActivityBox: { marginTop: 6, borderLeftWidth: 2, borderLeftColor: 'rgba(0,0,0,0.05)', paddingLeft: 10 },
+    subActivityName: { fontSize: 13, color: theme.colors.text.secondary, fontWeight: '600' },
+    subActivityCost: { fontSize: 11, color: theme.colors.primary, fontWeight: '700', marginTop: 2 },
     slotContentBox: { flex: 1 },
-    slotTimeLabel: { fontSize: 10, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 2 },
-    slotDescriptionText: { fontSize: 14, color: theme.colors.text.primary, fontWeight: '500', lineHeight: 20 },
 
     // Highlights
     highlightCard: { width: 220, padding: 16, marginRight: 12 },
@@ -541,7 +599,9 @@ const styles = StyleSheet.create({
     matchBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, opacity: 0.8 },
     matchText: { fontSize: 10, fontStyle: 'italic', color: theme.colors.primary, flex: 1 },
 
-    // Tips
+    // Old keys still used in code
+    dayHeader: { marginBottom: 16 },
+    slotsWrapper: { gap: 12 },
     tipRow: { flexDirection: 'row', gap: 10, marginBottom: 12 },
     tipText: { fontSize: 14, color: theme.colors.text.primary, flex: 1, lineHeight: 20 },
 
