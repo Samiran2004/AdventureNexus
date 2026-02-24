@@ -41,9 +41,18 @@ const getPersonalizedRecommendations = async (req: Request, res: Response) => {
                 .limit(3);
         }
 
+        // Ensure all recommendations have an image_url
+        const plansWithImages = recommendations.map(plan => {
+            const p = plan.toObject ? plan.toObject() : plan;
+            if (!p.image_url) {
+                p.image_url = "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&auto=format&fit=crop";
+            }
+            return p;
+        });
+
         return res.status(StatusCodes.OK).json({
             status: "Ok",
-            data: recommendations,
+            data: plansWithImages,
         });
 
     } catch (error: any) {

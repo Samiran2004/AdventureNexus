@@ -1,0 +1,390 @@
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root           1  0.7  0.1  44784 22804 ?        Ss   09:36   0:02 /usr/lib/systemd/systemd --switched-root --system --deserialize=60 rhgb
+root           2  0.0  0.0      0     0 ?        S    09:36   0:00 [kthreadd]
+root           3  0.0  0.0      0     0 ?        S    09:36   0:00 [pool_workqueue_release]
+root           4  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/R-rcu_gp]
+root           5  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/R-sync_wq]
+root           6  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/R-kvfree_rcu_reclaim]
+root           7  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/R-slub_flushwq]
+root           8  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/R-netns]
+root           9  0.0  0.0      0     0 ?        I    09:36   0:00 [kworker/0:0-mm_percpu_wq]
+root          10  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/0:0H-events_highpri]
+root          11  0.0  0.0      0     0 ?        I    09:36   0:00 [kworker/0:1-events]
+root          12  0.4  0.0      0     0 ?        I    09:36   0:01 [kworker/u32:0-iou_exit]
+root          13  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/R-mm_percpu_wq]
+root          14  0.3  0.0      0     0 ?        I    09:36   0:01 [kworker/u32:1-events_unbound]
+root          15  0.0  0.0      0     0 ?        S    09:36   0:00 [ksoftirqd/0]
+root          16  0.1  0.0      0     0 ?        I    09:36   0:00 [rcu_preempt]
+root          17  0.0  0.0      0     0 ?        S    09:36   0:00 [rcu_exp_par_gp_kthread_worker/0]
+root          18  0.0  0.0      0     0 ?        S    09:36   0:00 [rcu_exp_gp_kthread_worker]
+root          19  0.0  0.0      0     0 ?        S    09:36   0:00 [migration/0]
+root          20  0.0  0.0      0     0 ?        S    09:36   0:00 [idle_inject/0]
+root          21  0.0  0.0      0     0 ?        S    09:36   0:00 [cpuhp/0]
+root          22  0.0  0.0      0     0 ?        S    09:36   0:00 [cpuhp/1]
+root          23  0.0  0.0      0     0 ?        S    09:36   0:00 [idle_inject/1]
+root          24  0.0  0.0      0     0 ?        S    09:36   0:00 [migration/1]
+root          25  0.0  0.0      0     0 ?        S    09:36   0:00 [ksoftirqd/1]
+root          26  0.0  0.0      0     0 ?        I    09:36   0:00 [kworker/1:0-events]
+root          27  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/1:0H-events_highpri]
+root          28  0.0  0.0      0     0 ?        S    09:36   0:00 [cpuhp/2]
+root          29  0.0  0.0      0     0 ?        S    09:36   0:00 [idle_inject/2]
+root          30  0.0  0.0      0     0 ?        S    09:36   0:00 [migration/2]
+root          31  0.0  0.0      0     0 ?        S    09:36   0:00 [ksoftirqd/2]
+root          32  0.0  0.0      0     0 ?        I    09:36   0:00 [kworker/2:0-events]
+root          33  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/2:0H-events_highpri]
+root          34  0.0  0.0      0     0 ?        S    09:36   0:00 [cpuhp/3]
+root          35  0.0  0.0      0     0 ?        S    09:36   0:00 [idle_inject/3]
+root          36  0.0  0.0      0     0 ?        S    09:36   0:00 [migration/3]
+root          37  0.0  0.0      0     0 ?        S    09:36   0:00 [ksoftirqd/3]
+root          38  0.0  0.0      0     0 ?        I    09:36   0:00 [kworker/3:0-inode_switch_wbs]
+root          39  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/3:0H-events_highpri]
+root          40  0.0  0.0      0     0 ?        S    09:36   0:00 [cpuhp/4]
+root          41  0.0  0.0      0     0 ?        S    09:36   0:00 [idle_inject/4]
+root          42  0.0  0.0      0     0 ?        S    09:36   0:00 [migration/4]
+root          43  0.0  0.0      0     0 ?        S    09:36   0:00 [ksoftirqd/4]
+root          44  0.0  0.0      0     0 ?        I    09:36   0:00 [kworker/4:0-cgroup_free]
+root          45  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/4:0H-events_highpri]
+root          46  0.0  0.0      0     0 ?        S    09:36   0:00 [cpuhp/5]
+root          47  0.0  0.0      0     0 ?        S    09:36   0:00 [idle_inject/5]
+root          48  0.0  0.0      0     0 ?        S    09:36   0:00 [migration/5]
+root          49  0.0  0.0      0     0 ?        S    09:36   0:00 [ksoftirqd/5]
+root          50  0.1  0.0      0     0 ?        I    09:36   0:00 [kworker/5:0-i915-unordered]
+root          51  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/5:0H-events_highpri]
+root          52  0.0  0.0      0     0 ?        S    09:36   0:00 [cpuhp/6]
+root          53  0.0  0.0      0     0 ?        S    09:36   0:00 [idle_inject/6]
+root          54  0.0  0.0      0     0 ?        S    09:36   0:00 [migration/6]
+root          55  0.0  0.0      0     0 ?        S    09:36   0:00 [ksoftirqd/6]
+root          56  0.0  0.0      0     0 ?        I    09:36   0:00 [kworker/6:0-events]
+root          57  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/6:0H-events_highpri]
+root          58  0.0  0.0      0     0 ?        S    09:36   0:00 [cpuhp/7]
+root          59  0.0  0.0      0     0 ?        S    09:36   0:00 [idle_inject/7]
+root          60  0.0  0.0      0     0 ?        S    09:36   0:00 [migration/7]
+root          61  0.0  0.0      0     0 ?        S    09:36   0:00 [ksoftirqd/7]
+root          62  0.0  0.0      0     0 ?        I    09:36   0:00 [kworker/7:0-events]
+root          63  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/7:0H-events_highpri]
+root          64  0.0  0.0      0     0 ?        S    09:36   0:00 [kdevtmpfs]
+root          65  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/R-inet_frag_wq]
+root          66  0.0  0.0      0     0 ?        I    09:36   0:00 [rcu_tasks_kthread]
+root          67  0.0  0.0      0     0 ?        I    09:36   0:00 [rcu_tasks_rude_kthread]
+root          68  0.0  0.0      0     0 ?        I    09:36   0:00 [rcu_tasks_trace_kthread]
+root          69  0.0  0.0      0     0 ?        S    09:36   0:00 [kauditd]
+root          70  0.0  0.0      0     0 ?        S    09:36   0:00 [oom_reaper]
+root          71  0.1  0.0      0     0 ?        I    09:36   0:00 [kworker/u32:2-btrfs-compressed-write]
+root          72  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/R-writeback]
+root          73  0.0  0.0      0     0 ?        S    09:36   0:00 [kcompactd0]
+root          74  0.0  0.0      0     0 ?        SN   09:36   0:00 [ksmd]
+root          75  0.0  0.0      0     0 ?        SN   09:36   0:00 [khugepaged]
+root          76  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/R-kblockd]
+root          77  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/R-blkcg_punt_bio]
+root          78  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/R-kintegrityd]
+root          79  0.0  0.0      0     0 ?        S    09:36   0:00 [irq/9-acpi]
+root          80  0.0  0.0      0     0 ?        I    09:36   0:00 [kworker/5:1-cgroup_offline]
+root          81  0.0  0.0      0     0 ?        I    09:36   0:00 [kworker/4:1-cgroup_release]
+root          82  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/R-tpm_dev_wq]
+root          83  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/R-ata_sff]
+root          84  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/R-md_bitmap]
+root          85  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/R-md]
+root          86  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/R-edac-poller]
+root          87  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/R-devfreq_wq]
+root          88  0.0  0.0      0     0 ?        S    09:36   0:00 [watchdogd]
+root          89  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/R-quota_events_unbound]
+root          90  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/5:1H-i915_cleanup]
+root          91  0.0  0.0      0     0 ?        S    09:36   0:00 [kswapd0]
+root          92  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/R-cryptd]
+root          94  0.0  0.0      0     0 ?        I    09:36   0:00 [kworker/7:1-i915-unordered]
+root          96  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/R-kthrotld]
+root          97  0.0  0.0      0     0 ?        S    09:36   0:00 [irq/120-aerdrv]
+root          98  0.0  0.0      0     0 ?        S    09:36   0:00 [irq/120-pcie-dpc]
+root          99  0.0  0.0      0     0 ?        I    09:36   0:00 [kworker/1:1-i915-unordered]
+root         100  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/R-acpi_thermal_pm]
+root         101  0.0  0.0      0     0 ?        I    09:36   0:00 [kworker/3:1-mm_percpu_wq]
+root         102  0.0  0.0      0     0 ?        I    09:36   0:00 [kworker/2:1-events]
+root         103  0.0  0.0      0     0 ?        S    09:36   0:00 [hwrng]
+root         108  0.0  0.0      0     0 ?        I    09:36   0:00 [kworker/2:2-i915-unordered]
+root         109  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/R-dm_bufio_cache]
+root         110  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/R-mld]
+root         111  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/R-ipv6_addrconf]
+root         112  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/2:1H-kblockd]
+root         113  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/R-kstrp]
+root         114  0.0  0.0      0     0 ?        I    09:36   0:00 [kworker/6:1-i915-unordered]
+root         124  0.2  0.0      0     0 ?        I<   09:36   0:00 [kworker/u33:0-hci0]
+root         200  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/1:1H-i915_cleanup]
+root         201  0.0  0.0      0     0 ?        I    09:36   0:00 [kworker/3:2-inode_switch_wbs]
+root         202  0.0  0.0      0     0 ?        I    09:36   0:00 [kworker/2:3-events]
+root         204  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/3:1H-i915_cleanup]
+root         240  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/4:1H-kblockd]
+root         246  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/7:1H-i915_cleanup]
+root         250  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/6:1H-i915_cleanup]
+root         252  0.0  0.0      0     0 ?        I<   09:36   0:00 [kworker/0:1H-i915_cleanup]
+root         273  0.0  0.0      0     0 ?        I    09:36   0:00 [kworker/1:2-cgroup_free]
+root         280  0.0  0.0      0     0 ?        I    09:36   0:00 [kworker/4:2-mm_percpu_wq]
+root         292  0.0  0.0      0     0 ?        I    09:36   0:00 [kworker/1:3-rcu_gp]
+root         358  0.0  0.0      0     0 ?        I    09:36   0:00 [kworker/5:2-i915-unordered]
+root         359  0.0  0.0      0     0 ?        I    09:36   0:00 [kworker/5:3]
+root         371  0.0  0.0      0     0 ?        I    09:36   0:00 [kworker/0:2]
+root         393  0.0  0.0      0     0 ?        I    09:36   0:00 [kworker/7:2-events]
+root         406  0.0  0.0      0     0 ?        I    09:37   0:00 [kworker/7:3-cgroup_release]
+root         408  0.0  0.0      0     0 ?        S    09:37   0:00 [irq/118-ELAN0712:00]
+root         416  0.0  0.0      0     0 ?        I    09:37   0:00 [kworker/6:2-events]
+root         417  0.0  0.0      0     0 ?        S    09:37   0:00 [irq/148-aerdrv]
+root         418  0.0  0.0      0     0 ?        S    09:37   0:00 [irq/148-pcie-dpc]
+root         420  0.0  0.0      0     0 ?        I<   09:37   0:00 [kworker/R-nvme-wq]
+root         421  0.0  0.0      0     0 ?        I<   09:37   0:00 [kworker/R-nvme-reset-wq]
+root         422  0.0  0.0      0     0 ?        I<   09:37   0:00 [kworker/R-nvme-delete-wq]
+root         423  0.0  0.0      0     0 ?        I<   09:37   0:00 [kworker/R-nvme-auth-wq]
+root         425  0.3  0.0      0     0 ?        I    09:37   0:00 [kworker/u32:3-btrfs-endio-write]
+root         435  0.0  0.0      0     0 ?        I<   09:37   0:00 [kworker/R-btrfs-worker]
+root         436  0.0  0.0      0     0 ?        I<   09:37   0:00 [kworker/R-btrfs-delalloc]
+root         437  0.0  0.0      0     0 ?        I<   09:37   0:00 [kworker/R-btrfs-flush_delalloc]
+root         438  0.0  0.0      0     0 ?        I<   09:37   0:00 [kworker/R-btrfs-cache]
+root         439  0.0  0.0      0     0 ?        I<   09:37   0:00 [kworker/R-btrfs-fixup]
+root         440  0.0  0.0      0     0 ?        I<   09:37   0:00 [kworker/R-btrfs-endio]
+root         441  0.0  0.0      0     0 ?        I<   09:37   0:00 [kworker/R-btrfs-endio-meta]
+root         442  0.0  0.0      0     0 ?        I<   09:37   0:00 [kworker/R-btrfs-rmw]
+root         443  0.0  0.0      0     0 ?        I<   09:37   0:00 [kworker/R-btrfs-endio-write]
+root         444  0.0  0.0      0     0 ?        I<   09:37   0:00 [kworker/R-btrfs-compressed-write]
+root         445  0.0  0.0      0     0 ?        I<   09:37   0:00 [kworker/R-btrfs-freespace-write]
+root         446  0.0  0.0      0     0 ?        I<   09:37   0:00 [kworker/R-btrfs-delayed-meta]
+root         447  0.0  0.0      0     0 ?        I<   09:37   0:00 [kworker/R-btrfs-qgroup-rescan]
+root         448  0.0  0.0      0     0 ?        I<   09:37   0:00 [kworker/R-ttm]
+root         449  0.0  0.0      0     0 ?        S    09:37   0:00 [btrfs-cleaner]
+root         450  0.1  0.0      0     0 ?        S    09:37   0:00 [btrfs-transaction]
+root         474  0.0  0.0      0     0 ?        S    09:37   0:00 [card1-crtc0]
+root         475  0.0  0.0      0     0 ?        S    09:37   0:00 [card1-crtc1]
+root         476  0.0  0.0      0     0 ?        S    09:37   0:00 [card1-crtc2]
+root         477  0.0  0.0      0     0 ?        S    09:37   0:00 [card1-crtc3]
+root         480  0.3  0.0      0     0 ?        I    09:37   0:00 [kworker/u32:4-events_unbound]
+root         481  0.1  0.0      0     0 ?        I    09:37   0:00 [kworker/u32:5-btrfs-compressed-write]
+root         482  0.0  0.0      0     0 ?        I    09:37   0:00 [kworker/0:3-cgroup_free]
+root         492  0.1  0.0      0     0 ?        I    09:37   0:00 [kworker/u32:6-btrfs-delalloc]
+root         493  0.2  0.0      0     0 ?        I    09:37   0:00 [kworker/u32:7-btrfs-delalloc]
+root         496  0.2  0.0      0     0 ?        I    09:37   0:00 [kworker/u32:8-blkcg_punt_bio]
+root         542  0.0  0.0      0     0 ?        S    09:37   0:00 [psimon]
+root         553  0.1  0.3  83892 50444 ?        Ss   09:37   0:00 /usr/lib/systemd/systemd-journald
+root         584  0.0  0.0  16600  6968 ?        Ss   09:37   0:00 /usr/lib/systemd/systemd-userdbd
+root         585  0.0  0.0      0     0 ?        I    09:37   0:00 [kworker/3:3-i915-unordered]
+root         593  0.1  0.1  41380 16248 ?        Ss   09:37   0:00 /usr/lib/systemd/systemd-udevd
+root         596  0.0  0.0      0     0 ?        S    09:37   0:00 [psimon]
+root         706  0.0  0.0      0     0 ?        I<   09:37   0:00 [kworker/u33:1-hci0]
+root         707  0.0  0.0      0     0 ?        I<   09:37   0:00 [kworker/u33:2-hci0]
+root         730  0.0  0.0      0     0 ?        S    09:37   0:00 [irq/159-mei_me]
+root         741  0.0  0.0      0     0 ?        I<   09:37   0:00 [kworker/R-cfg80211]
+root         767  0.0  0.0      0     0 ?        S    09:37   0:00 [jbd2/nvme0n1p2-8]
+root         768  0.0  0.0      0     0 ?        I<   09:37   0:00 [kworker/R-ext4-rsv-conversion]
+root         789  0.0  0.0      0     0 ?        I    09:37   0:00 [kworker/u32:9-btrfs-endio-write]
+root         790  0.1  0.0      0     0 ?        I    09:37   0:00 [kworker/u32:10-events_unbound]
+root         792  0.0  0.0      0     0 ?        I    09:37   0:00 [kworker/u32:11-btrfs-endio-write]
+root         794  0.1  0.0      0     0 ?        I    09:37   0:00 [kworker/u32:12-btrfs-endio-write]
+root         805  0.0  0.0      0     0 ?        I    09:37   0:00 [kworker/u32:13-btrfs-endio-write]
+root         806  0.2  0.0      0     0 ?        I    09:37   0:00 [kworker/u32:14-btrfs-delalloc]
+root         807  0.1  0.0      0     0 ?        I    09:37   0:00 [kworker/u32:15-btrfs-compressed-write]
+root         809  0.1  0.0      0     0 ?        I    09:37   0:00 [kworker/u32:16-btrfs-endio-write]
+root         869  0.0  0.0      0     0 ?        S    09:37   0:00 [irq/160-rtw88_pci]
+systemd+     897  0.0  0.1  24860 16856 ?        Ss   09:37   0:00 /usr/lib/systemd/systemd-resolved
+root         900  0.0  0.0  20872  3536 ?        S<sl 09:37   0:00 /usr/bin/auditd
+dbus         928  0.0  0.0  13056  7088 ?        Ss   09:37   0:00 /usr/bin/dbus-broker-launch --scope system --audit
+dbus         929  0.1  0.0  11592  9676 ?        S    09:37   0:00 dbus-broker --log 10 --controller 9 --machine-id ccf4b3ca79364cdba4362b837606e488 --max-bytes 536870912 --max-fds 4096 --max-matches 131072 --audit
+avahi        932  0.0  0.0   6580  4812 ?        Ss   09:37   0:00 avahi-daemon: running [mac.local]
+root         933  0.0  0.0   9436  6144 ?        Ss   09:37   0:00 /usr/libexec/bluetooth/bluetoothd
+root         937  0.0  0.0  81020  4300 ?        Ssl  09:37   0:00 /usr/sbin/irqbalance
+chrony       939  0.0  0.0  86424  6744 ?        Ss   09:37   0:00 /usr/sbin/chronyd -n -F 2
+root         943  0.0  0.0 303040  5944 ?        SLsl 09:37   0:00 /usr/libexec/low-memory-monitor
+root         944  0.0  0.0   3208  2228 ?        Ss   09:37   0:00 /usr/sbin/mcelog --daemon --foreground
+polkitd      947  0.3  0.0 383968 12588 ?        Ssl  09:37   0:00 /usr/lib/polkit-1/polkitd --no-debug --log-level=notice
+rtkit        948  0.0  0.0  21728  3552 ?        SNsl 09:37   0:00 /usr/libexec/rtkit-daemon
+root         949  0.0  0.0   9684  6228 ?        Ss   09:37   0:00 /usr/bin/smartd -n -q never --capabilities=mail
+root         951  0.0  0.0 531448  7312 ?        Ssl  09:37   0:00 /usr/libexec/switcheroo-control
+root         952  0.0  0.0  17240  8464 ?        Ss   09:37   0:00 /usr/lib/systemd/systemd-machined
+root         953  0.0  0.0 610664  9892 ?        Ssl  09:37   0:00 /usr/bin/thermald --systemd --dbus-enable --adaptive
+root         954  0.0  0.0 543476 15384 ?        Ssl  09:37   0:00 /usr/libexec/udisks2/udisksd
+root         956  0.0  0.1 549848 18756 ?        Ssl  09:37   0:00 /usr/libexec/upowerd
+root         957  0.0  0.0      0     0 ?        S    09:37   0:00 [irq/161-AudioDSP]
+root         972  0.0  0.0 534708  9520 ?        Ssl  09:37   0:00 /usr/libexec/accounts-daemon
+root         977  0.0  0.0  20104 11804 ?        Ss   09:37   0:00 /usr/lib/systemd/systemd-logind
+root         982  0.0  0.0      0     0 ?        I    09:37   0:00 [kworker/6:3]
+avahi        983  0.0  0.0   6444  1640 ?        S    09:37   0:00 avahi-daemon: chroot helper
+root         996  0.0  0.0      0     0 ?        I    09:37   0:00 [kworker/4:3-i915-unordered]
+root        1001  0.0  0.0      0     0 ?        S    09:37   0:00 [psimon]
+root        1007  0.0  0.0 553768 15016 ?        Ssl  09:37   0:00 /usr/sbin/abrtd -d -s
+root        1032  0.0  0.0 306176  7244 ?        Ssl  09:37   0:00 /usr/libexec/uresourced
+root        1061  0.0  0.0 391304 13852 ?        Ssl  09:37   0:00 /usr/bin/ModemManager
+root        1062  0.1  0.3 373084 53316 ?        Ssl  09:37   0:00 /usr/bin/python3 -sP /usr/bin/firewalld --nofork --nopid
+root        1088  0.0  0.0   4932  3552 ?        SNs  09:37   0:00 /usr/sbin/alsactl -s -n 19 -c -E ALSA_CONFIG_PATH=/etc/alsa/alsactl.conf --initfile=/lib/alsa/init/00main rdaemon
+root        1113  0.0  0.0      0     0 ?        I<   09:37   0:00 [kworker/R-rpciod]
+root        1114  0.0  0.0      0     0 ?        I<   09:37   0:00 [kworker/R-xprtiod]
+root        1144  0.0  0.2 779224 33064 ?        Ss   09:37   0:00 /usr/bin/abrt-dump-journal-core -D -T -f -e
+root        1145  0.0  0.1 769072 31484 ?        Ss   09:37   0:00 /usr/bin/abrt-dump-journal-oops -fxtD
+root        1146  0.0  0.1 780236 31320 ?        Ss   09:37   0:00 /usr/bin/abrt-dump-journal-xorg -fxtD
+root        1169  0.3  0.1 560064 23912 ?        Ssl  09:37   0:00 /usr/bin/NetworkManager --no-daemon
+root        1193  0.1  0.0  16444 10556 ?        Ss   09:37   0:00 /usr/sbin/wpa_supplicant -c /etc/wpa_supplicant/wpa_supplicant.conf -u -s
+root        1207  0.0  0.0 252420 11832 ?        Ss   09:37   0:00 /usr/bin/cupsd -l
+root        1209  0.0  0.0 282388  8632 ?        Ssl  09:37   0:00 /usr/bin/gssproxy -i
+root        1219  0.1  0.2 671084 32308 ?        Ssl  09:37   0:00 /usr/sbin/rsyslogd -n
+root        1220  0.0  0.2 499536 36428 ?        Ssl  09:37   0:00 /usr/bin/python3 -Es /usr/sbin/tuned -l -P
+postgres    1226  0.0  0.1 450304 31904 ?        Ss   09:37   0:00 /usr/bin/postgres -D /var/lib/pgsql/data
+root        1240  0.1  0.3 1698096 49976 ?       Ssl  09:37   0:00 /usr/bin/containerd
+root        1263  0.0  0.0   5120  3248 ?        Ss   09:37   0:00 /usr/sbin/atd -f
+root        1264  0.0  0.0 232568  4116 ?        Ss   09:37   0:00 /usr/sbin/crond -n
+root        1265  0.0  0.0 609348 10860 ?        Ssl  09:37   0:00 /usr/bin/gdm
+zephyrus    1267  0.3  0.1  25832 16992 ?        Ss   09:37   0:00 /usr/lib/systemd/systemd --user
+postgres    1288  0.0  0.0 296908  5412 ?        Ss   09:37   0:00 postgres: logger 
+postgres    1322  0.0  0.0 450304  6400 ?        Ss   09:37   0:00 postgres: io worker 0
+postgres    1323  0.0  0.0 450304  5928 ?        Ss   09:37   0:00 postgres: io worker 2
+postgres    1325  0.0  0.0 450304  5924 ?        Ss   09:37   0:00 postgres: io worker 1
+postgres    1326  0.0  0.0 450440  6152 ?        Ss   09:37   0:00 postgres: checkpointer 
+postgres    1327  0.0  0.0 450460  7400 ?        Ss   09:37   0:00 postgres: background writer 
+zephyrus    1330  0.0  0.0  16776  3252 ?        S    09:37   0:00 (sd-pam)
+postgres    1335  0.0  0.0 450304 10388 ?        Ss   09:37   0:00 postgres: walwriter 
+postgres    1336  0.0  0.0 451888  9260 ?        Ss   09:37   0:00 postgres: autovacuum launcher 
+postgres    1337  0.0  0.0 451752  8344 ?        Ss   09:37   0:00 postgres: logical replication launcher 
+mysql       1346  0.4  2.9 1943248 465700 ?      Ssl  09:37   0:01 /usr/libexec/mysqld --basedir=/usr
+root        1422  0.0  0.5 1763860 89532 ?       Ssl  09:37   0:00 /usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
+root        1427  0.0  0.2 498048 34268 ?        Ssl  09:37   0:00 /usr/bin/python3 -Es /usr/sbin/tuned-ppd -l
+root        1736  0.0  0.0      0     0 ?        S<   09:37   0:00 [krfcommd]
+colord      1910  0.0  0.0 538708 13376 ?        Ssl  09:37   0:00 /usr/libexec/colord
+root        2036  0.0  0.0 625580  8812 ?        Ssl  09:37   0:00 /usr/bin/pcscd --foreground --auto-exit
+geoclue     2131  0.0  0.2 1520236 41548 ?       Ssl  09:37   0:00 /usr/libexec/geoclue
+root        2830  0.0  0.0 405716 14676 ?        Sl   09:37   0:00 gdm-session-worker [pam/gdm-password]
+zephyrus    2959  0.0  0.0 407356  8516 ?        SLl  09:37   0:00 /usr/bin/gnome-keyring-daemon --daemonize --login
+zephyrus    3034  0.0  0.0 391676  6452 tty2     Ssl+ 09:37   0:00 /usr/libexec/gdm-wayland-session /usr/bin/gnome-session
+zephyrus    3049  0.0  0.0   9100  4664 ?        Ss   09:37   0:00 /usr/bin/dbus-broker-launch --scope user
+zephyrus    3069  0.1  0.0   9208  5292 ?        S    09:37   0:00 dbus-broker --log 10 --controller 9 --machine-id ccf4b3ca79364cdba4362b837606e488 --max-bytes 100000000000000 --max-fds 25000000000000 --max-matches 5000000000
+zephyrus    3071  0.0  0.0 163832  6256 tty2     Sl+  09:37   0:00 /usr/libexec/gnome-session-init-worker gnome
+zephyrus    3135  0.0  0.0 311804  5868 ?        Ssl  09:37   0:00 /usr/libexec/gnome-session-ctl --monitor
+zephyrus    3136  0.0  0.0 382080 10352 ?        Ssl  09:37   0:00 /usr/libexec/uresourced --user
+zephyrus    3144  0.0  0.0 839176 11820 ?        Ssl  09:37   0:00 /usr/libexec/gnome-session-service --session=gnome
+zephyrus    3145  0.0  0.0 540112 10148 ?        Ssl  09:37   0:00 /usr/libexec/gvfsd
+zephyrus    3154  0.0  0.0 613632  7288 ?        Sl   09:37   0:00 /usr/libexec/gvfsd-fuse /run/user/1000/gvfs -f
+zephyrus    3174  0.0  0.1 335040 20072 ?        S<sl 09:37   0:00 /usr/bin/pipewire
+zephyrus    3176  0.2  0.2 945788 33752 ?        S<Lsl 09:37   0:00 /usr/bin/wireplumber
+zephyrus    3177  9.2  1.7 7307520 275076 ?      Ssl  09:37   0:23 /usr/bin/gnome-shell
+zephyrus    3237  0.0  0.0 380968  8056 ?        Ssl  09:37   0:00 /usr/libexec/at-spi-bus-launcher
+zephyrus    3243  0.0  0.0   8972  4432 ?        S    09:37   0:00 /usr/bin/dbus-broker-launch --config-file=/usr/share/defaults/at-spi2/accessibility.conf --scope user
+zephyrus    3244  0.0  0.0   5088  3340 ?        S    09:37   0:00 dbus-broker --log 10 --controller 9 --machine-id ccf4b3ca79364cdba4362b837606e488 --max-bytes 100000000000000 --max-fds 6400000 --max-matches 5000000000
+zephyrus    3245  0.0  0.0 168428  7932 ?        Ssl  09:37   0:00 /usr/libexec/at-spi2-registryd --use-gnome-session
+zephyrus    3265  0.0  0.0 530848  6584 ?        Ssl  09:37   0:00 /usr/libexec/xdg-permission-store
+zephyrus    3289  0.0  0.2 2983136 35208 ?       Ssl  09:37   0:00 /usr/bin/gjs -m /usr/share/gnome-shell/org.gnome.Shell.Notifications
+zephyrus    3325  0.1  0.0 612324 14172 ?        Ssl  09:37   0:00 /usr/bin/ibus-daemon --panel disable
+zephyrus    3326  0.0  0.0 478700 10956 ?        Ssl  09:37   0:00 /usr/libexec/gsd-a11y-settings
+zephyrus    3333  0.0  0.0 617312 11672 ?        Ssl  09:37   0:00 /usr/libexec/gsd-color
+zephyrus    3338  0.0  0.0 490268 13888 ?        Ssl  09:37   0:00 /usr/libexec/gsd-datetime
+zephyrus    3343  0.0  0.0 617060 11784 ?        Ssl  09:37   0:00 /usr/libexec/gsd-housekeeping
+zephyrus    3348  0.0  0.0 606620  8132 ?        Ssl  09:37   0:00 /usr/libexec/gsd-keyboard
+zephyrus    3351  0.0  0.0 779684 15312 ?        Ssl  09:37   0:00 /usr/libexec/gsd-media-keys
+zephyrus    3357  0.0  0.0 618364 12076 ?        Ssl  09:37   0:00 /usr/libexec/gsd-power
+zephyrus    3358  0.0  0.0 314532 10260 ?        Sl   09:37   0:00 /usr/libexec/gsd-disk-utility-notify
+zephyrus    3359  0.0  0.1 559288 16244 ?        Ssl  09:37   0:00 /usr/libexec/gsd-print-notifications
+zephyrus    3365  0.0  0.0 680436  8120 ?        Ssl  09:37   0:00 /usr/libexec/gsd-rfkill
+zephyrus    3370  0.0  0.0 393272  7432 ?        Ssl  09:37   0:00 /usr/libexec/gsd-screensaver-proxy
+zephyrus    3376  0.0  0.0 691400 13672 ?        Ssl  09:37   0:00 /usr/libexec/gsd-sharing
+zephyrus    3378  0.0  0.0 616696 13632 ?        Ssl  09:37   0:00 /usr/libexec/gsd-smartcard
+zephyrus    3381  0.0  0.0 473384 10532 ?        Ssl  09:37   0:00 /usr/libexec/gsd-sound
+zephyrus    3386  0.0  0.0 763800 10508 ?        Ssl  09:37   0:00 /usr/libexec/gsd-usb-protection
+zephyrus    3387  0.0  0.0 617872 12300 ?        Ssl  09:37   0:00 /usr/libexec/gsd-wwan
+zephyrus    3396  0.0  0.1 512900 22080 ?        Ssl  09:37   0:00 /usr/bin/abrt-applet --gapplication-service
+zephyrus    3463  0.0  0.0 466504  7920 ?        Sl   09:37   0:00 /usr/libexec/ibus-dconf
+zephyrus    3470  0.9  0.2 726940 38452 ?        Sl   09:37   0:02 /usr/libexec/ibus-extension-gtk3
+zephyrus    3516  0.0  0.0 531940  7824 ?        Ssl  09:37   0:00 /usr/libexec/ibus-portal
+zephyrus    3517  0.0  0.2 2984156 34624 ?       Ssl  09:37   0:00 /usr/bin/gjs -m /usr/share/gnome-shell/org.gnome.ScreenSaver
+zephyrus    3521 19.8  2.0 3917920 326080 ?      Ssl  09:37   0:51 /usr/bin/gnome-software --gapplication-service
+zephyrus    3525  0.1  0.1 335280 21448 ?        S<Lsl 09:37   0:00 /usr/bin/pipewire-pulse
+zephyrus    3565  0.0  0.0 622404 15276 ?        Ssl  09:37   0:00 /usr/libexec/gvfs-udisks2-volume-monitor
+zephyrus    3577  0.0  0.1 1125848 19008 ?       Ssl  09:37   0:00 /usr/libexec/xdg-desktop-portal
+zephyrus    3591  0.0  0.0 612404  8692 ?        Ssl  09:37   0:00 /usr/libexec/gvfs-afc-volume-monitor
+zephyrus    3593  0.0  0.0 829792  7996 ?        Ssl  09:37   0:00 /usr/libexec/xdg-document-portal
+root        3613  0.0  0.0   2588  2104 ?        Ss   09:37   0:00 fusermount3 -o rw,nosuid,nodev,fsname=portal,auto_unmount,subtype=portal -- /run/user/1000/doc
+zephyrus    3623  0.0  0.0 533436  8056 ?        Ssl  09:37   0:00 /usr/libexec/gvfs-gphoto2-volume-monitor
+zephyrus    3624  0.1  0.3 1117968 50956 ?       Ssl  09:37   0:00 /usr/libexec/xdg-desktop-portal-gnome
+zephyrus    3635  0.0  0.0 531552  7256 ?        Ssl  09:37   0:00 /usr/libexec/gvfs-mtp-volume-monitor
+zephyrus    3649  0.0  0.0 531108  6648 ?        Ssl  09:37   0:00 /usr/libexec/gvfs-goa-volume-monitor
+zephyrus    3663  0.0  0.2 685500 32712 ?        Ssl  09:37   0:00 /usr/libexec/goa-daemon
+zephyrus    3682  0.0  0.0 620076 11792 ?        Ssl  09:37   0:00 /usr/libexec/goa-identity-service
+root        3684  0.0  0.0 554288 15388 ?        Ssl  09:37   0:00 /usr/sbin/abrt-dbus -t133
+sssd        3716  0.0  0.1 307472 21360 ?        Ss   09:37   0:00 /usr/libexec/sssd/sssd_kcm --logger=files
+zephyrus    3721  0.0  0.0 392744  7836 ?        Sl   09:37   0:00 /usr/libexec/ibus-engine-simple
+zephyrus    3782  0.0  0.0 164480  6692 ?        Ssl  09:37   0:00 /usr/libexec/dconf-service
+zephyrus    3822  0.0  0.0 615000 11652 ?        Sl   09:37   0:00 /usr/libexec/gvfsd-recent --spawner :1.7 /org/gtk/gvfs/exec_spaw/0
+zephyrus    3831  0.0  0.0 835424 11368 ?        Sl   09:37   0:00 /usr/libexec/gvfsd-trash --spawner :1.7 /org/gtk/gvfs/exec_spaw/1
+zephyrus    3836  0.2  0.0 392508  7104 ?        Ssl  09:37   0:00 /usr/libexec/gvfsd-metadata
+zephyrus    4416  0.0  0.0 632100 14724 ?        Sl   09:37   0:00 /usr/libexec/gsd-printer
+zephyrus    4451  0.0  0.2 721616 33164 ?        Ssl  09:37   0:00 /usr/libexec/xdg-desktop-portal-gtk
+zephyrus    4467  0.0  0.0 537956  9024 ?        Ssl  09:37   0:00 /usr/bin/gnome-keyring-daemon --start --foreground --components=secrets
+root        4516  0.7  0.3 715660 50696 ?        Ssl  09:37   0:01 /usr/libexec/fwupd/fwupd
+root        4575  0.0  0.0      0     0 ?        I    09:37   0:00 [kworker/4:4-events]
+zephyrus    4666  1.8  0.7 1701816 122940 ?      Ssl  09:37   0:04 /usr/bin/ptyxis --gapplication-service
+zephyrus    4674  0.0  0.0 378000  7496 ?        Ssl  09:37   0:00 /usr/libexec/ptyxis-agent --socket-fd=3 --rlimit-nofile=1024
+zephyrus    4696  0.0  0.0   1056   704 ?        S    09:37   0:00 catatonit -P
+root        4707  0.2  0.0      0     0 ?        I    09:37   0:00 [kworker/u32:17-btrfs-delalloc]
+root        4708  0.0  0.0      0     0 ?        I    09:37   0:00 [kworker/u32:18-btrfs-endio-write]
+root        4709  0.2  0.0      0     0 ?        I    09:37   0:00 [kworker/u32:19-events_unbound]
+root        4710  0.0  0.0      0     0 ?        I    09:37   0:00 [kworker/u32:20-btrfs-delalloc]
+root        4718  0.0  0.0      0     0 ?        I    09:37   0:00 [kworker/3:4]
+zephyrus    4726  0.0  0.0 233412  5920 pts/0    Ss   09:37   0:00 /usr/bin/bash
+root        4836  0.0  0.0 246088 10660 pts/0    S+   09:37   0:00 sudo dnf update -y
+root        4853  0.0  0.0  23768 15144 ?        Ss   09:37   0:00 /usr/lib/systemd/systemd --user
+root        4855  0.0  0.0  16764  3308 ?        S    09:37   0:00 (sd-pam)
+root        4868  0.0  0.0      0     0 ?        S    09:37   0:00 [psimon]
+root        4873  0.0  0.0 246088  3124 pts/1    Ss   09:37   0:00 sudo dnf update -y
+root        4874  2.5  1.7 777020 274736 pts/1   Sl+  09:37   0:06 dnf update -y
+root        4950  6.7  0.8 1192604 128892 ?      Ssl  09:37   0:15 /usr/libexec/flatpak-system-helper
+zephyrus    5005  0.3  0.6 618420 106576 ?       Sl   09:37   0:00 /usr/bin/python3 /usr/share/ibus-typing-booster/engine/main.py --ibus
+zephyrus    5023  4.0  1.8 1461903712 291440 ?   SLl  09:37   0:08 /usr/share/antigravity/antigravity
+zephyrus    5027  0.0  0.3 34319408 58580 ?      S    09:37   0:00 /usr/share/antigravity/antigravity --type=zygote --no-zygote-sandbox
+zephyrus    5028  0.0  0.3 34319400 58328 ?      S    09:37   0:00 /usr/share/antigravity/antigravity --type=zygote
+zephyrus    5030  0.0  0.0 34319424 14292 ?      S    09:37   0:00 /usr/share/antigravity/antigravity --type=zygote
+zephyrus    5047  0.0  0.0 33567816 3748 ?       Sl   09:37   0:00 /usr/share/antigravity/chrome_crashpad_handler --monitor-self-annotation=ptype=crashpad-handler --no-rate-limit --database=/home/zephyrus/.config/Antigravity/Crashpad --annotation=_companyName=Google --annotation=_productName=Antigravity --annotation=_version=1.107.0 --annotation=lsb-release=Fedora Linux 43 (Workstation Edition) --annotation=plat=Linux --annotation=prod=Electron --annotation=ver=39.2.3 --initial-client-fd=46 --shared-client-connection
+zephyrus    5065  4.8  0.9 34741228 153692 ?     Sl   09:37   0:10 /usr/share/antigravity/antigravity --type=zygote --no-zygote-sandbox
+zephyrus    5069  0.2  0.4 356648 79368 ?        Sl   09:37   0:00 /usr/bin/Xwayland :0 -rootless -noreset -accessx -core -auth /run/user/1000/.mutter-Xwaylandauth.XRV1K3 -listenfd 4 -listenfd 5 -displayfd 6 -initfd 7 -byteswappedclients -enable-ei-portal
+zephyrus    5074  0.1  0.5 34134208 90552 ?      Sl   09:37   0:00 /proc/self/exe --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en-US --service-sandbox-type=none --render-node-override=/dev/dri/renderD128 --crashpad-handler-pid=5047 --enable-crash-reporter=a9755e86-8a9d-4381-bc79-850983235543,no_channel --user-data-dir=/home/zephyrus/.config/Antigravity --standard-schemes=vscode-webview,vscode-file --enable-sandbox --secure-schemes=vscode-webview,vscode-file --cors-schemes=vscode-webview,vscode-file --fetch-schemes=vscode-webview,vscode-file --service-worker-schemes=vscode-webview --code-cache-schemes=vscode-webview,vscode-file --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,15276595901274207898,11805541852228836931,262144 --enable-features=DocumentPolicyIncludeJSCallStacksInCrashReports,EarlyEstablishGpuChannel,EstablishGpuChannelAsync,PdfUseShowSaveFilePicker --disable-features=CalculateNativeWinOcclusion,LocalNetworkAccessChecks,ScreenAIOCREnabled,SpareRendererForSitePerProcess,TraceSiteInstanceGetProcessCreation --variations-seed-version --trace-process-track-uuid=3190708989122997041
+zephyrus    5089  0.0  0.0 476180 13624 ?        Ssl  09:37   0:00 /usr/libexec/gsd-xsettings
+zephyrus    5097  0.2  0.6 1229716 105908 ?      Sl   09:37   0:00 /usr/libexec/mutter-x11-frames
+zephyrus    5109  0.0  0.3 469188 50660 ?        Sl   09:37   0:00 /usr/libexec/ibus-x11
+zephyrus    5151 23.9  3.3 1461927404 538700 ?   Rl   09:37   0:52 /usr/share/antigravity/antigravity --type=zygote
+zephyrus    5166  0.9  1.0 1460102616 174624 ?   Sl   09:37   0:02 /usr/share/antigravity/antigravity --type=zygote
+zephyrus    5222  0.9  0.8 1461611996 130828 ?   Sl   09:37   0:02 /proc/self/exe --type=utility --utility-sub-type=node.mojom.NodeService --lang=en-US --service-sandbox-type=none --render-node-override=/dev/dri/renderD128 --crashpad-handler-pid=5047 --enable-crash-reporter=a9755e86-8a9d-4381-bc79-850983235543,no_channel --user-data-dir=/home/zephyrus/.config/Antigravity --standard-schemes=vscode-webview,vscode-file --enable-sandbox --secure-schemes=vscode-webview,vscode-file --cors-schemes=vscode-webview,vscode-file --fetch-schemes=vscode-webview,vscode-file --service-worker-schemes=vscode-webview --code-cache-schemes=vscode-webview,vscode-file --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,15276595901274207898,11805541852228836931,262144 --enable-features=DocumentPolicyIncludeJSCallStacksInCrashReports,EarlyEstablishGpuChannel,EstablishGpuChannelAsync,PdfUseShowSaveFilePicker --disable-features=CalculateNativeWinOcclusion,LocalNetworkAccessChecks,ScreenAIOCREnabled,SpareRendererForSitePerProcess,TraceSiteInstanceGetProcessCreation --variations-seed-version --trace-process-track-uuid=3190708991934122588
+zephyrus    5237  4.5  2.1 1461588236 340180 ?   Sl   09:37   0:09 /proc/self/exe --type=utility --utility-sub-type=node.mojom.NodeService --lang=en-US --service-sandbox-type=none --render-node-override=/dev/dri/renderD128 --dns-result-order=ipv4first --experimental-network-inspection --inspect-port=0 --crashpad-handler-pid=5047 --enable-crash-reporter=a9755e86-8a9d-4381-bc79-850983235543,no_channel --user-data-dir=/home/zephyrus/.config/Antigravity --standard-schemes=vscode-webview,vscode-file --enable-sandbox --secure-schemes=vscode-webview,vscode-file --cors-schemes=vscode-webview,vscode-file --fetch-schemes=vscode-webview,vscode-file --service-worker-schemes=vscode-webview --code-cache-schemes=vscode-webview,vscode-file --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,15276595901274207898,11805541852228836931,262144 --enable-features=DocumentPolicyIncludeJSCallStacksInCrashReports,EarlyEstablishGpuChannel,EstablishGpuChannelAsync,PdfUseShowSaveFilePicker --disable-features=CalculateNativeWinOcclusion,LocalNetworkAccessChecks,ScreenAIOCREnabled,SpareRendererForSitePerProcess,TraceSiteInstanceGetProcessCreation --variations-seed-version --trace-process-track-uuid=3190708992871164437
+zephyrus    5264  1.2  0.8 1461584280 135776 ?   Sl   09:37   0:02 /proc/self/exe --type=utility --utility-sub-type=node.mojom.NodeService --lang=en-US --service-sandbox-type=none --render-node-override=/dev/dri/renderD128 --crashpad-handler-pid=5047 --enable-crash-reporter=a9755e86-8a9d-4381-bc79-850983235543,no_channel --user-data-dir=/home/zephyrus/.config/Antigravity --standard-schemes=vscode-webview,vscode-file --enable-sandbox --secure-schemes=vscode-webview,vscode-file --cors-schemes=vscode-webview,vscode-file --fetch-schemes=vscode-webview,vscode-file --service-worker-schemes=vscode-webview --code-cache-schemes=vscode-webview,vscode-file --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,15276595901274207898,11805541852228836931,262144 --enable-features=DocumentPolicyIncludeJSCallStacksInCrashReports,EarlyEstablishGpuChannel,EstablishGpuChannelAsync,PdfUseShowSaveFilePicker --disable-features=CalculateNativeWinOcclusion,LocalNetworkAccessChecks,ScreenAIOCREnabled,SpareRendererForSitePerProcess,TraceSiteInstanceGetProcessCreation --variations-seed-version --trace-process-track-uuid=3190708993808206286
+zephyrus    5265  7.6  1.2 1461603752 202584 ?   Sl   09:37   0:16 /proc/self/exe --type=utility --utility-sub-type=node.mojom.NodeService --lang=en-US --service-sandbox-type=none --render-node-override=/dev/dri/renderD128 --crashpad-handler-pid=5047 --enable-crash-reporter=a9755e86-8a9d-4381-bc79-850983235543,no_channel --user-data-dir=/home/zephyrus/.config/Antigravity --standard-schemes=vscode-webview,vscode-file --enable-sandbox --secure-schemes=vscode-webview,vscode-file --cors-schemes=vscode-webview,vscode-file --fetch-schemes=vscode-webview,vscode-file --service-worker-schemes=vscode-webview --code-cache-schemes=vscode-webview,vscode-file --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,15276595901274207898,11805541852228836931,262144 --enable-features=DocumentPolicyIncludeJSCallStacksInCrashReports,EarlyEstablishGpuChannel,EstablishGpuChannelAsync,PdfUseShowSaveFilePicker --disable-features=CalculateNativeWinOcclusion,LocalNetworkAccessChecks,ScreenAIOCREnabled,SpareRendererForSitePerProcess,TraceSiteInstanceGetProcessCreation --variations-seed-version --trace-process-track-uuid=3190708994745248135
+zephyrus    5313  0.0  0.0 233592  5908 pts/2    Ss   09:37   0:00 /usr/bin/bash --init-file /usr/share/antigravity/resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh
+zephyrus    5424  0.0  0.0 233592  5912 pts/3    Ss   09:37   0:00 /usr/bin/bash --init-file /usr/share/antigravity/resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh
+zephyrus    5471  7.4  6.4 5620748 1031676 ?     Sl   09:37   0:15 /usr/share/antigravity/resources/app/extensions/antigravity/bin/language_server_linux_x64 --enable_lsp --extension_server_port 38775 --csrf_token b88083df-0aa8-4289-9217-79c1661d97a3 --random_port --workspace_id file_home_zephyrus_projects_AdventureNexus --cloud_code_endpoint https://daily-cloudcode-pa.googleapis.com --app_data_dir antigravity --parent_pipe_path /tmp/server_fded29ffa6f1fdd3
+zephyrus    5492  0.0  0.0 233588  6080 pts/4    Ss+  09:37   0:00 /usr/bin/bash --init-file /usr/share/antigravity/resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh
+zephyrus    5536  0.0  0.4 50961796 70304 ?      Sl   09:37   0:00 /proc/self/exe --type=utility --utility-sub-type=audio.mojom.AudioService --lang=en-US --service-sandbox-type=none --render-node-override=/dev/dri/renderD128 --crashpad-handler-pid=5047 --enable-crash-reporter=a9755e86-8a9d-4381-bc79-850983235543,no_channel --user-data-dir=/home/zephyrus/.config/Antigravity --standard-schemes=vscode-webview,vscode-file --enable-sandbox --secure-schemes=vscode-webview,vscode-file --cors-schemes=vscode-webview,vscode-file --fetch-schemes=vscode-webview,vscode-file --service-worker-schemes=vscode-webview --code-cache-schemes=vscode-webview,vscode-file --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,15276595901274207898,11805541852228836931,262144 --enable-features=DocumentPolicyIncludeJSCallStacksInCrashReports,EarlyEstablishGpuChannel,EstablishGpuChannelAsync,PdfUseShowSaveFilePicker --disable-features=CalculateNativeWinOcclusion,LocalNetworkAccessChecks,ScreenAIOCREnabled,SpareRendererForSitePerProcess,TraceSiteInstanceGetProcessCreation --variations-seed-version --trace-process-track-uuid=3190708995682289984
+zephyrus    5698  0.8  0.8 1459542244 142384 ?   Sl   09:38   0:01 /usr/share/antigravity/antigravity --max-old-space-size=3072 /usr/share/antigravity/resources/app/extensions/node_modules/typescript/lib/tsserver.js --serverMode partialSemantic --useInferredProjectPerProjectRoot --disableAutomaticTypingAcquisition --cancellationPipeName /tmp/vscode-typescript1000/dd3fe9819ed607aa8f2f/tscancellation-a6932b453a9d5e82d3dc.tmp* --locale en --noGetErrOnBackgroundUpdate --canUseWatchEvents --validateDefaultNpmLocation --useNodeIpc
+zephyrus    5699  4.9  2.6 1459542308 428016 ?   Sl   09:38   0:09 /usr/share/antigravity/antigravity --max-old-space-size=3072 /usr/share/antigravity/resources/app/extensions/node_modules/typescript/lib/tsserver.js --useInferredProjectPerProjectRoot --enableTelemetry --cancellationPipeName /tmp/vscode-typescript1000/dd3fe9819ed607aa8f2f/tscancellation-88f399f4e81579f688ed.tmp* --locale en --noGetErrOnBackgroundUpdate --canUseWatchEvents --validateDefaultNpmLocation --useNodeIpc
+zephyrus    5714  0.5  0.6 1459575028 103848 ?   Sl   09:38   0:01 /usr/share/antigravity/antigravity /usr/share/antigravity/resources/app/extensions/json-language-features/server/dist/node/jsonServerMain --node-ipc --clientProcessId=5237
+zephyrus    5786  0.2  0.7 1459542244 112064 ?   Sl   09:38   0:00 /usr/share/antigravity/antigravity /usr/share/antigravity/resources/app/extensions/node_modules/typescript/lib/typingsInstaller.js --globalTypingsCacheLocation /home/zephyrus/.cache/typescript/5.9 --enableTelemetry --typesMapLocation /usr/share/antigravity/resources/app/extensions/node_modules/typescript/lib/typesMap.json --validateDefaultNpmLocation
+zephyrus    5958  0.1  0.4 1130776 69692 pts/2   Sl+  09:38   0:00 npm run start
+zephyrus    5969  9.2  2.5 22611348 405168 pts/2 Sl+  09:38   0:16 node /home/zephyrus/projects/AdventureNexus/mobile/node_modules/.bin/expo start
+zephyrus    6404  9.1  0.9 22178528 147744 pts/2 Sl+  09:38   0:15 /usr/bin/node-22 /home/zephyrus/projects/AdventureNexus/mobile/node_modules/jest-worker/build/workers/processChild.js
+zephyrus    6405  7.5  0.7 22113332 120696 pts/2 Sl+  09:38   0:13 /usr/bin/node-22 /home/zephyrus/projects/AdventureNexus/mobile/node_modules/jest-worker/build/workers/processChild.js
+zephyrus    6406  8.1  0.7 22116880 124412 pts/2 Sl+  09:38   0:14 /usr/bin/node-22 /home/zephyrus/projects/AdventureNexus/mobile/node_modules/jest-worker/build/workers/processChild.js
+zephyrus    6407  7.8  0.7 22281052 121312 pts/2 Sl+  09:38   0:13 /usr/bin/node-22 /home/zephyrus/projects/AdventureNexus/mobile/node_modules/jest-worker/build/workers/processChild.js
+zephyrus    6413  8.2  0.9 11807320 144324 pts/2 Sl+  09:38   0:14 /usr/bin/node-22 /home/zephyrus/projects/AdventureNexus/mobile/node_modules/jest-worker/build/workers/processChild.js
+zephyrus    6420 10.0  1.2 22208976 193276 pts/2 Sl+  09:38   0:17 /usr/bin/node-22 /home/zephyrus/projects/AdventureNexus/mobile/node_modules/jest-worker/build/workers/processChild.js
+zephyrus    6460  0.0  0.0 326668  9040 ?        Ssl  09:38   0:00 adb -L tcp:5037 fork-server server --reply-fd 4
+root        6725  0.0  0.0  17208  7880 ?        S    09:38   0:00 systemd-userwork: waiting...
+zephyrus    6862  0.0  0.0   3752  2360 ?        S    09:39   0:00 bwrap --unshare-all --die-with-parent --chdir / --ro-bind /usr /usr --dev /dev --ro-bind-try /etc/ld.so.cache /etc/ld.so.cache --ro-bind-try /nix/store /nix/store --tmpfs /tmp-home --tmpfs /tmp-run --clearenv --setenv HOME /tmp-home --setenv XDG_RUNTIME_DIR /tmp-run --setenv XDG_RUNTIME_DIR /run/user/1000 --symlink /usr/lib /lib --symlink /usr/lib64 /lib64 --seccomp 50 /usr/libexec/glycin-loaders/2+/glycin-image-rs --dbus-fd 46
+zephyrus    6863  0.0  0.0   3752  1444 ?        S    09:39   0:00 bwrap --unshare-all --die-with-parent --chdir / --ro-bind /usr /usr --dev /dev --ro-bind-try /etc/ld.so.cache /etc/ld.so.cache --ro-bind-try /nix/store /nix/store --tmpfs /tmp-home --tmpfs /tmp-run --clearenv --setenv HOME /tmp-home --setenv XDG_RUNTIME_DIR /tmp-run --setenv XDG_RUNTIME_DIR /run/user/1000 --symlink /usr/lib /lib --symlink /usr/lib64 /lib64 --seccomp 50 /usr/libexec/glycin-loaders/2+/glycin-image-rs --dbus-fd 46
+zephyrus    6864  0.3  0.0 144004  6544 ?        Sl   09:39   0:00 /usr/libexec/glycin-loaders/2+/glycin-image-rs --dbus-fd 46
+passim      7438  0.0  0.0 321688 13528 ?        Ssl  09:40   0:00 /usr/libexec/passimd
+zephyrus    8099  0.0  0.0 531408  7292 ?        Ssl  09:40   0:00 /usr/libexec/flatpak-session-helper
+zephyrus    8104  0.0  0.0   4232  1072 ?        Ss   09:40   0:00 server --sh -n /run/user/1000/.flatpak-helper/pkcs11-flatpak-8099 --provider p11-kit-trust.so pkcs11:model=p11-kit-trust?write-protected=yes
+zephyrus    8107  0.0  0.0   3752  2324 ?        S    09:40   0:00 /usr/bin/bwrap --args 43 -- /usr/bin/xdg-dbus-proxy --args=45
+zephyrus    8108  0.0  0.0 457216  6328 ?        Sl   09:40   0:00 /usr/bin/xdg-dbus-proxy --args=45
+zephyrus    8114  0.0  0.0   3844  1584 ?        S    09:40   0:00 /usr/bin/bwrap --args 43 -- spotify
+zephyrus    8120  7.7  2.2 5053676 362348 ?      Sl   09:40   0:05 /app/extra/share/spotify/spotify
+zephyrus    8123  0.0  0.6 34337540 100276 ?     S    09:40   0:00 /app/extra/share/spotify/spotify --type=zygote --no-zygote-sandbox --no-sandbox --enable-crash-reporter=, --change-stack-guard-on-fork=enable --user-data-dir=/home/zephyrus/.var/app/com.spotify.Client/cache/spotify --log-severity=disable --user-agent-product=Chrome/139.0.7258.139 Spotify/1.2.74.477
+zephyrus    8124  0.0  0.6 34337536 100528 ?     S    09:40   0:00 /app/extra/share/spotify/spotify --type=zygote --no-sandbox --enable-crash-reporter=, --change-stack-guard-on-fork=enable --user-data-dir=/home/zephyrus/.var/app/com.spotify.Client/cache/spotify --log-severity=disable --user-agent-product=Chrome/139.0.7258.139 Spotify/1.2.74.477
+zephyrus    8150  5.1  1.1 35899348 190496 ?     Sl   09:40   0:03 /app/extra/share/spotify/spotify --type=gpu-process --no-sandbox --enable-crash-reporter=, --change-stack-guard-on-fork=enable --user-data-dir=/home/zephyrus/.var/app/com.spotify.Client/cache/spotify --log-severity=disable --user-agent-product=Chrome/139.0.7258.139 Spotify/1.2.74.477 --gpu-preferences=UAAAAAAAAAAgAAAIAAAAAAAAAAAAAGAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYAAAAAAAAABgAAAAAAAAAAQAAAAAAAAAIAAAAAAAAAAgAAAAAAAAA --shared-files --metrics-shmem-handle=4,i,8069477148921314104,16211955778680863006,262144 --field-trial-handle=3,i,10551882343605605432,3082698682075634576,262144 --disable-features=BackForwardCache,EyeDropper,FullscreenBubbleShowOrigin,LensOverlay,PartitionAllocDanglingPtr,PartitionAllocUnretainedDanglingPtr,StorageNotificationService --variations-seed-version
+zephyrus    8153  2.0  0.8 1189300 140176 ?      Sl   09:40   0:01 /app/extra/share/spotify/spotify --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en-US --service-sandbox-type=none --no-sandbox --enable-crash-reporter=, --change-stack-guard-on-fork=enable --user-data-dir=/home/zephyrus/.var/app/com.spotify.Client/cache/spotify --log-severity=disable --user-agent-product=Chrome/139.0.7258.139 Spotify/1.2.74.477 --shared-files=v8_context_snapshot_data:100 --metrics-shmem-handle=4,i,4780059701768213674,5658589973143961009,524288 --field-trial-handle=3,i,10551882343605605432,3082698682075634576,262144 --disable-features=BackForwardCache,EyeDropper,FullscreenBubbleShowOrigin,LensOverlay,PartitionAllocDanglingPtr,PartitionAllocUnretainedDanglingPtr,StorageNotificationService --variations-seed-version
+zephyrus    8156  0.0  0.3 34708388 49184 ?      Sl   09:40   0:00 /app/extra/share/spotify/spotify --type=utility --utility-sub-type=storage.mojom.StorageService --lang=en-US --service-sandbox-type=utility --no-sandbox --enable-crash-reporter=, --change-stack-guard-on-fork=enable --user-data-dir=/home/zephyrus/.var/app/com.spotify.Client/cache/spotify --log-severity=disable --user-agent-product=Chrome/139.0.7258.139 Spotify/1.2.74.477 --shared-files=v8_context_snapshot_data:100 --metrics-shmem-handle=4,i,11632879949721200722,8116889272789638454,524288 --field-trial-handle=3,i,10551882343605605432,3082698682075634576,262144 --disable-features=BackForwardCache,EyeDropper,FullscreenBubbleShowOrigin,LensOverlay,PartitionAllocDanglingPtr,PartitionAllocUnretainedDanglingPtr,StorageNotificationService --variations-seed-version
+zephyrus    8209 29.1  2.5 1478347136 411624 ?   Sl   09:40   0:20 /app/extra/share/spotify/spotify --type=renderer --enable-crash-reporter=, --origin-trial-disabled-features=CanvasTextNg|WebAssemblyCustomDescriptors --change-stack-guard-on-fork=enable --user-data-dir=/home/zephyrus/.var/app/com.spotify.Client/cache/spotify --log-severity=disable --user-agent-product=Chrome/139.0.7258.139 Spotify/1.2.74.477 --no-sandbox --autoplay-policy=no-user-gesture-required --lang=en-US --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=6 --time-ticks-at-unix-epoch=-1771906019089741 --launch-time-ticks=202659658 --shared-files=v8_context_snapshot_data:100 --metrics-shmem-handle=4,i,2589327907973420609,14265616639363733583,2097152 --field-trial-handle=3,i,10551882343605605432,3082698682075634576,262144 --disable-features=BackForwardCache,EyeDropper,FullscreenBubbleShowOrigin,LensOverlay,PartitionAllocDanglingPtr,PartitionAllocUnretainedDanglingPtr,StorageNotificationService --variations-seed-version
+zephyrus    8249  0.2  0.1  21312 19640 ?        S    09:40   0:00 p11-kit-remote --provider p11-kit-trust.so pkcs11:model=p11-kit-trust?write-protected=yes
+zephyrus    8379  1.0  0.6 68261956 101796 ?     Sl   09:40   0:00 /app/extra/share/spotify/spotify --type=utility --utility-sub-type=media.mojom.CdmServiceBroker --lang=en-US --service-sandbox-type=cdm --no-sandbox --enable-crash-reporter=, --change-stack-guard-on-fork=enable --user-data-dir=/home/zephyrus/.var/app/com.spotify.Client/cache/spotify --log-severity=disable --user-agent-product=Chrome/139.0.7258.139 Spotify/1.2.74.477 --shared-files=v8_context_snapshot_data:100 --metrics-shmem-handle=4,i,16556871834671782073,12834614912596050557,524288 --field-trial-handle=3,i,10551882343605605432,3082698682075634576,262144 --disable-features=BackForwardCache,EyeDropper,FullscreenBubbleShowOrigin,LensOverlay,PartitionAllocDanglingPtr,PartitionAllocUnretainedDanglingPtr,StorageNotificationService --variations-seed-version
+root        8678  0.0  0.0  17204  7856 ?        S    09:41   0:00 systemd-userwork: waiting...
+root        8685  0.0  0.0  17204  7848 ?        S    09:41   0:00 systemd-userwork: waiting...
+root        8701  0.0  0.0 232024  3888 pts/1    S+   09:41   0:00 /bin/sh /var/tmp/rpm-tmp.3wbqae 2
+root        8833  0.0  0.0 232024  3952 pts/1    S+   09:41   0:00 /usr/bin/bash /usr/libexec/selinux/varrun-convert.sh targeted
+root        8859  100  1.0 179536 174884 pts/1   R+   09:41   0:01 /usr/sbin/semodule -s targeted -i /run/selinux-policy/extra_varrun.cil
+zephyrus    8873  0.0  0.0 234656  4960 pts/3    R+   09:41   0:00 ps aux

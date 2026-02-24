@@ -12,7 +12,7 @@ export async function groqGeneratedData(prompt: string) {
                 content: prompt
             }
         ],
-        model: "llama-3.3-70b-versatile",
+        model: "llama-3-70b-8192",
         response_format: { type: "json_object" }
     });
 
