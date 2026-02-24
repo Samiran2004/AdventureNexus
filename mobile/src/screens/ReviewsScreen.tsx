@@ -109,6 +109,7 @@ export default function ReviewsScreen({ navigation }: any) {
                 tripType: newType.toLowerCase() as any,
                 userName: user?.fullName || 'Traveler',
                 userAvatar: user?.imageUrl || '',
+                userId: user?.id || '',
                 clerkUserId: user?.id || '',
                 tripDuration: '3 Days', // Defualt as it's mandatory in schema
                 travelers: '1',        // Default as it's mandatory in schema

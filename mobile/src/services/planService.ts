@@ -107,6 +107,7 @@ export const reviewService = {
         tripType: 'solo' | 'family' | 'couple' | 'adventure' | 'cultural' | 'business' | 'nature';
         userName: string;
         userAvatar: string;
+        userId: string;
         clerkUserId: string;
         tripDuration: string;
         travelers: string;
