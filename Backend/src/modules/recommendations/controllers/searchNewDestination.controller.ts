@@ -85,25 +85,44 @@ const searchNewDestination = async (req: Request, res: Response) => {
     // 4. Call Groq AI Service
     const generatedData = await groqGeneratedData(prompt);
 
-    // 🧼 5. Clean and Parse AI response (Extract JSON Object)
+    // 🧼 5. Clean and Parse AI response (Extract JSON Object with Self-Repair)
     let aiResponseArray: any[] = [];
     try {
-      const startIndex = generatedData.indexOf("{");
-      const endIndex = generatedData.lastIndexOf("}");
+      let startIndex = generatedData.indexOf("{");
+      let endIndex = generatedData.lastIndexOf("}");
+
       if (startIndex === -1 || endIndex === -1) {
         throw new Error("No JSON object found in AI response");
       }
-      const cleanString = generatedData.substring(startIndex, endIndex + 1);
-      const aiResponseObject = JSON.parse(cleanString);
 
-      aiResponseArray = aiResponseObject.plans || [];
-      if (!Array.isArray(aiResponseArray)) {
-        // Fallback if AI returned array directly despite prompt
-        aiResponseArray = Array.isArray(aiResponseObject) ? aiResponseObject : [];
+      let cleanString = generatedData.substring(startIndex, endIndex + 1);
+
+      // --- SELF-REPAIR LOGIC ---
+      // 1. Fix missing quotes around property values that look like place names with hyphens/special chars
+      cleanString = cleanString.replace(/"name":\s*([^",}\]]+)/g, (match, p1) => {
+        if (!p1.trim().startsWith('"')) return `"name": "${p1.trim()}"`;
+        return match;
+      });
+
+      // 2. Fix unescaped single quotes in values (very common in names like O'Hare)
+      // This is a bit tricky, but we can try to wrap unquoted strings
+
+      try {
+        const aiResponseObject = JSON.parse(cleanString);
+        aiResponseArray = aiResponseObject.plans || [];
+        if (!Array.isArray(aiResponseArray)) {
+          aiResponseArray = Array.isArray(aiResponseObject) ? aiResponseObject : [];
+        }
+      } catch (firstPassError) {
+        logger.warn(`Search: First parse failed, trying aggressive cleaning...`);
+        // Remove trailing commas before closing braces/brackets
+        const ultraClean = cleanString.replace(/,\s*([}\]])/g, '$1');
+        const aiResponseObject = JSON.parse(ultraClean);
+        aiResponseArray = aiResponseObject.plans || [];
       }
     } catch (parseError: any) {
-      logger.error(`JSON Parse Error: ${parseError.message}. Content: ${generatedData.substring(0, 100)}...`);
-      throw new Error("Failed to parse AI response as JSON");
+      logger.error(`JSON Parse Error: ${parseError.message}. Content: ${generatedData.substring(0, 200)}...`);
+      throw new Error(`AI generated invalid data: ${parseError.message}`);
     }
 
     if (aiResponseArray.length === 0) {
@@ -112,15 +131,49 @@ const searchNewDestination = async (req: Request, res: Response) => {
 
     // 🌐 5.5 Process each plan in the array (Fetch Images & Construct Objects)
     const processedPlans = await Promise.all(aiResponseArray.map(async (aiResponse: any) => {
-      // Strategy: Wikipedia (Reliable/Specific) -> Unsplash (High Quality) -> AI (Fallback)
+      // Strategy: Wikipedia -> Unsplash -> AI -> Hardcoded Fallback
       const searchQuery = aiResponse.name || to;
+      let destinationImage: string | undefined;
+      let source = "none";
 
-      let destinationImage = await fetchWikipediaImage(searchQuery);
+      try {
+        destinationImage = await fetchWikipediaImage(searchQuery);
+        if (destinationImage) source = "Wikipedia";
 
-      if (!destinationImage) {
-        logger.warn(`Wikipedia failed for ${searchQuery}, trying Unsplash...`);
-        destinationImage = await fetchUnsplashImage(searchQuery);
+        if (!destinationImage) {
+          destinationImage = await fetchUnsplashImage(searchQuery);
+          if (destinationImage) source = "Unsplash";
+        }
+      } catch (imgError) {
+        logger.error(`Image Fetch Error for ${searchQuery}:`, imgError);
       }
+
+      // Final URI Encoding & AI Fallback logic
+      let finalImageUrl = destinationImage || aiResponse.image_url;
+
+      if (finalImageUrl) {
+        try {
+          // Simplest robust encoding
+          if (finalImageUrl.startsWith('//')) finalImageUrl = 'https:' + finalImageUrl;
+          const urlObj = new URL(finalImageUrl);
+          finalImageUrl = urlObj.toString(); // Standard URL string is already reasonably encoded
+        } catch (e) {
+          finalImageUrl = encodeURI(finalImageUrl);
+        }
+      }
+
+      // STRICT FALLBACK: Ensure the card NEVER has a missing image
+      if (!finalImageUrl || finalImageUrl.length < 10) {
+        const fallbacks = [
+          "https://images.unsplash.com/photo-1488646953014-85cb44e25828",
+          "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1",
+          "https://images.unsplash.com/photo-1507525428034-b723cf961d3e"
+        ];
+        finalImageUrl = fallbacks[Math.floor(Math.random() * fallbacks.length)] + "?w=1000&auto=format&fit=crop";
+        source = "High-Quality Placeholder";
+      }
+
+      logger.info(`Search: Source [${source}] for "${searchQuery}" -> URL: ${finalImageUrl}`);
 
       // Construct Plan Data
       const planData: IPlan = {
@@ -136,7 +189,7 @@ const searchNewDestination = async (req: Request, res: Response) => {
 
         // AI generated fields
         ai_score: typeof aiResponse.ai_score === 'string' ? parseFloat(aiResponse.ai_score.replace('%', '')) : aiResponse.ai_score,
-        image_url: destinationImage || aiResponse.image_url,
+        image_url: finalImageUrl,
         name: aiResponse.name,
         days: aiResponse.days,
         cost: aiResponse.cost,

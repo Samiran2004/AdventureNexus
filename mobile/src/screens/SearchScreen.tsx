@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@clerk/clerk-expo';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { theme } from '../styles/theme';
-import { MapPin, Plane, Calendar, Users, DollarSign, Search, Star, Heart } from 'lucide-react-native';
+import { MapPin, Plane, Calendar, Users, DollarSign, Search, Star, Heart, Sparkles } from 'lucide-react-native';
 import { planService, likedPlansService } from '../services/planService';
 import BentoCard from '../components/common/BentoCard';
 
@@ -133,51 +133,63 @@ export default function SearchScreen({ navigation }: any) {
         }
     };
 
-    const renderResult = ({ item }: any) => (
-        <BentoCard
-            style={styles.resultCard}
-            onPress={() => navigation.navigate('Details', { plan: item })}
-        >
-            {item.image_url ? (
-                <Image source={{ uri: item.image_url }} style={styles.resultImage} resizeMode="cover" />
-            ) : (
-                <View style={[styles.resultImage, styles.imagePlaceholder]}>
-                    <Text style={styles.placeholderEmoji}>🌍</Text>
-                </View>
-            )}
-            <View style={styles.resultOverlay} />
+    const renderResult = ({ item }: any) => {
+        const imageUrl = item.image_url || item.image || item.imageUrl;
 
-            {/* Heart button */}
-            <TouchableOpacity style={styles.heartBtn} onPress={() => toggleLike(item._id || item.name)}>
-                <Heart
-                    size={18}
-                    color={likedIds.has(item._id || item.name) ? '#FF4E6A' : '#FFF'}
-                    fill={likedIds.has(item._id || item.name) ? '#FF4E6A' : 'transparent'}
-                />
-            </TouchableOpacity>
+        return (
+            <BentoCard
+                style={styles.resultCard}
+                onPress={() => navigation.navigate('Details', { plan: item })}
+            >
+                {imageUrl ? (
+                    <Image
+                        source={{ uri: imageUrl }}
+                        style={styles.resultImage}
+                        resizeMode="cover"
+                        onError={(e) => {
+                            const error = e.nativeEvent.error;
+                            console.warn(`[ImageError] ${item.name || 'Dest'}: ${error} | URL: ${imageUrl}`);
+                        }}
+                    />
+                ) : (
+                    <View style={[styles.resultImage, styles.imagePlaceholder]}>
+                        <Text style={styles.placeholderEmoji}>🌍</Text>
+                    </View>
+                )}
+                <View style={styles.resultOverlay} />
 
-            {/* AI Score badge */}
-            {item.ai_score != null && (
-                <View style={styles.scoreBadge}>
-                    <Star size={10} color="#FFD700" fill="#FFD700" />
-                    <Text style={styles.scoreText}>{item.ai_score}</Text>
-                </View>
-            )}
+                {/* Heart button */}
+                <TouchableOpacity style={styles.heartBtn} onPress={() => toggleLike(item._id || item.name)}>
+                    <Heart
+                        size={18}
+                        color={likedIds.has(item._id || item.name) ? '#FF4E6A' : '#FFF'}
+                        fill={likedIds.has(item._id || item.name) ? '#FF4E6A' : 'transparent'}
+                    />
+                </TouchableOpacity>
 
-            <View style={styles.resultContent}>
-                <Text style={styles.resultTitle} numberOfLines={2}>{item.name}</Text>
-                <View style={styles.resultStats}>
-                    <Text style={styles.resultStat}>📅 {item.days} days</Text>
-                    {item.cost != null && (
-                        <Text style={styles.resultStat}>💰 ${item.cost?.toLocaleString()}</Text>
-                    )}
+                {/* AI Score badge */}
+                {item.ai_score != null && (
+                    <View style={styles.scoreBadge}>
+                        <Sparkles size={10} color="#FFD700" />
+                        <Text style={styles.scoreText}>{item.ai_score}% Match</Text>
+                    </View>
+                )}
+
+                <View style={styles.resultContent}>
+                    <Text style={styles.resultTitle} numberOfLines={2}>{item.name}</Text>
+                    <View style={styles.resultStats}>
+                        <Text style={styles.resultStat}>📅 {item.days} days</Text>
+                        {item.cost != null && (
+                            <Text style={styles.resultStat}>💰 ${item.cost?.toLocaleString()}</Text>
+                        )}
+                    </View>
+                    {item.destination_overview ? (
+                        <Text style={styles.resultOverview} numberOfLines={2}>{item.destination_overview}</Text>
+                    ) : null}
                 </View>
-                {item.destination_overview ? (
-                    <Text style={styles.resultOverview} numberOfLines={2}>{item.destination_overview}</Text>
-                ) : null}
-            </View>
-        </BentoCard>
-    );
+            </BentoCard>
+        );
+    };
 
     return (
         <SafeAreaView style={styles.safeArea}>
