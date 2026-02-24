@@ -67,6 +67,17 @@ export interface IPlan extends Document {
         }[];
     }[];
 
+    how_to_reach?: {
+        best_way: string;
+        modes: {
+            type: string;
+            description: string;
+            estimated_cost?: string;
+            duration?: string;
+        }[];
+        arrival_tips: string[];
+    };
+
     local_tips: string[];
 
     // Integrated Booking Data (References)
