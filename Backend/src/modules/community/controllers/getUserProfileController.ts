@@ -67,10 +67,18 @@ export const getUserProfile = async (req: Request, res: Response) => {
             .sort({ createdAt: -1 })
             .limit(10);
 
+        // Fetch user's saved plans
+        const savedPlans = await User.findOne({ clerkUserId })
+            .populate('plans')
+            .then(u => u?.plans || []);
+
         // Check if the requesting user is following this user
         const isFollowing = requestingUserClerkId
             ? user.followers?.includes(requestingUserClerkId)
             : false;
+
+        // Better name derivation for profile
+        const fullname = user.fullname || `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || 'Traveler';
 
         return res.status(StatusCodes.OK).json({
             success: true,
@@ -78,9 +86,9 @@ export const getUserProfile = async (req: Request, res: Response) => {
                 profile: {
                     clerkUserId: user.clerkUserId,
                     username: user.username,
-                    fullname: user.fullname,
+                    fullname,
                     profilepicture: user.profilepicture,
-                    bio: user.country, // Using country as bio for now or we could add a bio field
+                    bio: user.country || 'Adventure Seeker',
                     followersCount: user.followers?.length || 0,
                     followingCount: user.following?.length || 0,
                     isFollowing,
@@ -88,7 +96,8 @@ export const getUserProfile = async (req: Request, res: Response) => {
                 },
                 activity: {
                     posts,
-                    stories
+                    stories,
+                    savedPlans
                 }
             }
         });

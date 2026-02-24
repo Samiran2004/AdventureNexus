@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import {
     View,
@@ -10,6 +11,7 @@ import {
     ActivityIndicator,
     Modal,
     FlatList,
+    Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
@@ -29,7 +31,10 @@ export default function DetailsScreen({ navigation, route }: any) {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [selectedLocation, setSelectedLocation] = useState<any>(null);
     const [isMapVisible, setIsMapVisible] = useState(false);
+    const [routeCoordinates, setRouteCoordinates] = useState<any[]>([]);
+    const [isFetchingRoute, setIsFetchingRoute] = useState(false);
     const [activeDayIndex, setActiveDayIndex] = useState(0);
+    const [isSaving, setIsSaving] = useState(false);
 
     useEffect(() => {
         if (plan?.name) {
@@ -51,6 +56,34 @@ export default function DetailsScreen({ navigation, route }: any) {
             console.error('Failed to load images:', err);
         } finally {
             setIsLoadingImages(false);
+        }
+    };
+
+    const handleSavePlan = async () => {
+        try {
+            setIsSaving(true);
+            const token = await getToken();
+            if (!token) {
+                Alert.alert("Sign In", "Please sign in to save plans.");
+                return;
+            }
+
+            if (!plan._id) {
+                Alert.alert("Error", "This plan cannot be saved right now.");
+                return;
+            }
+
+            const res = await planService.savePlan(token, plan._id);
+            if (res.success) {
+                Alert.alert("Success ✨", "Plan saved to your profile!");
+            } else {
+                Alert.alert("Error", res.message || "Failed to save plan.");
+            }
+        } catch (err: any) {
+            console.error("Failed to save plan:", err);
+            Alert.alert("Error", "An unexpected error occurred.");
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -108,6 +141,50 @@ export default function DetailsScreen({ navigation, route }: any) {
 
         return path;
     };
+    const fetchRoadRoute = async (highlights: any[]) => {
+        if (!highlights || highlights.length < 2) return;
+
+        setIsFetchingRoute(true);
+        try {
+            // Filter highlights with coordinates and join them for OSRM
+            const coords = highlights
+                .filter(h => h.geo_coordinates)
+                .map(h => `${h.geo_coordinates.lng},${h.geo_coordinates.lat}`)
+                .join(';');
+
+            if (!coords) return;
+
+            const url = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`;
+            const response = await axios.get(url);
+
+            if (response.data?.routes?.[0]?.geometry?.coordinates) {
+                const points = response.data.routes[0].geometry.coordinates.map((coord: any) => ({
+                    latitude: coord[1],
+                    longitude: coord[0]
+                }));
+                setRouteCoordinates(points);
+            }
+        } catch (error) {
+            console.error("Error fetching road route:", error);
+            // Fallback to straight lines if OSRM fails
+            setRouteCoordinates(highlights
+                .filter(h => h.geo_coordinates)
+                .map(h => ({
+                    latitude: h.geo_coordinates.lat,
+                    longitude: h.geo_coordinates.lng
+                }))
+            );
+        } finally {
+            setIsFetchingRoute(false);
+        }
+    };
+
+    useEffect(() => {
+        if (isMapVisible && !selectedLocation && plan.trip_highlights?.length > 1) {
+            fetchRoadRoute(plan.trip_highlights);
+        }
+    }, [isMapVisible, selectedLocation]);
+
     const getDateForDay = (index: number) => {
         if (!plan.date) return null;
         const startDate = new Date(plan.date);
@@ -349,12 +426,37 @@ export default function DetailsScreen({ navigation, route }: any) {
                                                                     </View>
                                                                     <Text style={styles.slotDescriptionText}>{day[slot]}</Text>
 
-                                                                    {day.activities?.filter((a: any) => a.time?.toLowerCase() === slot).map((act: any, aIdx: number) => (
-                                                                        <View key={aIdx} style={styles.subActivityBox}>
-                                                                            <Text style={styles.subActivityName}>• {act.name}</Text>
-                                                                            {act.cost && <Text style={styles.subActivityCost}>{act.cost}</Text>}
-                                                                        </View>
-                                                                    ))}
+                                                                    {day.activities?.filter((a: any) => a.time?.toLowerCase() === slot).map((act: any, aIdx: number) => {
+                                                                        const matchingHighlight = plan.trip_highlights?.find((h: any) =>
+                                                                            act.name.toLowerCase().includes(h.name.toLowerCase()) ||
+                                                                            h.name.toLowerCase().includes(act.name.toLowerCase())
+                                                                        );
+
+                                                                        return (
+                                                                            <TouchableOpacity
+                                                                                key={aIdx}
+                                                                                style={styles.subActivityBox}
+                                                                                onPress={() => {
+                                                                                    if (matchingHighlight?.geo_coordinates) {
+                                                                                        setSelectedLocation(matchingHighlight);
+                                                                                        setIsMapVisible(true);
+                                                                                    }
+                                                                                }}
+                                                                                disabled={!matchingHighlight?.geo_coordinates}
+                                                                                activeOpacity={0.7}
+                                                                            >
+                                                                                <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+                                                                                    <Text style={[styles.subActivityName, matchingHighlight && { color: theme.colors.primary }]}>
+                                                                                        • {act.name}
+                                                                                    </Text>
+                                                                                    {matchingHighlight && (
+                                                                                        <MapPin size={10} color={theme.colors.primary} style={{ marginLeft: 4, opacity: 0.7 }} />
+                                                                                    )}
+                                                                                </View>
+                                                                                {act.cost && <Text style={styles.subActivityCost}>{act.cost}</Text>}
+                                                                            </TouchableOpacity>
+                                                                        );
+                                                                    })}
                                                                 </View>
                                                             </BentoCard>
                                                         </View>
@@ -426,8 +528,16 @@ export default function DetailsScreen({ navigation, route }: any) {
                     )}
 
                     {/* CTA */}
-                    <TouchableOpacity style={styles.bookBtn}>
-                        <Text style={styles.bookBtnText}>Save to My Trips ✨</Text>
+                    <TouchableOpacity
+                        style={[styles.bookBtn, isSaving && { opacity: 0.7 }]}
+                        onPress={handleSavePlan}
+                        disabled={isSaving}
+                    >
+                        {isSaving ? (
+                            <ActivityIndicator color="#FFF" />
+                        ) : (
+                            <Text style={styles.bookBtnText}>Save to My Trips ✨</Text>
+                        )}
                     </TouchableOpacity>
                 </View>
 
@@ -504,41 +614,15 @@ export default function DetailsScreen({ navigation, route }: any) {
                                 )
                             ))}
 
-                            {/* Shortest Path Polyline */}
-                            {!selectedLocation && plan.trip_highlights.length > 1 && (
+                            {/* Navigational Polyline (OSRM Road-Following Style) */}
+                            {!selectedLocation && routeCoordinates.length > 0 && (
                                 <Polyline
-                                    coordinates={getShortestPath(plan.trip_highlights)}
-                                    strokeColor={theme.colors.primary}
-                                    strokeWidth={3}
-                                    lineDashPattern={[5, 5]} // Dashed line for a premium look
+                                    coordinates={routeCoordinates}
+                                    strokeColor="#4285F4" // Google Maps Blue
+                                    strokeWidth={4}
                                 />
                             )}
                         </MapView>
-
-                        {/* Distance overlay */}
-                        {!selectedLocation && plan.trip_highlights.length > 1 && (
-                            <View style={styles.distanceBadge}>
-                                <Sparkles size={14} color="#FFF" />
-                                <Text style={styles.distanceBadgeText}>
-                                    Total Trip Path: {(() => {
-                                        const path = getShortestPath(plan.trip_highlights);
-                                        let total = 0;
-                                        const toRad = (v: number) => (v * Math.PI) / 180;
-                                        for (let i = 0; i < path.length - 1; i++) {
-                                            const lat1 = path[i].latitude, lon1 = path[i].longitude;
-                                            const lat2 = path[i + 1].latitude, lon2 = path[i + 1].longitude;
-                                            const R = 6371;
-                                            const dLat = toRad(lat2 - lat1), dLon = toRad(lon2 - lon1);
-                                            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                                                Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-                                                Math.sin(dLon / 2) * Math.sin(dLon / 2);
-                                            total += R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-                                        }
-                                        return total.toFixed(1);
-                                    })()} km
-                                </Text>
-                            </View>
-                        )}
                     </View>
                 </Modal>
             </ScrollView>
@@ -837,22 +921,4 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     map: { flex: 1 },
-    distanceBadge: {
-        position: 'absolute',
-        bottom: 30,
-        alignSelf: 'center',
-        backgroundColor: theme.colors.primary,
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 8,
-        paddingVertical: 10,
-        paddingHorizontal: 16,
-        borderRadius: 25,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 8,
-        elevation: 10,
-    },
-    distanceBadgeText: { color: '#FFF', fontSize: 13, fontWeight: '800' },
 });

@@ -175,6 +175,7 @@ export default function HomeScreen({ navigation }: any) {
                     </View>
                     <Text style={styles.heroTitle}>Your Dream{'\n'}Adventure</Text>
                     <Text style={styles.heroTitleAccent}>Starts Here</Text>
+
                     <Text style={styles.heroSubtitle}>
                         Intelligent travel planning powered by AI. Personalized itineraries,
                         hidden destinations, perfect trips — all in one place.
