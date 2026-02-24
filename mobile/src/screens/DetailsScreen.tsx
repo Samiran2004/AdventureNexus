@@ -12,7 +12,7 @@ import {
     FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
 import { theme } from '../styles/theme';
 import BentoCard from '../components/common/BentoCard';
 import { ChevronLeft, Star, Clock, MapPin, Sparkles, X, Info, CheckCircle2, Sunrise, Sun, Sunset, Plane, Train, Bus, Car, ArrowRight } from 'lucide-react-native';
@@ -69,7 +69,45 @@ export default function DetailsScreen({ navigation, route }: any) {
 
     const mainImage = images.length > 0 ? images[0] : plan.image_url;
 
-    // Helper to get formatted date for a specific day index
+    // Nearest Neighbor (Greedy) algorithm for finding the shortest path between pins
+    const getShortestPath = (highlights: any[]) => {
+        if (!highlights || highlights.length <= 1) return highlights.map(h => ({
+            latitude: h.geo_coordinates.lat,
+            longitude: h.geo_coordinates.lng
+        }));
+
+        const points = highlights
+            .filter(h => h.geo_coordinates)
+            .map(h => ({
+                latitude: h.geo_coordinates.lat,
+                longitude: h.geo_coordinates.lng
+            }));
+
+        const path = [points[0]]; // Start with the first point (usually arrival point)
+        const unvisited = points.slice(1);
+
+        while (unvisited.length > 0) {
+            let lastPoint = path[path.length - 1];
+            let nearestIdx = 0;
+            let minDist = Infinity;
+
+            for (let i = 0; i < unvisited.length; i++) {
+                // simple Euclidean distance for short trip distances (good enough for visualization)
+                const d = Math.sqrt(
+                    Math.pow(unvisited[i].latitude - lastPoint.latitude, 2) +
+                    Math.pow(unvisited[i].longitude - lastPoint.longitude, 2)
+                );
+                if (d < minDist) {
+                    minDist = d;
+                    nearestIdx = i;
+                }
+            }
+            path.push(unvisited[nearestIdx]);
+            unvisited.splice(nearestIdx, 1);
+        }
+
+        return path;
+    };
     const getDateForDay = (index: number) => {
         if (!plan.date) return null;
         const startDate = new Date(plan.date);
@@ -447,8 +485,8 @@ export default function DetailsScreen({ navigation, route }: any) {
                             initialRegion={{
                                 latitude: selectedLocation?.geo_coordinates?.lat || plan.trip_highlights[0]?.geo_coordinates?.lat || 0,
                                 longitude: selectedLocation?.geo_coordinates?.lng || plan.trip_highlights[0]?.geo_coordinates?.lng || 0,
-                                latitudeDelta: selectedLocation ? 0.01 : 0.1,
-                                longitudeDelta: selectedLocation ? 0.01 : 0.1,
+                                latitudeDelta: selectedLocation ? 0.01 : 0.2,
+                                longitudeDelta: selectedLocation ? 0.01 : 0.2,
                             }}
                         >
                             {plan.trip_highlights.map((h: any, i: number) => (
@@ -465,7 +503,42 @@ export default function DetailsScreen({ navigation, route }: any) {
                                     />
                                 )
                             ))}
+
+                            {/* Shortest Path Polyline */}
+                            {!selectedLocation && plan.trip_highlights.length > 1 && (
+                                <Polyline
+                                    coordinates={getShortestPath(plan.trip_highlights)}
+                                    strokeColor={theme.colors.primary}
+                                    strokeWidth={3}
+                                    lineDashPattern={[5, 5]} // Dashed line for a premium look
+                                />
+                            )}
                         </MapView>
+
+                        {/* Distance overlay */}
+                        {!selectedLocation && plan.trip_highlights.length > 1 && (
+                            <View style={styles.distanceBadge}>
+                                <Sparkles size={14} color="#FFF" />
+                                <Text style={styles.distanceBadgeText}>
+                                    Total Trip Path: {(() => {
+                                        const path = getShortestPath(plan.trip_highlights);
+                                        let total = 0;
+                                        const toRad = (v: number) => (v * Math.PI) / 180;
+                                        for (let i = 0; i < path.length - 1; i++) {
+                                            const lat1 = path[i].latitude, lon1 = path[i].longitude;
+                                            const lat2 = path[i + 1].latitude, lon2 = path[i + 1].longitude;
+                                            const R = 6371;
+                                            const dLat = toRad(lat2 - lat1), dLon = toRad(lon2 - lon1);
+                                            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                                                Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                                                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                                            total += R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                                        }
+                                        return total.toFixed(1);
+                                    })()} km
+                                </Text>
+                            </View>
+                        )}
                     </View>
                 </Modal>
             </ScrollView>
@@ -764,4 +837,22 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     map: { flex: 1 },
+    distanceBadge: {
+        position: 'absolute',
+        bottom: 30,
+        alignSelf: 'center',
+        backgroundColor: theme.colors.primary,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        paddingVertical: 10,
+        paddingHorizontal: 16,
+        borderRadius: 25,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 8,
+        elevation: 10,
+    },
+    distanceBadgeText: { color: '#FFF', fontSize: 13, fontWeight: '800' },
 });
