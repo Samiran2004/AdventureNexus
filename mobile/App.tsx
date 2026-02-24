@@ -16,6 +16,7 @@ import ProfileScreen from './src/screens/ProfileScreen';
 import UserProfileScreen from './src/screens/UserProfileScreen';
 import SignInScreen from './src/screens/SignInScreen';
 import SignUpScreen from './src/screens/SignUpScreen';
+import EditProfileScreen from './src/screens/EditProfileScreen';
 import { theme } from './src/styles/theme';
 
 // ─── Clerk publishable key ────────────────────────────────────────────────────
@@ -128,6 +129,7 @@ function RootNavigator() {
                         <Stack.Screen name="Main" component={HomeTabs} />
                         <Stack.Screen name="Details" component={DetailsScreen} />
                         <Stack.Screen name="UserProfile" component={UserProfileScreen} />
+                        <Stack.Screen name="EditProfile" component={EditProfileScreen} />
                     </>
                 ) : (
                     <Stack.Screen name="Auth" component={AuthNavigator} />

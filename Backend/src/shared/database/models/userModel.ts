@@ -18,6 +18,8 @@ export interface IUser extends Document {
     likedPlans?: string[];  // Array of Plan IDs liked by the user (IDs)
     followers?: string[];   // Array of clerkUserIds following this user
     following?: string[];   // Array of clerkUserIds this user is following
+    bio?: string;           // User bio
+    coverImage?: string;    // URL to cover/background image
     lastActive?: Date;      // Last active timestamp
     createdAt: Date;        // Timestamp
     updatedAt: Date;        // Timestamp
@@ -85,6 +87,8 @@ const userSchema = new Schema<IUser>(
         likedPlans: [{ type: String }],
         followers: [{ type: String, ref: 'User' }], // Clerk User IDs
         following: [{ type: String, ref: 'User' }], // Clerk User IDs
+        bio: { type: String, default: "" },
+        coverImage: { type: String, default: "" },
     },
     {
         timestamps: true, // Automatically manage createdAt and updatedAt

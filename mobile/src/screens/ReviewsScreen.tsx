@@ -4,10 +4,11 @@ import {
     SafeAreaView, ActivityIndicator, TextInput, Alert,
 } from 'react-native';
 import { theme } from '../styles/theme';
-import { Star, ThumbsUp, Search, MapPin, Users, Clock, CheckCircle2, SlidersHorizontal, Image as ImageIcon } from 'lucide-react-native';
+import { Star, ThumbsUp, Search, MapPin, Users, Clock, CheckCircle2, SlidersHorizontal, Image as ImageIcon, Plus } from 'lucide-react-native';
 import { reviewService } from '../services/planService';
 import BentoCard from '../components/common/BentoCard';
 import { Image, ScrollView } from 'react-native';
+import { useUser, useAuth } from '@clerk/clerk-expo';
 
 const TRIP_TYPES = ['All', 'Solo', 'Family', 'Adventure', 'Romance', 'Group'];
 const SORT_OPTIONS = [
@@ -32,6 +33,8 @@ function StarRating({ count }: { count: number }) {
 }
 
 export default function ReviewsScreen({ navigation }: any) {
+    const { user } = useUser();
+    const { getToken } = useAuth();
     const [reviews, setReviews] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeType, setActiveType] = useState('All');
@@ -93,18 +96,30 @@ export default function ReviewsScreen({ navigation }: any) {
             return;
         }
         try {
-            await reviewService.createReview('', {
+            const token = await getToken();
+            if (!token) {
+                Alert.alert('Sign In', 'Please sign in to share a review.');
+                return;
+            }
+
+            await reviewService.createReview(token, {
                 rating: newRating,
                 comment: newComment.trim(),
                 location: newLocation.trim(),
-                tripType: newType,
+                tripType: newType.toLowerCase() as any,
+                userName: user?.fullName || 'Traveler',
+                userAvatar: user?.imageUrl || '',
+                clerkUserId: user?.id || '',
+                tripDuration: '3 Days', // Defualt as it's mandatory in schema
+                travelers: '1',        // Default as it's mandatory in schema
             });
-            Alert.alert('Success', 'Review submitted!');
+            Alert.alert('Success ✨', 'Your journey has been shared!');
             setShowForm(false);
             setNewComment(''); setNewLocation('');
             fetchReviews(true);
-        } catch {
-            Alert.alert('Error', 'Failed to submit review.');
+        } catch (error: any) {
+            console.error("Submit error:", error);
+            Alert.alert('Error', 'Failed to submit review. Please try again.');
         }
     };
 

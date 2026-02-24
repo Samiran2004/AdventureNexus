@@ -4,6 +4,7 @@ import getDestinationImages from '../../recommendations/controllers/getDestinati
 import getPersonalizedRecommendations from '../../recommendations/controllers/getPersonalizedRecommendations.controller';
 import { getPlanById } from '../controllers/getPlanByIdController';
 import { savePlanToUser } from '../controllers/savePlanToUserController';
+import { unsavePlanFromUser } from '../controllers/unsavePlanFromUserController';
 import protect from '../../../shared/middleware/authClerkTokenMiddleware';
 import { cacheMiddleware } from '../../../shared/middleware/cacheMiddleware';
 import { CACHE_CONFIG } from '../../../shared/config/cache.config';
@@ -34,6 +35,12 @@ route.post("/search/destination-images", getDestinationImages);
  * @desc Save an AI-generated plan to a user's personal list.
  */
 route.post("/:planId/save", protect, savePlanToUser);
+
+/**
+ * @route DELETE /api/v1/plans/:planId/save
+ * @desc Remove a saved plan from a user's personal list.
+ */
+route.delete("/:planId/save", protect, unsavePlanFromUser);
 
 /**
  * @route GET /api/v1/plans/public/:id

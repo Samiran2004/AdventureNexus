@@ -18,14 +18,15 @@ import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
 import { theme } from '../styles/theme';
 import BentoCard from '../components/common/BentoCard';
 import { ChevronLeft, Star, Clock, MapPin, Sparkles, X, Info, CheckCircle2, Sunrise, Sun, Sunset, Plane, Train, Bus, Car, ArrowRight } from 'lucide-react-native';
-import { useAuth } from '@clerk/clerk-expo';
-import { planService } from '../services/planService';
+import { useAuth, useUser } from '@clerk/clerk-expo';
+import { planService, communityService } from '../services/planService';
 
 const { width } = Dimensions.get('window');
 
 export default function DetailsScreen({ navigation, route }: any) {
     const { plan } = route.params || {};
     const { getToken } = useAuth();
+    const { user } = useUser();
     const [images, setImages] = useState<string[]>([]);
     const [isLoadingImages, setIsLoadingImages] = useState(false);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -35,12 +36,30 @@ export default function DetailsScreen({ navigation, route }: any) {
     const [isFetchingRoute, setIsFetchingRoute] = useState(false);
     const [activeDayIndex, setActiveDayIndex] = useState(0);
     const [isSaving, setIsSaving] = useState(false);
+    const [isSaved, setIsSaved] = useState(false);
 
     useEffect(() => {
         if (plan?.name) {
             loadImages();
         }
-    }, [plan?.name]);
+        checkSaveStatus();
+    }, [plan?.name, plan?._id, user?.id]);
+
+    const checkSaveStatus = async () => {
+        try {
+            const token = await getToken();
+            if (token && user?.id && plan?._id) {
+                const res = await communityService.getUserProfile(token, user.id);
+                if (res.success) {
+                    const savedPlans = res.data.activity?.savedPlans || [];
+                    const found = savedPlans.some((p: any) => p._id === plan._id);
+                    setIsSaved(found);
+                }
+            }
+        } catch (err) {
+            console.error("Error checking save status:", err);
+        }
+    };
 
     const loadImages = async () => {
         try {
@@ -73,14 +92,27 @@ export default function DetailsScreen({ navigation, route }: any) {
                 return;
             }
 
-            const res = await planService.savePlan(token, plan._id);
-            if (res.success) {
-                Alert.alert("Success ✨", "Plan saved to your profile!");
+            if (isSaved) {
+                // Unsave
+                const res = await planService.unsavePlan(token, plan._id);
+                if (res.success) {
+                    setIsSaved(false);
+                    Alert.alert("Removed ✨", "Plan removed from your profile.");
+                } else {
+                    Alert.alert("Error", res.message || "Failed to remove plan.");
+                }
             } else {
-                Alert.alert("Error", res.message || "Failed to save plan.");
+                // Save
+                const res = await planService.savePlan(token, plan._id);
+                if (res.success) {
+                    setIsSaved(true);
+                    Alert.alert("Success ✨", "Plan saved to your profile!");
+                } else {
+                    Alert.alert("Error", res.message || "Failed to save plan.");
+                }
             }
         } catch (err: any) {
-            console.error("Failed to save plan:", err);
+            console.error("Failed to toggle save plan:", err);
             Alert.alert("Error", "An unexpected error occurred.");
         } finally {
             setIsSaving(false);
@@ -529,14 +561,20 @@ export default function DetailsScreen({ navigation, route }: any) {
 
                     {/* CTA */}
                     <TouchableOpacity
-                        style={[styles.bookBtn, isSaving && { opacity: 0.7 }]}
+                        style={[
+                            styles.bookBtn,
+                            isSaving && { opacity: 0.7 },
+                            isSaved && styles.savedBtn
+                        ]}
                         onPress={handleSavePlan}
                         disabled={isSaving}
                     >
                         {isSaving ? (
                             <ActivityIndicator color="#FFF" />
                         ) : (
-                            <Text style={styles.bookBtnText}>Save to My Trips ✨</Text>
+                            <Text style={styles.bookBtnText}>
+                                {isSaved ? "Remove from My Trips 🗑️" : "Save to My Trips ✨"}
+                            </Text>
                         )}
                     </TouchableOpacity>
                 </View>
@@ -880,6 +918,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     bookBtnText: { color: '#FFF', fontSize: 16, fontWeight: '800' },
+    savedBtn: { backgroundColor: '#FF4E6A' },
 
     // Modals
     modalOverlay: {

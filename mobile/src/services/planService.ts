@@ -49,6 +49,14 @@ export const planService = {
         });
         return res.data;
     },
+
+    // DELETE unsave an AI-generated plan from user's personal list
+    async unsavePlan(token: string, planId: string) {
+        const res = await api.delete(`/plans/${planId}/save`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return res.data;
+    },
 };
 
 export const likedPlansService = {
@@ -92,13 +100,19 @@ export const reviewService = {
     },
 
     // POST create a review
-    async createReview(token: string, body: {
+    async createReview(token: string, review: {
         rating: number;
         comment: string;
         location: string;
-        tripType: string;
+        tripType: 'solo' | 'family' | 'couple' | 'adventure' | 'cultural' | 'business' | 'nature';
+        userName: string;
+        userAvatar: string;
+        clerkUserId: string;
+        tripDuration: string;
+        travelers: string;
+        images?: string[];
     }) {
-        const res = await api.post('/reviews', body, {
+        const res = await api.post('/reviews', review, {
             headers: { Authorization: `Bearer ${token}` },
         });
         return res.data;
@@ -133,9 +147,16 @@ export const communityService = {
     },
 
     // POST toggle follow
-    async toggleFollow(token: string, targetClerkUserId: string) {
-        const res = await api.post('/community/follow', { targetClerkUserId }, {
-            headers: { Authorization: `Bearer ${token}` },
+    async toggleFollow(token: string, clerkUserId: string) {
+        const res = await api.post(`/community/follow/${clerkUserId}`, {}, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return res.data;
+    },
+
+    async updateProfile(token: string, profileData: any) {
+        const res = await api.patch('/users/profile', profileData, {
+            headers: { Authorization: `Bearer ${token}` }
         });
         return res.data;
     },
