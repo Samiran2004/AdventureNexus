@@ -69,6 +69,21 @@ export default function DetailsScreen({ navigation, route }: any) {
 
     const mainImage = images.length > 0 ? images[0] : plan.image_url;
 
+    // Helper to get formatted date for a specific day index
+    const getDateForDay = (index: number) => {
+        if (!plan.date) return null;
+        const startDate = new Date(plan.date);
+        const currentDate = new Date(startDate);
+        currentDate.setDate(startDate.getDate() + index);
+
+        return {
+            dayName: currentDate.toLocaleDateString('en-US', { weekday: 'short' }),
+            dayNumber: currentDate.getDate(),
+            month: currentDate.toLocaleDateString('en-US', { month: 'short' }),
+            fullDate: currentDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+        };
+    };
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <ScrollView showsVerticalScrollIndicator={false}>
@@ -214,74 +229,97 @@ export default function DetailsScreen({ navigation, route }: any) {
                                 </TouchableOpacity>
                             </View>
 
-                            {/* Horizontal Day Selector */}
+                            {/* Calendar-Style Day Selector */}
                             <ScrollView
                                 horizontal
                                 showsHorizontalScrollIndicator={false}
-                                style={styles.daySelectorScroll}
-                                contentContainerStyle={{ paddingRight: 20 }}
+                                style={styles.calendarStripe}
+                                contentContainerStyle={{ paddingRight: 24, paddingLeft: 4 }}
                             >
-                                {plan.suggested_itinerary.map((_: any, idx: number) => (
-                                    <TouchableOpacity
-                                        key={idx}
-                                        style={[
-                                            styles.dayTab,
-                                            activeDayIndex === idx && styles.dayTabActive
-                                        ]}
-                                        onPress={() => setActiveDayIndex(idx)}
-                                    >
-                                        <Text style={[
-                                            styles.dayTabText,
-                                            activeDayIndex === idx && styles.dayTabTextActive
-                                        ]}>Day {idx + 1}</Text>
-                                    </TouchableOpacity>
-                                ))}
+                                {plan.suggested_itinerary.map((_: any, idx: number) => {
+                                    const dateInfo = getDateForDay(idx);
+                                    return (
+                                        <TouchableOpacity
+                                            key={idx}
+                                            style={[
+                                                styles.calendarCard,
+                                                activeDayIndex === idx && styles.calendarCardActive
+                                            ]}
+                                            onPress={() => setActiveDayIndex(idx)}
+                                        >
+                                            <Text style={[
+                                                styles.calendarMonth,
+                                                activeDayIndex === idx && styles.calendarTextActive
+                                            ]}>{dateInfo?.month || '---'}</Text>
+                                            <Text style={[
+                                                styles.calendarDate,
+                                                activeDayIndex === idx && styles.calendarTextActive
+                                            ]}>{dateInfo?.dayNumber || idx + 1}</Text>
+                                            <Text style={[
+                                                styles.calendarDayName,
+                                                activeDayIndex === idx && styles.calendarTextActive
+                                            ]}>{dateInfo?.dayName || `Day ${idx + 1}`}</Text>
+
+                                            {activeDayIndex === idx && <View style={styles.activeDot} />}
+                                        </TouchableOpacity>
+                                    );
+                                })}
                             </ScrollView>
 
                             <View style={styles.timelineContainer}>
                                 {(() => {
                                     const day = plan.suggested_itinerary[activeDayIndex];
                                     if (!day) return null;
+                                    const dateInfo = getDateForDay(activeDayIndex);
 
                                     return (
                                         <View style={styles.activeDayContainer}>
                                             <View style={styles.dayHeader}>
                                                 <View style={styles.dayTitleRow}>
                                                     <View style={styles.dayBadgeLarge}>
-                                                        <Text style={styles.dayBadgeText}>Day {activeDayIndex + 1}</Text>
+                                                        <Text style={styles.dayBadgeText}>DAY {activeDayIndex + 1}</Text>
                                                     </View>
-                                                    <Text style={styles.dayTitleTextLarge}>{day.title || `Exploring ${plan.to}`}</Text>
+                                                    <Text style={styles.dayFullDate}>{dateInfo?.fullDate || `Itinerary for Day ${activeDayIndex + 1}`}</Text>
                                                 </View>
+                                                <Text style={styles.dayTitleTextLarge}>{day.title || `Exploring ${plan.to}`}</Text>
                                                 <Text style={styles.dayBriefTextLarge}>{day.description}</Text>
                                             </View>
 
-                                            <View style={styles.slotsWrapper}>
-                                                {['morning', 'afternoon', 'evening'].map((slot) => {
+                                            <View style={styles.scheduleWrapper}>
+                                                {/* Vertical Timeline Line */}
+                                                <View style={styles.verticalTimelineLine} />
+
+                                                {['morning', 'afternoon', 'evening'].map((slot, index) => {
                                                     if (!day[slot]) return null;
                                                     const Icon = slot === 'morning' ? Sunrise : slot === 'afternoon' ? Sun : Sunset;
                                                     const bgColor = slot === 'morning' ? '#FFF7ED' : slot === 'afternoon' ? '#FEFCE8' : '#FAF5FF';
                                                     const iconColor = slot === 'morning' ? '#EA580C' : slot === 'afternoon' ? '#CA8A04' : '#9333EA';
 
                                                     return (
-                                                        <BentoCard key={slot} style={styles.modernSlotCard}>
-                                                            <View style={[styles.slotIconBoxLarge, { backgroundColor: bgColor }]}>
-                                                                <Icon size={24} color={iconColor} />
-                                                            </View>
-                                                            <View style={styles.slotContentBox}>
-                                                                <View style={styles.slotHeaderRow}>
-                                                                    <Text style={[styles.slotTimeLabel, { color: iconColor }]}>{slot}</Text>
-                                                                    <ArrowRight size={14} color="#CBD5E1" />
-                                                                </View>
-                                                                <Text style={styles.slotDescriptionText}>{day[slot]}</Text>
+                                                        <View key={slot} style={styles.slotContainer}>
+                                                            {/* Time Indicator Point */}
+                                                            <View style={[styles.timePoint, { backgroundColor: iconColor }]} />
 
-                                                                {day.activities?.filter((a: any) => a.time?.toLowerCase() === slot).map((act: any, aIdx: number) => (
-                                                                    <View key={aIdx} style={styles.subActivityBox}>
-                                                                        <Text style={styles.subActivityName}>• {act.name}</Text>
-                                                                        {act.cost && <Text style={styles.subActivityCost}>{act.cost}</Text>}
+                                                            <BentoCard style={styles.modernSlotCard}>
+                                                                <View style={[styles.slotIconBoxLarge, { backgroundColor: bgColor }]}>
+                                                                    <Icon size={24} color={iconColor} />
+                                                                </View>
+                                                                <View style={styles.slotContentBox}>
+                                                                    <View style={styles.slotHeaderRow}>
+                                                                        <Text style={[styles.slotTimeLabel, { color: iconColor }]}>{slot}</Text>
+                                                                        <ArrowRight size={14} color="#CBD5E1" />
                                                                     </View>
-                                                                ))}
-                                                            </View>
-                                                        </BentoCard>
+                                                                    <Text style={styles.slotDescriptionText}>{day[slot]}</Text>
+
+                                                                    {day.activities?.filter((a: any) => a.time?.toLowerCase() === slot).map((act: any, aIdx: number) => (
+                                                                        <View key={aIdx} style={styles.subActivityBox}>
+                                                                            <Text style={styles.subActivityName}>• {act.name}</Text>
+                                                                            {act.cost && <Text style={styles.subActivityCost}>{act.cost}</Text>}
+                                                                        </View>
+                                                                    ))}
+                                                                </View>
+                                                            </BentoCard>
+                                                        </View>
                                                     );
                                                 })}
                                             </View>
@@ -566,23 +604,94 @@ const styles = StyleSheet.create({
     arrivalTipsTitle: { fontSize: 14, fontWeight: '800', color: theme.colors.text.primary, marginBottom: 10 },
     arrivalTipText: { fontSize: 13, color: theme.colors.text.secondary, lineHeight: 18, flex: 1 },
 
-    // Day Selector
-    daySelectorScroll: { marginBottom: 20 },
-    dayTab: { paddingHorizontal: 20, paddingVertical: 10, borderRadius: 25, backgroundColor: 'rgba(0,0,0,0.03)', marginRight: 10, borderWidth: 1, borderColor: 'transparent' },
-    dayTabActive: { backgroundColor: theme.colors.primary, borderColor: theme.colors.primary },
-    dayTabText: { fontSize: 14, fontWeight: '700', color: theme.colors.text.secondary },
-    dayTabTextActive: { color: '#FFF' },
+    // Calendar Stripe Redesign
+    calendarStripe: { marginBottom: 24 },
+    calendarCard: {
+        width: 64,
+        height: 84,
+        borderRadius: 20,
+        backgroundColor: '#FFF',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 12,
+        borderWidth: 1,
+        borderColor: 'rgba(0,0,0,0.05)',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.05,
+        shadowRadius: 8,
+        elevation: 3,
+    },
+    calendarCardActive: {
+        backgroundColor: theme.colors.primary,
+        borderColor: theme.colors.primary,
+        shadowOpacity: 0.2,
+        shadowColor: theme.colors.primary,
+        elevation: 8,
+    },
+    calendarMonth: {
+        fontSize: 10,
+        fontWeight: '800',
+        color: theme.colors.text.secondary,
+        textTransform: 'uppercase',
+        marginBottom: 2,
+    },
+    calendarDate: {
+        fontSize: 20,
+        fontWeight: '900',
+        color: theme.colors.text.primary,
+        marginBottom: 2,
+    },
+    calendarDayName: {
+        fontSize: 10,
+        fontWeight: '700',
+        color: theme.colors.text.secondary,
+    },
+    calendarTextActive: {
+        color: '#FFF',
+    },
+    activeDot: {
+        position: 'absolute',
+        bottom: 8,
+        width: 4,
+        height: 4,
+        borderRadius: 2,
+        backgroundColor: '#FFF',
+    },
 
     // Timeline Container Redesign
     timelineContainer: { marginBottom: 30 },
     activeDayContainer: { opacity: 1 },
+    dayFullDate: { fontSize: 13, fontWeight: '700', color: theme.colors.primary, flex: 1 },
     dayTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 8 },
     dayBadgeLarge: { backgroundColor: 'rgba(26, 60, 52, 0.1)', paddingVertical: 4, paddingHorizontal: 10, borderRadius: 8 },
     dayBadgeText: { fontSize: 12, fontWeight: '900', color: theme.colors.primary, textTransform: 'uppercase' },
     dayTitleTextLarge: { fontSize: 24, fontWeight: '900', color: theme.colors.text.primary, flex: 1 },
     dayBriefTextLarge: { fontSize: 14, color: theme.colors.text.secondary, lineHeight: 22, marginBottom: 20 },
 
-    modernSlotCard: { padding: 18, marginBottom: 14, flexDirection: 'row', gap: 16, backgroundColor: '#FFF' },
+    // Calendar Schedule Styles
+    scheduleWrapper: { paddingLeft: 12, position: 'relative' },
+    verticalTimelineLine: {
+        position: 'absolute',
+        top: 24,
+        bottom: 24,
+        left: 0,
+        width: 2,
+        backgroundColor: 'rgba(26, 60, 52, 0.1)',
+        borderRadius: 1,
+    },
+    slotContainer: { marginBottom: 14, flexDirection: 'row', alignItems: 'center' },
+    timePoint: {
+        width: 10,
+        height: 10,
+        borderRadius: 5,
+        position: 'absolute',
+        left: -4,
+        zIndex: 10,
+        borderWidth: 2,
+        borderColor: '#FFF',
+    },
+    modernSlotCard: { flex: 1, padding: 18, marginLeft: 20, flexDirection: 'row', gap: 16, backgroundColor: '#FFF' },
     slotIconBoxLarge: { width: 56, height: 56, borderRadius: 18, justifyContent: 'center', alignItems: 'center' },
     slotHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 },
     slotTimeLabel: { fontSize: 11, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 1.5 },
