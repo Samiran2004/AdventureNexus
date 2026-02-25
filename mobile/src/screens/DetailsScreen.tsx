@@ -1,27 +1,16 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-import {
-    View,
-    Text,
-    StyleSheet,
-    Image,
-    ScrollView,
-    TouchableOpacity,
-    Dimensions,
-    ActivityIndicator,
-    Modal,
-    FlatList,
-    Alert,
-} from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Dimensions, ActivityIndicator, Modal, Alert, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
+import { WebView } from 'react-native-webview';
 import { theme } from '../styles/theme';
 import BentoCard from '../components/common/BentoCard';
 import { ChevronLeft, Star, Clock, MapPin, Sparkles, X, Info, CheckCircle2, Sunrise, Sun, Sunset, Plane, Train, Bus, Car, ArrowRight } from 'lucide-react-native';
 import { useAuth, useUser } from '@clerk/clerk-expo';
 import { planService, communityService } from '../services/planService';
 
-const { width } = Dimensions.get('window');
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const WIKI_HEADERS = { 'User-Agent': 'AdventureNexus/1.0 (https://adventurenexus.com; support@adventurenexus.com)' };
 
 export default function DetailsScreen({ navigation, route }: any) {
     const { plan } = route.params || {};
@@ -37,6 +26,13 @@ export default function DetailsScreen({ navigation, route }: any) {
     const [activeDayIndex, setActiveDayIndex] = useState(0);
     const [isSaving, setIsSaving] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
+
+    const onRefresh = React.useCallback(() => {
+        setRefreshing(true);
+        // Refresh images and save status
+        Promise.all([loadImages(), checkSaveStatus()]).finally(() => setRefreshing(false));
+    }, [plan?._id, plan?.name]);
 
     useEffect(() => {
         if (plan?.name) {
@@ -190,10 +186,10 @@ export default function DetailsScreen({ navigation, route }: any) {
             const response = await axios.get(url);
 
             if (response.data?.routes?.[0]?.geometry?.coordinates) {
-                const points = response.data.routes[0].geometry.coordinates.map((coord: any) => ({
-                    latitude: coord[1],
-                    longitude: coord[0]
-                }));
+                const points = response.data.routes[0].geometry.coordinates.map((coord: any) => [
+                    coord[1], // latitude
+                    coord[0]  // longitude
+                ]);
                 setRouteCoordinates(points);
             }
         } catch (error) {
@@ -201,10 +197,10 @@ export default function DetailsScreen({ navigation, route }: any) {
             // Fallback to straight lines if OSRM fails
             setRouteCoordinates(highlights
                 .filter(h => h.geo_coordinates)
-                .map(h => ({
-                    latitude: h.geo_coordinates.lat,
-                    longitude: h.geo_coordinates.lng
-                }))
+                .map(h => [
+                    h.geo_coordinates.lat,
+                    h.geo_coordinates.lng
+                ])
             );
         } finally {
             setIsFetchingRoute(false);
@@ -212,10 +208,10 @@ export default function DetailsScreen({ navigation, route }: any) {
     };
 
     useEffect(() => {
-        if (isMapVisible && !selectedLocation && plan.trip_highlights?.length > 1) {
+        if (isMapVisible && plan.trip_highlights?.length > 1 && routeCoordinates.length === 0) {
             fetchRoadRoute(plan.trip_highlights);
         }
-    }, [isMapVisible, selectedLocation]);
+    }, [isMapVisible, plan.trip_highlights]);
 
     const getDateForDay = (index: number) => {
         if (!plan.date) return null;
@@ -233,12 +229,17 @@ export default function DetailsScreen({ navigation, route }: any) {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[theme.colors.primary]} />
+                }
+            >
                 {/* ── Immersive Photo with Curved Mask ── */}
                 <View style={styles.imageContainer}>
                     {mainImage ? (
                         <Image
-                            source={{ uri: mainImage }}
+                            source={{ uri: mainImage, headers: WIKI_HEADERS }}
                             style={styles.mainImage}
                             resizeMode="cover"
                         />
@@ -305,7 +306,7 @@ export default function DetailsScreen({ navigation, route }: any) {
                         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.dateScroll}>
                             {images.map((img, idx) => (
                                 <TouchableOpacity key={idx} style={styles.galleryItem} onPress={() => setSelectedImage(img)}>
-                                    <Image source={{ uri: img }} style={styles.galleryImage} />
+                                    <Image source={{ uri: img, headers: WIKI_HEADERS }} style={styles.galleryImage} />
                                 </TouchableOpacity>
                             ))}
                         </ScrollView>
@@ -439,8 +440,8 @@ export default function DetailsScreen({ navigation, route }: any) {
                                                 {['morning', 'afternoon', 'evening'].map((slot, index) => {
                                                     if (!day[slot]) return null;
                                                     const Icon = slot === 'morning' ? Sunrise : slot === 'afternoon' ? Sun : Sunset;
-                                                    const bgColor = slot === 'morning' ? '#FFF7ED' : slot === 'afternoon' ? '#FEFCE8' : '#FAF5FF';
-                                                    const iconColor = slot === 'morning' ? '#EA580C' : slot === 'afternoon' ? '#CA8A04' : '#9333EA';
+                                                    const bgColor = slot === 'morning' ? '#FDF8F3' : slot === 'afternoon' ? '#FEFCE8' : '#FAF5FF';
+                                                    const iconColor = slot === 'morning' ? '#F59E0B' : slot === 'afternoon' ? '#EAB308' : '#A855F7';
 
                                                     return (
                                                         <View key={slot} style={styles.slotContainer}>
@@ -591,7 +592,7 @@ export default function DetailsScreen({ navigation, route }: any) {
                             <X size={30} color="#FFF" />
                         </TouchableOpacity>
                         {selectedImage && (
-                            <Image source={{ uri: selectedImage }} style={styles.modalImage} resizeMode="contain" />
+                            <Image source={{ uri: selectedImage, headers: WIKI_HEADERS }} style={styles.modalImage} resizeMode="contain" />
                         )}
                     </View>
                 </Modal>
@@ -627,40 +628,76 @@ export default function DetailsScreen({ navigation, route }: any) {
                             </TouchableOpacity>
                         </View>
 
-                        <MapView
+                        <WebView
                             style={styles.map}
-                            provider={PROVIDER_GOOGLE}
-                            initialRegion={{
-                                latitude: selectedLocation?.geo_coordinates?.lat || plan.trip_highlights[0]?.geo_coordinates?.lat || 0,
-                                longitude: selectedLocation?.geo_coordinates?.lng || plan.trip_highlights[0]?.geo_coordinates?.lng || 0,
-                                latitudeDelta: selectedLocation ? 0.01 : 0.2,
-                                longitudeDelta: selectedLocation ? 0.01 : 0.2,
-                            }}
-                        >
-                            {plan.trip_highlights.map((h: any, i: number) => (
-                                h.geo_coordinates && (
-                                    <Marker
-                                        key={i}
-                                        coordinate={{
-                                            latitude: h.geo_coordinates.lat,
-                                            longitude: h.geo_coordinates.lng,
-                                        }}
-                                        title={h.name}
-                                        description={h.description}
-                                        pinColor={selectedLocation?.name === h.name ? theme.colors.primary : '#F43F5E'}
-                                    />
-                                )
-                            ))}
+                            originWhitelist={['*']}
+                            source={{
+                                html: `
+              <!DOCTYPE html>
+              <html>
+                <head>
+                  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+                  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+                  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+                  <style>
+                    body { margin: 0; padding: 0; }
+                    #map { height: 100vh; width: 100vw; }
+                  </style>
+                </head>
+                <body>
+                  <div id="map"></div>
+                  <script>
+                    const highlights = ${JSON.stringify(plan.trip_highlights || [])};
+                    const routeCoords = ${JSON.stringify(routeCoordinates || [])};
+                    const selectedLoc = ${JSON.stringify(selectedLocation)};
 
-                            {/* Navigational Polyline (OSRM Road-Following Style) */}
-                            {!selectedLocation && routeCoordinates.length > 0 && (
-                                <Polyline
-                                    coordinates={routeCoordinates}
-                                    strokeColor="#4285F4" // Google Maps Blue
-                                    strokeWidth={4}
-                                />
-                            )}
-                        </MapView>
+                    console.log("Map Debug: Highlights count", highlights.length);
+                    console.log("Map Debug: Route coords count", routeCoords.length);
+                    console.log("Map Debug: Selected loc", selectedLoc?.name);
+
+                    const initialLat = selectedLoc?.geo_coordinates?.lat || highlights[0]?.geo_coordinates?.lat || 0;
+                    const initialLng = selectedLoc?.geo_coordinates?.lng || highlights[0]?.geo_coordinates?.lng || 0;
+                    const initialZoom = selectedLoc ? 15 : 12;
+
+                    const map = L.map('map').setView([initialLat, initialLng], initialZoom);
+
+                    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                      attribution: 'Tiles &copy; Esri'
+                    }).addTo(map);
+
+                    // Add hybrid labels (roads, boundaries) for better context
+                    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+                      attribution: 'Labels &copy; Esri',
+                      opacity: 0.8
+                    }).addTo(map);
+
+                    highlights.forEach(h => {
+                      if (h.geo_coordinates) {
+                        const isSelected = selectedLoc && selectedLoc.name === h.name;
+                        const marker = L.marker([h.geo_coordinates.lat, h.geo_coordinates.lng]).addTo(map);
+                        marker.bindPopup("<b>" + h.name + "</b><br>" + (h.description || ""));
+                        if (isSelected) marker.openPopup();
+                      }
+                    });
+
+                    if (routeCoords.length > 1) {
+                      const path = L.polyline(routeCoords, {
+                        color: '#1A73E8',
+                        weight: 6,
+                        opacity: 0.8,
+                        lineJoin: 'round'
+                      }).addTo(map);
+                      
+                      if (!selectedLoc) {
+                        map.fitBounds(path.getBounds(), { padding: [50, 50] });
+                      }
+                    }
+                  </script>
+                </body>
+              </html>
+            `
+                            }}
+                        />
                     </View>
                 </Modal>
             </ScrollView>
@@ -758,7 +795,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         marginRight: 12,
         overflow: 'hidden',
-        backgroundColor: '#F0F0F0',
+        backgroundColor: theme.colors.accent,
     },
     galleryImage: { width: '100%', height: '100%' },
 
@@ -935,8 +972,8 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     modalImage: {
-        width: width,
-        height: width * 1.5,
+        width: SCREEN_WIDTH,
+        height: SCREEN_WIDTH * 1.5,
     },
     // Map Modal
     mapModalContainer: { flex: 1, backgroundColor: '#FFF' },

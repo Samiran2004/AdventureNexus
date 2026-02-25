@@ -1,19 +1,24 @@
 export const theme = {
     colors: {
-        background: '#F2F4E8',
+        background: '#F5F7F0',
         primary: '#1A3C34',
         secondary: '#4A5D4E',
         text: {
-            primary: '#1A3C34',
-            secondary: '#4A5D4E',
+            primary: '#1A2421',
+            secondary: '#6B7280',
             light: '#FFFFFF',
+            muted: '#9CA3AF',
         },
         card: {
             background: '#FFFFFF',
+            border: '#F0F2EB',
             shadow: 'rgba(0, 0, 0, 0.08)',
         },
         accent: '#E6EAD3',
         star: '#FFD700',
+        error: '#FF4E6A',
+        success: '#22C55E',
+        divider: '#E5E7EB',
     },
     spacing: {
         xs: 4,

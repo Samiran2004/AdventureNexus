@@ -184,7 +184,7 @@ export default function EditProfileScreen({ route, navigation }: any) {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#F5F7F0' },
+    container: { flex: 1, backgroundColor: theme.colors.background },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -192,38 +192,38 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 15,
         borderBottomWidth: 1,
-        borderBottomColor: '#E5E7EB',
-        backgroundColor: '#FFF'
+        borderBottomColor: theme.colors.divider,
+        backgroundColor: theme.colors.card.background
     },
     backBtn: { width: 40, height: 40, justifyContent: 'center' },
-    headerTitle: { fontSize: 18, fontWeight: '800', color: '#1A3C34' },
+    headerTitle: { fontSize: 18, fontWeight: '800', color: theme.colors.primary },
     saveBtn: { width: 40, height: 40, justifyContent: 'center', alignItems: 'center' },
 
     form: { padding: 20 },
     section: { marginBottom: 25 },
-    sectionTitle: { fontSize: 13, fontWeight: '800', color: '#6B7280', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 15 },
+    sectionTitle: { fontSize: 13, fontWeight: '800', color: theme.colors.text.secondary, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 15 },
 
     inputGroup: { marginBottom: 15 },
     labelRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 },
-    label: { fontSize: 14, fontWeight: '600', color: '#4B5563' },
+    label: { fontSize: 14, fontWeight: '600', color: theme.colors.text.primary },
     input: {
-        backgroundColor: '#FFF',
+        backgroundColor: theme.colors.card.background,
         borderRadius: 12,
         padding: 12,
         fontSize: 15,
-        color: '#1A2421',
+        color: theme.colors.text.primary,
         borderWidth: 1,
-        borderColor: '#E5E7EB'
+        borderColor: theme.colors.divider
     },
     textArea: { height: 100, textAlignVertical: 'top' },
 
     fullSaveBtn: {
-        backgroundColor: '#1A3C34',
+        backgroundColor: theme.colors.primary,
         paddingVertical: 16,
         borderRadius: 16,
         alignItems: 'center',
         marginTop: 10,
-        shadowColor: '#1A3C34',
+        shadowColor: theme.colors.primary,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
         shadowRadius: 8,

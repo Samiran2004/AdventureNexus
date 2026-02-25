@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
     View, Text, StyleSheet, Image, ScrollView,
-    TouchableOpacity, ActivityIndicator, Alert, ImageBackground
+    TouchableOpacity, ActivityIndicator, Alert, ImageBackground, RefreshControl
 } from 'react-native';
 import { useAuth } from '@clerk/clerk-expo';
 import { theme } from '../styles/theme';
@@ -17,11 +17,15 @@ export default function UserProfileScreen({ route, navigation }: any) {
     const [profile, setProfile] = useState<any>(null);
     const [activity, setActivity] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
     const [togglingFollow, setTogglingFollow] = useState(false);
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
-    const fetchProfile = async () => {
+    const fetchProfile = async (isRefreshing = false) => {
         try {
+            if (isRefreshing) setRefreshing(true);
+            else setLoading(true);
+
             const token = await getToken();
             if (token) {
                 const res = await communityService.getUserProfile(token, clerkUserId);
@@ -35,12 +39,15 @@ export default function UserProfileScreen({ route, navigation }: any) {
             Alert.alert("Error", "Could not load user profile.");
         } finally {
             setLoading(false);
+            setRefreshing(false);
         }
     };
 
     useEffect(() => {
         fetchProfile();
     }, [clerkUserId]);
+
+    const onRefresh = () => fetchProfile(true);
 
     const handleToggleFollow = async () => {
         try {
@@ -91,7 +98,13 @@ export default function UserProfileScreen({ route, navigation }: any) {
         <View style={styles.container}>
             <StatusBar style="light" />
 
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.scroll}
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[theme.colors.primary]} />
+                }
+            >
                 {/* ─── 1. HEADER MASK (CURVED) ─────────────────────────────────── */}
                 <View style={styles.headerContainer}>
                     <ImageBackground
@@ -163,8 +176,11 @@ export default function UserProfileScreen({ route, navigation }: any) {
                                 </>
                             )}
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.messageBtn}>
-                            <MessageSquare size={18} color="#1A3C34" />
+                        <TouchableOpacity
+                            style={styles.messageBtn}
+                            onPress={() => Alert.alert("Coming Soon ✨", "Messaging feature is currently in development. Stay tuned for future updates!")}
+                        >
+                            <MessageSquare size={18} color={theme.colors.primary} />
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -234,12 +250,12 @@ export default function UserProfileScreen({ route, navigation }: any) {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#F5F7F0' },
+    container: { flex: 1, backgroundColor: theme.colors.background },
     scroll: { flexGrow: 1 },
-    loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F5F7F0' },
+    loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.background },
     errorBox: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
-    errorText: { fontSize: 18, color: '#6B7280', marginBottom: 20 },
-    backBtn: { backgroundColor: '#1A3C34', paddingVertical: 12, paddingHorizontal: 24, borderRadius: 12 },
+    errorText: { fontSize: 18, color: theme.colors.text.secondary, marginBottom: 20 },
+    backBtn: { backgroundColor: theme.colors.primary, paddingVertical: 12, paddingHorizontal: 24, borderRadius: 12 },
     backBtnText: { color: '#FFF', fontWeight: '700' },
 
     // Header Mask
@@ -247,7 +263,7 @@ const styles = StyleSheet.create({
         height: 240,
         borderBottomLeftRadius: 100,
         overflow: 'hidden',
-        backgroundColor: '#1A3C34'
+        backgroundColor: theme.colors.primary
     },
     coverImage: { width: '100%', height: '100%' },
     coverImageStyle: { opacity: 0.9 },
@@ -266,29 +282,29 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1, shadowRadius: 12, elevation: 8,
     },
     avatar: { width: '100%', height: '100%', borderRadius: 36 },
-    avatarFallback: { flex: 1, backgroundColor: '#1A3C34', borderRadius: 36, justifyContent: 'center', alignItems: 'center' },
+    avatarFallback: { flex: 1, backgroundColor: theme.colors.primary, borderRadius: 36, justifyContent: 'center', alignItems: 'center' },
     avatarInitial: { color: '#FFF', fontSize: 36, fontWeight: '900' },
     verifiedBadge: {
         position: 'absolute', bottom: -2, right: -2, width: 22, height: 22,
-        borderRadius: 11, backgroundColor: '#4ADE80', borderWidth: 3, borderColor: '#FFF',
+        borderRadius: 11, backgroundColor: theme.colors.success, borderWidth: 3, borderColor: '#FFF',
         justifyContent: 'center', alignItems: 'center',
     },
 
     // Info
     infoSection: { alignItems: 'center', marginTop: 15, paddingHorizontal: 40 },
-    name: { fontSize: 24, fontWeight: '700', color: '#1A2421', letterSpacing: -0.5 },
+    name: { fontSize: 24, fontWeight: '700', color: theme.colors.text.primary, letterSpacing: -0.5 },
     locationRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 4 },
-    locationText: { fontSize: 14, color: '#6B7280', fontWeight: '500' },
-    bioText: { fontSize: 14, color: '#6B7280', textAlign: 'center', marginTop: 15, lineHeight: 20 },
+    locationText: { fontSize: 14, color: theme.colors.text.secondary, fontWeight: '500' },
+    bioText: { fontSize: 14, color: theme.colors.text.secondary, textAlign: 'center', marginTop: 15, lineHeight: 20 },
 
     // Actions
     actionRow: { flexDirection: 'row', gap: 12, marginTop: 22 },
     followBtn: {
         flexDirection: 'row', alignItems: 'center', gap: 8,
-        backgroundColor: '#1A3C34', paddingVertical: 12, paddingHorizontal: 24, borderRadius: 16,
-        shadowColor: '#1A3C34', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 4
+        backgroundColor: theme.colors.primary, paddingVertical: 12, paddingHorizontal: 24, borderRadius: 16,
+        shadowColor: theme.colors.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 4
     },
-    unfollowBtn: { backgroundColor: '#FF4E6A', shadowColor: '#FF4E6A' },
+    unfollowBtn: { backgroundColor: theme.colors.error, shadowColor: theme.colors.error },
     followBtnText: { color: '#FFF', fontWeight: '800', fontSize: 15 },
     messageBtn: {
         width: 52, height: 52, borderRadius: 16, backgroundColor: 'rgba(26,60,52,0.1)',
@@ -301,24 +317,24 @@ const styles = StyleSheet.create({
         marginTop: 30, paddingVertical: 15,
     },
     statCol: { alignItems: 'center' },
-    statVal: { fontSize: 20, fontWeight: '700', color: '#1A2421' },
-    statLab: { fontSize: 12, color: '#6B7280', fontWeight: '600', marginTop: 2 },
-    divider: { width: 1, height: 30, backgroundColor: '#E5E7EB' },
+    statVal: { fontSize: 20, fontWeight: '700', color: theme.colors.text.primary },
+    statLab: { fontSize: 12, color: theme.colors.text.secondary, fontWeight: '600', marginTop: 2 },
+    divider: { width: 1, height: 30, backgroundColor: theme.colors.divider },
 
     // Grid Gallery
     gridSection: { marginTop: 20, paddingHorizontal: 20 },
     gridHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
-    gridTitle: { fontSize: 13, fontWeight: '800', color: '#1A2421', textTransform: 'uppercase', letterSpacing: 1 },
+    gridTitle: { fontSize: 13, fontWeight: '800', color: theme.colors.text.primary, textTransform: 'uppercase', letterSpacing: 1 },
     viewToggle: { flexDirection: 'row', gap: 12 },
 
     activityList: { gap: 12 },
-    activityCard: { padding: 18, borderRadius: 24, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#F0F2EB' },
+    activityCard: { padding: 18, borderRadius: 24, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: theme.colors.card.border },
     activityHead: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 },
     iconBox: { width: 30, height: 30, borderRadius: 10, backgroundColor: 'rgba(26,60,52,0.08)', justifyContent: 'center', alignItems: 'center' },
-    activityType: { fontSize: 12, fontWeight: '800', color: '#1A2421', flex: 1 },
-    activityDate: { fontSize: 10, color: '#6B7280' },
+    activityType: { fontSize: 12, fontWeight: '800', color: theme.colors.text.primary, flex: 1 },
+    activityDate: { fontSize: 10, color: theme.colors.text.secondary },
     activityText: { fontSize: 14, color: '#4B5563', lineHeight: 20 },
 
     emptyContainer: { paddingVertical: 40, alignItems: 'center' },
-    emptyText: { color: '#6B7280', fontSize: 14 },
+    emptyText: { color: theme.colors.text.secondary, fontSize: 14 },
 });
