@@ -30,8 +30,12 @@ import {
     Users,
     Utensils,
     Wind,
-    Zap
+    Zap,
+    X,
+    Map as MapIcon
 } from 'lucide-react';
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import HighlightMap from '@/components/HighlightMap';
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -358,6 +362,7 @@ const IndividualDestinationPage = () => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [activeTab, setActiveTab] = useState('overview');
     const [selectedItinerary, setSelectedItinerary] = useState(0);
+    const [isMapOpen, setIsMapOpen] = useState(false);
     const [isFavorite, setIsFavorite] = useState(false);
 
     // Refs for animations
@@ -566,10 +571,20 @@ const IndividualDestinationPage = () => {
                             <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
                                 {destinationData.name}
                             </h1>
-                            <p className="text-xl text-gray-300 mb-6 flex items-center">
-                                <MapPin className="mr-2" size={20} />
-                                {destinationData.country}, {destinationData.continent}
-                            </p>
+                            <div className="flex flex-wrap items-center gap-4 mb-6">
+                                <p className="text-xl text-gray-300 flex items-center">
+                                    <MapPin className="mr-2" size={20} />
+                                    {destinationData.country}, {destinationData.continent}
+                                </p>
+                                <Button
+                                    variant="outline"
+                                    className="bg-white/10 backdrop-blur-md border-white/20 text-white hover:bg-white/20 rounded-full h-9 px-4 text-xs font-bold"
+                                    onClick={() => setIsMapOpen(true)}
+                                >
+                                    <MapIcon className="mr-2" size={14} />
+                                    View Map
+                                </Button>
+                            </div>
                             <p className="text-lg text-gray-300 mb-8 max-w-2xl leading-relaxed">
                                 {destinationData.description}
                             </p>
@@ -1060,6 +1075,38 @@ const IndividualDestinationPage = () => {
                     </div>
                 </div>
             </section>
+
+            {/* Map Dialog */}
+            <Dialog open={isMapOpen} onOpenChange={setIsMapOpen}>
+                <DialogContent className="max-w-5xl h-[80vh] bg-card border-border p-0 overflow-hidden shadow-2xl">
+                    <div className="relative w-full h-full">
+                        <div className="absolute top-4 left-4 z-50 pointer-events-none">
+                            <div className="bg-background/90 backdrop-blur-md p-4 rounded-2xl border border-border shadow-xl pointer-events-auto">
+                                <h3 className="font-black font-outfit text-lg">{destinationData.name} Exploration</h3>
+                                <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest">{destinationData.country}, {destinationData.continent}</p>
+                            </div>
+                        </div>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="absolute top-4 right-4 z-50 bg-background/80 hover:bg-background rounded-full shadow-sm"
+                            onClick={() => setIsMapOpen(false)}
+                        >
+                            <X size={20} />
+                        </Button>
+
+                        <HighlightMap
+                            highlight={{
+                                name: destinationData.name,
+                                geo_coordinates: destinationData.coordinates,
+                                description: destinationData.description
+                            }}
+                            destinationName={destinationData.name}
+                            isSatellite={true}
+                        />
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };

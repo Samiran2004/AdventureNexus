@@ -36,16 +36,20 @@
 }
 
 :root {
-  --radius: 3rem; /* Travadog signature large radius */
-  --background: #FCF9F6; /* Warm Beige background */
+  --radius: 3rem;
+  /* Travadog signature large radius */
+  --background: #FCF9F6;
+  /* Warm Beige background */
   --foreground: #101828;
   --card: #ffffff;
   --card-foreground: #101828;
   --popover: #ffffff;
   --popover-foreground: #101828;
-  --primary: #FF7B31; /* Travadog Vibrant Orange */
+  --primary: #FF7B31;
+  /* Travadog Vibrant Orange */
   --primary-foreground: #ffffff;
-  --secondary: #2D3142; /* Deep Navy */
+  --secondary: #2D3142;
+  /* Deep Navy */
   --secondary-foreground: #ffffff;
   --muted: #F2F4F7;
   --muted-foreground: #667085;
@@ -59,7 +63,8 @@
 }
 
 .dark {
-  --background: #0B0E14; /* Deep Space Black/Navy */
+  --background: #0B0E14;
+  /* Deep Space Black/Navy */
   --foreground: #F9FAFB;
   --card: #151921;
   --card-foreground: #F9FAFB;

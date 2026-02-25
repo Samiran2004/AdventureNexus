@@ -43,6 +43,9 @@ const SharedPlanPage = () => {
     const [plan, setPlan] = useState(null);
     const [loading, setLoading] = useState(true);
     const [selectedHighlight, setSelectedHighlight] = useState(null);
+    const [isFullMapOpen, setIsFullMapOpen] = useState(false);
+    const [routeCoordinates, setRouteCoordinates] = useState([]);
+    const [isFetchingRoute, setIsFetchingRoute] = useState(false);
     const [galleryImages, setGalleryImages] = useState([]);
     const [isGalleryLoading, setIsGalleryLoading] = useState(false);
     const [lightboxIndex, setLightboxIndex] = useState(null);
@@ -116,15 +119,52 @@ const SharedPlanPage = () => {
 
     useEffect(() => {
         const handleKeyDown = (e) => {
-            if (lightboxIndex === null) return;
-            if (e.key === "Escape") closeLightbox();
+            if (lightboxIndex === null && !isFullMapOpen && !selectedHighlight) return;
+            if (e.key === "Escape") {
+                closeLightbox();
+                setIsFullMapOpen(false);
+                setSelectedHighlight(null);
+            }
             if (e.key === "ArrowRight") nextImage();
             if (e.key === "ArrowLeft") prevImage();
         };
 
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [lightboxIndex, galleryImages]);
+    }, [lightboxIndex, galleryImages, isFullMapOpen, selectedHighlight]);
+
+    const fetchRoadRoute = async () => {
+        if (!plan.trip_highlights || plan.trip_highlights.length < 2 || routeCoordinates.length > 0) return;
+
+        try {
+            setIsFetchingRoute(true);
+            const coords = plan.trip_highlights
+                .filter(h => h.geo_coordinates)
+                .map(h => `${h.geo_coordinates.lng},${h.geo_coordinates.lat}`)
+                .join(';');
+
+            if (!coords) return;
+
+            const response = await axios.get(`https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`);
+
+            if (response.data?.routes?.[0]?.geometry?.coordinates) {
+                const points = response.data.routes[0].geometry.coordinates.map(coord => [
+                    coord[1], // latitude
+                    coord[0]  // longitude
+                ]);
+                setRouteCoordinates(points);
+            }
+        } catch (error) {
+            console.error("Error fetching road route:", error);
+            // Fallback: use straight lines if OSRM fails
+            setRouteCoordinates(plan.trip_highlights
+                .filter(h => h.geo_coordinates)
+                .map(h => [h.geo_coordinates.lat, h.geo_coordinates.lng])
+            );
+        } finally {
+            setIsFetchingRoute(false);
+        }
+    };
 
 
     if (loading) {
@@ -319,6 +359,19 @@ const SharedPlanPage = () => {
 
                             {/* Itinerary Tab */}
                             <TabsContent value="itinerary" className="space-y-12 py-4 px-2 outline-none">
+                                <div className="flex justify-end mb-4">
+                                    <Button
+                                        variant="outline"
+                                        className="rounded-full border-primary/30 text-primary hover:bg-primary/10 font-bold font-outfit"
+                                        onClick={() => {
+                                            setIsFullMapOpen(true);
+                                            fetchRoadRoute();
+                                        }}
+                                    >
+                                        <MapIcon size={16} className="mr-2" />
+                                        View Full Route on Map
+                                    </Button>
+                                </div>
                                 <div className="space-y-16">
                                     {plan.suggested_itinerary && plan.suggested_itinerary.length > 0 ? (
                                         plan.suggested_itinerary.map((day, idx) => (
@@ -608,6 +661,7 @@ const SharedPlanPage = () => {
 
             <Footer />
 
+            {/* Highlight Map Dialog */}
             <Dialog open={!!selectedHighlight} onOpenChange={() => setSelectedHighlight(null)}>
                 <DialogContent className="max-w-4xl h-[70vh] bg-card border-border p-0 overflow-hidden shadow-2xl">
                     <div className="relative w-full h-full">
@@ -625,6 +679,44 @@ const SharedPlanPage = () => {
                                 destinationName={plan?.name}
                             />
                         )}
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* Full Itinerary Map Dialog */}
+            <Dialog open={isFullMapOpen} onOpenChange={setIsFullMapOpen}>
+                <DialogContent className="max-w-5xl h-[85vh] bg-card border-border p-0 overflow-hidden shadow-2xl">
+                    <div className="relative w-full h-full">
+                        <div className="absolute top-4 left-4 z-50 pointer-events-none">
+                            <div className="bg-background/90 backdrop-blur-md p-4 rounded-2xl border border-border shadow-xl pointer-events-auto">
+                                <h3 className="font-black font-outfit text-lg">{plan.to} Adventure</h3>
+                                <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest">Full Trip Visualization</p>
+                            </div>
+                        </div>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="absolute top-4 right-4 z-50 bg-background/80 hover:bg-background rounded-full shadow-sm"
+                            onClick={() => setIsFullMapOpen(false)}
+                        >
+                            <X size={20} />
+                        </Button>
+
+                        {isFetchingRoute && (
+                            <div className="absolute inset-0 z-40 bg-background/20 backdrop-blur-sm flex items-center justify-center pointer-events-none">
+                                <div className="bg-background p-4 rounded-full shadow-2xl border border-border flex items-center gap-3">
+                                    <Spinner className="size-5 text-primary" />
+                                    <span className="text-sm font-bold font-outfit">Calculating optimal route...</span>
+                                </div>
+                            </div>
+                        )}
+
+                        <HighlightMap
+                            highlights={plan.trip_highlights}
+                            routeCoordinates={routeCoordinates}
+                            destinationName={plan?.name}
+                            isSatellite={true}
+                        />
                     </div>
                 </DialogContent>
             </Dialog>
