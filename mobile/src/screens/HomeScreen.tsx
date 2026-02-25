@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
     View, Text, StyleSheet, ScrollView, Image, TouchableOpacity,
     TextInput, Linking, SafeAreaView, Alert, Animated, Dimensions,
-    KeyboardAvoidingView, Platform,
+    KeyboardAvoidingView, Platform, RefreshControl
 } from 'react-native';
 import { theme } from '../styles/theme';
 import BentoCard from '../components/common/BentoCard';
@@ -14,6 +14,7 @@ import {
 } from 'lucide-react-native';
 
 const { width } = Dimensions.get('window');
+const WIKI_HEADERS = { 'User-Agent': 'AdventureNexus/1.0 (https://adventurenexus.com; support@adventurenexus.com)' };
 
 // ─── Data ──────────────────────────────────────────────────────────────────
 const CATEGORIES = ['Hiking', 'Kayaking', 'Biking', 'Camping', 'Beach', 'Culture'];
@@ -121,6 +122,15 @@ export default function HomeScreen({ navigation }: any) {
     const [subscribing, setSubscribing] = useState(false);
     const scrollY = useRef(new Animated.Value(0)).current;
 
+    const [refreshing, setRefreshing] = useState(false);
+
+    const onRefresh = React.useCallback(async () => {
+        setRefreshing(true);
+        // Special case: just a small delay for home screen as most data is static
+        // but we could refresh user-specific data if needed
+        setTimeout(() => setRefreshing(false), 1500);
+    }, []);
+
     const handleSubscribe = async () => {
         if (!email.trim() || !email.includes('@')) {
             Alert.alert('Invalid Email', 'Please enter a valid email address.');
@@ -150,6 +160,9 @@ export default function HomeScreen({ navigation }: any) {
                 showsVerticalScrollIndicator={false}
                 onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
                 scrollEventThrottle={16}
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[theme.colors.primary]} />
+                }
             >
                 {/* ─── 1. HEADER ─────────────────────────────────────────────────── */}
                 <View style={styles.header}>
@@ -275,7 +288,7 @@ export default function HomeScreen({ navigation }: any) {
                     style={styles.heroCard}
                     onPress={() => navigation.navigate('Details', { plan: FEATURED_DESTINATIONS[0] })}
                 >
-                    <Image source={{ uri: FEATURED_DESTINATIONS[0].image }} style={styles.heroImage} resizeMode="cover" />
+                    <Image source={{ uri: FEATURED_DESTINATIONS[0].image, headers: WIKI_HEADERS }} style={styles.heroImage} resizeMode="cover" />
                     <View style={styles.heroOverlay} />
                     <View style={styles.heroContentBox}>
                         <Text style={styles.heroCountry}>🇳🇴  {FEATURED_DESTINATIONS[0].country}</Text>
@@ -306,7 +319,7 @@ export default function HomeScreen({ navigation }: any) {
                         style={styles.bentoCard}
                         onPress={() => navigation.navigate('Details', { plan: dest })}
                     >
-                        <Image source={{ uri: dest.image }} style={styles.bentoImage} resizeMode="cover" />
+                        <Image source={{ uri: dest.image, headers: WIKI_HEADERS }} style={styles.bentoImage} resizeMode="cover" />
                         <View style={styles.bentoOverlay} />
                         <View style={styles.bentoInfo}>
                             <Text style={styles.bentoCountry}>{dest.country}</Text>
@@ -584,8 +597,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row', alignItems: 'center', gap: 6,
         backgroundColor: 'rgba(34,197,94,0.1)', paddingVertical: 5, paddingHorizontal: 12, borderRadius: 20,
     },
-    aiDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: '#22C55E' },
-    aiActiveText: { fontSize: 11, color: '#22C55E', fontWeight: '700' },
+    aiDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: theme.colors.success },
+    aiActiveText: { fontSize: 11, color: theme.colors.success, fontWeight: '700' },
     statsRow: { flexDirection: 'row', gap: 12, marginBottom: 16 },
     statMini: { flex: 1, alignItems: 'center', padding: 16 },
     counterText: { fontSize: 26, fontWeight: '900', color: C.text.primary, marginTop: 6 },
@@ -663,7 +676,7 @@ const styles = StyleSheet.create({
     avatarInitials: { color: '#FFF', fontWeight: '800', fontSize: 14 },
     onlineDot: {
         position: 'absolute', bottom: -1, right: -1,
-        width: 11, height: 11, borderRadius: 6, backgroundColor: '#22C55E',
+        width: 11, height: 11, borderRadius: 6, backgroundColor: theme.colors.success,
         borderWidth: 2, borderColor: '#FFF',
     },
     testimonialName: { fontSize: 13, fontWeight: '800', color: C.text.primary },

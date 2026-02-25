@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
     View, Text, StyleSheet, FlatList, TouchableOpacity,
-    SafeAreaView, ActivityIndicator, TextInput, Alert,
+    SafeAreaView, ActivityIndicator, TextInput, Alert, RefreshControl,
 } from 'react-native';
 import { theme } from '../styles/theme';
 import { Star, ThumbsUp, Search, MapPin, Users, Clock, CheckCircle2, SlidersHorizontal, Image as ImageIcon, Plus } from 'lucide-react-native';
@@ -47,10 +47,12 @@ export default function ReviewsScreen({ navigation }: any) {
     const [newRating, setNewRating] = useState(5);
     const [newLocation, setNewLocation] = useState('');
     const [newType, setNewType] = useState('Solo');
+    const [refreshing, setRefreshing] = useState(false);
 
-    const fetchReviews = async (reset = false) => {
+    const fetchReviews = async (reset = false, isRefreshing = false) => {
         try {
-            if (reset) setLoading(true);
+            if (isRefreshing) setRefreshing(true);
+            else if (reset) setLoading(true);
             const params: any = {
                 page: reset ? 1 : page,
                 limit: 8,
@@ -74,8 +76,11 @@ export default function ReviewsScreen({ navigation }: any) {
             // silent
         } finally {
             setLoading(false);
+            setRefreshing(false);
         }
     };
+
+    const onRefresh = () => fetchReviews(true, true);
 
     useEffect(() => {
         fetchReviews(true);
@@ -83,23 +88,36 @@ export default function ReviewsScreen({ navigation }: any) {
 
     const handleLike = async (id: string) => {
         try {
-            await reviewService.likeReview('', id);
+            const token = await getToken();
+            if (!token) {
+                Alert.alert('Sign In', 'Please sign in to like reviews.');
+                return;
+            }
+            await reviewService.likeReview(token, id);
             setReviews(prev =>
                 prev.map(r => r._id === id ? { ...r, helpfulCount: (r.helpfulCount || 0) + 1 } : r)
             );
-        } catch { /* no auth handled */ }
+        } catch (error) {
+            console.error("Like error:", error);
+        }
     };
 
     const handleSubmitReview = async () => {
-        if (!newComment.trim() || !newLocation.trim()) {
-            Alert.alert('Missing Info', 'Please fill in comment and location.');
+        if (!newComment.trim()) {
+            Alert.alert('Missing Field', 'Please share your experience in the comment field.');
+            return;
+        }
+        if (!newLocation.trim()) {
+            Alert.alert('Missing Field', 'Please specify a location.');
             return;
         }
 
         try {
+            setLoading(true); // Re-use loading or add a specific submitting state? Let's use loading for now to show global indicator or just a local one.
             const token = await getToken();
             if (!token || !user) {
                 Alert.alert('Sign In', 'Please sign in to share a review.');
+                setLoading(false);
                 return;
             }
 
@@ -108,7 +126,7 @@ export default function ReviewsScreen({ navigation }: any) {
                 comment: newComment.trim(),
                 location: newLocation.trim(),
                 tripType: newType.toLowerCase() as any,
-                userName: user.fullName || 'Traveler',
+                userName: user.fullName || user.username || 'Traveler',
                 userAvatar: user.imageUrl || '',
                 userId: user.id || '',
                 clerkUserId: user.id || '',
@@ -129,6 +147,8 @@ export default function ReviewsScreen({ navigation }: any) {
             console.error("Submit error:", error);
             const errorMsg = error.response?.data?.message || error.message || 'Failed to submit review.';
             Alert.alert('Error', errorMsg);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -325,6 +345,9 @@ export default function ReviewsScreen({ navigation }: any) {
                     showsVerticalScrollIndicator={false}
                     onEndReached={() => { if (hasMore) fetchReviews(); }}
                     onEndReachedThreshold={0.5}
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[theme.colors.primary]} />
+                    }
                     ListEmptyComponent={
                         <Text style={styles.emptyText}>No reviews yet. Be the first! 🌍</Text>
                     }

@@ -76,7 +76,7 @@ export default function ProfileScreen({ navigation }: any) {
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scroll}
                 refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#1A3C34']} />
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[theme.colors.primary]} />
                 }
             >
                 {/* ─── 1. HEADER MASK (CURVED) ─────────────────────────────────── */}
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
     avatarFallback: { flex: 1, backgroundColor: '#1A3C34', borderRadius: 36, justifyContent: 'center', alignItems: 'center' },
     verifiedBadge: {
         position: 'absolute', bottom: -2, right: -2, width: 22, height: 22,
-        borderRadius: 11, backgroundColor: '#4ADE80', borderWidth: 3, borderColor: '#FFF',
+        borderRadius: 11, backgroundColor: theme.colors.success, borderWidth: 3, borderColor: '#FFF',
         justifyContent: 'center', alignItems: 'center',
     },
 

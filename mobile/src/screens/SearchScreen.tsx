@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import {
     View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity,
-    ActivityIndicator, Alert, Image, Platform,
+    ActivityIndicator, Alert, Image, Platform, RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@clerk/clerk-expo';
@@ -10,6 +10,8 @@ import { theme } from '../styles/theme';
 import { MapPin, Plane, Calendar, Users, DollarSign, Search, Star, Heart, Sparkles } from 'lucide-react-native';
 import { planService, likedPlansService } from '../services/planService';
 import BentoCard from '../components/common/BentoCard';
+
+const WIKI_HEADERS = { 'User-Agent': 'AdventureNexus/1.0 (https://adventurenexus.com; support@adventurenexus.com)' };
 
 const BUDGET_OPTIONS = [
     { label: 'Budget', value: 'budget', limit: 25000 },
@@ -27,22 +29,30 @@ export default function SearchScreen({ navigation }: any) {
     const [returnDate, setReturnDate] = useState(new Date(Date.now() + 7 * 86400000));
     const [showDepartPicker, setShowDepartPicker] = useState(false);
     const [showReturnPicker, setShowReturnPicker] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [travelers, setTravelers] = useState('2');
     const [budget, setBudget] = useState('mid');
-    const [isLoading, setIsLoading] = useState(false);
     const [results, setResults] = useState<any[]>([]);
     const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
+    const [refreshing, setRefreshing] = useState(false);
+
+    const init = async (isRefreshing = false) => {
+        if (isRefreshing) setRefreshing(true);
+        const token = await getToken();
+        if (token) {
+            await Promise.all([
+                fetchRecommendations(token),
+                fetchLikedPlans(token)
+            ]);
+        }
+        if (isRefreshing) setRefreshing(false);
+    };
 
     React.useEffect(() => {
-        const init = async () => {
-            const token = await getToken();
-            if (token) {
-                fetchRecommendations(token);
-                fetchLikedPlans(token);
-            }
-        };
         init();
     }, []);
+
+    const onRefresh = () => init(true);
 
     const fetchRecommendations = async (token: string) => {
         try {
@@ -143,7 +153,7 @@ export default function SearchScreen({ navigation }: any) {
             >
                 {imageUrl ? (
                     <Image
-                        source={{ uri: imageUrl }}
+                        source={{ uri: imageUrl, headers: WIKI_HEADERS }}
                         style={styles.resultImage}
                         resizeMode="cover"
                         onError={(e) => {
@@ -162,8 +172,8 @@ export default function SearchScreen({ navigation }: any) {
                 <TouchableOpacity style={styles.heartBtn} onPress={() => toggleLike(item._id || item.name)}>
                     <Heart
                         size={18}
-                        color={likedIds.has(item._id || item.name) ? '#FF4E6A' : '#FFF'}
-                        fill={likedIds.has(item._id || item.name) ? '#FF4E6A' : 'transparent'}
+                        color={likedIds.has(item._id || item.name) ? theme.colors.error : '#FFF'}
+                        fill={likedIds.has(item._id || item.name) ? theme.colors.error : 'transparent'}
                     />
                 </TouchableOpacity>
 
@@ -193,7 +203,14 @@ export default function SearchScreen({ navigation }: any) {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <ScrollView style={styles.container} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+            <ScrollView
+                style={styles.container}
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[theme.colors.primary]} />
+                }
+            >
                 {/* Header */}
                 <View style={styles.header}>
                     <Text style={styles.title}>✨ Find Your</Text>

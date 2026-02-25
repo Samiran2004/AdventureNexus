@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
@@ -49,6 +49,7 @@ const Tab = createBottomTabNavigator();
 
 // Custom bottom tab bar
 function CustomTabBar({ state, navigation }: any) {
+    const insets = useSafeAreaInsets();
     const tabs: { name: string; icon: string }[] = [
         { name: 'Home', icon: '🏠' },
         { name: 'Search', icon: '🔍' },
@@ -57,7 +58,7 @@ function CustomTabBar({ state, navigation }: any) {
     ];
 
     return (
-        <View style={styles.tabBar}>
+        <View style={[styles.tabBar, { paddingBottom: Math.max(insets.bottom, 12), height: 76 + Math.max(0, insets.bottom - 10) }]}>
             {tabs.map((tab, index) => {
                 const isFocused = state.index === index;
                 return (

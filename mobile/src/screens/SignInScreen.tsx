@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
     logoTagline: { fontSize: 13, color: 'rgba(255,255,255,0.8)', marginTop: 4 },
 
     card: {
-        backgroundColor: '#FFF', marginHorizontal: 20, marginTop: -32,
+        backgroundColor: theme.colors.card.background, marginHorizontal: 20, marginTop: -32,
         borderRadius: 32, padding: 28,
         shadowColor: '#000', shadowOffset: { width: 0, height: 8 },
         shadowOpacity: 0.12, shadowRadius: 20, elevation: 8,
