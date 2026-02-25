@@ -131,7 +131,7 @@ const guides = [
 const stats = [
     { value: "200+", label: "Expert Guides" },
     { value: "80+", label: "Destinations" },
-    { value: "5+", label: "Happy Travelers" },
+    { value: "50+", label: "Happy Travelers" },
     { value: "4.9★", label: "Avg. Rating" },
 ];
 
