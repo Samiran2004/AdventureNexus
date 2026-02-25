@@ -7,7 +7,6 @@ import {
   Card,
   CardContent
 } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent
@@ -23,9 +22,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
 import { Spinner } from "@/components/ui/spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
 import axios from "axios";
 import {
   Bot,
@@ -33,17 +34,19 @@ import {
   CalendarDays,
   ChevronDown,
   Clock,
+  DollarSign,
   Heart,
   Hotel,
   IndianRupee,
   Info,
   Lightbulb,
+  LocateFixed,
+  Map,
   MapPin,
   MapPinned,
   Plane,
   Search,
   Share,
-  SlidersHorizontal,
   Sparkles,
   Star,
   TrendingUp,
@@ -58,14 +61,25 @@ import {
 import { useState, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "@clerk/clerk-react"
+import { format, addDays } from "date-fns";
+
+// Fix for default Leaflet marker icon not showing
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+
+let DefaultIcon = L.icon({
+  iconUrl: icon,
+  shadowUrl: iconShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41]
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
 
 
 // SearchPage component allows users to search for trips using AI-powered criteria
 const SearchPage = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
-  const [budgetRange, setBudgetRange] = useState([15000, 45000]);
-  const [selectedActivities, setSelectedActivities] = useState([]);
   const [sortBy, setSortBy] = useState("recommended");
   const [selectedDestination, setSelectedDestination] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -79,17 +93,17 @@ const SearchPage = () => {
   const [activeTab, setActiveTab] = useState("all"); // Track active tab: "all" or "liked"
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [selectedSharePlan, setSelectedSharePlan] = useState(null);
+  const [isFullMapOpen, setIsFullMapOpen] = useState(false);
+  const [mapRouteCoordinates, setMapRouteCoordinates] = useState([]);
+  const [isFetchingMapRoute, setIsFetchingMapRoute] = useState(false);
+  const [activeMapResult, setActiveMapResult] = useState(null);
+
+  const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
+  const [isDetectingLocation, setIsDetectingLocation] = useState(false);
+  const [pickerLocation, setPickerLocation] = useState(null); // {lat, lng}
 
   const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
-
-  const handleActivityToggle = (activity) => {
-    setSelectedActivities((prev) =>
-      prev.includes(activity)
-        ? prev.filter((a) => a !== activity)
-        : [...prev, activity]
-    );
-  };
 
   const handleViewDetails = (result) => {
     setSelectedDestination(result);
@@ -104,6 +118,68 @@ const SearchPage = () => {
     setIsModalOpen(false);
     setTimeout(() => setSelectedDestination(null), 300);
     setGalleryImages([]);
+  };
+
+  // --- Location Selection Helpers ---
+
+  const reverseGeocode = async (lat, lng) => {
+    try {
+      const response = await axios.get(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&addressdetails=1`
+      );
+      if (response.data && response.data.address) {
+        const addr = response.data.address;
+        const city = addr.city || addr.town || addr.village || addr.suburb || addr.county || "";
+        const country = addr.country || "";
+        return city && country ? `${city}, ${country}` : city || country || "Unknown Location";
+      }
+      return "Unknown Location";
+    } catch (error) {
+      console.error("Reverse geocoding error:", error);
+      return "Unknown Location";
+    }
+  };
+
+  const handleGetCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error("Geolocation is not supported by your browser");
+      return;
+    }
+
+    setIsDetectingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        const locationName = await reverseGeocode(latitude, longitude);
+        setFrom(locationName);
+        setIsDetectingLocation(false);
+        toast.success(`Location set to ${locationName}`);
+      },
+      (error) => {
+        console.error("Geolocation error:", error);
+        setIsDetectingLocation(false);
+        toast.error("Failed to detect location. Please enter manually.");
+      },
+      { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+    );
+  };
+
+  const handleLocationPick = async (lat, lng) => {
+    setPickerLocation({ lat, lng });
+    const locationName = await reverseGeocode(lat, lng);
+    setFrom(locationName);
+    setIsLocationModalOpen(false);
+    toast.success(`Origin set to ${locationName}`);
+  };
+
+  // --- Picker Map Component ---
+  const MapClickEvents = ({ onClick }) => {
+    useMapEvents({
+      click(e) {
+        onClick(e.latlng.lat, e.latlng.lng);
+      },
+    });
+    return null;
   };
 
   const fetchGalleryImages = async (destinationName) => {
@@ -171,14 +247,61 @@ const SearchPage = () => {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [lightboxIndex, galleryImages]);
+  }, [lightboxIndex, galleryImages, isFullMapOpen]);
+
+  const fetchRoadRoute = async (plan) => {
+    if (!plan.trip_highlights || plan.trip_highlights.length < 2) {
+      setMapRouteCoordinates([]);
+      return;
+    }
+
+    try {
+      setIsFetchingMapRoute(true);
+      const coords = plan.trip_highlights
+        .filter(h => h.geo_coordinates)
+        .map(h => `${h.geo_coordinates.lng},${h.geo_coordinates.lat}`)
+        .join(';');
+
+      if (!coords) {
+        setMapRouteCoordinates([]);
+        return;
+      }
+
+      const response = await axios.get(`https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`);
+
+      if (response.data?.routes?.[0]?.geometry?.coordinates) {
+        const points = response.data.routes[0].geometry.coordinates.map(coord => [
+          coord[1], // latitude
+          coord[0]  // longitude
+        ]);
+        setMapRouteCoordinates(points);
+      }
+    } catch (error) {
+      console.error("Error fetching road route:", error);
+      // Fallback: use straight lines if OSRM fails
+      setMapRouteCoordinates(plan.trip_highlights
+        .filter(h => h.geo_coordinates)
+        .map(h => [h.geo_coordinates.lat, h.geo_coordinates.lng])
+      );
+    } finally {
+      setIsFetchingMapRoute(false);
+    }
+  };
+
+  const handleOpenMap = (result, e) => {
+    if (e) e.stopPropagation();
+    setActiveMapResult(result);
+    setIsFullMapOpen(true);
+    setMapRouteCoordinates([]); // Clear previous route
+    fetchRoadRoute(result);
+  };
 
 
   // State
   const [searchResults, setSearchResults] = useState([]);
   const [isLoading, setIsLoading] = useState(true); // Start loading to fetch recommendations
-  const [toDate, setToDate] = useState("");
-  const [fromDate, setFromDate] = useState("");
+  const [fromDate, setFromDate] = useState(format(new Date(), "yyyy-MM-dd"));
+  const [toDate, setToDate] = useState(format(addDays(new Date(), 7), "yyyy-MM-dd"));
   const [to, setTo] = useState("");
   const [from, setFrom] = useState("");
   const [travelers, setTravelers] = useState("2");
@@ -349,7 +472,7 @@ const SearchPage = () => {
         to,
         from,
         date: fromDate,
-        travelers: Number(travelers),
+        travelers: isNaN(parseInt(travelers)) ? 2 : parseInt(travelers),
         budget: budgetLimit,
         budget_range: budget, // This sends "budget", "mid", or "luxury" string
         duration: duration
@@ -376,22 +499,6 @@ const SearchPage = () => {
     }
   };
 
-
-
-  const activities = [
-    "Adventure",
-    "Culture",
-    "Food",
-    "Beach",
-    "Nature",
-    "Photography",
-    "Romance",
-    "Wellness",
-    "Shopping",
-    "Nightlife",
-    "History",
-    "Art",
-  ];
 
 
   return (
@@ -440,7 +547,7 @@ const SearchPage = () => {
                       />
                       <Input
                         id="destination"
-                        placeholder="Enter destination"
+                        placeholder="Where to? (e.g. Kyoto, Japan)"
                         value={to}
                         onChange={(e) => setTo(e.target.value)}
                         className="pl-12 h-12 bg-input border-input text-foreground placeholder-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl transition-all"
@@ -457,18 +564,45 @@ const SearchPage = () => {
                       <Plane size={16} className="text-secondary" />
                       Where from?
                     </Label>
-                    <div className="relative">
+                    <div className="relative group">
                       <Plane
-                        className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors"
                         size={18}
                       />
                       <Input
                         id="from-destination"
-                        placeholder="Enter origin"
+                        placeholder="Where from? (e.g. London, UK)"
                         value={from}
                         onChange={(e) => setFrom(e.target.value)}
-                        className="pl-12 h-12 bg-input border-input text-foreground placeholder-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl transition-all"
+                        className="pl-12 pr-28 h-12 bg-input border-input text-foreground placeholder-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl transition-all"
                       />
+                      <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-all"
+                          onClick={handleGetCurrentLocation}
+                          title="Use current location"
+                          disabled={isDetectingLocation}
+                        >
+                          {isDetectingLocation ? (
+                            <Spinner className="size-4 text-primary" />
+                          ) : (
+                            <LocateFixed size={16} />
+                          )}
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-muted-foreground hover:text-secondary hover:bg-secondary/10 rounded-lg transition-all"
+                          onClick={() => setIsLocationModalOpen(true)}
+                          title="Pick from map"
+                        >
+                          <Map size={16} />
+                        </Button>
+                      </div>
                     </div>
                   </div>
 
@@ -513,61 +647,53 @@ const SearchPage = () => {
 
 
                 <div className="grid md:grid-cols-2 gap-6 mb-6">
-                  {/* Select total travelers */}
+                  {/* Pill Selection for Travelers */}
                   <div className="space-y-3">
-                    <Label
-                      htmlFor="travelers"
-                      className="text-foreground text-sm font-semibold flex items-center gap-2"
-                    >
+                    <Label className="text-foreground text-sm font-semibold flex items-center gap-2">
                       <Users size={16} className="text-primary" />
                       Travelers
                     </Label>
-                    <div className="relative">
-                      <Users
-                        className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground z-10"
-                        size={18}
-                      />
-                      <Select value={travelers} onValueChange={(value) => setTravelers(value)}>
-                        <SelectTrigger className="pl-12 h-12 bg-input border-input text-foreground cursor-pointer rounded-xl focus:ring-2 focus:ring-primary/20 transition-all">
-                          <SelectValue placeholder="2 travelers" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-popover border-border cursor-pointer">
-                          <SelectItem value="1" className="cursor-pointer">1 traveler</SelectItem>
-                          <SelectItem value="2" className="cursor-pointer">2 travelers</SelectItem>
-                          <SelectItem value="3" className="cursor-pointer">3 travelers</SelectItem>
-                          <SelectItem value="4" className="cursor-pointer">4+ travelers</SelectItem>
-                        </SelectContent>
-                      </Select>
+                    <div className="flex flex-wrap gap-2">
+                      {["1", "2", "3", "4+"].map((t) => (
+                        <button
+                          key={t}
+                          type="button"
+                          onClick={() => setTravelers(t)}
+                          className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${travelers === t
+                            ? "bg-primary text-primary-foreground shadow-lg scale-105"
+                            : "bg-muted text-muted-foreground hover:bg-muted/80 border border-transparent"
+                            }`}
+                        >
+                          {t}
+                        </button>
+                      ))}
                     </div>
                   </div>
 
-                  {/* Select Budget */}
+                  {/* Pill Selection for Budget */}
                   <div className="space-y-3">
                     <Label className="text-foreground text-sm font-semibold flex items-center gap-2">
-                      <IndianRupee size={16} className="text-secondary" />
+                      <DollarSign size={16} className="text-secondary" />
                       Budget Range
                     </Label>
-                    <div className="relative">
-                      <IndianRupee
-                        className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground z-10"
-                        size={18}
-                      />
-                      <Select value={budget} onValueChange={(value) => setBudget(value)}>
-                        <SelectTrigger className="pl-12 h-12 bg-input border-input text-foreground cursor-pointer rounded-xl focus:ring-2 focus:ring-primary/20 transition-all">
-                          <SelectValue placeholder="Any budget range" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-popover border-border cursor-pointer">
-                          <SelectItem value="budget" className="cursor-pointer">
-                            Budget (₹15000-₹25000)
-                          </SelectItem>
-                          <SelectItem value="mid" className="cursor-pointer">
-                            Mid-range (₹25000-₹65000)
-                          </SelectItem>
-                          <SelectItem value="luxury" className="cursor-pointer">
-                            Luxury (₹65000+)
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        { label: "Budget", value: "budget" },
+                        { label: "Mid-range", value: "mid" },
+                        { label: "Luxury", value: "luxury" }
+                      ].map((b) => (
+                        <button
+                          key={b.value}
+                          type="button"
+                          onClick={() => setBudget(b.value)}
+                          className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${budget === b.value
+                            ? "bg-secondary text-white shadow-lg scale-105"
+                            : "bg-muted text-muted-foreground hover:bg-muted/80 border border-transparent"
+                            }`}
+                        >
+                          {b.label}
+                        </button>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -593,137 +719,7 @@ const SearchPage = () => {
                       </>
                     )}
                   </Button>
-
-
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="w-full sm:w-auto border-2 border-border text-foreground hover:bg-accent hover:text-accent-foreground hover:border-primary/50 transition-all shadow-md hover:shadow-lg"
-                    onClick={() => setShowFilters(!showFilters)}
-                  >
-                    <SlidersHorizontal className="mr-2" size={18} />
-                    Filters
-                    <ChevronDown
-                      className={`ml-2 transition-transform duration-300 ${showFilters ? "rotate-180" : ""
-                        }`}
-                      size={16}
-                    />
-                  </Button>
                 </div>
-
-
-                {/* Advanced Filters */}
-                {showFilters && (
-                  <div className="mt-8 pt-8 border-t border-border/50 animate-in fade-in-50 duration-500">
-                    <div className="grid md:grid-cols-3 gap-6">
-                      {/* Budget Range Card */}
-                      <div className="space-y-4 p-5 rounded-2xl bg-gradient-to-br from-primary/5 via-transparent to-primary/10 border border-primary/20 shadow-lg hover:shadow-xl transition-all duration-300">
-                        <h3 className="text-foreground font-bold text-base flex items-center gap-2">
-                          <div className="p-2 bg-gradient-to-br from-primary to-primary/70 rounded-lg shadow-md">
-                            <IndianRupee size={16} className="text-white" />
-                          </div>
-                          Budget Range
-                        </h3>
-                        <div className="px-3 py-4 bg-background/50 backdrop-blur-sm rounded-xl border border-border/50">
-                          <div className="mb-3">
-                            <div className="flex justify-between text-[10px] text-muted-foreground mb-2">
-                              <span>Min</span>
-                              <span>Max</span>
-                            </div>
-                            <Slider
-                              value={budgetRange}
-                              onValueChange={setBudgetRange}
-                              max={10000}
-                              min={500}
-                              step={100}
-                              className="w-full"
-                            />
-                            <div className="flex justify-between text-[10px] text-muted-foreground mt-2">
-                              <span>$500</span>
-                              <span>$10K</span>
-                            </div>
-                          </div>
-                          <div className="flex justify-between gap-2">
-                            <div className="flex-1 min-w-0">
-                              <div className="text-[10px] text-muted-foreground mb-1 text-center">From</div>
-                              <div className="px-2 py-2 bg-gradient-to-r from-primary to-primary/80 text-white rounded-xl shadow-lg text-center font-bold text-sm truncate">
-                                ${budgetRange[0].toLocaleString()}
-                              </div>
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="text-[10px] text-muted-foreground mb-1 text-center">To</div>
-                              <div className="px-2 py-2 bg-gradient-to-r from-secondary to-secondary/80 text-white rounded-xl shadow-lg text-center font-bold text-sm truncate">
-                                ${budgetRange[1].toLocaleString()}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Activities Card */}
-                      <div className="space-y-4 p-5 rounded-2xl bg-gradient-to-br from-secondary/5 via-transparent to-secondary/10 border border-secondary/20 shadow-lg hover:shadow-xl transition-all duration-300">
-                        <h3 className="text-foreground font-bold text-base flex items-center gap-2">
-                          <div className="p-2 bg-gradient-to-br from-secondary to-secondary/70 rounded-lg shadow-md">
-                            <Sparkles size={16} className="text-white" />
-                          </div>
-                          Activities
-                        </h3>
-                        <div className="grid grid-cols-2 gap-2">
-                          {activities.slice(0, 6).map((activity) => (
-                            <label
-                              key={activity}
-                              className={`flex items-center gap-1.5 px-2 py-2 rounded-lg border-2 transition-all duration-300 cursor-pointer ${selectedActivities.includes(activity)
-                                ? 'bg-gradient-to-r from-secondary/20 to-secondary/10 border-secondary shadow-md scale-105'
-                                : 'bg-background/50 border-border/50 hover:border-secondary/50 hover:bg-secondary/5'
-                                }`}
-                            >
-                              <Checkbox
-                                id={activity}
-                                checked={selectedActivities.includes(activity)}
-                                onCheckedChange={() => handleActivityToggle(activity)}
-                                className="border-secondary data-[state=checked]:bg-secondary data-[state=checked]:border-secondary flex-shrink-0"
-                              />
-                              <span className="text-xs font-semibold text-foreground truncate">
-                                {activity}
-                              </span>
-                            </label>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Travel Style Card */}
-                      <div className="space-y-4 p-5 rounded-2xl bg-gradient-to-br from-purple-500/5 via-transparent to-purple-500/10 border border-purple-500/20 shadow-lg hover:shadow-xl transition-all duration-300">
-                        <h3 className="text-foreground font-bold text-base flex items-center gap-2">
-                          <div className="p-2 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-md">
-                            <Users size={16} className="text-white" />
-                          </div>
-                          Travel Style
-                        </h3>
-                        <div className="space-y-2">
-                          {[
-                            "Solo Travel",
-                            "Family Friendly",
-                            "Romantic",
-                            "Group Travel",
-                          ].map((style) => (
-                            <label
-                              key={style}
-                              className="flex items-center gap-2 px-3 py-2.5 rounded-lg border-2 border-border/50 bg-background/50 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all duration-300 cursor-pointer hover:scale-105"
-                            >
-                              <Checkbox
-                                id={style}
-                                className="border-purple-500 data-[state=checked]:bg-purple-500 data-[state=checked]:border-purple-500 flex-shrink-0"
-                              />
-                              <span className="text-xs font-semibold text-foreground">
-                                {style}
-                              </span>
-                            </label>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
               </CardContent>
             </Card>
           </div>
@@ -956,9 +952,10 @@ const SearchPage = () => {
                               </Button>
                               <Button
                                 variant="outline"
-                                className="border-input text-foreground hover:bg-accent hover:text-accent-foreground"
+                                className="border-input text-foreground hover:bg-accent hover:text-accent-foreground group/map"
+                                onClick={(e) => handleOpenMap(result, e)}
                               >
-                                <Bot size={16} />
+                                <MapPinned size={16} className="group-hover/map:text-primary transition-colors" />
                               </Button>
                             </div>
                           </div>
@@ -1138,9 +1135,10 @@ const SearchPage = () => {
                               </Button>
                               <Button
                                 variant="outline"
-                                className="border-input text-foreground hover:bg-accent hover:text-accent-foreground"
+                                className="border-input text-foreground hover:bg-accent hover:text-accent-foreground group/map"
+                                onClick={(e) => handleOpenMap(result, e)}
                               >
-                                <Bot size={16} />
+                                <MapPinned size={16} className="group-hover/map:text-primary transition-colors" />
                               </Button>
                             </div>
                           </div>
@@ -1585,6 +1583,83 @@ const SearchPage = () => {
           planName={selectedSharePlan.name}
         />
       )}
+      {/* Map View Dialog */}
+      <Dialog open={isFullMapOpen} onOpenChange={setIsFullMapOpen}>
+        <DialogContent className="max-w-[95vw] h-[95vh] bg-card border-border p-0 overflow-hidden shadow-2xl">
+          <div className="relative w-full h-full">
+            <div className="absolute top-4 left-4 z-50 pointer-events-none">
+              <div className="bg-background/90 backdrop-blur-md p-4 rounded-2xl border border-border shadow-xl pointer-events-auto">
+                <h3 className="font-black font-outfit text-lg">{activeMapResult?.name} Route</h3>
+                <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest">Itinerary Visualization</p>
+              </div>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-4 right-4 z-50 bg-background/80 hover:bg-background rounded-full shadow-sm"
+              onClick={() => setIsFullMapOpen(false)}
+            >
+              <X size={20} />
+            </Button>
+
+            {isFetchingMapRoute && (
+              <div className="absolute inset-0 z-40 bg-background/20 backdrop-blur-sm flex items-center justify-center pointer-events-none">
+                <div className="bg-background p-4 rounded-full shadow-2xl border border-border flex items-center gap-3">
+                  <Spinner className="size-5 text-primary" />
+                  <span className="text-sm font-bold font-outfit">Mapping route...</span>
+                </div>
+              </div>
+            )}
+
+            <HighlightMap
+              highlights={activeMapResult?.trip_highlights}
+              routeCoordinates={mapRouteCoordinates}
+              destinationName={activeMapResult?.name}
+              isSatellite={true}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Origin Location Picker Modal */}
+      <Dialog open={isLocationModalOpen} onOpenChange={setIsLocationModalOpen}>
+        <DialogContent className="max-w-[70vw] h-[70vh] bg-card border-border p-0 overflow-hidden shadow-2xl">
+          <div className="relative w-full h-full flex flex-col">
+            <div className="absolute top-4 left-4 z-50 pointer-events-none">
+              <div className="bg-background/90 backdrop-blur-md p-4 rounded-2xl border border-border shadow-xl pointer-events-auto">
+                <h3 className="font-black font-outfit text-lg">Pick Origin Location</h3>
+                <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest">Click anywhere on the map to select</p>
+              </div>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-4 right-4 z-50 bg-background/80 hover:bg-background rounded-full shadow-sm"
+              onClick={() => setIsLocationModalOpen(false)}
+            >
+              <X size={20} />
+            </Button>
+
+            <div className="flex-1 w-full h-full relative z-0">
+              <MapContainer
+                center={[20, 0]}
+                zoom={2}
+                scrollWheelZoom={true}
+                style={{ height: '100%', width: '100%' }}
+              >
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                <MapClickEvents onClick={handleLocationPick} />
+                {pickerLocation && (
+                  <Marker position={[pickerLocation.lat, pickerLocation.lng]} />
+                )}
+              </MapContainer>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
