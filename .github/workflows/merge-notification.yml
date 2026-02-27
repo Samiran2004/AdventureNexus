@@ -1,0 +1,38 @@
+name: Merge Notification
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+jobs:
+  notify-merge:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Send PR Comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const body = `### ✅ Code Merged Successfully!
+            
+            **Details:**
+            - **PR Number:** #${pr.number}
+            - **Author:** @${pr.user.login}
+            - **Base Branch:** ${pr.base.ref}
+            - **Head Branch:** ${pr.head.ref}
+            - **Commits:** ${pr.commits}
+            - **Changed Files:** ${pr.changed_files}
+            
+            Your changes from \`${pr.head.ref}\` are now part of \`main\`. Great work! 🚀`;
+            
+            await github.rest.issues.createComment({
+              issue_number: pr.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });

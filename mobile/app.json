@@ -19,8 +19,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#F2F4E8"
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#0a0a0a"
       },
       "package": "com.adventurenexus.app",
       "edgeToEdgeEnabled": true
