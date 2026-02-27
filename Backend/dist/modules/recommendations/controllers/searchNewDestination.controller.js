@@ -68,20 +68,83 @@ const searchNewDestination = (req, res) => __awaiter(void 0, void 0, void 0, fun
         };
         const prompt = (0, generatePromptForSearchNewDestinations_1.default)(promptData);
         const generatedData = yield (0, groq_service_1.groqGeneratedData)(prompt);
-        const startIndex = generatedData.indexOf("[");
-        const endIndex = generatedData.lastIndexOf("]");
-        const cleanString = generatedData.substring(startIndex, endIndex + 1);
-        const aiResponseArray = JSON.parse(cleanString);
-        if (!Array.isArray(aiResponseArray)) {
-            throw new Error("AI response is not an array");
+        let aiResponseArray = [];
+        try {
+            let startIndex = generatedData.indexOf("{");
+            let endIndex = generatedData.lastIndexOf("}");
+            if (startIndex === -1 || endIndex === -1) {
+                throw new Error("No JSON object found in AI response");
+            }
+            let cleanString = generatedData.substring(startIndex, endIndex + 1);
+            cleanString = cleanString.replace(/"name":\s*([^",}\]]+)/g, (match, p1) => {
+                if (!p1.trim().startsWith('"'))
+                    return `"name": "${p1.trim()}"`;
+                return match;
+            });
+            cleanString = cleanString.replace(/("|\d|true|false|null|\]|\})\s*(?!\s*,)(\n\s*)"([^"]+)":/g, '$1,$2"$3":');
+            try {
+                const aiResponseObject = JSON.parse(cleanString);
+                aiResponseArray = aiResponseObject.plans || [];
+                if (!Array.isArray(aiResponseArray)) {
+                    aiResponseArray = Array.isArray(aiResponseObject) ? aiResponseObject : [];
+                }
+            }
+            catch (firstPassError) {
+                logger_1.default.warn(`Search: First parse failed, trying aggressive cleaning...`);
+                const ultraClean = cleanString.replace(/,\s*([}\]])/g, '$1');
+                const finalClean = ultraClean.replace(/:\s*"(.+?)"\s*(,|})/g, (match, p1, p2) => {
+                    return `: "${p1.replace(/"/g, '\\"')}"${p2}`;
+                });
+                const aiResponseObject = JSON.parse(finalClean);
+                aiResponseArray = aiResponseObject.plans || [];
+            }
+        }
+        catch (parseError) {
+            logger_1.default.error(`JSON Parse Error: ${parseError.message}. Content: ${generatedData.substring(0, 200)}...`);
+            throw new Error(`AI generated invalid data: ${parseError.message}`);
+        }
+        if (aiResponseArray.length === 0) {
+            throw new Error("AI response contains no plans");
         }
         const processedPlans = yield Promise.all(aiResponseArray.map((aiResponse) => __awaiter(void 0, void 0, void 0, function* () {
             const searchQuery = aiResponse.name || to;
-            let destinationImage = yield (0, wikipedia_service_1.fetchWikipediaImage)(searchQuery);
-            if (!destinationImage) {
-                logger_1.default.warn(`Wikipedia failed for ${searchQuery}, trying Unsplash...`);
-                destinationImage = yield (0, unsplash_service_1.fetchUnsplashImage)(searchQuery);
+            let destinationImage;
+            let source = "none";
+            try {
+                destinationImage = yield (0, wikipedia_service_1.fetchWikipediaImage)(searchQuery);
+                if (destinationImage)
+                    source = "Wikipedia";
+                if (!destinationImage) {
+                    destinationImage = yield (0, unsplash_service_1.fetchUnsplashImage)(searchQuery);
+                    if (destinationImage)
+                        source = "Unsplash";
+                }
             }
+            catch (imgError) {
+                logger_1.default.error(`Image Fetch Error for ${searchQuery}:`, imgError);
+            }
+            let finalImageUrl = destinationImage || aiResponse.image_url;
+            if (finalImageUrl) {
+                try {
+                    if (finalImageUrl.startsWith('//'))
+                        finalImageUrl = 'https:' + finalImageUrl;
+                    const urlObj = new URL(finalImageUrl);
+                    finalImageUrl = urlObj.toString();
+                }
+                catch (e) {
+                    finalImageUrl = encodeURI(finalImageUrl);
+                }
+            }
+            if (!finalImageUrl || finalImageUrl.length < 10) {
+                const fallbacks = [
+                    "https://images.unsplash.com/photo-1488646953014-85cb44e25828",
+                    "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1",
+                    "https://images.unsplash.com/photo-1507525428034-b723cf961d3e"
+                ];
+                finalImageUrl = fallbacks[Math.floor(Math.random() * fallbacks.length)] + "?w=1000&auto=format&fit=crop";
+                source = "High-Quality Placeholder";
+            }
+            logger_1.default.info(`Search: Source [${source}] for "${searchQuery}" -> URL: ${finalImageUrl}`);
             const planData = {
                 clerkUserId,
                 to,
@@ -93,18 +156,19 @@ const searchNewDestination = (req, res) => __awaiter(void 0, void 0, void 0, fun
                 activities,
                 travel_style,
                 ai_score: typeof aiResponse.ai_score === 'string' ? parseFloat(aiResponse.ai_score.replace('%', '')) : aiResponse.ai_score,
-                image_url: destinationImage || aiResponse.image_url,
+                image_url: finalImageUrl,
                 name: aiResponse.name,
                 days: aiResponse.days,
                 cost: aiResponse.cost,
                 star: aiResponse.star,
                 total_reviews: aiResponse.total_reviews,
                 destination_overview: aiResponse.destination_overview,
-                perfect_for: aiResponse.perfect_for,
+                perfect_for: Array.isArray(aiResponse.perfect_for) ? aiResponse.perfect_for : [],
                 budget_breakdown: aiResponse.budget_breakdown,
-                trip_highlights: aiResponse.trip_highlights,
-                suggested_itinerary: aiResponse.suggested_itinerary,
-                local_tips: aiResponse.local_tips,
+                trip_highlights: Array.isArray(aiResponse.trip_highlights) ? aiResponse.trip_highlights : [],
+                suggested_itinerary: Array.isArray(aiResponse.suggested_itinerary) ? aiResponse.suggested_itinerary : [],
+                local_tips: Array.isArray(aiResponse.local_tips) ? aiResponse.local_tips : [],
+                how_to_reach: aiResponse.how_to_reach,
                 hotel_options: aiResponse.hotel_options,
                 flight_options: aiResponse.flight_options,
                 userId: null

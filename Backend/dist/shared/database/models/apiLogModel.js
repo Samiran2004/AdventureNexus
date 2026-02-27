@@ -11,7 +11,7 @@ const apiLogSchema = new mongoose_1.default.Schema({
     duration: Number,
     ip: String,
     userAgent: String,
-    timestamp: { type: Date, default: Date.now, index: true }
+    timestamp: { type: Date, default: Date.now }
 });
 apiLogSchema.index({ timestamp: 1 }, { expireAfterSeconds: 604800 });
 const ApiLog = mongoose_1.default.model('ApiLog', apiLogSchema);

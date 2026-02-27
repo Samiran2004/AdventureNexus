@@ -45,9 +45,16 @@ const getPersonalizedRecommendations = (req, res) => __awaiter(void 0, void 0, v
                 .sort({ createdAt: -1 })
                 .limit(3);
         }
+        const plansWithImages = recommendations.map(plan => {
+            const p = plan.toObject ? plan.toObject() : plan;
+            if (!p.image_url) {
+                p.image_url = "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&auto=format&fit=crop";
+            }
+            return p;
+        });
         return res.status(http_status_codes_1.StatusCodes.OK).json({
             status: "Ok",
-            data: recommendations,
+            data: plansWithImages,
         });
     }
     catch (error) {

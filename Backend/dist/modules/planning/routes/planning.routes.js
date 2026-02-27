@@ -8,11 +8,16 @@ const searchNewDestination_controller_1 = __importDefault(require("../../recomme
 const getDestinationImages_controller_1 = __importDefault(require("../../recommendations/controllers/getDestinationImages.controller"));
 const getPersonalizedRecommendations_controller_1 = __importDefault(require("../../recommendations/controllers/getPersonalizedRecommendations.controller"));
 const getPlanByIdController_1 = require("../controllers/getPlanByIdController");
+const savePlanToUserController_1 = require("../controllers/savePlanToUserController");
+const unsavePlanFromUserController_1 = require("../controllers/unsavePlanFromUserController");
+const authClerkTokenMiddleware_1 = __importDefault(require("../../../shared/middleware/authClerkTokenMiddleware"));
 const cacheMiddleware_1 = require("../../../shared/middleware/cacheMiddleware");
 const cache_config_1 = require("../../../shared/config/cache.config");
 const route = express_1.default.Router();
 route.post("/search/destination", searchNewDestination_controller_1.default);
 route.get("/recommendations", (0, cacheMiddleware_1.cacheMiddleware)({ prefix: cache_config_1.CACHE_CONFIG.PREFIX.RECOMMENDATIONS, useUserPrefix: true }), getPersonalizedRecommendations_controller_1.default);
 route.post("/search/destination-images", getDestinationImages_controller_1.default);
+route.post("/:planId/save", authClerkTokenMiddleware_1.default, savePlanToUserController_1.savePlanToUser);
+route.delete("/:planId/save", authClerkTokenMiddleware_1.default, unsavePlanFromUserController_1.unsavePlanFromUser);
 route.get("/public/:id", (0, cacheMiddleware_1.cacheMiddleware)({ prefix: cache_config_1.CACHE_CONFIG.PREFIX.PLAN }), getPlanByIdController_1.getPlanById);
 exports.default = route;

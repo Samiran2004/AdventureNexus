@@ -1,2 +1,0 @@
-To https://github.com/Samiran2004/AdventureNexus.git
-   aba8113..f0a4ec5  samiran -> samiran

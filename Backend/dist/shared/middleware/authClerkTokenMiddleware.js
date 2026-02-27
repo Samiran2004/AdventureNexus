@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.protect = void 0;
+exports.optionalProtect = exports.protect = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const http_status_codes_1 = require("http-status-codes");
 const userModel_1 = __importDefault(require("../database/models/userModel"));
@@ -83,4 +83,31 @@ const protect = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.protect = protect;
+const optionalProtect = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        if (!((_a = req.headers) === null || _a === void 0 ? void 0 : _a.authorization) || !req.headers.authorization.startsWith("Bearer ")) {
+            return next();
+        }
+        const token = req.headers.authorization.split(" ")[1];
+        const decoded = jsonwebtoken_1.default.decode(token);
+        if (decoded && decoded.sub) {
+            const user = yield userModel_1.default.findOne({ clerkUserId: decoded.sub });
+            if (user) {
+                req.user = {
+                    _id: user._id.toString(),
+                    clerkUserId: user.clerkUserId,
+                    role: user.role || "user",
+                    email: user.email,
+                    username: user.username,
+                };
+            }
+        }
+    }
+    catch (error) {
+        logger_1.default.warn("⚠️ Optional Auth failed, continuing as guest");
+    }
+    next();
+});
+exports.optionalProtect = optionalProtect;
 exports.default = exports.protect;

@@ -23,11 +23,12 @@ function groqGeneratedData(prompt) {
         const chatComplete = groq.chat.completions.create({
             messages: [
                 {
-                    role: "assistant",
+                    role: "user",
                     content: prompt
                 }
             ],
-            model: "openai/gpt-oss-120b"
+            model: "openai/gpt-oss-120b",
+            response_format: { type: "json_object" }
         });
         return ((_b = (_a = (yield chatComplete).choices[0]) === null || _a === void 0 ? void 0 : _a.message) === null || _b === void 0 ? void 0 : _b.content) || "";
     });

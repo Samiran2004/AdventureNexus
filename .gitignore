@@ -1,1 +1,29 @@
-APIs/.env
+# Environment
+.env
+.env.local
+.env.*.local
+.venv/
+env/
+venv/
+ENV/
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Builds and Output
+dist/
+build/
+*.apk
+*.log
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Diagnostic
+ps_output.txt
+git_push_out.txt
+app.log
