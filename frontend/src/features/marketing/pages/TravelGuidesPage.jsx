@@ -131,7 +131,7 @@ const guides = [
 const stats = [
     { value: "200+", label: "Expert Guides" },
     { value: "80+", label: "Destinations" },
-    { value: "50K+", label: "Happy Travelers" },
+    { value: "50+", label: "Happy Travelers" },
     { value: "4.9★", label: "Avg. Rating" },
 ];
 
@@ -238,8 +238,8 @@ const TravelGuidesPage = () => {
                                 key={cat.label}
                                 onClick={() => setActiveCategory(cat.label)}
                                 className={`flex items-center gap-2 px-5 py-2.5 rounded-full border text-sm font-semibold whitespace-nowrap transition-all duration-200 shrink-0 ${isActive
-                                        ? 'bg-foreground text-background border-foreground shadow-md scale-105'
-                                        : 'border-border hover:border-foreground/30 bg-card hover:bg-muted/50'
+                                    ? 'bg-foreground text-background border-foreground shadow-md scale-105'
+                                    : 'border-border hover:border-foreground/30 bg-card hover:bg-muted/50'
                                     }`}
                             >
                                 <cat.icon size={15} className={isActive ? '' : cat.color.split(' ')[0]} />
