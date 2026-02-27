@@ -14,7 +14,7 @@ const generateNewSearchDestinationPrompt = (data) => {
 
         Act as an expert travel planner. Create **3 DISTINCT** travel plan options for a trip to **${data.to}** (or nearby regions if ${data.to} is a country/broad region).
         
-        Generate a strictly formatted **JSON Array** containing exactly 3 objects.
+        Generate a strictly formatted **JSON Object** with a key "plans" containing exactly 3 objects.
 
         **IMPORTANT: BUDGET REALISM RULE**
         - The "cost" field MUST be a realistic estimate for the destination and duration, considering the origin (**${data.from}**) and destination (**${data.to}**).
@@ -34,48 +34,42 @@ const generateNewSearchDestinationPrompt = (data) => {
         - Each of the 3 plans must be slightly different (e.g., different focus, different specific location if applicable, or different itinerary vibe).
         - Ensure they aren't duplicates.
 
-        The JSON Array must contain objects with the following keys exactly:
-        1. **ai_score**: An estimated match score (e.g., "98%").
-        2. **image_url**: The dynamic URL constructed using the rule above.
-        3. **name**: The destination name (e.g., "Tokyo, Japan").
-        4. **days**: Recommended duration (must be ${data.duration || 7} if specified).
-        5. **cost**: Total estimated cost per person in Indian Rupees (INR).
-        6. **star**: Average rating (e.g., 4.8).
-        7. **total_reviews**: Estimated number of reviews (e.g., 342).
-        8. **destination_overview**: A concise summary of the vibe.
-        9. **perfect_for**: An array of strings describing the trip type (e.g., ["Culture", "Food"]).
-        10. **budget_breakdown**: Object with costs for "flights", "accommodation", "food", "activities".
-        11. **trip_highlights**: Array of objects with "name", "description", "match_reason", and "geo_coordinates": {"lat": number, "lng": number}.
-        12. **suggested_itinerary**: Array of day objects with "morning", "afternoon", "evening".
-        13. **local_tips**: Array of string tips.
-        
-        **Booking Specific Fields (MANDATORY):**
-        14. **hotel_options**: An array of 3 realistic hotel objects with:
-            - "hotel_name", "description", "starRating" (1-5), "amenities", "category" (Hotel, Resort, etc.).
-            - "location": An object with "address", "city", "state", "country", "zipCode".
-            - "rooms": An array of 2 room objects with "roomType" (Standard, Deluxe, etc.), "pricePerNight" (INR), "amenities", "description", "capacity": {"adults": number, "children": number}.
-        15. **flight_options**: An array of 3 realistic flight objects with:
-            - "airline", "flight_number", "departure_time", "arrival_time", "price" (INR), "class", "duration", "departure_airport", "arrival_airport".
+        The JSON Object must contain a "plans" key, which is an array of objects with the following keys:
+        1. "ai_score": estimated match score as a string (e.g., "98%").
+        2. "image_url": dynamic URL using the rule above.
+        3. "name": destination name.
+        4. "days": number (must be ${data.duration || 7}).
+        5. "cost": estimated cost in INR.
+        6. "star": number (e.g., 4.8).
+        7. "total_reviews": number (e.g., 342).
+        8. "destination_overview": string summary.
+        9. "perfect_for": array of strings.
+        10. "budget_breakdown": object with keys "flights", "accommodation", "food", "activities" (all numbers).
+        11. "trip_highlights": array of objects with "name", "description", "match_reason", and "geo_coordinates" (object with "lat", "lng" as numbers).
+        12. "suggested_itinerary": array of objects with "day" (number), "title", "description", "morning", "afternoon", "evening".
+        13. "local_tips": array of strings.
+        14. "hotel_options": array of 3 objects with "hotel_name", "description", "starRating", "amenities" (array), "category", "location" (object with "address", "city", "state", "country", "zipCode"), and "rooms" (array of 2 objects with "roomType", "pricePerNight", "amenities", "description", "capacity": {"adults": number, "children": number}).
+        15. "flight_options": array of 3 objects with "airline", "flight_number", "departure_time", "arrival_time", "price", "class", "duration", "departure_airport", "arrival_airport".
+        16. "how_to_reach": object with:
+            - "best_way": string (recommendation, e.g., "Direct flight from Kolkata is the most convenient").
+            - "modes": array of objects with "type" (e.g., "Flight", "Train", "Bus", "Car"), "description", "estimated_cost" (string), "duration" (string).
+            - "arrival_tips": array of strings (e.g., "Pre-paid taxis are available at the airport").
 
         **Rules:**
-        - Return **ONLY** the valid JSON Array. Do not include markdown formatting (like request \`\`\`json) or extra text.
+        - Return **ONLY** the valid JSON Object. Do not include markdown formatting (like \`\`\`json) or extra text.
         - Ensure all prices are realistic estimates in INR.
 
-        **Example Output Format:**
-        [
-            {
-                "ai_score": "98%",
-                "image_url": "...",
-                "name": "Tokyo, Japan",
-                 ...
-            },
-            {
-                "ai_score": "95%",
-                "image_url": "...",
-                "name": "Kyoto, Japan",
-                 ...
-            }
-        ]
-    `;
+        ** Example Output Format:**
+        {
+            "plans": [
+                {
+                    "ai_score": "98%",
+                    "image_url": "...",
+                    "name": "Tokyo, Japan",
+                    ...
+                }
+            ]
+        }
+            `;
 };
 exports.default = generateNewSearchDestinationPrompt;

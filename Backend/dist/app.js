@@ -53,6 +53,9 @@ const server = http_1.default.createServer(app);
 (() => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, connection_1.default)(process.env.DB_URI);
 }))();
+client_1.default.connect().catch(() => {
+    logger_1.default.warn('Redis is unavailable on startup. Caching will be disabled until Redis reconnects.');
+});
 client_1.default.on('connect', () => {
     (0, figlet_1.default)('R e d i s   c o n n e c t e d', (err, data) => err ? logger_1.default.error('Figlet error...') : logger_1.default.info(data));
 });
@@ -111,6 +114,8 @@ app.post('/api/v1/mail/subscribe', subscribeDailyMail_controller_1.default);
 app.post('/api/v1/mail/trigger-daily-tips', triggerDailyTips_controller_1.default);
 const admin_routes_1 = __importDefault(require("./modules/admin/routes/admin.routes"));
 app.use('/api/v1/admin', admin_routes_1.default);
+const community_routes_1 = __importDefault(require("./modules/community/community.routes"));
+app.use('/api/v1/community', community_routes_1.default);
 app.use((req, res, next) => {
     next((0, http_errors_1.default)(404));
 });

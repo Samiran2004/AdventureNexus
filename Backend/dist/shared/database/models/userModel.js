@@ -89,12 +89,11 @@ const userSchema = new mongoose_1.Schema({
             ref: 'Plan',
         },
     ],
-    likedPlans: [
-        {
-            type: mongoose_1.default.Schema.Types.ObjectId,
-            ref: 'Plan',
-        },
-    ],
+    likedPlans: [{ type: String }],
+    followers: [{ type: String, ref: 'User' }],
+    following: [{ type: String, ref: 'User' }],
+    bio: { type: String, default: "" },
+    coverImage: { type: String, default: "" },
 }, {
     timestamps: true,
 });

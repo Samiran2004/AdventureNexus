@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getIO = exports.initSocket = void 0;
+exports.sendRealtimeMessage = exports.sendRealtimeNotification = exports.getIO = exports.initSocket = void 0;
 const socket_io_1 = require("socket.io");
 let io;
 const onlineUsers = new Map();
@@ -50,3 +50,21 @@ const getIO = () => {
     return io;
 };
 exports.getIO = getIO;
+const sendRealtimeNotification = (recipientClerkUserId, notification) => {
+    var _a;
+    if (onlineUsers.has(recipientClerkUserId)) {
+        (_a = onlineUsers.get(recipientClerkUserId)) === null || _a === void 0 ? void 0 : _a.forEach(socketId => {
+            io.to(socketId).emit('notification', notification);
+        });
+    }
+};
+exports.sendRealtimeNotification = sendRealtimeNotification;
+const sendRealtimeMessage = (recipientClerkUserId, message) => {
+    var _a;
+    if (onlineUsers.has(recipientClerkUserId)) {
+        (_a = onlineUsers.get(recipientClerkUserId)) === null || _a === void 0 ? void 0 : _a.forEach(socketId => {
+            io.to(socketId).emit('message:direct', message);
+        });
+    }
+};
+exports.sendRealtimeMessage = sendRealtimeMessage;
