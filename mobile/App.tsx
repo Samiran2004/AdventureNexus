@@ -108,16 +108,15 @@ function AuthNavigator() {
     );
 }
 
+import AnimeLoader from './src/components/AnimeLoader';
+
 // ─── Root navigator — switches based on auth status ──────────────────────────
 function RootNavigator() {
     const { isSignedIn, isLoaded } = useAuth();
 
     if (!isLoaded) {
         return (
-            <View style={styles.loadingScreen}>
-                <Text style={styles.loadingEmoji}>🧭</Text>
-                <Text style={styles.loadingBrand}>AdventureNexus</Text>
-            </View>
+            <AnimeLoader />
         );
     }
 

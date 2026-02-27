@@ -1,0 +1,73 @@
+name: Auto-Merge & Conflict Resolver
+
+on:
+  pull_request:
+    types: [labeled, synchronize]
+
+jobs:
+  auto-merge:
+    if: contains(github.event.pull_request.labels.*.name, 'auto-merge')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Attempt Auto-Merge with Conflict Resolution
+        id: merge
+        run: |
+          # Checkout the main branch
+          git checkout main
+          
+          # Attempt to merge the pull request branch into main
+          # We use '-X theirs' to resolve conflicts by preferring the PR changes
+          # The PR branch ref is 'refs/remotes/pull/${{ github.event.pull_request.number }}/merge' usually
+          # But it's easier to fetch the head ref
+          
+          git fetch origin ${{ github.event.pull_request.head.ref }}:temp-merge-branch
+          
+          echo "Attempting to merge temp-merge-branch into main..."
+          if git merge temp-merge-branch -X theirs -m "Auto-merge PR #${{ github.event.pull_request.number }} with conflict resolution"; then
+            echo "Merge successful!"
+            git push origin main
+            echo "merge_status=success" >> $GITHUB_OUTPUT
+          else
+            echo "Merge failed even with conflict resolution."
+            echo "merge_status=failed" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Comment on PR (Success)
+        if: steps.merge.outputs.merge_status == 'success'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "### ✅ Auto-Merged Successfully!\nConflicts were automatically resolved using the 'theirs' strategy. The changes are now live on `main`."
+            });
+
+      - name: Comment on PR (Failure)
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "### ❌ Auto-Merge Failed\nEven with automated conflict resolution, the merge could not be completed safely. Please resolve conflicts manually."
+            });

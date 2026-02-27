@@ -1,183 +1,208 @@
-import React from 'react';
-import styled from 'styled-components'; // Library for styling components
+import React, { useEffect, useRef } from 'react';
+import styled from 'styled-components';
+import anime from 'animejs';
 
-// Loader component displaying an animated SVG
 const Loader = () => {
+  const compassNeedleRef = useRef(null);
+  const ringRef = useRef(null);
+  const nexusNodesRef = useRef(null);
+
+  useEffect(() => {
+    // 1. Compass Needle Animation: Searching for adventure
+    anime({
+      targets: '.compass-needle',
+      rotate: [
+        { value: -45, duration: 500, easing: 'easeInOutQuad' },
+        { value: 135, duration: 1000, easing: 'easeInOutElastic(1, .5)' },
+        { value: 45, duration: 800, easing: 'easeInOutQuad' },
+        { value: 90, duration: 1200, easing: 'spring(1, 80, 10, 0)' }
+      ],
+      loop: true,
+      direction: 'alternate'
+    });
+
+    // 2. Nexus Nodes: Pulsing connectivity
+    anime({
+      targets: '.nexus-node',
+      opacity: [0.3, 1],
+      scale: [0.8, 1.2],
+      delay: anime.stagger(200),
+      duration: 1000,
+      loop: true,
+      direction: 'alternate',
+      easing: 'easeInOutSine'
+    });
+
+    // 3. Globe Lines: Drawing effect
+    anime({
+      targets: '.globe-line',
+      strokeDashoffset: [anime.setDashoffset, 0],
+      easing: 'easeInOutSine',
+      duration: 1500,
+      delay: anime.stagger(300),
+      loop: true,
+      direction: 'alternate'
+    });
+
+    // 4. Outer Ring Rotation
+    anime({
+      targets: '.outer-ring',
+      rotate: '1turn',
+      duration: 10000,
+      easing: 'linear',
+      loop: true
+    });
+  }, []);
+
   return (
     <StyledWrapper>
-      {/* AdventureNexus Animated Loader Container */}
-      <div className="loader">
-        {/* Definition of Gradients and Animations for use in SVGs */}
-        <svg height={0} width={0} viewBox="0 0 64 64" className="absolute">
-          <defs className="s-xJBuHA073rTt" xmlns="http://www.w3.org/2000/svg">
-            {/* Gradient 1 */}
-            <linearGradient className="s-xJBuHA073rTt" gradientUnits="userSpaceOnUse" y2={2} x2={0} y1={62} x1={0} id="b">
-              <stop className="s-xJBuHA073rTt" stopColor="#973BED" />
-              <stop className="s-xJBuHA073rTt" stopColor="#007CFF" offset={1} />
-            </linearGradient>
-            {/* Gradient 2 with Animation */}
-            <linearGradient className="s-xJBuHA073rTt" gradientUnits="userSpaceOnUse" y2={0} x2={0} y1={64} x1={0} id="c">
-              <stop className="s-xJBuHA073rTt" stopColor="#FFC800" />
-              <stop className="s-xJBuHA073rTt" stopColor="#F0F" offset={1} />
-              {/* Rotating animation for the gradient */}
-              <animateTransform repeatCount="indefinite" keySplines=".42,0,.58,1;.42,0,.58,1;.42,0,.58,1;.42,0,.58,1;.42,0,.58,1;.42,0,.58,1;.42,0,.58,1;.42,0,.58,1" keyTimes="0; 0.125; 0.25; 0.375; 0.5; 0.625; 0.75; 0.875; 1" dur="8s" values="0 32 32;-270 32 32;-270 32 32;-540 32 32;-540 32 32;-810 32 32;-810 32 32;-1080 32 32;-1080 32 32" type="rotate" attributeName="gradientTransform" />
-            </linearGradient>
-            {/* Other Gradients */}
-            <linearGradient className="s-xJBuHA073rTt" gradientUnits="userSpaceOnUse" y2={2} x2={0} y1={62} x1={0} id="d">
-              <stop className="s-xJBuHA073rTt" stopColor="#00E0ED" />
-              <stop className="s-xJBuHA073rTt" stopColor="#00DA72" offset={1} />
-            </linearGradient>
-            <linearGradient className="s-xJBuHA073rTt" gradientUnits="userSpaceOnUse" y2={2} x2={0} y1={62} x1={0} id="e">
-              <stop className="s-xJBuHA073rTt" stopColor="#FF6B35" />
-              <stop className="s-xJBuHA073rTt" stopColor="#F7931E" offset={1} />
-            </linearGradient>
-          </defs>
-        </svg>
+      <div className="glass-loader">
+        <div className="content">
+          <svg width="120" height="120" viewBox="0 0 100 100" className="main-svg">
+            <defs>
+              <linearGradient id="needle-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#FF7B31" />
+                <stop offset="100%" stopColor="#FFC800" />
+              </linearGradient>
+              <filter id="svg-glow">
+                <feGaussianBlur stdDeviation="1.5" result="coloredBlur" />
+                <feMerge>
+                  <feMergeNode in="coloredBlur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
 
-        {/* Letter Components "S" constructed from SVG paths */}
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height={64} width={64} className="inline-block">
-          <path strokeLinejoin="round" strokeLinecap="round" strokeWidth={8} stroke="url(#b)" d="M 50,15 C 50,8 44,4 32,4 20,4 14,8 14,15 c 0,6 4,9 12,11 l 16,4 c 8,2 12,6 12,14 0,10 -8,16 -22,16 -14,0 -22,-6 -22,-16" className="dash" pathLength={360} />
-        </svg>
+            {/* Background Globe Grid */}
+            <g className="globe-grid" opacity="0.2">
+              <ellipse cx="50" cy="50" rx="45" ry="15" stroke="var(--primary)" strokeWidth="0.5" fill="none" className="globe-line" />
+              <ellipse cx="50" cy="50" rx="15" ry="45" stroke="var(--primary)" strokeWidth="0.5" fill="none" className="globe-line" />
+              <circle cx="50" cy="50" r="45" stroke="var(--primary)" strokeWidth="0.5" fill="none" className="globe-line" />
+            </g>
 
-        {/* Letter "y" */}
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height={64} width={64} className="inline-block">
-          <path strokeLinejoin="round" strokeLinecap="round" strokeWidth={8} stroke="url(#c)" d="M 50,20 C 46,16 40,14 32,14 20,14 12,22 12,32 c 0,10 8,18 20,18 8,0 14,-2 18,-6" className="dash" pathLength={360} />
-        </svg>
+            {/* Nexus Nodes & Connections */}
+            <g className="nexus-system">
+              <line x1="20" y1="50" x2="80" y2="50" stroke="var(--primary)" strokeWidth="0.2" opacity="0.1" />
+              <line x1="50" y1="20" x2="50" y2="80" stroke="var(--primary)" strokeWidth="0.2" opacity="0.1" />
+              <circle cx="20" cy="50" r="1.5" fill="var(--primary)" className="nexus-node" />
+              <circle cx="80" cy="50" r="1.5" fill="var(--primary)" className="nexus-node" />
+              <circle cx="50" cy="20" r="1.5" fill="var(--primary)" className="nexus-node" />
+              <circle cx="50" cy="80" r="1.5" fill="var(--primary)" className="nexus-node" />
+            </g>
 
-        {/* Letter "n" */}
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height={64} width={64} className="inline-block">
-          <path strokeLinejoin="round" strokeLinecap="round" strokeWidth={8} stroke="url(#d)" d="M 12,4 V 60 M 12,28 C 16,20 24,18 32,18 44,18 52,24 52,32 V 60" className="dash" pathLength={360} />
-        </svg>
+            {/* Compass Outer Ring */}
+            <g className="outer-ring">
+              <circle cx="50" cy="50" r="40" stroke="var(--secondary)" strokeWidth="0.5" fill="none" strokeDasharray="2 4" opacity="0.5" />
+              <text x="50" y="8" fontSize="6" fill="var(--primary)" textAnchor="middle" fontWeight="bold">N</text>
+              <text x="50" y="96" fontSize="6" fill="var(--muted-foreground)" textAnchor="middle">S</text>
+              <text x="92" y="52" fontSize="6" fill="var(--muted-foreground)" textAnchor="middle">E</text>
+              <text x="8" y="52" fontSize="6" fill="var(--muted-foreground)" textAnchor="middle">W</text>
+            </g>
 
-        {/* Animated Spinners / Letters */}
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height={64} width={64} className="inline-block">
-          <path strokeLinejoin="round" strokeLinecap="round" strokeWidth={8} stroke="url(#e)" d="M 32 32 m 0 -18 a 18 18 0 1 1 0 36 a 18 18 0 1 1 0 -36" className="spin" pathLength={360} />
-        </svg>
+            {/* Centered Compass Needle */}
+            <g className="compass-needle" style={{ transformOrigin: '50px 50px' }}>
+              <path d="M50 15 L 45 50 L 50 55 L 55 50 Z" fill="url(#needle-grad)" filter="url(#svg-glow)" />
+              <path d="M50 85 L 55 50 L 50 45 L 45 50 Z" fill="#2D3142" />
+              <circle cx="50" cy="50" r="2" fill="white" />
+            </g>
+          </svg>
 
-        {/* Note: The SVGs above spell out parts of a word or form a logo using paths */}
-        {/* Duplicate spinners/letters for effect */}
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height={64} width={64} className="inline-block">
-          <path strokeLinejoin="round" strokeLinecap="round" strokeWidth={8} stroke="url(#b)" d="M 32 32 m 0 -18 a 18 18 0 1 1 0 36 a 18 18 0 1 1 0 -36" className="spin" pathLength={360} />
-        </svg>
-
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height={64} width={64} className="inline-block">
-          <path strokeLinejoin="round" strokeLinecap="round" strokeWidth={8} stroke="url(#c)" d="M 32,4 V 60" className="dash" pathLength={360} />
-        </svg>
-
-        <div className="w-2" />
-
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height={64} width={64} className="inline-block">
-          <path strokeLinejoin="round" strokeLinecap="round" strokeWidth={8} stroke="url(#d)" d="M 50,15 C 50,8 44,4 32,4 20,4 14,8 14,15 c 0,6 4,9 12,11 l 16,4 c 8,2 12,6 12,14 0,10 -8,16 -22,16 -14,0 -22,-6 -22,-16" className="dash" pathLength={360} />
-        </svg>
-
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height={64} width={64} className="inline-block">
-          <path strokeLinejoin="round" strokeLinecap="round" strokeWidth={8} stroke="url(#e)" d="M 12,18 L 32,40 L 52,18 M 32,40 L 32,60" className="dash" pathLength={360} />
-        </svg>
-
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height={64} width={64} className="inline-block">
-          <path strokeLinejoin="round" strokeLinecap="round" strokeWidth={8} stroke="url(#b)" d="M 12,18 V 60 M 12,28 C 16,20 24,18 32,18 44,18 52,24 52,32 V 60" className="dash" pathLength={360} />
-        </svg>
-
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 64 64" height={64} width={64} className="inline-block">
-          <path strokeLinejoin="round" strokeLinecap="round" strokeWidth={8} stroke="url(#c)" d="M 50,24 C 46,20 40,18 32,18 20,18 12,26 12,36 c 0,10 8,18 20,18 8,0 14,-2 18,-6" className="dash" pathLength={360} />
-        </svg>
+          <div className="text-container">
+            <h2 className="brand-text">AdventureNexus</h2>
+            <div className="status-bar">
+              <div className="bar-fill"></div>
+            </div>
+            <p className="loading-msg">Searching for adventures...</p>
+          </div>
+        </div>
       </div>
     </StyledWrapper>
   );
 };
 
 const StyledWrapper = styled.div`
-  .absolute {
-    position: absolute;
-  }
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: radial-gradient(circle at center, #151921 0%, #0B0E14 100%);
+  overflow: hidden;
 
-  .inline-block {
-    display: inline-block;
-  }
-
-  .loader {
+  .glass-loader {
+    position: relative;
+    padding: 3rem;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 2.5rem;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
     display: flex;
-    margin: 0.25em 0;
+    flex-direction: column;
+    align-items: center;
+    max-width: 320px;
+    width: 100%;
   }
 
-  .w-2 {
-    width: 0.5em;
+  .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
   }
 
-  .dash {
-    animation: dashArray 2s ease-in-out infinite,
-      dashOffset 2s linear infinite;
+  .main-svg {
+    filter: drop-shadow(0 0 10px rgba(255, 123, 49, 0.2));
   }
 
-  .spin {
-    animation: spinDashArray 2s ease-in-out infinite,
-      spin 8s ease-in-out infinite,
-      dashOffset 2s linear infinite;
-    transform-origin: center;
+  .text-container {
+    text-align: center;
+    width: 100%;
   }
 
-  @keyframes dashArray {
-    0% {
-      stroke-dasharray: 0 1 359 0;
-    }
-
-    50% {
-      stroke-dasharray: 0 359 1 0;
-    }
-
-    100% {
-      stroke-dasharray: 359 1 0 0;
-    }
+  .brand-text {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    background: linear-gradient(90deg, #FF7B31, #FFBE0B, #FF7B31);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 3s linear infinite;
   }
 
-  @keyframes spinDashArray {
-    0% {
-      stroke-dasharray: 270 90;
-    }
-
-    50% {
-      stroke-dasharray: 0 360;
-    }
-
-    100% {
-      stroke-dasharray: 270 90;
-    }
+  .status-bar {
+    height: 3px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
   }
 
-  @keyframes dashOffset {
-    0% {
-      stroke-dashoffset: 365;
-    }
-
-    100% {
-      stroke-dashoffset: 5;
-    }
+  .bar-fill {
+    height: 100%;
+    width: 40%;
+    background: var(--primary);
+    border-radius: 10px;
+    animation: loading 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   }
 
-  @keyframes spin {
-    0% {
-      rotate: 0deg;
-    }
+  .loading-msg {
+    font-size: 0.8rem;
+    color: var(--muted-foreground);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
 
-    12.5%,
-    25% {
-      rotate: 270deg;
-    }
+  @keyframes shine {
+    to { background-position: 200% center; }
+  }
 
-    37.5%,
-    50% {
-      rotate: 540deg;
-    }
-
-    62.5%,
-    75% {
-      rotate: 810deg;
-    }
-
-    87.5%,
-    100% {
-      rotate: 1080deg;
-    }
+  @keyframes loading {
+    0% { transform: translateX(-100%); width: 20%; }
+    50% { transform: translateX(100%); width: 60%; }
+    100% { transform: translateX(300%); width: 20%; }
   }
 `;
 
