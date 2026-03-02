@@ -38,6 +38,7 @@ import AccessibilityPage from './features/legal/pages/AccessibilityPage';
 import ChatAssistant from './components/ChatAssistant'; // Floating chat assistant
 import { ChatProvider } from './context/ChatContext'; // Chat context provider
 import ContactPage from './features/marketing/pages/ContactPage';
+import SEO from './components/SEO';
 
 // --- Admin Imports ---
 import { AuthProvider as AdminAuthProvider } from './admin/context/AdminAuthContext';
@@ -119,6 +120,8 @@ const AppContent = () => {
 
   return (
     <>
+      <SEO />
+
       {/* Toast notification container */}
       <Toaster
         position='top-right'

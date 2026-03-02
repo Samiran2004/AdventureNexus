@@ -285,7 +285,7 @@ const styles = StyleSheet.create({
     inactiveTabTitle: { color: '#D1D5DB' },
     viewToggle: { flexDirection: 'row', gap: 12 },
 
-    plansGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, justifyContent: 'space-between' },
+    plansGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
     plansList: { gap: 12 },
     planCard: {
         width: '48%',
@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         borderWidth: 1,
         borderColor: '#F0F2EB',
-        marginBottom: 10
+        marginBottom: 12
     },
     planThumb: { width: '100%', height: '100%', backgroundColor: '#F3F4F6' },
     planCardOverlay: {
