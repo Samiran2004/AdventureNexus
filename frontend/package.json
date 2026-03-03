@@ -54,6 +54,7 @@
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.9.1",
     "@vercel/analytics": "^1.6.1",
+    "animejs": "^4.3.6",
     "axios": "^1.12.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
