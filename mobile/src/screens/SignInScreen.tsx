@@ -113,8 +113,10 @@ export default function SignInScreen({ navigation }: any) {
                                 <ActivityIndicator color={theme.colors.text.primary} />
                             ) : (
                                 <View style={styles.googleBtnContent}>
-                                    {/* Google "G" logo using text */}
-                                    <Text style={styles.googleLogo}>G</Text>
+                                    <Image
+                                        source={require('../../assets/google-logo.png')}
+                                        style={styles.googleLogoImage}
+                                    />
                                     <Text style={styles.googleBtnText}>Continue with Google</Text>
                                 </View>
                             )}
@@ -241,9 +243,10 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.06, shadowRadius: 8, elevation: 2,
     },
     googleBtnContent: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-    googleLogo: {
-        fontSize: 20, fontWeight: '900', color: '#4285F4',
-        fontStyle: 'italic', width: 24, textAlign: 'center',
+    googleLogoImage: {
+        width: 22,
+        height: 22,
+        resizeMode: 'contain',
     },
     googleBtnText: { fontSize: 15, fontWeight: '700', color: C.text.primary },
 
