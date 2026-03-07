@@ -1,118 +1,78 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import anime from 'animejs';
+import { animate, svg, stagger } from 'animejs';
 
 const Loader = () => {
-  const compassNeedleRef = useRef(null);
-  const ringRef = useRef(null);
-  const nexusNodesRef = useRef(null);
-
   useEffect(() => {
-    // 1. Compass Needle Animation: Searching for adventure
-    anime({
-      targets: '.compass-needle',
-      rotate: [
-        { value: -45, duration: 500, easing: 'easeInOutQuad' },
-        { value: 135, duration: 1000, easing: 'easeInOutElastic(1, .5)' },
-        { value: 45, duration: 800, easing: 'easeInOutQuad' },
-        { value: 90, duration: 1200, easing: 'spring(1, 80, 10, 0)' }
-      ],
-      loop: true,
-      direction: 'alternate'
-    });
-
-    // 2. Nexus Nodes: Pulsing connectivity
-    anime({
-      targets: '.nexus-node',
-      opacity: [0.3, 1],
-      scale: [0.8, 1.2],
-      delay: anime.stagger(200),
-      duration: 1000,
-      loop: true,
-      direction: 'alternate',
-      easing: 'easeInOutSine'
-    });
-
-    // 3. Globe Lines: Drawing effect
-    anime({
-      targets: '.globe-line',
-      strokeDashoffset: [anime.setDashoffset, 0],
-      easing: 'easeInOutSine',
-      duration: 1500,
-      delay: anime.stagger(300),
-      loop: true,
-      direction: 'alternate'
-    });
-
-    // 4. Outer Ring Rotation
-    anime({
-      targets: '.outer-ring',
-      rotate: '1turn',
-      duration: 10000,
-      easing: 'linear',
+    // Anime.js v4 SVG Drawing Animation
+    animate(svg.createDrawable('.brand-path'), {
+      draw: ['0 0', '0 1', '1 1'],
+      ease: 'inOutQuad',
+      duration: 2500,
+      delay: stagger(150),
       loop: true
+    });
+
+    // Subtle glow pulse
+    animate('.brand-svg', {
+      filter: ['drop-shadow(0 0 5px rgba(255, 123, 49, 0.3))', 'drop-shadow(0 0 20px rgba(255, 123, 49, 0.6))'],
+      duration: 1250,
+      direction: 'alternate',
+      loop: true,
+      ease: 'inOutSine'
     });
   }, []);
 
   return (
     <StyledWrapper>
-      <div className="glass-loader">
-        <div className="content">
-          <svg width="120" height="120" viewBox="0 0 100 100" className="main-svg">
-            <defs>
-              <linearGradient id="needle-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#FF7B31" />
-                <stop offset="100%" stopColor="#FFC800" />
-              </linearGradient>
-              <filter id="svg-glow">
-                <feGaussianBlur stdDeviation="1.5" result="coloredBlur" />
-                <feMerge>
-                  <feMergeNode in="coloredBlur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
+      <div className="glass-container">
+        <svg viewBox="0 0 600 120" className="brand-svg">
+          <defs>
+            <linearGradient id="brand-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#FF7B31" />
+              <stop offset="50%" stopColor="#FFC800" />
+              <stop offset="100%" stopColor="#FF7B31" />
+            </linearGradient>
+          </defs>
 
-            {/* Background Globe Grid */}
-            <g className="globe-grid" opacity="0.2">
-              <ellipse cx="50" cy="50" rx="45" ry="15" stroke="var(--primary)" strokeWidth="0.5" fill="none" className="globe-line" />
-              <ellipse cx="50" cy="50" rx="15" ry="45" stroke="var(--primary)" strokeWidth="0.5" fill="none" className="globe-line" />
-              <circle cx="50" cy="50" r="45" stroke="var(--primary)" strokeWidth="0.5" fill="none" className="globe-line" />
-            </g>
+          {/* Stylized "AdventureNexus" SVG Paths - Monoline Style */}
+          <g fill="none" stroke="url(#brand-grad)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            {/* A */}
+            <path className="brand-path" d="M30 90 L 50 30 L 70 90 M 40 70 L 60 70" />
+            {/* d */}
+            <path className="brand-path" d="M105 30 V 90 M 105 90 C 105 90, 80 90, 80 70 C 80 50, 105 50, 105 50" />
+            {/* v */}
+            <path className="brand-path" d="M120 50 L 135 90 L 150 50" />
+            {/* e */}
+            <path className="brand-path" d="M190 70 H 160 C 160 55, 185 55, 185 70 C 185 85, 160 85, 160 85" />
+            {/* n */}
+            <path className="brand-path" d="M200 90 V 50 M 200 60 C 200 45, 230 45, 230 60 V 90" />
+            {/* t */}
+            <path className="brand-path" d="M250 40 V 90 C 250 90, 250 95, 260 95 M 240 55 H 260" />
+            {/* u */}
+            <path className="brand-path" d="M275 50 V 80 C 275 95, 305 95, 305 80 V 50" />
+            {/* r */}
+            <path className="brand-path" d="M320 90 V 50 M 320 65 C 320 45, 345 45, 345 55" />
+            {/* e */}
+            <path className="brand-path" d="M380 70 H 355 C 355 55, 375 55, 375 70 C 375 85, 355 85, 355 85" />
 
-            {/* Nexus Nodes & Connections */}
-            <g className="nexus-system">
-              <line x1="20" y1="50" x2="80" y2="50" stroke="var(--primary)" strokeWidth="0.2" opacity="0.1" />
-              <line x1="50" y1="20" x2="50" y2="80" stroke="var(--primary)" strokeWidth="0.2" opacity="0.1" />
-              <circle cx="20" cy="50" r="1.5" fill="var(--primary)" className="nexus-node" />
-              <circle cx="80" cy="50" r="1.5" fill="var(--primary)" className="nexus-node" />
-              <circle cx="50" cy="20" r="1.5" fill="var(--primary)" className="nexus-node" />
-              <circle cx="50" cy="80" r="1.5" fill="var(--primary)" className="nexus-node" />
-            </g>
+            {/* N (Start of Nexus) */}
+            <path className="brand-path" d="M410 90 V 30 L 440 90 V 30" strokeWidth="3.5" />
+            {/* e */}
+            <path className="brand-path" d="M475 70 H 455 C 455 55, 470 55, 470 70 C 470 85, 455 85, 455 85" />
+            {/* x */}
+            <path className="brand-path" d="M485 55 L 515 85 M 515 55 L 485 85" />
+            {/* u */}
+            <path className="brand-path" d="M525 55 V 80 C 525 90, 550 90, 550 80 V 55" />
+            {/* s */}
+            <path className="brand-path" d="M585 55 C 565 45, 565 65, 585 75 C 600 85, 575 95, 565 85" />
+          </g>
+        </svg>
 
-            {/* Compass Outer Ring */}
-            <g className="outer-ring">
-              <circle cx="50" cy="50" r="40" stroke="var(--secondary)" strokeWidth="0.5" fill="none" strokeDasharray="2 4" opacity="0.5" />
-              <text x="50" y="8" fontSize="6" fill="var(--primary)" textAnchor="middle" fontWeight="bold">N</text>
-              <text x="50" y="96" fontSize="6" fill="var(--muted-foreground)" textAnchor="middle">S</text>
-              <text x="92" y="52" fontSize="6" fill="var(--muted-foreground)" textAnchor="middle">E</text>
-              <text x="8" y="52" fontSize="6" fill="var(--muted-foreground)" textAnchor="middle">W</text>
-            </g>
-
-            {/* Centered Compass Needle */}
-            <g className="compass-needle" style={{ transformOrigin: '50px 50px' }}>
-              <path d="M50 15 L 45 50 L 50 55 L 55 50 Z" fill="url(#needle-grad)" filter="url(#svg-glow)" />
-              <path d="M50 85 L 55 50 L 50 45 L 45 50 Z" fill="#2D3142" />
-              <circle cx="50" cy="50" r="2" fill="white" />
-            </g>
-          </svg>
-
-          <div className="text-container">
-            <h2 className="brand-text">AdventureNexus</h2>
-            <div className="status-bar">
-              <div className="bar-fill"></div>
-            </div>
-            <p className="loading-msg">Searching for adventures...</p>
+        <div className="loader-info">
+          <p className="loading-text">Exploring Destinations...</p>
+          <div className="progress-track">
+            <div className="progress-thumb"></div>
           </div>
         </div>
       </div>
@@ -125,84 +85,66 @@ const StyledWrapper = styled.div`
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: radial-gradient(circle at center, #151921 0%, #0B0E14 100%);
-  overflow: hidden;
+  background: #05070a;
+  color: white;
 
-  .glass-loader {
-    position: relative;
-    padding: 3rem;
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 2.5rem;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    max-width: 320px;
-    width: 100%;
-  }
-
-  .content {
+  .glass-container {
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 2rem;
+    padding: 4rem;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 2rem;
+    width: 90%;
+    max-width: 800px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   }
 
-  .main-svg {
-    filter: drop-shadow(0 0 10px rgba(255, 123, 49, 0.2));
-  }
-
-  .text-container {
-    text-align: center;
+  .brand-svg {
     width: 100%;
+    height: auto;
+    max-height: 150px;
+    overflow: visible;
   }
 
-  .brand-text {
-    font-family: 'Outfit', sans-serif;
-    font-size: 1.5rem;
-    font-weight: 800;
-    margin-bottom: 1rem;
-    background: linear-gradient(90deg, #FF7B31, #FFBE0B, #FF7B31);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: shine 3s linear infinite;
-  }
-
-  .status-bar {
-    height: 3px;
+  .loader-info {
     width: 100%;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
-    overflow: hidden;
-    margin-bottom: 0.75rem;
+    max-width: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
   }
 
-  .bar-fill {
-    height: 100%;
-    width: 40%;
-    background: var(--primary);
-    border-radius: 10px;
-    animation: loading 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  }
-
-  .loading-msg {
-    font-size: 0.8rem;
-    color: var(--muted-foreground);
-    letter-spacing: 0.1em;
+  .loading-text {
+    font-size: 0.75rem;
     text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: rgba(255, 123, 49, 0.8);
+    font-weight: 500;
   }
 
-  @keyframes shine {
-    to { background-position: 200% center; }
+  .progress-track {
+    width: 100%;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 1px;
+    overflow: hidden;
   }
 
-  @keyframes loading {
-    0% { transform: translateX(-100%); width: 20%; }
-    50% { transform: translateX(100%); width: 60%; }
-    100% { transform: translateX(300%); width: 20%; }
+  .progress-thumb {
+    height: 100%;
+    width: 30%;
+    background: linear-gradient(90deg, transparent, #FF7B31, transparent);
+    animation: slide 2s infinite ease-in-out;
+  }
+
+  @keyframes slide {
+    from { transform: translateX(-150%); }
+    to { transform: translateX(250%); }
   }
 `;
 

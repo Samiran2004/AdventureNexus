@@ -1,16 +1,19 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
     View, Text, StyleSheet, ScrollView, Image, TouchableOpacity,
-    TextInput, Linking, SafeAreaView, Alert, Animated, Dimensions,
-    KeyboardAvoidingView, Platform, RefreshControl
+    TextInput, Linking, Alert, Animated, Dimensions,
+    KeyboardAvoidingView, Platform, RefreshControl, ActivityIndicator, AppState
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useUser } from '@clerk/clerk-expo';
+import * as Location from 'expo-location';
 import { theme } from '../styles/theme';
 import BentoCard from '../components/common/BentoCard';
 import {
     MapPin, Plane, Star, Search, Users, Bot, CheckCircle, Globe,
     Clock, Award, Sparkles, Zap, TrendingUp, Mail, Phone,
     MessageCircle, ArrowRight, Play, Instagram, Twitter, Linkedin,
-    Youtube,
+    Youtube, Calendar, Sun, Cloud, CloudRain, CloudLightning,
 } from 'lucide-react-native';
 
 const { width } = Dimensions.get('window');
@@ -122,14 +125,128 @@ export default function HomeScreen({ navigation }: any) {
     const [subscribing, setSubscribing] = useState(false);
     const scrollY = useRef(new Animated.Value(0)).current;
 
+    const { user } = useUser();
     const [refreshing, setRefreshing] = useState(false);
+    const [weather, setWeather] = useState<{ temp: number; icon: string; city: string } | null>(null);
+    const [dateTime, setDateTime] = useState({ time: '', date: '' });
+    const [locationEnabled, setLocationEnabled] = useState<boolean | null>(null);
+    const [loadingWeather, setLoadingWeather] = useState(false);
+    const appState = useRef(AppState.currentState);
+
+    const fetchWeather = async () => {
+        try {
+            setLoadingWeather(true);
+            const { status } = await Location.requestForegroundPermissionsAsync();
+
+            if (status !== 'granted') {
+                setLocationEnabled(false);
+                setLoadingWeather(false);
+                return;
+            }
+
+            // Check if location services are enabled to avoid "unsatisfied device settings" error
+            const servicesEnabled = await Location.hasServicesEnabledAsync();
+            if (!servicesEnabled) {
+                console.log("Location services are disabled");
+                setLocationEnabled(false);
+                setLoadingWeather(false);
+                return;
+            }
+
+            setLocationEnabled(true);
+            const location = await Location.getCurrentPositionAsync({
+                accuracy: Location.Accuracy.Balanced,
+            });
+            const { latitude, longitude } = location.coords;
+
+            // Reverse Geocode to get city name with timeout
+            let city = 'Somewhere';
+            try {
+                const geocodePromise = Location.reverseGeocodeAsync({ latitude, longitude });
+                const timeoutPromise = new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('Geocode timeout')), 5000)
+                );
+
+                const results: any = await Promise.race([geocodePromise, timeoutPromise]);
+                if (Array.isArray(results) && results.length > 0) {
+                    const address = results[0];
+                    city = address?.city || address?.region || 'Somewhere';
+                }
+            } catch (err) {
+                console.warn("Geocoding failed or timed out:", err);
+            }
+
+            // Fetch weather from Open-Meteo
+            const weatherRes = await fetch(
+                `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`
+            );
+            const weatherData = await weatherRes.json();
+
+            if (weatherData.current_weather) {
+                setWeather({
+                    temp: Math.round(weatherData.current_weather.temperature),
+                    icon: getWeatherEmoji(weatherData.current_weather.weathercode),
+                    city: city
+                });
+            }
+        } catch (error) {
+            console.error("Error fetching weather:", error);
+            setLocationEnabled(false);
+        } finally {
+            setLoadingWeather(false);
+        }
+    };
+
+    useEffect(() => {
+        // Update clock every minute
+        const updateClock = () => {
+            const now = new Date();
+            setDateTime({
+                time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                date: now.toLocaleDateString([], { month: 'short', day: 'numeric' })
+            });
+        };
+
+        updateClock();
+        const timer = setInterval(updateClock, 60000);
+
+        // Initial fetch
+        fetchWeather();
+
+        // Listen for AppState changes to handle permission updates
+        const subscription = AppState.addEventListener('change', nextAppState => {
+            if (
+                appState.current.match(/inactive|background/) &&
+                nextAppState === 'active'
+            ) {
+                // App has come to the foreground, check location again
+                fetchWeather();
+            }
+            appState.current = nextAppState;
+        });
+
+        return () => {
+            clearInterval(timer);
+            subscription.remove();
+        };
+    }, []);
+
+    const getWeatherEmoji = (code: number) => {
+        if (code === 0) return '☀️'; // Clear sky
+        if (code <= 3) return '🌤️'; // Partly cloudy
+        if (code <= 48) return '🌫️'; // Fog
+        if (code <= 67) return '🌧️'; // Rain
+        if (code <= 77) return '❄️'; // Snow
+        if (code <= 82) return '🌦️'; // Showers
+        if (code <= 99) return '⛈️'; // Thunderstorm
+        return '☀️';
+    };
 
     const onRefresh = React.useCallback(async () => {
         setRefreshing(true);
-        // Special case: just a small delay for home screen as most data is static
-        // but we could refresh user-specific data if needed
+        await fetchWeather();
         setTimeout(() => setRefreshing(false), 1500);
-    }, []);
+    }, [locationEnabled]);
 
     const handleSubscribe = async () => {
         if (!email.trim() || !email.includes('@')) {
@@ -167,15 +284,29 @@ export default function HomeScreen({ navigation }: any) {
                 {/* ─── 1. HEADER ─────────────────────────────────────────────────── */}
                 <View style={styles.header}>
                     <View>
-                        <Text style={styles.greeting}>Hi, Explorer 👋</Text>
+                        <Text style={styles.greeting}>Hi, {user?.firstName || user?.username || 'Explorer'} 👋</Text>
                         <Text style={styles.subGreeting}>Where to next?</Text>
                     </View>
                     <View style={styles.weatherWidget}>
-                        <Text style={styles.weatherEmoji}>☀️</Text>
-                        <View>
-                            <Text style={styles.weatherLabel}>Weather</Text>
-                            <Text style={styles.weatherValue}>28 °C</Text>
-                        </View>
+                        {loadingWeather ? (
+                            <ActivityIndicator size="small" color={theme.colors.primary} />
+                        ) : locationEnabled && weather ? (
+                            <>
+                                <Text style={styles.weatherEmoji}>{weather.icon}</Text>
+                                <View>
+                                    <Text style={styles.weatherLabel} numberOfLines={1}>{weather.city}</Text>
+                                    <Text style={styles.weatherValue}>{weather.temp} °C</Text>
+                                </View>
+                            </>
+                        ) : (
+                            <>
+                                <Clock size={18} color={theme.colors.primary} />
+                                <View>
+                                    <Text style={styles.weatherLabel}>{dateTime.date}</Text>
+                                    <Text style={styles.weatherValue}>{dateTime.time}</Text>
+                                </View>
+                            </>
+                        )}
                     </View>
                 </View>
 
