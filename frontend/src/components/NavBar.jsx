@@ -173,90 +173,71 @@ function NavBar() {
             )}
 
             {/* Main Navigation - Floating Island */}
-            <div className="fixed top-0 w-full z-40 flex justify-center pt-4 md:pt-6 px-4">
+            <div className="fixed top-0 w-full z-50 flex justify-center pt-6 px-4">
                 <nav
-                    className={`transition-all duration-500 ease-in-out ${scrolled
-                        ? 'w-full md:w-auto md:min-w-[700px] rounded-full glass-3d shadow-3d border border-white/20 px-6 py-3'
-                        : 'w-full bg-transparent py-4'
-                        }`}
+                    className={`transition-all duration-500 ease-in-out px-6 py-2 rounded-full border border-white/10 glass-card flex items-center justify-between gap-8 ${
+                        scrolled ? 'scale-95' : 'scale-100'
+                    }`}
                 >
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-12">
                         {/* Logo */}
                         <Link
                             to="/"
-                            className="flex items-center space-x-2 hover:scale-105 transition-transform duration-300"
+                            className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
                         >
-                            <AnimatedLogo size={scrolled ? 36 : 42} />
-                            <span className={`font-bold font-outfit tracking-tight transition-all duration-300 ${scrolled ? 'text-xl' : 'text-2xl'}`}>
-                                <span className="text-foreground drop-shadow-[0_1px_6px_rgba(0,0,0,0.7)]">Adventure</span>
-                                <span className="text-primary drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)]">Nexus</span>
+                            <AnimatedLogo size={28} />
+                            <span className="font-bold font-inter text-lg tracking-tight text-white">
+                                AdventureNexus
                             </span>
                         </Link>
-
+                        
                         {/* Desktop Navigation */}
                         <div className="hidden md:flex items-center space-x-1">
                             {navItems.map((item) => (
                                 <Link
                                     key={item.name}
                                     to={item.path}
-                                    className="relative px-4 py-2 rounded-full text-sm font-medium text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300 group"
+                                    className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-white transition-colors"
                                 >
                                     {item.name}
-                                    {/* Active/Hover Indicator */}
-                                    <span className="absolute inset-x-0 bottom-0 h-0.5 bg-primary scale-x-0 group-hover:scale-x-75 transition-transform duration-300 rounded-full origin-center" />
                                 </Link>
                             ))}
                         </div>
-
-                        {/* Desktop CTA Buttons & Actions */}
-                        <div className="hidden md:flex items-center space-x-3">
-                            <button
-                                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                                className="relative p-2 rounded-full hover:bg-accent transition-colors duration-300 group"
-                                aria-label="Toggle theme"
-                            >
-                                {theme === 'dark' ? (
-                                    <Moon className="h-5 w-5 text-primary group-hover:rotate-[-20deg] transition-transform" />
-                                ) : (
-                                    <Sun className="h-5 w-5 text-orange-500 group-hover:rotate-90 transition-transform" />
-                                )}
-                            </button>
-
-                            <SignedOut>
-                                <SignInButton mode="modal">
-                                    <Button
-                                        variant="ghost"
-                                        className="text-foreground hover:text-primary transition-colors font-medium"
-                                    >
-                                        Sign In
-                                    </Button>
-                                </SignInButton>
-                            </SignedOut>
-                            <SignedIn>
-                                <UserButton
-                                    appearance={{
-                                        elements: {
-                                            avatarBox: "w-8 h-8 ring-2 ring-primary/20 hover:ring-primary/50 transition-all"
-                                        }
-                                    }}
-                                />
-                            </SignedIn>
-
-                            <Link to="/search">
-                                <Button className={`${scrolled ? 'h-9 px-4 text-sm' : 'h-10 px-6'} bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-105 transition-all duration-300 shadow-md hover:shadow-primary/25 rounded-full`}>
-                                    Plan Trip
-                                </Button>
-                            </Link>
-                        </div>
-
-                        {/* Mobile menu button */}
-                        <button
-                            className="md:hidden p-2 text-foreground hover:bg-accent rounded-full transition-colors"
-                            onClick={toggleMobileMenu}
-                        >
-                            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                        </button>
                     </div>
+
+                    {/* Desktop CTA Buttons & Actions */}
+                    <div className="hidden md:flex items-center space-x-4">
+                        <SignedOut>
+                            <SignInButton mode="modal">
+                                <button className="text-sm font-medium text-muted-foreground hover:text-white transition-colors">
+                                    Sign In
+                                </button>
+                            </SignInButton>
+                        </SignedOut>
+                        <SignedIn>
+                            <UserButton
+                                appearance={{
+                                    elements: {
+                                        avatarBox: "w-8 h-8 rounded-full border border-white/10"
+                                    }
+                                }}
+                            />
+                        </SignedIn>
+
+                        <Link to="/search">
+                            <Button className="h-9 px-6 bg-white text-black hover:bg-white/90 rounded-full text-xs font-bold uppercase tracking-widest transition-all hover:scale-105 active:scale-95">
+                                Plan Trip
+                            </Button>
+                        </Link>
+                    </div>
+
+                    {/* Mobile menu button */}
+                    <button
+                        className="md:hidden text-white p-1"
+                        onClick={toggleMobileMenu}
+                    >
+                        {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+                    </button>
                 </nav>
             </div>
 
