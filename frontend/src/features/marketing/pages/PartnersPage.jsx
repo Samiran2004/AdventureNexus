@@ -76,7 +76,7 @@ const PartnersPage = () => {
             <Button size="lg" className="bg-primary hover:bg-primary/90 text-white rounded-full px-8 text-lg h-14">
               Become a Partner
             </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:!text-black rounded-full px-8 text-lg h-14 bg-white/10 backdrop-blur-sm">
+            <Button size="lg" variant="outline" className="border-white text-white hover:bg-blue hover:!text-white rounded-full px-8 text-lg h-14 bg-blue/10 backdrop-blur-sm">
               Login to Portal
             </Button>
           </div>

@@ -29,6 +29,7 @@ import SafetyPage from './features/legal/pages/SafetyPage';
 import CommunityPage from './features/marketing/pages/CommunityPage';
 import PublicProfilePage from './features/user/pages/PublicProfilePage';
 import TravelStoriesPage from './features/marketing/pages/TravelStoriesPage';
+import TravelGuidesPage from './features/marketing/pages/TravelGuidesPage';
 import SocialHub from './components/SocialHub';
 import TermsPage from './features/legal/pages/TermsPage';
 import PrivacyPage from './features/legal/pages/PrivacyPage';
@@ -37,6 +38,7 @@ import AccessibilityPage from './features/legal/pages/AccessibilityPage';
 import ChatAssistant from './components/ChatAssistant'; // Floating chat assistant
 import { ChatProvider } from './context/ChatContext'; // Chat context provider
 import ContactPage from './features/marketing/pages/ContactPage';
+import SEO from './components/SEO';
 
 // --- Admin Imports ---
 import { AuthProvider as AdminAuthProvider } from './admin/context/AdminAuthContext';
@@ -138,6 +140,7 @@ const AppContent = () => {
         <Route path='/safety' element={<SafetyPage />} />
         <Route path='/community' element={<CommunityPage />} />
         <Route path='/stories' element={<TravelStoriesPage />} />
+        <Route path='/guides' element={<TravelGuidesPage />} />
         <Route path='/user/profile/:clerkUserId' element={<PublicProfilePage />} />
         <Route path='/terms' element={<TermsPage />} />
         <Route path='/privacy' element={<PrivacyPage />} />
