@@ -222,16 +222,16 @@ export default function ProfileScreen({ navigation }: any) {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#F5F7F0' },
+    container: { flex: 1, backgroundColor: theme.colors.background },
     scroll: { flexGrow: 1 },
-    loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F5F7F0' },
+    loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.background },
 
     // Header Mask
     headerContainer: {
         height: 240,
         borderBottomLeftRadius: 100,
         overflow: 'hidden',
-        backgroundColor: '#1A3C34'
+        backgroundColor: '#000'
     },
     coverImage: { width: '100%', height: '100%' },
     coverImageStyle: { opacity: 0.9 },
@@ -244,13 +244,13 @@ const styles = StyleSheet.create({
     avatarWrapper: {
         width: 120, height: 120,
         borderRadius: 40, // Modern Squircle
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#000',
         padding: 5,
         shadowColor: '#000', shadowOffset: { width: 0, height: 8 },
         shadowOpacity: 0.1, shadowRadius: 12, elevation: 8,
     },
     avatar: { width: '100%', height: '100%', borderRadius: 36 },
-    avatarFallback: { flex: 1, backgroundColor: '#1A3C34', borderRadius: 36, justifyContent: 'center', alignItems: 'center' },
+    avatarFallback: { flex: 1, backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 36, justifyContent: 'center', alignItems: 'center' },
     verifiedBadge: {
         position: 'absolute', bottom: -2, right: -2, width: 22, height: 22,
         borderRadius: 11, backgroundColor: theme.colors.success, borderWidth: 3, borderColor: '#FFF',
@@ -259,10 +259,10 @@ const styles = StyleSheet.create({
 
     // Info
     infoSection: { alignItems: 'center', marginTop: 15, paddingHorizontal: 40 },
-    name: { fontSize: 24, fontWeight: '700', color: '#1A2421', letterSpacing: -0.5 },
+    name: { fontSize: 24, fontWeight: '700', color: theme.colors.text.primary, letterSpacing: -0.5 },
     locationRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 4 },
-    locationText: { fontSize: 14, color: '#6B7280', fontWeight: '500' },
-    bioText: { fontSize: 14, color: '#6B7280', textAlign: 'center', marginTop: 15, lineHeight: 20 },
+    locationText: { fontSize: 14, color: theme.colors.text.secondary, fontWeight: '500' },
+    bioText: { fontSize: 14, color: theme.colors.text.secondary, textAlign: 'center', marginTop: 15, lineHeight: 20 },
 
     // Stats
     statsRow: {
@@ -270,19 +270,19 @@ const styles = StyleSheet.create({
         marginTop: 30, paddingVertical: 15,
     },
     statCol: { alignItems: 'center' },
-    statVal: { fontSize: 20, fontWeight: '700', color: '#1A2421' },
-    statLab: { fontSize: 12, color: '#6B7280', fontWeight: '600', marginTop: 2 },
-    divider: { width: 1, height: 30, backgroundColor: '#E5E7EB' },
+    statVal: { fontSize: 20, fontWeight: '700', color: theme.colors.text.primary },
+    statLab: { fontSize: 12, color: theme.colors.text.secondary, fontWeight: '600', marginTop: 2 },
+    divider: { width: 1, height: 30, backgroundColor: 'rgba(255,255,255,0.1)' },
 
     // Grid Gallery
     gridSection: { marginTop: 20, paddingHorizontal: 20 },
     gridHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
     tabsWrapper: { flexDirection: 'row', gap: 20, alignItems: 'center' },
     tabItem: { paddingBottom: 4 },
-    activeTabItem: { borderBottomWidth: 2, borderBottomColor: '#1A3C34' },
+    activeTabItem: { borderBottomWidth: 2, borderBottomColor: '#FFF' },
     gridTitle: { fontSize: 13, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1 },
-    activeTabTitle: { color: '#1A2421' },
-    inactiveTabTitle: { color: '#D1D5DB' },
+    activeTabTitle: { color: theme.colors.text.primary },
+    inactiveTabTitle: { color: theme.colors.text.secondary },
     viewToggle: { flexDirection: 'row', gap: 12 },
 
     plansGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
@@ -290,36 +290,36 @@ const styles = StyleSheet.create({
     planCard: {
         width: '48%',
         height: 180,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: 'rgba(255,255,255,0.05)',
         borderRadius: 24,
         overflow: 'hidden',
         borderWidth: 1,
-        borderColor: '#F0F2EB',
-        marginBottom: 12
+        borderColor: 'rgba(255,255,255,0.1)',
+        marginBottom: 10
     },
-    planThumb: { width: '100%', height: '100%', backgroundColor: '#F3F4F6' },
+    planThumb: { width: '100%', height: '100%', backgroundColor: 'rgba(255,255,255,0.05)' },
     planCardOverlay: {
         position: 'absolute', bottom: 0, left: 0, right: 0,
-        padding: 12, backgroundColor: 'rgba(255,255,255,0.85)'
+        padding: 12, backgroundColor: 'rgba(0,0,0,0.85)'
     },
-    planName: { fontSize: 12, fontWeight: '700', color: '#1A2421', textAlign: 'center' },
+    planName: { fontSize: 12, fontWeight: '700', color: theme.colors.text.primary, textAlign: 'center' },
 
     // List Styles
     planListItem: {
         flexDirection: 'row',
-        backgroundColor: '#FFFFFF',
+        backgroundColor: 'rgba(255,255,255,0.05)',
         borderRadius: 20,
         padding: 10,
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: '#F0F2EB',
+        borderColor: 'rgba(255,255,255,0.1)',
     },
-    listThumb: { width: 70, height: 70, borderRadius: 12, backgroundColor: '#F3F4F6' },
+    listThumb: { width: 70, height: 70, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.05)' },
     listContent: { flex: 1, marginLeft: 15 },
-    listName: { fontSize: 16, fontWeight: '700', color: '#1A2421' },
+    listName: { fontSize: 16, fontWeight: '700', color: theme.colors.text.primary },
     listMeta: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 },
-    listMetaText: { fontSize: 12, color: '#6B7280' },
+    listMetaText: { fontSize: 12, color: theme.colors.text.secondary },
 
     emptyContainer: { paddingVertical: 40, alignItems: 'center' },
-    emptyText: { color: '#6B7280', fontSize: 14 },
+    emptyText: { color: theme.colors.text.secondary, fontSize: 14 },
 });

@@ -685,10 +685,8 @@ const styles = StyleSheet.create({
     subGreeting: { fontSize: 13, color: C.text.secondary, marginTop: 2 },
     weatherWidget: {
         flexDirection: 'row', alignItems: 'center', gap: 8,
-        backgroundColor: '#FFF', paddingVertical: 10, paddingHorizontal: 14,
-        borderRadius: 20, elevation: 2,
-        shadowColor: '#000', shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.06, shadowRadius: 8,
+        backgroundColor: 'rgba(255,255,255,0.05)', paddingVertical: 10, paddingHorizontal: 14,
+        borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
     },
     weatherEmoji: { fontSize: 20 },
     weatherLabel: { fontSize: 10, color: C.text.secondary },
@@ -698,24 +696,26 @@ const styles = StyleSheet.create({
     heroSection: { paddingHorizontal: 20, marginBottom: 24 },
     aiBadge: {
         flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start',
-        backgroundColor: 'rgba(26,60,52,0.08)', borderWidth: 1, borderColor: 'rgba(26,60,52,0.2)',
+        backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(37,99,235,0.3)',
         paddingVertical: 6, paddingHorizontal: 14, borderRadius: R.round, marginBottom: 14,
     },
-    aiBadgeText: { fontSize: 12, fontWeight: '700', color: C.primary },
+    aiBadgeText: { fontSize: 12, fontWeight: '700', color: '#FFF' },
     heroTitle: { fontSize: 44, fontWeight: '900', color: C.text.primary, lineHeight: 46 },
     heroTitleAccent: { fontSize: 44, fontWeight: '900', color: C.primary, lineHeight: 46, marginBottom: 14 },
     heroSubtitle: { fontSize: 14, color: C.text.secondary, lineHeight: 21, marginBottom: 24 },
     heroButtons: { gap: 12, marginBottom: 20 },
     primaryBtn: {
         flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10,
-        backgroundColor: C.primary, paddingVertical: 16, borderRadius: R.round,
+        backgroundColor: '#FFF', paddingVertical: 16, borderRadius: R.round,
+        shadowColor: 'rgba(255,255,255,0.15)', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 1, shadowRadius: 20,
     },
-    primaryBtnText: { color: '#FFF', fontSize: 16, fontWeight: '800' },
+    primaryBtnText: { color: '#000', fontSize: 16, fontWeight: '800' },
     outlineBtn: {
         flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10,
-        borderWidth: 2, borderColor: C.primary, paddingVertical: 14, borderRadius: R.round,
+        borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', paddingVertical: 14, borderRadius: R.round,
+        backgroundColor: 'rgba(255,255,255,0.03)',
     },
-    outlineBtnText: { color: C.primary, fontSize: 15, fontWeight: '700' },
+    outlineBtnText: { color: '#FFF', fontSize: 15, fontWeight: '700' },
     trustRow: { flexDirection: 'row', gap: 16, flexWrap: 'wrap' },
     trustItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
     trustText: { fontSize: 11, color: C.text.secondary, fontWeight: '600' },
@@ -740,29 +740,26 @@ const styles = StyleSheet.create({
     progressTrack: { height: 6, backgroundColor: C.accent, borderRadius: 10, overflow: 'hidden' },
     progressFill: { height: '100%', width: '75%', backgroundColor: C.primary, borderRadius: 10 },
 
-    // ── Search bar ───────────────────────────────────────────────────────────
     searchBar: {
         flexDirection: 'row', alignItems: 'center', gap: 10,
-        backgroundColor: '#FFF', borderRadius: R.round,
+        backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: R.round,
         paddingVertical: 14, paddingHorizontal: 20, marginHorizontal: 20, marginBottom: 20,
-        elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.06, shadowRadius: 8,
+        borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
     },
     searchPlaceholder: { flex: 1, color: C.text.secondary, fontSize: 13 },
     searchSparkle: {
         width: 30, height: 30, borderRadius: 15,
-        backgroundColor: 'rgba(26,60,52,0.08)', justifyContent: 'center', alignItems: 'center',
+        backgroundColor: 'rgba(255,255,255,0.1)', justifyContent: 'center', alignItems: 'center',
     },
 
-    // ── Category pills ───────────────────────────────────────────────────────
     categoryScroll: { paddingLeft: 20, paddingRight: 10, paddingBottom: 20, gap: 10 },
     pill: {
         paddingVertical: 10, paddingHorizontal: 22, borderRadius: R.round,
-        backgroundColor: '#FFF', borderWidth: 1, borderColor: 'rgba(0,0,0,0.04)',
+        backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
     },
-    pillActive: { backgroundColor: C.primary },
+    pillActive: { backgroundColor: '#FFF' },
     pillText: { fontSize: 13, fontWeight: '600', color: C.text.primary },
-    pillTextActive: { color: '#FFF' },
+    pillTextActive: { color: '#000' },
 
     // ── Hero featured card ───────────────────────────────────────────────────
     heroCard: { height: 400, padding: 0, marginHorizontal: 20, marginBottom: 28, borderRadius: R.xl },
@@ -778,9 +775,10 @@ const styles = StyleSheet.create({
     heroStatRow: { flexDirection: 'row', gap: 14, marginBottom: 18 },
     heroStat: { fontSize: 12, color: '#FFF', fontWeight: '600' },
     startBtn: {
-        backgroundColor: C.primary, paddingVertical: 14, borderRadius: R.round, alignItems: 'center',
+        backgroundColor: '#FFF', paddingVertical: 14, borderRadius: R.round, alignItems: 'center', width: '50%',
+        shadowColor: 'rgba(255,255,255,0.2)', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 1, shadowRadius: 15,
     },
-    startBtnText: { color: '#FFF', fontWeight: '800', fontSize: 15 },
+    startBtnText: { color: '#000', fontWeight: '800', fontSize: 15 },
 
     // ── Section headers ──────────────────────────────────────────────────────
     sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 20, marginBottom: 4 },
@@ -816,10 +814,8 @@ const styles = StyleSheet.create({
     // ── Pricing ───────────────────────────────────────────────────────────────
     pricingCard: {
         marginHorizontal: 20, marginBottom: 16, padding: 24,
-        backgroundColor: '#FFF', borderRadius: R.lg,
-        borderWidth: 1, borderColor: 'rgba(0,0,0,0.06)',
-        elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.06, shadowRadius: 8,
+        backgroundColor: C.card.background, borderRadius: R.lg,
+        borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)',
     },
     pricingCardPopular: { borderColor: C.primary, borderWidth: 2, transform: [{ scale: 1.02 }] },
     popularBadge: {
@@ -839,33 +835,36 @@ const styles = StyleSheet.create({
     featureText: { fontSize: 13, color: C.text.secondary, flex: 1 },
     planBtn: {
         paddingVertical: 14, borderRadius: R.round, alignItems: 'center',
-        backgroundColor: C.accent,
+        backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
     },
-    planBtnPopular: { backgroundColor: C.primary },
-    planBtnText: { fontSize: 15, fontWeight: '800', color: C.text.primary },
-    planBtnTextPopular: { color: '#FFF' },
+    planBtnPopular: { backgroundColor: '#FFF', borderColor: '#FFF', shadowColor: 'rgba(255,255,255,0.2)', shadowOpacity: 1, shadowRadius: 15 },
+    planBtnText: { fontSize: 15, fontWeight: '800', color: '#FFF' },
+    planBtnTextPopular: { color: '#000' },
 
     // ── CTA Section ──────────────────────────────────────────────────────────
     ctaSection: {
         marginHorizontal: 20, marginBottom: 28, padding: 28,
-        backgroundColor: C.primary, borderRadius: R.xl, alignItems: 'center',
+        backgroundColor: '#0A0A0A', borderRadius: R.xl, alignItems: 'center',
+        borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
     },
     ctaEmoji: { fontSize: 40, marginBottom: 12 },
     ctaTitle: { fontSize: 26, fontWeight: '900', color: '#FFF', textAlign: 'center', lineHeight: 32, marginBottom: 12 },
-    ctaSubtitle: { fontSize: 13, color: 'rgba(255,255,255,0.85)', textAlign: 'center', lineHeight: 20, marginBottom: 24 },
+    ctaSubtitle: { fontSize: 13, color: 'rgba(255,255,255,0.65)', textAlign: 'center', lineHeight: 20, marginBottom: 24 },
     ctaPrimaryBtn: {
         backgroundColor: '#FFF', paddingVertical: 14, paddingHorizontal: 32,
         borderRadius: R.round, marginBottom: 12, width: '100%', alignItems: 'center',
+        shadowColor: 'rgba(255,255,255,0.2)', shadowOpacity: 1, shadowRadius: 15,
     },
-    ctaPrimaryBtnText: { color: C.primary, fontSize: 16, fontWeight: '800' },
+    ctaPrimaryBtnText: { color: '#000', fontSize: 16, fontWeight: '800' },
     ctaSecondaryBtn: {
         flexDirection: 'row', alignItems: 'center', gap: 8,
-        borderWidth: 2, borderColor: '#FFF', paddingVertical: 12, paddingHorizontal: 28,
+        backgroundColor: 'transparent',
+        borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', paddingVertical: 12, paddingHorizontal: 28,
         borderRadius: R.round, marginBottom: 20, width: '100%', justifyContent: 'center',
     },
     ctaSecondaryBtnText: { color: '#FFF', fontSize: 14, fontWeight: '700' },
     ctaTrustRow: { flexDirection: 'row', gap: 12, flexWrap: 'wrap', justifyContent: 'center' },
-    ctaTrustItem: { fontSize: 11, color: 'rgba(255,255,255,0.75)', fontWeight: '600' },
+    ctaTrustItem: { fontSize: 11, color: 'rgba(255,255,255,0.5)', fontWeight: '600' },
 
     // ── Newsletter / Subscribe ────────────────────────────────────────────────
     subscribeCard: { marginHorizontal: 20, marginBottom: 28, padding: 24 },
@@ -873,13 +872,14 @@ const styles = StyleSheet.create({
     subscribeSubtitle: { fontSize: 13, color: C.text.secondary, lineHeight: 20, marginBottom: 16 },
     subscribeImage: { width: '100%', height: 160, borderRadius: R.md, marginBottom: 20 } as const,
     emailInput: {
-        backgroundColor: C.accent, borderRadius: R.md, padding: 14,
-        fontSize: 14, color: C.text.primary, marginBottom: 12,
+        backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: R.md, padding: 14,
+        fontSize: 14, color: C.text.primary, marginBottom: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
     },
     subscribeBtn: {
-        backgroundColor: C.primary, paddingVertical: 14, borderRadius: R.round, alignItems: 'center',
+        backgroundColor: '#FFF', paddingVertical: 14, borderRadius: R.round, alignItems: 'center',
+        shadowColor: 'rgba(255,255,255,0.2)', shadowOpacity: 1, shadowRadius: 15,
     },
-    subscribeBtnText: { color: '#FFF', fontSize: 15, fontWeight: '800' },
+    subscribeBtnText: { color: '#000', fontSize: 15, fontWeight: '800' },
     subscribeNote: { textAlign: 'center', color: C.text.secondary, fontSize: 11, marginTop: 10 },
 
     // ── Footer ───────────────────────────────────────────────────────────────

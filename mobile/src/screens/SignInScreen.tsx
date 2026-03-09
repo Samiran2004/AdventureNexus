@@ -227,8 +227,9 @@ const styles = StyleSheet.create({
     card: {
         backgroundColor: theme.colors.card.background, marginHorizontal: 20, marginTop: -32,
         borderRadius: 32, padding: 28,
-        shadowColor: '#000', shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.12, shadowRadius: 20, elevation: 8,
+        borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
+        shadowColor: 'rgba(255,255,255,0.05)', shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 1, shadowRadius: 20, elevation: 8,
     },
     title: { fontSize: 26, fontWeight: '900', color: C.text.primary, marginBottom: 6 },
     subtitle: { fontSize: 14, color: C.text.secondary, marginBottom: 20 },
@@ -236,11 +237,9 @@ const styles = StyleSheet.create({
     // Google button
     googleBtn: {
         flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-        backgroundColor: '#FFF', borderRadius: 40, paddingVertical: 14,
-        borderWidth: 1.5, borderColor: 'rgba(0,0,0,0.12)',
+        backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 40, paddingVertical: 14,
+        borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.1)',
         marginBottom: 20,
-        shadowColor: '#000', shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.06, shadowRadius: 8, elevation: 2,
     },
     googleBtnContent: { flexDirection: 'row', alignItems: 'center', gap: 12 },
     googleLogoImage: {
@@ -251,30 +250,31 @@ const styles = StyleSheet.create({
     googleBtnText: { fontSize: 15, fontWeight: '700', color: C.text.primary },
 
     divider: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 20 },
-    dividerLine: { flex: 1, height: 1, backgroundColor: 'rgba(0,0,0,0.08)' },
+    dividerLine: { flex: 1, height: 1, backgroundColor: 'rgba(255,255,255,0.1)' },
     dividerText: { fontSize: 11, color: C.text.secondary, fontWeight: '600' },
 
     inputGroup: { marginBottom: 18 },
     label: { fontSize: 12, fontWeight: '700', color: C.text.primary, marginBottom: 8 },
     inputRow: {
         flexDirection: 'row', alignItems: 'center', gap: 12,
-        backgroundColor: C.background, borderRadius: 16,
+        backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 16,
         paddingHorizontal: 16, paddingVertical: 14,
-        borderWidth: 1, borderColor: 'rgba(0,0,0,0.08)',
+        borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
     },
     input: { flex: 1, fontSize: 14, color: C.text.primary },
 
     signInBtn: {
-        backgroundColor: C.primary, paddingVertical: 16, borderRadius: 40,
+        backgroundColor: '#FFF', paddingVertical: 16, borderRadius: 40,
         alignItems: 'center', marginTop: 4, marginBottom: 16,
+        shadowColor: 'rgba(255,255,255,0.2)', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 1, shadowRadius: 15,
     },
-    btnDisabled: { opacity: 0.65 },
+    btnDisabled: { opacity: 0.5 },
     btnContent: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-    signInBtnText: { color: '#FFF', fontSize: 16, fontWeight: '800' },
+    signInBtnText: { color: '#000', fontSize: 16, fontWeight: '800' },
 
     signUpLink: { paddingVertical: 4, alignItems: 'center' },
     signUpLinkText: { fontSize: 14, color: C.text.secondary },
-    signUpLinkAccent: { color: C.primary, fontWeight: '800' },
+    signUpLinkAccent: { color: '#FFF', fontWeight: '800' },
 
     trustRow: { flexDirection: 'row', justifyContent: 'center', gap: 16, paddingVertical: 24, flexWrap: 'wrap' },
     trustText: { fontSize: 11, color: C.text.secondary, fontWeight: '600' },

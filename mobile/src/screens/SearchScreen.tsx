@@ -377,28 +377,29 @@ const styles = StyleSheet.create({
     titleAccent: { fontSize: 38, fontWeight: '900', color: theme.colors.primary, lineHeight: 40 },
     subtitle: { fontSize: 14, color: theme.colors.text.secondary, marginTop: 6 },
 
-    formCard: { padding: 20, marginBottom: 20 },
+    formCard: { padding: 20, marginBottom: 20, backgroundColor: theme.colors.card.background },
     fieldRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 14, gap: 12 },
     input: { flex: 1, fontSize: 14, color: theme.colors.text.primary, fontWeight: '500' },
-    divider: { height: 1, backgroundColor: 'rgba(0,0,0,0.06)', marginVertical: 2 },
+    divider: { height: 1, backgroundColor: 'rgba(255,255,255,0.1)', marginVertical: 2 },
 
     fieldLabel: { fontSize: 12, fontWeight: '700', color: theme.colors.text.primary, marginTop: 16, marginBottom: 10 },
     pillRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginBottom: 8 },
     optionPill: {
         paddingVertical: 8, paddingHorizontal: 18, borderRadius: 40,
-        backgroundColor: theme.colors.accent, borderWidth: 1, borderColor: 'rgba(0,0,0,0.04)',
+        backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
     },
-    optionPillActive: { backgroundColor: theme.colors.primary },
+    optionPillActive: { backgroundColor: '#FFF' },
     optionPillText: { fontSize: 13, fontWeight: '600', color: theme.colors.text.primary },
-    optionPillTextActive: { color: '#FFF' },
+    optionPillTextActive: { color: '#000' },
 
     searchBtn: {
-        backgroundColor: theme.colors.primary, paddingVertical: 16, borderRadius: 40,
+        backgroundColor: '#FFF', paddingVertical: 16, borderRadius: 40,
         alignItems: 'center', marginTop: 20,
+        shadowColor: 'rgba(255,255,255,0.15)', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 1, shadowRadius: 20,
     },
-    searchBtnDisabled: { opacity: 0.7 },
+    searchBtnDisabled: { opacity: 0.5 },
     searchBtnContent: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-    searchBtnText: { color: '#FFF', fontSize: 16, fontWeight: '800' },
+    searchBtnText: { color: '#000', fontSize: 16, fontWeight: '800' },
 
     loadingContainer: { alignItems: 'center', paddingVertical: 30 },
     loadingText: { marginTop: 12, color: theme.colors.text.secondary, fontSize: 14 },

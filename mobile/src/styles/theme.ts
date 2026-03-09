@@ -1,24 +1,24 @@
 export const theme = {
     colors: {
-        background: '#F5F7F0',
-        primary: '#1A3C34',
-        secondary: '#4A5D4E',
+        background: '#000000',
+        primary: '#FFFFFF', // High contrast white for primary actions
+        secondary: '#1A1A1A', // Charcoal gray for borders and secondary elements
         text: {
-            primary: '#1A2421',
-            secondary: '#6B7280',
+            primary: '#F5F5F7',
+            secondary: '#A1A1AA',
             light: '#FFFFFF',
-            muted: '#9CA3AF',
+            muted: '#71717A',
         },
         card: {
-            background: '#FFFFFF',
-            border: '#F0F2EB',
-            shadow: 'rgba(0, 0, 0, 0.08)',
+            background: '#0A0A0A', // Deep black for cards to contrast against #000000
+            border: 'rgba(255, 255, 255, 0.05)', // Inner glow / subtle subtle border
+            shadow: 'rgba(0, 0, 0, 0.5)',
         },
-        accent: '#E6EAD3',
+        accent: '#2563EB', // Adding a neon blue accent commonly found in Antimatter
         star: '#FFD700',
-        error: '#FF4E6A',
-        success: '#22C55E',
-        divider: '#E5E7EB',
+        error: '#EF4444',
+        success: '#10B981',
+        divider: 'rgba(255, 255, 255, 0.1)',
     },
     spacing: {
         xs: 4,

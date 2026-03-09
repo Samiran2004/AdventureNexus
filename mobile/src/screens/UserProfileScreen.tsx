@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
         height: 240,
         borderBottomLeftRadius: 100,
         overflow: 'hidden',
-        backgroundColor: theme.colors.primary
+        backgroundColor: '#000'
     },
     coverImage: { width: '100%', height: '100%' },
     coverImageStyle: { opacity: 0.9 },
@@ -276,13 +276,13 @@ const styles = StyleSheet.create({
     avatarWrapper: {
         width: 120, height: 120,
         borderRadius: 40, // Modern Squircle
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#000',
         padding: 5,
         shadowColor: '#000', shadowOffset: { width: 0, height: 8 },
         shadowOpacity: 0.1, shadowRadius: 12, elevation: 8,
     },
     avatar: { width: '100%', height: '100%', borderRadius: 36 },
-    avatarFallback: { flex: 1, backgroundColor: theme.colors.primary, borderRadius: 36, justifyContent: 'center', alignItems: 'center' },
+    avatarFallback: { flex: 1, backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 36, justifyContent: 'center', alignItems: 'center' },
     avatarInitial: { color: '#FFF', fontSize: 36, fontWeight: '900' },
     verifiedBadge: {
         position: 'absolute', bottom: -2, right: -2, width: 22, height: 22,
@@ -301,13 +301,13 @@ const styles = StyleSheet.create({
     actionRow: { flexDirection: 'row', gap: 12, marginTop: 22 },
     followBtn: {
         flexDirection: 'row', alignItems: 'center', gap: 8,
-        backgroundColor: theme.colors.primary, paddingVertical: 12, paddingHorizontal: 24, borderRadius: 16,
-        shadowColor: theme.colors.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 4
+        backgroundColor: '#FFF', paddingVertical: 12, paddingHorizontal: 24, borderRadius: 16,
+        shadowColor: 'rgba(255,255,255,0.15)', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 1, shadowRadius: 20, elevation: 4
     },
-    unfollowBtn: { backgroundColor: theme.colors.error, shadowColor: theme.colors.error },
-    followBtnText: { color: '#FFF', fontWeight: '800', fontSize: 15 },
+    unfollowBtn: { backgroundColor: theme.colors.error, shadowColor: 'rgba(255,78,106,0.3)', shadowOpacity: 1, shadowRadius: 15 },
+    followBtnText: { color: '#000', fontWeight: '800', fontSize: 15 },
     messageBtn: {
-        width: 52, height: 52, borderRadius: 16, backgroundColor: 'rgba(26,60,52,0.1)',
+        width: 52, height: 52, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
         justifyContent: 'center', alignItems: 'center'
     },
 
@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
     statCol: { alignItems: 'center' },
     statVal: { fontSize: 20, fontWeight: '700', color: theme.colors.text.primary },
     statLab: { fontSize: 12, color: theme.colors.text.secondary, fontWeight: '600', marginTop: 2 },
-    divider: { width: 1, height: 30, backgroundColor: theme.colors.divider },
+    divider: { width: 1, height: 30, backgroundColor: 'rgba(255,255,255,0.1)' },
 
     // Grid Gallery
     gridSection: { marginTop: 20, paddingHorizontal: 20 },
@@ -328,12 +328,12 @@ const styles = StyleSheet.create({
     viewToggle: { flexDirection: 'row', gap: 12 },
 
     activityList: { gap: 12 },
-    activityCard: { padding: 18, borderRadius: 24, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: theme.colors.card.border },
+    activityCard: { padding: 18, borderRadius: 24, backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
     activityHead: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 },
-    iconBox: { width: 30, height: 30, borderRadius: 10, backgroundColor: 'rgba(26,60,52,0.08)', justifyContent: 'center', alignItems: 'center' },
+    iconBox: { width: 30, height: 30, borderRadius: 10, backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', justifyContent: 'center', alignItems: 'center' },
     activityType: { fontSize: 12, fontWeight: '800', color: theme.colors.text.primary, flex: 1 },
     activityDate: { fontSize: 10, color: theme.colors.text.secondary },
-    activityText: { fontSize: 14, color: '#4B5563', lineHeight: 20 },
+    activityText: { fontSize: 14, color: theme.colors.text.primary, opacity: 0.9, lineHeight: 20 },
 
     emptyContainer: { paddingVertical: 40, alignItems: 'center' },
     emptyText: { color: theme.colors.text.secondary, fontSize: 14 },
