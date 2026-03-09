@@ -365,50 +365,50 @@ const styles = StyleSheet.create({
     title: { fontSize: 36, fontWeight: '900', color: theme.colors.text.primary, letterSpacing: -1 },
     subtitle: { fontSize: 14, color: theme.colors.text.secondary, marginTop: 4 },
     writeBtn: {
-        backgroundColor: theme.colors.primary, paddingVertical: 14, borderRadius: 16, alignItems: 'center',
-        shadowColor: theme.colors.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 4,
+        backgroundColor: '#FFF', paddingVertical: 14, borderRadius: 16, alignItems: 'center',
+        shadowColor: 'rgba(255,255,255,0.2)', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 1, shadowRadius: 15, elevation: 4,
     },
-    writeBtnText: { color: '#FFF', fontSize: 14, fontWeight: '800' },
+    writeBtnText: { color: '#000', fontSize: 14, fontWeight: '800' },
 
-    formCard: { marginHorizontal: 20, marginBottom: 16, padding: 16, borderRadius: 24 },
+    formCard: { marginHorizontal: 20, marginBottom: 16, padding: 16, borderRadius: 24, backgroundColor: theme.colors.card.background },
     formLabel: { fontSize: 12, fontWeight: '700', color: theme.colors.text.primary, marginBottom: 6, marginTop: 12 },
     formInput: {
-        backgroundColor: theme.colors.accent, borderRadius: 12, padding: 12,
-        fontSize: 14, color: theme.colors.text.primary,
+        backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: 12,
+        fontSize: 14, color: theme.colors.text.primary, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
     },
     formTextArea: { height: 90, textAlignVertical: 'top' },
     ratingRow: { flexDirection: 'row', gap: 10, marginBottom: 4 },
-    submitBtn: { backgroundColor: theme.colors.primary, borderRadius: 40, padding: 14, alignItems: 'center', marginTop: 16 },
-    submitBtnText: { color: '#FFF', fontWeight: '800', fontSize: 15 },
+    submitBtn: { backgroundColor: '#FFF', borderRadius: 40, padding: 14, alignItems: 'center', marginTop: 16, shadowColor: 'rgba(255,255,255,0.2)', shadowOpacity: 1, shadowRadius: 15 },
+    submitBtnText: { color: '#000', fontWeight: '800', fontSize: 15 },
 
     searchBar: {
-        flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF',
+        flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.05)',
         borderRadius: 20, paddingHorizontal: 16, paddingVertical: 12, marginHorizontal: 20,
-        marginBottom: 16, gap: 10, elevation: 4, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 10,
+        marginBottom: 16, gap: 10, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
     },
     searchInput: { flex: 1, fontSize: 14, color: theme.colors.text.primary, fontWeight: '500' },
 
     tagsRow: { flexDirection: 'row', paddingLeft: 20, marginBottom: 16, gap: 8 },
     tag: {
         paddingVertical: 10, paddingHorizontal: 20, borderRadius: 16,
-        backgroundColor: '#FFF', borderWidth: 1, borderColor: 'rgba(0,0,0,0.05)',
+        backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
     },
-    tagActive: { backgroundColor: theme.colors.primary, borderColor: theme.colors.primary },
+    tagActive: { backgroundColor: '#FFF', borderColor: '#FFF' },
     tagText: { fontSize: 13, fontWeight: '600', color: theme.colors.text.primary },
-    tagTextActive: { color: '#FFF' },
+    tagTextActive: { color: '#000' },
 
     sortContainer: { flexDirection: 'row', alignItems: 'center', paddingLeft: 20, marginBottom: 20, gap: 12 },
     sortScroll: { gap: 8, paddingRight: 20 },
-    sortBtn: { paddingVertical: 6, paddingHorizontal: 14, borderRadius: 12, backgroundColor: 'rgba(0,0,0,0.03)' },
-    sortBtnActive: { backgroundColor: theme.colors.secondary },
+    sortBtn: { paddingVertical: 6, paddingHorizontal: 14, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+    sortBtnActive: { backgroundColor: '#FFF' },
     sortText: { fontSize: 12, fontWeight: '600', color: theme.colors.text.primary },
-    sortTextActive: { fontWeight: '800' },
+    sortTextActive: { fontWeight: '800', color: '#000' },
 
     loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center' },
     list: { paddingHorizontal: 20, paddingBottom: 100 },
     emptyText: { textAlign: 'center', color: theme.colors.text.secondary, marginTop: 60, fontSize: 15 },
 
-    reviewCard: { padding: 20, marginBottom: 16, borderRadius: 32, borderWidth: 1, borderColor: 'rgba(0,0,0,0.03)' },
+    reviewCard: { padding: 20, marginBottom: 16, borderRadius: 32, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', backgroundColor: theme.colors.card.background },
     reviewHeader: { flexDirection: 'row', alignItems: 'center', gap: 14, marginBottom: 16 },
     avatarContainer: { position: 'relative' },
     avatarImage: { width: 48, height: 48, borderRadius: 24 },
@@ -430,9 +430,9 @@ const styles = StyleSheet.create({
     statsBadges: { flexDirection: 'row', gap: 8, marginBottom: 14, flexWrap: 'wrap' },
     statBadge: {
         flexDirection: 'row', alignItems: 'center', gap: 4,
-        backgroundColor: 'rgba(26,60,52,0.05)', paddingVertical: 4, paddingHorizontal: 8, borderRadius: 8
+        backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', paddingVertical: 4, paddingHorizontal: 8, borderRadius: 8
     },
-    statBadgeText: { fontSize: 11, fontWeight: '700', color: theme.colors.primary },
+    statBadgeText: { fontSize: 11, fontWeight: '700', color: '#FFF' },
 
     reviewComment: { fontSize: 14, color: theme.colors.text.primary, lineHeight: 22, marginBottom: 16, opacity: 0.9 },
 
@@ -441,9 +441,9 @@ const styles = StyleSheet.create({
 
     reviewFooter: {
         flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-        paddingTop: 16, borderTopWidth: 1, borderTopColor: 'rgba(0,0,0,0.04)'
+        paddingTop: 16, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.1)'
     },
-    likeBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: 'rgba(26,60,52,0.08)', paddingVertical: 6, paddingHorizontal: 12, borderRadius: 20 },
-    likeBtnText: { fontSize: 12, fontWeight: '700', color: theme.colors.primary },
+    likeBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', paddingVertical: 6, paddingHorizontal: 12, borderRadius: 20 },
+    likeBtnText: { fontSize: 12, fontWeight: '700', color: '#FFF' },
     dateText: { fontSize: 11, color: theme.colors.text.secondary, fontWeight: '500' },
 });

@@ -24,13 +24,10 @@ const styles = StyleSheet.create({
     card: {
         backgroundColor: theme.colors.card.background,
         borderRadius: theme.borderRadius.xl,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.1)',
         padding: theme.spacing.md,
         margin: 0,
-        shadowColor: theme.colors.card.shadow,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 1,
-        shadowRadius: 10,
-        elevation: 2,
         overflow: 'hidden',
     },
 });

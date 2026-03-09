@@ -4,7 +4,8 @@ import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-cont
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
+import { BlurView } from 'expo-blur';
 import { ClerkProvider, useAuth } from '@clerk/clerk-expo';
 import * as SecureStore from 'expo-secure-store';
 
@@ -58,26 +59,32 @@ function CustomTabBar({ state, navigation }: any) {
     ];
 
     return (
-        <View style={[styles.tabBar, { paddingBottom: Math.max(insets.bottom, 12), height: 76 + Math.max(0, insets.bottom - 10) }]}>
-            {tabs.map((tab, index) => {
-                const isFocused = state.index === index;
-                return (
-                    <TouchableOpacity
-                        key={tab.name}
-                        style={styles.tabItem}
-                        onPress={() => navigation.navigate(tab.name)}
-                        activeOpacity={0.8}
-                    >
-                        <Text style={[styles.tabIcon, isFocused && styles.tabIconActive]}>
-                            {tab.icon}
-                        </Text>
-                        <Text style={[styles.tabLabel, isFocused && styles.tabLabelActive]}>
-                            {tab.name}
-                        </Text>
-                        {isFocused && <View style={styles.tabIndicator} />}
-                    </TouchableOpacity>
-                );
-            })}
+        <View style={styles.tabBarContainer}>
+            <BlurView
+                intensity={80}
+                tint="dark"
+                style={[styles.tabBar, { paddingBottom: Math.max(insets.bottom - 10, 0) }]}
+            >
+                {tabs.map((tab, index) => {
+                    const isFocused = state.index === index;
+                    return (
+                        <TouchableOpacity
+                            key={tab.name}
+                            style={styles.tabItem}
+                            onPress={() => navigation.navigate(tab.name)}
+                            activeOpacity={0.8}
+                        >
+                            <Text style={[styles.tabIcon, isFocused && styles.tabIconActive]}>
+                                {tab.icon}
+                            </Text>
+                            <Text style={[styles.tabLabel, isFocused && styles.tabLabelActive]}>
+                                {tab.name}
+                            </Text>
+                            {isFocused && <View style={styles.tabIndicator} />}
+                        </TouchableOpacity>
+                    );
+                })}
+            </BlurView>
         </View>
     );
 }
@@ -122,7 +129,7 @@ function RootNavigator() {
 
     return (
         <NavigationContainer>
-            <StatusBar style="dark" />
+            <StatusBar style="light" />
             <Stack.Navigator id={undefined} screenOptions={{ headerShown: false }}>
                 {isSignedIn ? (
                     <>
@@ -164,19 +171,22 @@ const styles = StyleSheet.create({
     loadingEmoji: { fontSize: 64 },
     loadingBrand: { fontSize: 28, fontWeight: '900', color: theme.colors.primary, marginTop: 16 },
 
+    tabBarContainer: {
+        position: 'absolute',
+        bottom: Platform.OS === 'ios' ? 24 : 16,
+        left: 20,
+        right: 20,
+        backgroundColor: 'transparent',
+        borderRadius: 100,
+        overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+    },
     tabBar: {
         flexDirection: 'row',
-        backgroundColor: theme.colors.primary,
-        height: 76,
-        borderTopLeftRadius: 28,
-        borderTopRightRadius: 28,
+        height: 64,
         paddingHorizontal: 10,
         alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: -4 },
-        shadowOpacity: 0.14,
-        shadowRadius: 16,
-        elevation: 12,
     },
     tabItem: {
         flex: 1, alignItems: 'center', justifyContent: 'center',

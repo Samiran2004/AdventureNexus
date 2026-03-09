@@ -345,8 +345,9 @@ const styles = StyleSheet.create({
     card: {
         backgroundColor: theme.colors.card.background, marginHorizontal: 20, marginTop: -32,
         borderRadius: 32, padding: 24,
-        shadowColor: '#000', shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.12, shadowRadius: 20, elevation: 8,
+        borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
+        shadowColor: 'rgba(255,255,255,0.05)', shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 1, shadowRadius: 20, elevation: 8,
     },
     title: { fontSize: 24, fontWeight: '900', color: C.text.primary, marginBottom: 4 },
     subtitle: { fontSize: 13, color: C.text.secondary, marginBottom: 20 },
@@ -354,10 +355,8 @@ const styles = StyleSheet.create({
     // Google OAuth
     googleBtn: {
         flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-        backgroundColor: '#FFF', borderRadius: 40, paddingVertical: 14,
-        borderWidth: 1.5, borderColor: 'rgba(0,0,0,0.12)', marginBottom: 16,
-        shadowColor: '#000', shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.06, shadowRadius: 8, elevation: 2,
+        backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 40, paddingVertical: 14,
+        borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.1)', marginBottom: 16,
     },
     googleBtnContent: { flexDirection: 'row', alignItems: 'center', gap: 12 },
     googleLogoImage: {
@@ -367,7 +366,7 @@ const styles = StyleSheet.create({
     },
     googleBtnText: { fontSize: 15, fontWeight: '700', color: C.text.primary },
     signDivider: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 16 },
-    dividerLine: { flex: 1, height: 1, backgroundColor: 'rgba(0,0,0,0.08)' },
+    dividerLine: { flex: 1, height: 1, backgroundColor: 'rgba(255,255,255,0.1)' },
     dividerText: { fontSize: 11, color: C.text.secondary, fontWeight: '600' },
 
     nameRow: { flexDirection: 'row', gap: 12 },
@@ -375,15 +374,15 @@ const styles = StyleSheet.create({
     label: { fontSize: 11, fontWeight: '700', color: C.text.primary, marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5 },
     inputRow: {
         flexDirection: 'row', alignItems: 'center', gap: 10,
-        backgroundColor: C.background, borderRadius: 14,
+        backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 14,
         paddingHorizontal: 14, paddingVertical: 13,
-        borderWidth: 1, borderColor: 'rgba(0,0,0,0.08)',
+        borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
     },
     inputRowInner: {
         flexDirection: 'row', alignItems: 'center', gap: 8,
-        backgroundColor: C.background, borderRadius: 14,
+        backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 14,
         paddingHorizontal: 12, paddingVertical: 12,
-        borderWidth: 1, borderColor: 'rgba(0,0,0,0.08)',
+        borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
     },
     input: { flex: 1, fontSize: 13, color: C.text.primary },
 
@@ -392,15 +391,16 @@ const styles = StyleSheet.create({
     benefitText: { fontSize: 12, color: C.text.secondary },
 
     signInBtn: {
-        backgroundColor: C.primary, paddingVertical: 16, borderRadius: 40,
+        backgroundColor: '#FFF', paddingVertical: 16, borderRadius: 40,
         alignItems: 'center', marginBottom: 16,
+        shadowColor: 'rgba(255,255,255,0.2)', shadowOpacity: 1, shadowRadius: 15,
     },
-    btnDisabled: { opacity: 0.7 },
-    signInBtnText: { color: '#FFF', fontSize: 15, fontWeight: '800' },
+    btnDisabled: { opacity: 0.5 },
+    signInBtnText: { color: '#000', fontSize: 15, fontWeight: '800' },
 
     signUpBtn: { paddingVertical: 4, alignItems: 'center' },
     signUpBtnText: { fontSize: 14, color: C.text.secondary },
-    signUpBtnAccent: { color: C.primary, fontWeight: '800' },
+    signUpBtnAccent: { color: '#FFF', fontWeight: '800' },
 
     // OTP screen
     otpContainer: {
@@ -412,11 +412,9 @@ const styles = StyleSheet.create({
     otpSubtitle: { fontSize: 14, color: C.text.secondary, textAlign: 'center', lineHeight: 22 },
     otpInputWrapper: { width: '100%', marginTop: 8 },
     otpInput: {
-        backgroundColor: '#FFF', borderRadius: 20, paddingVertical: 18,
-        fontSize: 28, fontWeight: '900', color: C.primary, letterSpacing: 12,
-        borderWidth: 2, borderColor: C.primary,
-        shadowColor: '#000', shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.08, shadowRadius: 12, elevation: 4,
+        backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 20, paddingVertical: 18,
+        fontSize: 28, fontWeight: '900', color: '#FFF', letterSpacing: 12,
+        borderWidth: 2, borderColor: '#FFF',
     },
     resendBtn: { paddingVertical: 4 },
     resendText: { fontSize: 14, color: C.primary, fontWeight: '700' },
