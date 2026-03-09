@@ -5,11 +5,25 @@ import getPersonalizedRecommendations from '../../recommendations/controllers/ge
 import { getPlanById } from '../controllers/getPlanByIdController';
 import { savePlanToUser } from '../controllers/savePlanToUserController';
 import { unsavePlanFromUser } from '../controllers/unsavePlanFromUserController';
+import { createPlan } from '../controllers/newPlanController';
+import { getMyPlans } from '../controllers/getMyPlansController';
 import protect from '../../../shared/middleware/authClerkTokenMiddleware';
 import { cacheMiddleware } from '../../../shared/middleware/cacheMiddleware';
 import { CACHE_CONFIG } from '../../../shared/config/cache.config';
 
 const route = express.Router();
+
+/**
+ * @route POST /api/v1/plans/
+ * @desc Create a manual travel plan.
+ */
+route.post("/", protect, createPlan);
+
+/**
+ * @route GET /api/v1/plans/my-plans
+ * @desc Fetch all plans for the authenticated user.
+ */
+route.get("/my-plans", protect, getMyPlans);
 
 /**
  * @route POST /api/v1/plans/search/destination

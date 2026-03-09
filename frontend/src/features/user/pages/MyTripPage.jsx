@@ -121,54 +121,47 @@ const MyTripsPage = () => {
   };
 
   // Mock data
-  const [trips] = useState([
-    {
-      id: '1',
-      title: 'Japan Adventure',
-      destination: 'Tokyo, Kyoto, Osaka',
-      startDate: '2025-10-15',
-      endDate: '2025-10-22',
-      status: 'upcoming',
-      progress: 85,
-      totalDays: 7,
-      budget: 3500,
-      spent: 2100,
-      travelers: 2,
-      image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400',
-      aiGenerated: true
-    },
-    {
-      id: '2',
-      title: 'European Summer',
-      destination: 'Paris, Rome, Barcelona',
-      startDate: '2025-07-10',
-      endDate: '2025-07-20',
-      status: 'completed',
-      progress: 100,
-      totalDays: 10,
-      budget: 4200,
-      spent: 4150,
-      travelers: 1,
-      image: 'https://images.unsplash.com/photo-1502602898536-47ad22581b52?w=400',
-      aiGenerated: true
-    },
-    {
-      id: '3',
-      title: 'Thailand Retreat',
-      destination: 'Bangkok, Phuket, Chiang Mai',
-      startDate: '2025-09-20',
-      endDate: '2025-09-23',
-      status: 'active',
-      progress: 40,
-      totalDays: 14,
-      currentDay: 6,
-      budget: 2800,
-      spent: 1200,
-      travelers: 4,
-      image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400',
-      aiGenerated: true
-    }
-  ]);
+  const [trips, setTrips] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch trips from backend
+  useEffect(() => {
+    const fetchTrips = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'}/api/v1/plans/my-plans`, {
+          headers: {
+            'Content-Type': 'application/json',
+            // Auth should be handled by a global setup or passed here
+          }
+        });
+        const data = await response.json();
+        if (data.status === 'Success') {
+          // Transform backend data to match frontend expectations if necessary
+          const transformedTrips = data.data.map(plan => ({
+            id: plan._id,
+            title: plan.name,
+            destination: plan.to,
+            startDate: plan.date,
+            totalDays: plan.days,
+            status: new Date(plan.date) > new Date() ? 'upcoming' : 'completed', // Simple logic
+            budget: plan.budget,
+            spent: plan.cost || 0,
+            travelers: plan.travelers,
+            image: plan.image_url || 'https://images.unsplash.com/photo-1488085061387-422e29b40080?w=400',
+            aiGenerated: !!plan.ai_score
+          }));
+          setTrips(transformedTrips);
+        }
+      } catch (error) {
+        console.error('Fetch Trips Error:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTrips();
+  }, []);
 
   const [itineraryItems] = useState([
     {
@@ -514,85 +507,101 @@ const MyTripsPage = () => {
 
             {/* Trip Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredTrips.map((trip) => (
-                <Card
-                  key={trip.id}
-                  className="trip-card bg-card border-border hover:border-primary/50 transition-all cursor-pointer group"
-                  onClick={() => setSelectedTrip(trip)}
-                >
-                  <div className="relative">
-                    <img
-                      src={trip.image}
-                      alt={trip.title}
-                      className="w-full h-48 object-cover rounded-t-lg"
-                    />
-                    <div className="absolute top-4 left-4">
-                      <Badge className={getStatusColor(trip.status)}>
-                        {trip.status}
-                      </Badge>
-                    </div>
-                    <div className="absolute top-4 right-4">
-                      <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
-                        <MoreVertical size={16} />
-                      </Button>
-                    </div>
-                    {trip.aiGenerated && (
-                      <div className="absolute bottom-4 left-4">
-                        <Badge className="bg-gradient-to-r from-primary to-secondary text-primary-foreground">
-                          AI Generated
+              {loading ? (
+                <div className="col-span-full text-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                  <p className="text-muted-foreground">Loading your trips...</p>
+                </div>
+              ) : filteredTrips.length === 0 ? (
+                <div className="col-span-full text-center py-12">
+                  <Compass size={48} className="mx-auto mb-4 text-muted-foreground opacity-50" />
+                  <p className="text-xl font-semibold mb-2">No trips found</p>
+                  <p className="text-muted-foreground mb-6">Start planning your next adventure today!</p>
+                  <Button className="bg-gradient-to-r from-primary to-secondary text-primary-foreground">
+                    Build a Trip
+                  </Button>
+                </div>
+              ) : (
+                filteredTrips.map((trip) => (
+                  <Card
+                    key={trip.id}
+                    className="trip-card bg-card border-border hover:border-primary/50 transition-all cursor-pointer group"
+                    onClick={() => setSelectedTrip(trip)}
+                  >
+                    <div className="relative">
+                      <img
+                        src={trip.image}
+                        alt={trip.title}
+                        className="w-full h-48 object-cover rounded-t-lg"
+                      />
+                      <div className="absolute top-4 left-4">
+                        <Badge className={getStatusColor(trip.status)}>
+                          {trip.status}
                         </Badge>
                       </div>
-                    )}
-                  </div>
-                  <CardContent className="p-6">
-                    <div className="space-y-4">
-                      <div>
-                        <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
-                          {trip.title}
-                        </h3>
-                        <p className="text-muted-foreground">{trip.destination}</p>
+                      <div className="absolute top-4 right-4">
+                        <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                          <MoreVertical size={16} />
+                        </Button>
                       </div>
-
-                      <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                        <div className="flex items-center">
-                          <Calendar size={14} className="mr-1" />
-                          {new Date(trip.startDate).toLocaleDateString()}
-                        </div>
-                        <div className="flex items-center">
-                          <Clock size={14} className="mr-1" />
-                          {trip.totalDays} days
-                        </div>
-                      </div>
-
-                      {trip.status === 'active' && trip.currentDay && (
-                        <div>
-                          <div className="flex justify-between text-sm mb-2">
-                            <span className="text-muted-foreground">Progress</span>
-                            <span className="text-foreground">Day {trip.currentDay} of {trip.totalDays}</span>
-                          </div>
-                          <div className="w-full bg-muted rounded-full h-2">
-                            <div
-                              className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full"
-                              style={{ width: `${trip.progress}%` }}
-                            />
-                          </div>
+                      {trip.aiGenerated && (
+                        <div className="absolute bottom-4 left-4">
+                          <Badge className="bg-gradient-to-r from-primary to-secondary text-primary-foreground">
+                            AI Generated
+                          </Badge>
                         </div>
                       )}
-
-                      <div className="flex justify-between items-center">
+                    </div>
+                    <CardContent className="p-6">
+                      <div className="space-y-4">
                         <div>
-                          <p className="text-sm text-muted-foreground">Budget</p>
-                          <p className="text-foreground font-semibold">${trip.budget}</p>
+                          <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
+                            {trip.title}
+                          </h3>
+                          <p className="text-muted-foreground">{trip.destination}</p>
                         </div>
-                        <div className="text-right">
-                          <p className="text-sm text-muted-foreground">Travelers</p>
-                          <p className="text-foreground font-semibold">{trip.travelers}</p>
+
+                        <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                          <div className="flex items-center">
+                            <Calendar size={14} className="mr-1" />
+                            {new Date(trip.startDate).toLocaleDateString()}
+                          </div>
+                          <div className="flex items-center">
+                            <Clock size={14} className="mr-1" />
+                            {trip.totalDays} days
+                          </div>
+                        </div>
+
+                        {trip.status === 'active' && trip.currentDay && (
+                          <div>
+                            <div className="flex justify-between text-sm mb-2">
+                              <span className="text-muted-foreground">Progress</span>
+                              <span className="text-foreground">Day {trip.currentDay} of {trip.totalDays}</span>
+                            </div>
+                            <div className="w-full bg-muted rounded-full h-2">
+                              <div
+                                className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full"
+                                style={{ width: `${trip.progress}%` }}
+                              />
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <p className="text-sm text-muted-foreground">Budget</p>
+                            <p className="text-foreground font-semibold">${trip.budget}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-sm text-muted-foreground">Travelers</p>
+                            <p className="text-foreground font-semibold">{trip.travelers}</p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                ))
+              )}
             </div>
           </div>
         ) : (
