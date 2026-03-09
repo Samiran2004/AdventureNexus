@@ -123,24 +123,36 @@ const TripBuilderPage = () => {
     });
 
     // Itinerary state
-    const [itinerary, setItinerary] = useState(() => {
-        const days = [];
+    const [itinerary, setItinerary] = useState([]);
+
+    // Update itinerary when dates change
+    useEffect(() => {
         const start = new Date(tripData.startDate);
         const end = new Date(tripData.endDate);
-        const totalDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+        if (isNaN(start.getTime()) || isNaN(end.getTime())) return;
+        
+        const totalDays = Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1);
 
-        for (let i = 0; i < totalDays; i++) {
-            const date = new Date(start);
-            date.setDate(start.getDate() + i);
-            days.push({
-                date: date.toISOString().split('T'),
-                dayNumber: i + 1,
-                activities: [],
-                notes: ''
-            });
-        }
-        return days;
-    });
+        setItinerary(prevItinerary => {
+            const newItinerary = [];
+            for (let i = 0; i < totalDays; i++) {
+                const date = new Date(start);
+                date.setDate(start.getDate() + i);
+                const dateString = date.toISOString().split('T')[0];
+                
+                // Try to preserve existing activities if day still exists
+                const existingDay = prevItinerary.find(day => day.date === dateString);
+                
+                newItinerary.push({
+                    date: dateString,
+                    dayNumber: i + 1,
+                    activities: existingDay ? existingDay.activities : [],
+                    notes: existingDay ? existingDay.notes : ''
+                });
+            }
+            return newItinerary;
+        });
+    }, [tripData.startDate, tripData.endDate]);
 
     // UI state
     const [selectedDay, setSelectedDay] = useState(0);
@@ -218,7 +230,7 @@ const TripBuilderPage = () => {
 
         // Handle adding from activity database
         if (sourceDroppableId === 'activities' && destinationDroppableId.startsWith('day-')) {
-            const dayIndex = parseInt(destinationDroppableId.split('-')[11]);
+            const dayIndex = parseInt(destinationDroppableId.split('-')[1]);
             const activityIndex = result.source.index;
             const activity = filteredActivities[activityIndex];
 
@@ -238,8 +250,8 @@ const TripBuilderPage = () => {
 
         // Handle reordering within same day
         if (sourceDroppableId === destinationDroppableId && sourceDroppableId.startsWith('day-')) {
-            const dayIndex = parseInt(sourceDroppableId.split('-')[11]);
-
+            const dayIndex = parseInt(sourceDroppableId.split('-')[1]);
+            
             setItinerary(prev => {
                 const newItinerary = [...prev];
                 const dayActivities = [...newItinerary[dayIndex].activities];
@@ -253,8 +265,8 @@ const TripBuilderPage = () => {
 
         // Handle moving between days
         if (sourceDroppableId.startsWith('day-') && destinationDroppableId.startsWith('day-')) {
-            const sourceDayIndex = parseInt(sourceDroppableId.split('-')[11]);
-            const destDayIndex = parseInt(destinationDroppableId.split('-')[11]);
+            const sourceDayIndex = parseInt(sourceDroppableId.split('-')[1]);
+            const destDayIndex = parseInt(destinationDroppableId.split('-')[1]);
 
             setItinerary(prev => {
                 const newItinerary = [...prev];
@@ -278,6 +290,49 @@ const TripBuilderPage = () => {
             newItinerary[dayIndex].activities.splice(activityIndex, 1);
             return newItinerary;
         });
+    };
+
+    // Save trip to backend
+    const handleSaveTrip = async () => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'}/api/v1/plans`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Note: Auth token should be handled by an interceptor or passed here
+                    // Assuming useAppContext or similar provides the token if needed
+                },
+                body: JSON.stringify({
+                    to: tripData.destination,
+                    from: 'Your Location', // Placeholder or add to tripData
+                    date: tripData.startDate,
+                    budget: tripData.budget,
+                    travelers: tripData.travelers,
+                    name: tripData.name,
+                    days: itinerary.length,
+                    suggested_itinerary: itinerary.map(day => ({
+                        day: day.dayNumber,
+                        date: day.date,
+                        activities: day.activities.map(act => ({
+                            name: act.name,
+                            cost: act.cost.toString(),
+                            time: act.suggestedTime,
+                            description: act.description
+                        }))
+                    }))
+                })
+            });
+
+            const data = await response.json();
+            if (data.status === 'Success') {
+                alert('Trip saved successfully!');
+            } else {
+                alert('Failed to save trip: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Save Trip Error:', error);
+            alert('Error saving trip. Check console for details.');
+        }
     };
 
     const ActivityCard = ({ activity, index, isDragging = false }) => (
@@ -343,19 +398,59 @@ const TripBuilderPage = () => {
                             budget tracker, and collaborative planning tools.
                         </p>
 
-                        {/* Trip Quick Stats */}
-                        <div className="flex justify-center space-x-8 text-sm text-muted-foreground mt-8">
-                            <div className="flex items-center">
-                                <Calendar className="mr-2" size={16} />
-                                {itinerary.length} Days
+                        {/* Trip Edit Controls */}
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-8 bg-card/50 p-6 rounded-xl border border-border">
+                            <div className="space-y-2">
+                                <label className="text-xs font-semibold uppercase text-muted-foreground flex items-center">
+                                    <MapPin size={12} className="mr-1" /> Destination
+                                </label>
+                                <Input 
+                                    value={tripData.destination} 
+                                    onChange={(e) => setTripData({...tripData, destination: e.target.value})}
+                                    className="bg-background border-border"
+                                />
                             </div>
-                            <div className="flex items-center">
-                                <Users className="mr-2" size={16} />
-                                {tripData.travelers} Travelers
+                            <div className="space-y-2">
+                                <label className="text-xs font-semibold uppercase text-muted-foreground flex items-center">
+                                    <Calendar size={12} className="mr-1" /> Dates
+                                </label>
+                                <div className="flex items-center space-x-2">
+                                    <Input 
+                                        type="date"
+                                        value={tripData.startDate} 
+                                        onChange={(e) => setTripData({...tripData, startDate: e.target.value})}
+                                        className="bg-background border-border"
+                                    />
+                                    <span className="text-muted-foreground">-</span>
+                                    <Input 
+                                        type="date"
+                                        value={tripData.endDate} 
+                                        onChange={(e) => setTripData({...tripData, endDate: e.target.value})}
+                                        className="bg-background border-border"
+                                    />
+                                </div>
                             </div>
-                            <div className="flex items-center">
-                                <DollarSign className="mr-2" size={16} />
-                                ${totalSpent} / ${tripData.budget}
+                            <div className="space-y-2">
+                                <label className="text-xs font-semibold uppercase text-muted-foreground flex items-center">
+                                    <Users size={12} className="mr-1" /> Travelers
+                                </label>
+                                <Input 
+                                    type="number"
+                                    value={tripData.travelers} 
+                                    onChange={(e) => setTripData({...tripData, travelers: parseInt(e.target.value)})}
+                                    className="bg-background border-border"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs font-semibold uppercase text-muted-foreground flex items-center">
+                                    <DollarSign size={12} className="mr-1" /> Budget
+                                </label>
+                                <Input 
+                                    type="number"
+                                    value={tripData.budget} 
+                                    onChange={(e) => setTripData({...tripData, budget: parseInt(e.target.value)})}
+                                    className="bg-background border-border"
+                                />
                             </div>
                         </div>
                     </div>
@@ -580,7 +675,12 @@ const TripBuilderPage = () => {
                             <Bot className="mr-2" size={20} />
                             Optimize with AI
                         </Button>
-                        <Button size="lg" variant="outline" className="border-border text-primary hover:text-primary-foreground hover:bg-primary">
+                        <Button 
+                            size="lg" 
+                            variant="outline" 
+                            onClick={handleSaveTrip}
+                            className="border-border text-primary hover:text-primary-foreground hover:bg-primary"
+                        >
                             <Save className="mr-2" size={20} />
                             Save Trip
                         </Button>

@@ -131,9 +131,12 @@ app.use(sanitizeInput);
 // Activity Tracking Middleware (Updates lastActive)
 app.use(async (req: any, res: Response, next: NextFunction) => {
     try {
-        if (req.auth?.userId) {
+        const auth = req.auth();
+        if (auth?.userId) {
             // Fire and forget update (don't await to avoid latency)
-            User.updateOne({ clerkUserId: req.auth.userId }, { lastActive: new Date() }).exec();
+            User.updateOne({ clerkUserId: auth.userId }, { lastActive: new Date() })
+                .exec()
+                .catch(err => logger.warn('Failed to update user activity: DB timeout or error'));
         }
     } catch (error) {
         // Ignore errors here to not block request
