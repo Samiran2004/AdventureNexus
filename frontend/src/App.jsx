@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'; // Hooks for state and side effects
 import { Toaster, toast } from 'react-hot-toast'; // Component for toast notifications
 import { Route, Routes } from 'react-router-dom'; // Components for defining routes
-import CircularText from './components/CircularText'; // Loading spinner component
+import Preloader from './components/Preloader'; // Modern 3D smooth loader
 import ProtectedRoute from './components/ProtectedRoute'; // Component to protect private routes
 import { AppProvider, useAppContext } from './context/appContext.jsx'; // Context for accessing global state
 import HowItWorks from './features/marketing/pages/HowItWorksPage'; // Page components
@@ -109,19 +109,10 @@ const AppContent = () => {
     };
   }, [isSignedIn, user]);
 
-  // Show loading spinner if still loading
-  if (loading) {
-    return (
-      <div className='h-screen flex justify-center items-center border-8 bg-white'>
-        <CircularText text='AdventureNexus' />
-      </div>
-    );
-  }
-
   return (
     <>
-      <SEO />
-
+      <Preloader isLoading={loading} />
+      
       {/* Toast notification container */}
       <Toaster
         position='top-right'

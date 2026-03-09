@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -55,10 +55,55 @@ import TextRevealLetters from '@/components/mvpblocks/text-reveal-1';
 // Register GSAP Plugins
 gsap.registerPlugin(ScrollTrigger, TextPlugin);
 
+// Reusable 3D Tilt Card Wrapper
+const TiltWrapper = ({ children, className, ...props }) => {
+    const ref = useRef(null);
+    const x = useMotionValue(0);
+    const y = useMotionValue(0);
+    const mouseXSpring = useSpring(x);
+    const mouseYSpring = useSpring(y);
+    const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["7deg", "-7deg"]);
+    const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-7deg", "7deg"]);
+
+    const handleMouseMove = (e) => {
+        if (!ref.current) return;
+        const rect = ref.current.getBoundingClientRect();
+        const width = rect.width;
+        const height = rect.height;
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        const xPct = mouseX / width - 0.5;
+        const yPct = mouseY / height - 0.5;
+        x.set(xPct);
+        y.set(yPct);
+    };
+
+    const handleMouseLeave = () => {
+        x.set(0);
+        y.set(0);
+    };
+
+    return (
+        <motion.div
+            ref={ref}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            style={{ rotateY, rotateX, transformStyle: "preserve-3d", perspective: 1000 }}
+            className={className}
+            {...props}
+        >
+            <div style={{ transform: "translateZ(30px)" }} className="h-full w-full">
+                {children}
+            </div>
+        </motion.div>
+    );
+};
+
 // AdventureNexusLanding is the main landing page component of the application
 const AdventureNexusLanding = () => {
-
-
+    const { scrollYProgress } = useScroll();
+    const backgroundParallax = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+    const lightRayParallax = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
     // Refs for GSAP animations for various sections of the page
     const heroRef = useRef(null);
     const featuresRef = useRef(null);
@@ -208,228 +253,233 @@ const AdventureNexusLanding = () => {
             <NavBar />
 
             {/* Hero Section */}
-            <section ref={heroRef} className="py-20 bg-background relative overflow-hidden">
-                {/* Background decorative elements */}
-                <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute -top-10 -right-10 w-80 h-80 bg-primary/20 rounded-full opacity-50 blur-3xl"></div>
-                    <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-secondary/20 rounded-full opacity-30 blur-3xl"></div>
-                </div>
-
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
-                    <div className="grid lg:grid-cols-2 gap-12 items-center">
-                        <div ref={heroContentRef} className="space-y-8">
-                            <div className="space-y-4">
-                                <Badge className="bg-gradient-to-r from-primary/10 to-secondary/10 text-primary border border-primary/30 hover:border-primary/50 transition-all duration-300 shadow-lg shadow-primary/20 flex items-center gap-2 px-4 py-2">
-                                    <Sparkles className="w-4 h-4 animate-pulse" />
-                                    AI-Powered Travel Planning
-                                    <Zap className="w-3 h-3" />
-                                </Badge>
-                                <h1 className="text-4xl md:text-6xl font-bold text-foreground leading-tight font-outfit">
-                                    Your Dream Adventure
-                                    <span className="bg-gradient-to-r from-primary via-secondary to-purple-600 bg-clip-text text-transparent animate-gradient"> Starts Here</span>
-                                </h1>
-                                <p className="text-xl text-muted-foreground leading-relaxed">
-                                    Experience intelligent travel planning powered by AI. Get personalized itineraries, discover hidden destinations, and book the perfect trip—all in one place.
-                                </p>
+            <section ref={heroRef} className="min-h-screen flex items-center justify-center relative overflow-hidden pt-32 pb-20 perspective-1000">
+                {/* Background Atmosphere with Parallax */}
+                <motion.div className="absolute inset-0 z-0" style={{ y: backgroundParallax }}>
+                    <div className="absolute inset-0 developer-grid opacity-30"></div>
+                    <div className="absolute inset-0 developer-grid-dot opacity-20"></div>
+                </motion.div>
+                {/* Light Ray effect with stronger Parallax */}
+                <motion.div 
+                    className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[1000px] h-[600px] opacity-20 pointer-events-none z-0"
+                    style={{
+                        y: lightRayParallax,
+                        background: 'radial-gradient(ellipse 60% 50% at 50% 0%, rgba(255, 255, 255, 0.4) 0%, transparent 70%)',
+                        filter: 'blur(100px)'
+                    }}
+                ></motion.div>
+ 
+                <div className="container mx-auto px-4 relative z-10">
+                    <div className="max-w-4xl mx-auto text-center space-y-10">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, ease: "easeOut" }}
+                            className="space-y-6"
+                        >
+                            <div className="flex justify-center">
+                                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                                    <Sparkles size={12} className="text-white" />
+                                    AdventureNexus AI
+                                </span>
                             </div>
+                            
+                            <h1 className="text-6xl md:text-8xl font-bold text-white tracking-tighter leading-[0.9] font-inter">
+                                YOUR DREAM <br /> ADVENTURE <br />
+                                <span className="text-muted-foreground/50">STARTS HERE</span>
+                            </h1>
 
-                            <div className="flex flex-col sm:flex-row gap-4">
-                                <Button
-                                    size="lg"
-                                    className="text-lg px-8 py-6 bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer shadow-lg hover:shadow-primary/25"
-                                    onMouseEnter={handleButtonHover}
-                                    onMouseLeave={handleButtonLeave}
-                                    onClick={() => {
-                                        navigate('/build-trip')
-                                    }}
-                                >
-                                    Start Planning Free
-                                    <ArrowRight className="ml-2" size={20} />
-                                </Button>
-                                <Button
-                                    variant="outline"
-                                    size="lg"
-                                    className="text-lg px-8 py-6 border-2 border-input text-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer"
-                                    onMouseEnter={handleButtonHover}
-                                    onMouseLeave={handleButtonLeave}
-                                    onClick={() => {
-                                        navigate('/works')
-                                    }}
-                                >
-                                    <Play className="mr-2" size={20} />
-                                    See How It Works
-                                </Button>
-                            </div>
-
-                            <div className="flex items-center space-x-6 text-sm text-muted-foreground">
-                                <div className="flex items-center">
-                                    <CheckCircle className="text-green-600 dark:text-green-400 mr-2" size={16} />
-                                    Free to start
-                                </div>
-                                <div className="flex items-center">
-                                    <CheckCircle className="text-green-600 dark:text-green-400 mr-2" size={16} />
-                                    AI-powered insights
-                                </div>
-                                <div className="flex items-center">
-                                    <CheckCircle className="text-green-600 dark:text-green-400 mr-2" size={16} />
-                                    No credit card needed
-                                </div>
-                            </div>
-                        </div>
-
-                        <div ref={heroImageRef} className="relative perspective-container">
-                            <motion.div
-                                className="glass-3d rounded-2xl p-8 space-y-6 glow-border preserve-3d"
-                                initial={{ rotateX: 0, rotateY: 0 }}
-                                whileHover={{ rotateX: 5, rotateY: -5, scale: 1.02 }}
-                                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium">
+                                Experience intelligent travel planning powered by AI. Get personalized itineraries and discover hidden destinations instantly.
+                            </p>
+                        </motion.div>
+ 
+                        <motion.div 
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+                            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+                        >
+                            <Button
+                                size="lg"
+                                className="h-14 px-10 bg-white text-black hover:bg-white/90 rounded-full font-bold text-sm uppercase tracking-widest transition-all hover:scale-105 active:scale-95 shadow-[0_0_40px_rgba(255,255,255,0.2)]"
+                                onClick={() => navigate('/build-trip')}
                             >
-                                <div className="flex items-center justify-between transform translate-z-10">
-                                    <h3 className="text-lg font-semibold text-card-foreground">Trip Planner Dashboard</h3>
-                                    <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-400 border border-green-200 dark:border-green-800 shadow-lg animate-pulse">AI Active</Badge>
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <Card className="bg-muted/50 border-border hover-lift shadow-lg hover:shadow-2xl transition-all duration-300 card-3d">
-                                        <CardContent className="p-4 text-center">
-                                            <MapPin className="text-primary mx-auto mb-2 animate-float" size={24} />
-                                            <div className="text-2xl font-bold text-foreground">
-                                                <NumberCounter
-                                                    targetNumber={195}
-                                                    duration={3}
-                                                    className="text-2xl font-bold text-foreground"
-                                                />
-                                            </div>
-                                            <div className="text-sm text-muted-foreground">Countries</div>
-                                        </CardContent>
-                                    </Card>
-                                    <Card className="bg-muted/50 border-border hover-lift shadow-lg hover:shadow-2xl transition-all duration-300 card-3d">
-                                        <CardContent className="p-4 text-center">
-                                            <Users className="text-green-600 dark:text-green-400 mx-auto mb-2 animate-float" size={24} />
-                                            <div className="text-2xl font-bold text-foreground">
-                                                <NumberCounter
-                                                    targetNumber={5}
-                                                    duration={2.5}
-                                                    className="text-2xl font-bold text-foreground"
-                                                />
-                                                +
-                                            </div>
-                                            <div className="text-sm text-muted-foreground">Happy Travelers</div>
-                                        </CardContent>
-                                    </Card>
-                                </div>
-                                <div className="space-y-3 transform translate-z-20">
-                                    <div className="flex items-center space-x-3">
-                                        <Bot className="text-secondary animate-float" size={20} />
-                                        <div className="flex-1 bg-muted/70 backdrop-blur-sm rounded-lg p-2 border border-border/50 shadow-inner">
-                                            <div className="text-sm text-muted-foreground">Planning your 7-day Japan adventure...</div>
-                                        </div>
-                                    </div>
-                                    <div className="h-2 bg-muted/70 rounded-full overflow-hidden backdrop-blur-sm border border-border/30">
-                                        <div className="h-full bg-gradient-to-r from-primary via-secondary to-primary rounded-full w-3/4 animate-shimmer shadow-lg"></div>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        </div>
+                                Start planning
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="lg"
+                                className="h-14 px-10 border-white/10 bg-transparent text-white hover:bg-white/5 rounded-full font-bold text-sm uppercase tracking-widest transition-all"
+                                onClick={() => navigate('/works')}
+                            >
+                                See how it works
+                            </Button>
+                        </motion.div>
                     </div>
                 </div>
             </section>
 
-            {/* Features Section */}
-            <section id="features" ref={featuresRef} className="py-10 bg-background">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8 space-y-20">
-                    <div className="w-full">
-                        <Globe2 />
+            {/* Features / Bento Grid Section */}
+            <section id="features" ref={featuresRef} className="py-24 relative overflow-hidden">
+                <div className="container mx-auto px-4 relative z-10">
+                    <div className="text-center mb-16 space-y-4">
+                        <span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold font-inter">Capabilities</span>
+                        <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight font-inter">
+                            POWERED BY <span className="text-muted-foreground/30">INTELLIGENCE</span>
+                        </h2>
                     </div>
 
-                    <div className="w-full">
-                        <CardSlider />
-                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[300px]">
+                        {/* Globe Box - Large */}
+                        <TiltWrapper 
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            className="md:col-span-2 md:row-span-2 glass-card rounded-3xl overflow-hidden relative flex flex-col items-center justify-center p-8 group border border-white/5"
+                        >
+                            <div className="absolute inset-0 opacity-20 pointer-events-none">
+                                <Globe2 />
+                            </div>
+                            <div className="relative z-10 mt-auto text-center space-y-2">
+                                <h3 className="text-2xl font-bold text-white font-inter">Global Reach</h3>
+                                <p className="text-muted-foreground max-w-sm text-sm">Every destination at your fingertips with AI-driven insights.</p>
+                            </div>
+                        </TiltWrapper>
 
-                    <div className="space-y-10">
-                        <TextRevealLetters />
-                        <BentoGrid1 />
+                        {/* Itinerary Box */}
+                        <TiltWrapper 
+                            initial={{ opacity: 0, x: 20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            className="glass-card rounded-3xl p-8 flex flex-col justify-between group overflow-hidden relative border border-white/5"
+                        >
+                            <div className="absolute top-[-20%] right-[-20%] w-40 h-40 bg-white/5 blur-3xl rounded-full group-hover:bg-white/10 transition-colors"></div>
+                            <Sparkles className="text-white w-8 h-8 mb-4" />
+                            <div className="space-y-2">
+                                <h3 className="text-xl font-bold text-white font-inter">Smart Itineraries</h3>
+                                <p className="text-sm text-muted-foreground">Personalized routes based on your preferences and local trends.</p>
+                            </div>
+                        </TiltWrapper>
+
+                        {/* Search Box */}
+                        <TiltWrapper 
+                            initial={{ opacity: 0, x: 20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="glass-card rounded-3xl p-8 flex flex-col justify-between group overflow-hidden relative border border-white/5"
+                        >
+                            <Search className="text-white w-8 h-8 mb-4" />
+                            <div className="space-y-2">
+                                <h3 className="text-xl font-bold text-white font-inter">Infinite Discovery</h3>
+                                <p className="text-sm text-muted-foreground">Find hidden gems that other planners simply overlook.</p>
+                            </div>
+                        </TiltWrapper>
+
+                        {/* Activity Slider - wide bottom */}
+                        <TiltWrapper 
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            className="md:col-span-3 glass-card rounded-3xl p-8 overflow-hidden relative border border-white/5"
+                        >
+                            <div className="flex flex-col md:flex-row items-center justify-between gap-8 h-full">
+                                <div className="space-y-4 max-w-md">
+                                    <h3 className="text-2xl font-bold text-white leading-tight font-inter">Curated Experiences</h3>
+                                    <p className="text-muted-foreground text-sm">From luxury stays to local street food, we map out the perfect journey for every vibe.</p>
+                                    <Button variant="outline" className="rounded-full border-white/10 text-[10px] px-6 uppercase tracking-widest font-bold text-white hover:bg-white/5">Explore Features</Button>
+                                </div>
+                                <div className="w-full md:w-1/2 min-h-[150px]">
+                                    <CardSlider />
+                                </div>
+                            </div>
+                        </TiltWrapper>
                     </div>
                 </div>
             </section>
 
             {/* Testimonials Section */}
-            <section id="testimonials" ref={testimonialsRef} className="py-20 bg-background">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center space-y-4 mb-16">
-                        <div className="flex items-center justify-center gap-2 mb-4">
-                            <Star className="w-8 h-8 text-primary fill-primary animate-pulse" />
-                            <h2 className="text-3xl md:text-4xl font-bold text-foreground font-outfit">
-                                Travelers Love AdventureNexus
-                            </h2>
-                            <Star className="w-8 h-8 text-secondary fill-secondary animate-pulse" />
-                        </div>
-                        <p className="text-xl text-muted-foreground">
-                            See what our community of adventurers is saying
-                        </p>
+            <section id="testimonials" ref={testimonialsRef} className="py-24 relative overflow-hidden">
+                <div className="absolute inset-0 developer-grid opacity-10"></div>
+                <div className="container mx-auto px-4 relative z-10">
+                    <div className="text-center mb-16 space-y-4">
+                        <span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold font-inter">Voices of Adventure</span>
+                        <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight font-inter">
+                            COMMUNITY <span className="text-muted-foreground/30">TRUST</span>
+                        </h2>
                     </div>
 
-                    <div className="grid md:grid-cols-3 gap-8">
+                    <div className="grid md:grid-cols-3 gap-6">
                         {[
                             {
                                 name: "Samiran Samanta",
                                 role: "Journey Lover",
-                                content: "“Great tool! Very easy to use and gives smart, personalized travel plans. Adding more customization options would make it perfect. Keep it up!”",
+                                content: "Great tool! Very easy to use and gives smart, personalized travel plans. Adding more customization options would make it perfect.",
                                 rating: 5,
-                                location: "Bangkok, Thailand, Kyoto"
+                                location: "Bangkok, Thailand"
                             },
                             {
                                 name: "Ritam Maity",
                                 role: "Family Traveler",
-                                content: "Wow! This AI Adventure Planner is seriously cool! It planned my whole trip in seconds and gave ideas I wouldn’t have thought of. Super easy to use, super fun, and definitely something I’ll use again. Just add a few more customization options and it will be perfect!",
+                                content: "This AI planner planned my whole trip in seconds and gave ideas I wouldn't have thought of. Super easy to use, super fun.",
                                 rating: 4,
-                                location: "Tokyo, Japan, Delhi"
+                                location: "Tokyo, Japan"
                             },
                             {
                                 name: "Shounak Santra",
                                 role: "Adventure Seeker",
-                                content: "A really helpful planner with clear itineraries and creative suggestions. The interface is simple and smooth. Adding more filters like budget and travel style would improve accuracy even more. Great experience overall!",
+                                content: "A really helpful planner with clear itineraries and creative suggestions. The interface is simple, smooth, and very intuitive.",
                                 rating: 4,
-                                location: "Argentina, Barcelona, Canada"
+                                location: "Barcelona, Spain"
                             }
                         ].map((testimonial, index) => (
-                            <Card key={index} className="testimonial-card bg-card border-border shadow-lg hover:shadow-xl transition-shadow duration-300">
-                                <CardContent className="p-6 space-y-4">
-                                    <div className="flex text-yellow-500">
-                                        {[...Array(testimonial.rating)].map((_, i) => (
-                                            <Star key={i} size={20} fill="currentColor" />
-                                        ))}
-                                    </div>
-                                    <p className="text-muted-foreground italic leading-relaxed">"{testimonial.content}"</p>
-                                    <div className="border-t border-border pt-4 flex items-center space-x-3">
-                                        <div className="relative">
-                                            <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-primary-foreground font-bold shadow-lg">
+                            <motion.div
+                                key={index}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: index * 0.1 }}
+                            >
+                                <Card className="testimonial-card bg-[#0A0A0A]/80 backdrop-blur-xl border border-white/5 shadow-2xl hover:bg-[#111] transition-colors duration-300 h-full flex flex-col group">
+                                    <CardContent className="p-8 space-y-6 flex-1 flex flex-col">
+                                        <div className="flex text-white/80 gap-1">
+                                            {[...Array(testimonial.rating)].map((_, i) => (
+                                                <Star key={i} size={16} fill="currentColor" strokeWidth={0} />
+                                            ))}
+                                            <span className="ml-2 text-xs font-bold font-inter text-muted-foreground">{testimonial.rating}.0</span>
+                                        </div>
+                                        <p className="text-muted-foreground text-sm leading-relaxed flex-1 font-inter">
+                                            "{testimonial.content}"
+                                        </p>
+                                        <div className="flex items-center space-x-4 pt-4 border-t border-white/5">
+                                            <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white font-bold text-sm tracking-widest font-inter">
                                                 {testimonial.name.split(' ').map(n => n[0]).join('')}
                                             </div>
-                                            <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-background"></div>
+                                            <div>
+                                                <div className="font-bold text-white text-sm font-inter tracking-tight">{testimonial.name}</div>
+                                                <div className="text-xs text-muted-foreground font-inter tracking-wide">{testimonial.role} &bull; {testimonial.location}</div>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <div className="font-semibold text-card-foreground">{testimonial.name}</div>
-                                            <div className="text-sm text-muted-foreground">{testimonial.role} • {testimonial.location}</div>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                                    </CardContent>
+                                </Card>
+                            </motion.div>
                         ))}
                     </div>
                 </div>
             </section>
 
             {/* Pricing Section */}
-            <section id="pricing" ref={pricingRef} className="py-20 bg-muted/30">
+            <section id="pricing" ref={pricingRef} className="py-24 bg-[#050505]">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center space-y-4 mb-16">
                         <div className="flex items-center justify-center gap-3 mb-4">
-                            <TrendingUp className="w-8 h-8 text-primary" />
-                            <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-foreground via-primary to-secondary bg-clip-text text-transparent font-outfit">
+                            <TrendingUp className="w-8 h-8 text-white" />
+                            <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-white/80 to-white/50 bg-clip-text text-transparent font-inter tracking-tight">
                                 Simple, Transparent Pricing
                             </h2>
                         </div>
-                        <p className="text-xl text-muted-foreground">
+                        <p className="text-xl text-muted-foreground font-inter">
                             Choose the plan that fits your travel style
                         </p>
                     </div>
@@ -450,7 +500,7 @@ const AdventureNexusLanding = () => {
                                 price: "₹999",
                                 period: "/year",
                                 description: "Most popular for frequent travelers",
-                                features: ["Unlimited AI trip plans", "Price tracking for flights", "Local transport suggestions", "Region-aware recommendations (best visiting hours, crowd levels)"],
+                                features: ["Unlimited AI trip plans", "Price tracking for flights", "Local transport suggestions", "Region-aware recommendations"],
                                 popular: true,
                                 buttonText: "Start Free Trial"
                             },
@@ -459,105 +509,108 @@ const AdventureNexusLanding = () => {
                                 price: "₹2999",
                                 period: "/year",
                                 description: "For travel professionals",
-                                features: ["Everything in Adventurer", "Unlimited Group Trip Planning", "Custom integrations", "Priority Booking", "Guided Planning With AI", "Smart Hotel and Flight Booking Redirection"],
+                                features: ["Everything in Adventurer", "Unlimited Group Trip Planning", "Custom integrations", "Priority Booking", "Guided Planning", "Smart Booking Redirection"],
                                 popular: false,
                                 buttonText: "Go Premium Pro"
                             }
                         ].map((plan, index) => (
-                            <Card
+                            <motion.div
                                 key={index}
-                                className={`pricing-card relative bg-card shadow-xl hover:shadow-2xl transition-all duration-300 ${plan.popular ? 'border-primary scale-105' : 'border-border'
-                                    }`}
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: index * 0.1 }}
+                                className="h-full"
                             >
-                                {plan.popular && (
-                                    <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-lg">
-                                        Most Popular
-                                    </Badge>
-                                )}
-                                <CardHeader className="text-center">
-                                    <CardTitle className="text-2xl text-card-foreground">{plan.name}</CardTitle>
-                                    <div className="space-y-2">
-                                        <div className="text-4xl font-bold text-card-foreground">
-                                            {plan.price}
-                                            <span className="text-lg font-normal text-muted-foreground">{plan.period}</span>
+                                <Card
+                                    className={`pricing-card relative h-full flex flex-col bg-[#0A0A0A] shadow-2xl transition-all duration-300 ${plan.popular ? 'border-white/20' : 'border-white/5'
+                                        }`}
+                                >
+                                    {plan.popular && (
+                                        <div className="absolute -top-[1px] -left-[1px] -right-[1px] -bottom-[1px] rounded-xl bg-gradient-to-b from-white/20 to-transparent opacity-50 pointer-events-none z-0"></div>
+                                    )}
+                                    {plan.popular && (
+                                        <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white text-black hover:bg-white border-0 shadow-lg px-3 py-1 text-xs font-bold uppercase tracking-widest z-10">
+                                            Most Popular
+                                        </Badge>
+                                    )}
+                                    <CardHeader className="text-center z-10 pt-8">
+                                        <CardTitle className="text-xl font-bold text-white font-inter tracking-tight">{plan.name}</CardTitle>
+                                        <div className="space-y-2 mt-4">
+                                            <div className="text-5xl font-bold text-white font-inter tracking-tighter">
+                                                {plan.price}
+                                                <span className="text-lg font-normal text-muted-foreground tracking-normal">{plan.period}</span>
+                                            </div>
+                                            <CardDescription className="text-muted-foreground text-sm font-inter pt-2">{plan.description}</CardDescription>
                                         </div>
-                                        <CardDescription className="text-muted-foreground">{plan.description}</CardDescription>
-                                    </div>
-                                </CardHeader>
-                                <CardContent className="space-y-6">
-                                    <ul className="space-y-3">
-                                        {plan.features.map((feature, featureIndex) => (
-                                            <li key={featureIndex} className="flex items-center">
-                                                <CheckCircle className="text-green-600 dark:text-green-400 mr-3" size={16} />
-                                                <span className="text-sm text-muted-foreground">{feature}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                    <Button
-                                        className={`w-full shadow-lg hover:shadow-xl transition-all ${plan.popular
-                                            ? 'bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground'
-                                            : 'bg-muted hover:bg-muted/80 text-foreground'
-                                            }`}
-                                        onMouseEnter={handleButtonHover}
-                                        onMouseLeave={handleButtonLeave}
-                                    >
-                                        {plan.buttonText}
-                                    </Button>
-                                </CardContent>
-                            </Card>
+                                    </CardHeader>
+                                    <CardContent className="space-y-8 flex-1 flex flex-col z-10 pb-8 mt-4">
+                                        <ul className="space-y-4 flex-1">
+                                            {plan.features.map((feature, featureIndex) => (
+                                                <li key={featureIndex} className="flex items-start">
+                                                    <CheckCircle className="text-white/80 mr-3 shrink-0 mt-0.5" size={16} />
+                                                    <span className="text-sm text-muted-foreground font-inter">{feature}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                        <Button
+                                            className={`w-full h-12 rounded-full font-bold text-xs uppercase tracking-widest transition-all ${plan.popular
+                                                ? 'bg-white text-black btn-glow hover-scale shadow-[0_0_20px_rgba(255,255,255,0.15)]'
+                                                : 'bg-[#111] hover-scale text-white border border-white/10'
+                                                }`}
+                                        >
+                                            {plan.buttonText}
+                                        </Button>
+                                    </CardContent>
+                                </Card>
+                            </motion.div>
                         ))}
                     </div>
                 </div>
             </section>
 
             {/* Call to Action Section */}
-            <section ref={ctaRef} className="py-20 bg-gradient-to-br from-primary via-secondary to-purple-800 text-white">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <div className="max-w-3xl mx-auto space-y-8">
-                        <div className="flex items-center justify-center gap-3 mb-4">
-                            <Sparkles className="w-10 h-10 animate-pulse" />
-                            <h2 className="text-3xl md:text-4xl font-bold font-outfit">
+            <section ref={ctaRef} className="py-32 bg-black relative overflow-hidden border-t border-white/5">
+                <div className="absolute inset-0">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-white/5 rounded-full blur-[100px] pointer-events-none"></div>
+                    <div className="absolute inset-0 developer-grid opacity-20 pointer-events-none"></div>
+                </div>
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+                    <div className="max-w-3xl mx-auto space-y-10">
+                        <div className="flex flex-col items-center justify-center gap-6 mb-4">
+                            <Sparkles className="w-12 h-12 text-white/80 animate-pulse" />
+                            <h2 className="text-5xl md:text-7xl font-bold font-inter tracking-tighter text-white leading-tight">
                                 Ready to Plan Your Next Adventure?
                             </h2>
-                            <Sparkles className="w-10 h-10 animate-pulse" />
                         </div>
-                        <p className="text-xl opacity-90">
-                            Join thousands of adventurers who trust AdventureNexus to create unforgettable journeys. Your next great adventure is just a click away.
+                        <p className="text-xl md:text-2xl text-muted-foreground font-inter max-w-2xl mx-auto">
+                            Join thousands of adventurers who trust AdventureNexus to create unforgettable journeys.
                         </p>
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
                             <Button
                                 size="lg"
-                                variant="secondary"
-                                className="text-lg px-8 py-6 bg-white text-primary hover:bg-gray-50 cursor-pointer shadow-3d hover-lift"
-                                onMouseEnter={handleButtonHover}
-                                onMouseLeave={handleButtonLeave}
+                                className="h-14 px-10 bg-white text-black btn-glow hover-scale rounded-full font-bold text-sm uppercase tracking-widest shadow-[0_0_40px_rgba(255,255,255,0.2)]"
                             >
-                                Start Planning Now
-                                <ArrowRight className="ml-2 animate-float" size={20} />
+                                Start planning
+                                <ArrowRight className="ml-2" size={16} />
                             </Button>
                             <Button
                                 size="lg"
                                 variant="outline"
-                                className="text-lg px-8 py-6 text-white border-white hover:bg-white hover:text-primary cursor-pointer bg-transparent shadow-lg hover:shadow-2xl transition-all"
-                                onMouseEnter={handleButtonHover}
-                                onMouseLeave={handleButtonLeave}
+                                className="h-14 px-10 border-white/10 bg-transparent text-white hover-scale rounded-full font-bold text-sm uppercase tracking-widest"
                             >
-                                <MessageCircle className="mr-2 animate-float" size={20} />
+                                <MessageCircle className="mr-2" size={16} />
                                 Talk to Our AI
                             </Button>
                         </div>
-                        <div className="flex items-center justify-center space-x-8 text-sm opacity-75">
+                        <div className="flex items-center justify-center space-x-8 text-sm text-muted-foreground font-inter pt-8 border-t border-white/5 mt-12 w-full max-w-lg mx-auto">
                             <div className="flex items-center">
-                                <Award className="mr-2" size={16} />
-                                Smart AI recommendations
+                                <Award className="mr-2 w-4 h-4" />
+                                Smart recommendations
                             </div>
                             <div className="flex items-center">
-                                <Clock className="mr-2" size={16} />
-                                Instant trip planning
-                            </div>
-                            <div className="flex items-center">
-                                <Globe className="mr-2" size={16} />
-                                195+ destinations worldwide
+                                <Clock className="mr-2 w-4 h-4" />
+                                Instant planning
                             </div>
                         </div>
                     </div>
