@@ -391,7 +391,7 @@ const TripBuilderPage = () => {
                     <div className="max-w-4xl mx-auto text-center space-y-6">
                         <h1 className="text-4xl md:text-5xl font-bold text-foreground leading-tight">
                             Build Your Perfect
-                            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"> Itinerary</span>
+                            <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent"> Itinerary</span>
                         </h1>
                         <p className="text-xl text-muted-foreground leading-relaxed">
                             Plan every detail of your trip with our interactive itinerary builder,
@@ -466,7 +466,7 @@ const TripBuilderPage = () => {
                             <button
                                 onClick={() => setActiveTab('planner')}
                                 className={`flex items-center px-6 py-3 rounded-md transition-all ${activeTab === 'planner'
-                                    ? 'bg-gradient-to-r from-primary to-secondary text-primary-foreground'
+                                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white'
                                     : 'text-muted-foreground hover:text-foreground'
                                     }`}
                             >
@@ -667,11 +667,11 @@ const TripBuilderPage = () => {
 
                     {/* Action Buttons */}
                     <div className="flex justify-center space-x-4 mt-12">
-                        <Button size="lg" className="bg-gradient-to-r from-primary to-secondary text-primary-foreground hover:from-primary/90 hover:to-secondary/90">
+                        <Button size="lg" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white">
                             <Download className="mr-2" size={20} />
                             Export Itinerary
                         </Button>
-                        <Button size="lg" variant="outline" className="border-border text-primary hover:text-primary-foreground hover:bg-primary">
+                        <Button size="lg" variant="outline" className="border-border text-foreground hover:text-white hover:bg-indigo-600">
                             <Bot className="mr-2" size={20} />
                             Optimize with AI
                         </Button>
@@ -679,7 +679,7 @@ const TripBuilderPage = () => {
                             size="lg" 
                             variant="outline" 
                             onClick={handleSaveTrip}
-                            className="border-border text-primary hover:text-primary-foreground hover:bg-primary"
+                            className="border-border text-foreground hover:text-white hover:bg-purple-600"
                         >
                             <Save className="mr-2" size={20} />
                             Save Trip
