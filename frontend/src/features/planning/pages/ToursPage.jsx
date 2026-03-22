@@ -144,7 +144,7 @@ const ToursPage = () => {
             Discover multi-day guided tours that take you deeper into culture, nature, and adventure.
           </p>
           <div className="flex justify-center gap-4">
-            <Button size="lg" className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white rounded-full px-10 py-6 text-lg shadow-xl hover:shadow-2xl transition-all hover:scale-105">
+            <Button size="lg" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-full px-10 py-6 text-lg shadow-xl hover:shadow-2xl transition-all hover:scale-105">
               Find Your Trip
             </Button>
           </div>
@@ -164,7 +164,7 @@ const ToursPage = () => {
                 onClick={() => setSelectedCategory(category)}
                 className={`rounded-full px-6 whitespace-nowrap transition-all ${
                   selectedCategory === category 
-                    ? "bg-primary text-white shadow-md transform scale-105" 
+                    ? "bg-indigo-600 text-white shadow-md transform scale-105" 
                     : "border-border text-muted-foreground hover:text-foreground hover:bg-secondary/5"
                 }`}
               >

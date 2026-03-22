@@ -541,7 +541,7 @@ const TripBuilderPage = () => {
                                                 key={index}
                                                 onClick={() => setSelectedDay(index)}
                                                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedDay === index
-                                                    ? 'bg-primary text-primary-foreground'
+                                                    ? 'bg-indigo-600 text-white'
                                                     : 'bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80'
                                                     }`}
                                             >

@@ -261,10 +261,11 @@ const AdventureNexusReviews = () => {
                                 <button
                                     key={filter.id}
                                     onClick={() => setSelectedFilter(filter.id === 'all' ? 'all' : filter.id)}
-                                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${(selectedFilter === filter.id || (selectedFilter === 'all' && filter.id === 'all'))
-                                        ? 'bg-primary text-primary-foreground shadow-lg'
+                                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                                    (selectedFilter === filter.id || (selectedFilter === 'all' && filter.id === 'all'))
+                                        ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
                                         : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground border border-border/50'
-                                        }`}
+                                    }`}
                                 >
                                     {filter.label}
                                 </button>
@@ -349,7 +350,7 @@ const AdventureNexusReviews = () => {
 
                             <Button
                                 onClick={() => setShowWriteReview(!showWriteReview)}
-                                className="h-10 bg-primary hover:bg-primary/90 text-white rounded-xl px-6 transition-all hover:scale-105 shadow-lg shadow-primary/25 font-medium"
+                                className="h-10 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl px-6 transition-all hover:scale-105 shadow-lg shadow-indigo-500/25 font-medium"
                             >
                                 <Edit3 size={16} className="mr-2" />
                                 Write Review
@@ -452,7 +453,7 @@ const AdventureNexusReviews = () => {
                                     <Button
                                         onClick={handleReviewSubmit}
                                         disabled={submitting}
-                                        className="bg-primary text-white"
+                                        className="bg-indigo-600 hover:bg-indigo-700 text-white"
                                     >
                                         {submitting ? <Loader2 className="animate-spin mr-2" /> : <Send size={16} className="mr-2" />}
                                         Submit Review
@@ -587,7 +588,7 @@ const AdventureNexusReviews = () => {
                             {currentPage < totalPages && (
                                 <button
                                     onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                                    className="px-8 py-3 rounded-xl bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25 transition-all font-bold flex items-center gap-2 group hover:scale-105"
+                                    className="px-8 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/25 transition-all font-bold flex items-center gap-2 group hover:scale-105"
                                 >
                                     Load Next 3 Reviews
                                     <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />

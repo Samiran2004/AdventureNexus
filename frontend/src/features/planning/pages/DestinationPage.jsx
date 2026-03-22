@@ -204,7 +204,7 @@ const DestinationsPage = () => {
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                     className="flex-1 bg-transparent border-none text-lg px-4 py-3 focus:outline-none placeholder:text-muted-foreground/50 text-foreground"
                                 />
-                                <button className="bg-primary text-primary-foreground px-6 py-3 rounded-xl font-medium hover:bg-primary/90 transition-colors">
+                                <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-medium transition-colors">
                                     Search
                                 </button>
                             </div>
@@ -223,7 +223,7 @@ const DestinationsPage = () => {
                                 key={cat}
                                 onClick={() => setSelectedCategory(cat)}
                                 className={`px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-300 ${selectedCategory === cat
-                                        ? 'bg-primary text-primary-foreground shadow-md'
+                                        ? 'bg-indigo-600 text-white shadow-md'
                                         : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'
                                     }`}
                             >
@@ -491,7 +491,7 @@ const DestinationsPage = () => {
                                                     <span className="text-sm text-muted-foreground font-normal"> / person</span>
                                                 </div>
                                             </div>
-                                            <button className="bg-primary text-primary-foreground px-8 py-3 rounded-xl font-bold hover:bg-primary/90 transition-all shadow-lg hover:shadow-primary/25 flex items-center gap-2">
+                                            <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 flex items-center gap-2">
                                                 Book Now <Ticket size={18} />
                                             </button>
                                         </div>
