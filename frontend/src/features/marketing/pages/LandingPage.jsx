@@ -284,7 +284,7 @@ const AdventureNexusLanding = () => {
                                 </span>
                             </div>
                             
-                            <h1 className="text-6xl md:text-8xl font-bold text-white tracking-tighter leading-[0.9] font-inter">
+                            <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold text-white tracking-tighter leading-[0.9] font-inter">
                                 YOUR DREAM <br /> ADVENTURE <br />
                                 <span className="text-white/40">STARTS HERE</span>
                             </h1>
@@ -326,11 +326,11 @@ const AdventureNexusLanding = () => {
                     <div className="text-center mb-16 space-y-4">
                         <span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold font-inter">Capabilities</span>
                         <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight font-inter">
-                            POWERED BY <span className="text-white/30">INTELLIGENCE</span>
+                            POWERED BY <span className="text-white/50">INTELLIGENCE</span>
                         </h2>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[300px]">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:auto-rows-[300px]">
                         {/* Globe Box - Large */}
                         <TiltWrapper 
                             initial={{ opacity: 0, scale: 0.95 }}
