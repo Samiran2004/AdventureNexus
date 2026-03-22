@@ -43,6 +43,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { TextPlugin } from 'gsap/TextPlugin';
 import NumberCounter from '@/components/NumberCounter';
 import CardSlider from '@/components/CardSlider';
+
 import ScrollBasedVelocityDemo from '@/components/mvpblocks/scrollbasedvelocity-demo';
 import BentoGrid1 from '@/components/mvpblocks/bento-grid-1';
 import Globe2 from '@/components/mvpblocks/globe2';
@@ -398,6 +399,7 @@ const AdventureNexusLanding = () => {
                     </div>
                 </div>
             </section>
+
 
             {/* Testimonials Section */}
             <section id="testimonials" ref={testimonialsRef} className="py-24 relative overflow-hidden">
