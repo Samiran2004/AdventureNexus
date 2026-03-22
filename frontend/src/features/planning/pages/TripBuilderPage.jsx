@@ -389,17 +389,16 @@ const TripBuilderPage = () => {
 
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
                     <div className="max-w-4xl mx-auto text-center space-y-6">
-                        <h1 className="text-4xl md:text-5xl font-bold text-foreground leading-tight">
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight">
                             Build Your Perfect
-                            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"> Itinerary</span>
+                            <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent"> Itinerary</span>
                         </h1>
-                        <p className="text-xl text-muted-foreground leading-relaxed">
+                        <p className="text-lg text-muted-foreground leading-relaxed px-2">
                             Plan every detail of your trip with our interactive itinerary builder,
                             budget tracker, and collaborative planning tools.
                         </p>
 
-                        {/* Trip Edit Controls */}
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-8 bg-card/50 p-6 rounded-xl border border-border">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8 bg-card/50 p-4 sm:p-6 rounded-xl border border-border">
                             <div className="space-y-2">
                                 <label className="text-xs font-semibold uppercase text-muted-foreground flex items-center">
                                     <MapPin size={12} className="mr-1" /> Destination
@@ -414,19 +413,19 @@ const TripBuilderPage = () => {
                                 <label className="text-xs font-semibold uppercase text-muted-foreground flex items-center">
                                     <Calendar size={12} className="mr-1" /> Dates
                                 </label>
-                                <div className="flex items-center space-x-2">
+                                <div className="flex flex-col sm:flex-row items-center gap-2">
                                     <Input 
                                         type="date"
                                         value={tripData.startDate} 
                                         onChange={(e) => setTripData({...tripData, startDate: e.target.value})}
-                                        className="bg-background border-border"
+                                        className="bg-background border-border w-full"
                                     />
-                                    <span className="text-muted-foreground">-</span>
+                                    <span className="text-muted-foreground hidden sm:block">-</span>
                                     <Input 
                                         type="date"
                                         value={tripData.endDate} 
                                         onChange={(e) => setTripData({...tripData, endDate: e.target.value})}
-                                        className="bg-background border-border"
+                                        className="bg-background border-border w-full"
                                     />
                                 </div>
                             </div>
@@ -466,7 +465,7 @@ const TripBuilderPage = () => {
                             <button
                                 onClick={() => setActiveTab('planner')}
                                 className={`flex items-center px-6 py-3 rounded-md transition-all ${activeTab === 'planner'
-                                    ? 'bg-gradient-to-r from-primary to-secondary text-primary-foreground'
+                                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white'
                                     : 'text-muted-foreground hover:text-foreground'
                                     }`}
                             >
@@ -542,7 +541,7 @@ const TripBuilderPage = () => {
                                                 key={index}
                                                 onClick={() => setSelectedDay(index)}
                                                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedDay === index
-                                                    ? 'bg-primary text-primary-foreground'
+                                                    ? 'bg-indigo-600 text-white'
                                                     : 'bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80'
                                                     }`}
                                             >
@@ -666,12 +665,12 @@ const TripBuilderPage = () => {
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex justify-center space-x-4 mt-12">
-                        <Button size="lg" className="bg-gradient-to-r from-primary to-secondary text-primary-foreground hover:from-primary/90 hover:to-secondary/90">
+                    <div className="flex flex-wrap justify-center gap-3 mt-12">
+                        <Button size="lg" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white">
                             <Download className="mr-2" size={20} />
                             Export Itinerary
                         </Button>
-                        <Button size="lg" variant="outline" className="border-border text-primary hover:text-primary-foreground hover:bg-primary">
+                        <Button size="lg" variant="outline" className="border-border text-foreground hover:text-white hover:bg-indigo-600">
                             <Bot className="mr-2" size={20} />
                             Optimize with AI
                         </Button>
@@ -679,7 +678,7 @@ const TripBuilderPage = () => {
                             size="lg" 
                             variant="outline" 
                             onClick={handleSaveTrip}
-                            className="border-border text-primary hover:text-primary-foreground hover:bg-primary"
+                            className="border-border text-foreground hover:text-white hover:bg-purple-600"
                         >
                             <Save className="mr-2" size={20} />
                             Save Trip

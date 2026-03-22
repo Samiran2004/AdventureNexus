@@ -135,11 +135,11 @@ const ExperiencesPage = () => {
           <p className="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto mb-8 font-light">
             From hot air balloon rides to intimate cooking classes, explore activities that make your journey unforgettable.
           </p>
-          <div className="flex justify-center gap-4">
-            <Button size="lg" className="bg-primary hover:bg-primary/90 text-white rounded-full px-8">
+          <div className="flex flex-wrap justify-center gap-3">
+            <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full px-8 shadow-lg shadow-indigo-500/30">
               Explore Now
             </Button>
-            <Button size="lg" variant="outline" className="bg-white/10 hover:bg-white/20 text-white border-white/20 rounded-full px-8 backdrop-blur-sm">
+            <Button size="lg" variant="outline" className="bg-white/10 hover:bg-white/20 text-white border-white/30 rounded-full px-8 backdrop-blur-sm">
               <Sparkles size={18} className="mr-2" />
               AI Recommendations
             </Button>
@@ -152,27 +152,26 @@ const ExperiencesPage = () => {
         
         {/* Filter Section */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
-          <div className="flex overflow-x-auto pb-2 md:pb-0 gap-2 w-full md:w-auto no-scrollbar scroll-smooth">
+          <div className="flex overflow-x-auto pb-2 md:pb-0 gap-2 w-full md:w-auto scrollbar-hide scroll-smooth">
             {categories.map((category) => (
-              <Button
+              <button
                 key={category}
-                variant={selectedCategory === category ? "default" : "outline"}
                 onClick={() => setSelectedCategory(category)}
-                className={`rounded-full whitespace-nowrap ${
+                className={`rounded-full whitespace-nowrap px-5 py-2 text-sm font-medium transition-all duration-200 flex-shrink-0 ${
                   selectedCategory === category 
-                    ? "bg-primary text-white" 
-                    : "border-border text-muted-foreground hover:text-foreground"
+                    ? 'bg-white text-black shadow-md' 
+                    : 'border border-border text-muted-foreground hover:text-foreground hover:border-white/40'
                 }`}
               >
                 {category}
-              </Button>
+              </button>
             ))}
           </div>
           
-          <Button variant="outline" className="hidden md:flex items-center gap-2 border-border text-muted-foreground hover:text-foreground">
+          <button className="hidden md:flex items-center gap-2 border border-border text-muted-foreground hover:text-foreground rounded-full px-5 py-2 text-sm transition-colors">
             <Filter size={16} />
             More Filters
-          </Button>
+          </button>
         </div>
 
         {/* Categories Grid */}

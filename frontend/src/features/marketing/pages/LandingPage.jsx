@@ -43,6 +43,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { TextPlugin } from 'gsap/TextPlugin';
 import NumberCounter from '@/components/NumberCounter';
 import CardSlider from '@/components/CardSlider';
+
 import ScrollBasedVelocityDemo from '@/components/mvpblocks/scrollbasedvelocity-demo';
 import BentoGrid1 from '@/components/mvpblocks/bento-grid-1';
 import Globe2 from '@/components/mvpblocks/globe2';
@@ -284,9 +285,9 @@ const AdventureNexusLanding = () => {
                                 </span>
                             </div>
                             
-                            <h1 className="text-6xl md:text-8xl font-bold text-white tracking-tighter leading-[0.9] font-inter">
+                            <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold text-white tracking-tighter leading-[0.9] font-inter">
                                 YOUR DREAM <br /> ADVENTURE <br />
-                                <span className="text-muted-foreground/50">STARTS HERE</span>
+                                <span className="text-white/40">STARTS HERE</span>
                             </h1>
 
                             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium">
@@ -326,11 +327,11 @@ const AdventureNexusLanding = () => {
                     <div className="text-center mb-16 space-y-4">
                         <span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold font-inter">Capabilities</span>
                         <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight font-inter">
-                            POWERED BY <span className="text-muted-foreground/30">INTELLIGENCE</span>
+                            POWERED BY <span className="text-white/50">INTELLIGENCE</span>
                         </h2>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[300px]">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:auto-rows-[300px]">
                         {/* Globe Box - Large */}
                         <TiltWrapper 
                             initial={{ opacity: 0, scale: 0.95 }}
@@ -399,6 +400,7 @@ const AdventureNexusLanding = () => {
                 </div>
             </section>
 
+
             {/* Testimonials Section */}
             <section id="testimonials" ref={testimonialsRef} className="py-24 relative overflow-hidden">
                 <div className="absolute inset-0 developer-grid opacity-10"></div>
@@ -406,7 +408,7 @@ const AdventureNexusLanding = () => {
                     <div className="text-center mb-16 space-y-4">
                         <span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold font-inter">Voices of Adventure</span>
                         <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight font-inter">
-                            COMMUNITY <span className="text-muted-foreground/30">TRUST</span>
+                            COMMUNITY <span className="text-white/30">TRUST</span>
                         </h2>
                     </div>
 

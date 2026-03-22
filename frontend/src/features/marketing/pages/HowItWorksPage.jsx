@@ -179,8 +179,7 @@ const VideoShowcase = () => {
 
             {/* Custom 3D Background Overlay */}
             <div
-              className="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-30"
-              style={{ backgroundImage: "url('/home/zephyrus/.gemini/antigravity/brain/89310916-f9c4-4ed0-b191-8abe1fbe94cb/futuristic_3d_travel_showcase_1769093668054.png')" }}
+              className="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-30 bg-gradient-to-br from-indigo-900 to-gray-950"
             ></div>
             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none"></div>
             <div className="absolute inset-0 bg-gradient-to-t from-gray-950/80 via-transparent to-transparent"></div>
@@ -377,7 +376,7 @@ const HowItWorks = () => {
       <section className="relative py-20 px-4 text-center z-10">
         <div className="max-w-4xl mx-auto">
           <motion.h1
-            className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent pb-2"
+            className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-indigo-400 via-purple-400 to-emerald-400 bg-clip-text text-transparent pb-2"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}

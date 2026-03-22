@@ -268,7 +268,7 @@ const FlightsPage = () => {
                                 <Button
                                     variant={searchForm.tripType === 'roundTrip' ? 'default' : 'outline'}
                                     onClick={() => setSearchForm({ ...searchForm, tripType: 'roundTrip' })}
-                                    className={searchForm.tripType === 'roundTrip' ? "bg-gradient-to-r from-primary to-secondary text-primary-foreground" : "border-border"}
+                                    className={searchForm.tripType === 'roundTrip' ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white" : "border-border"}
                                 >
                                     Round Trip
                                 </Button>
@@ -481,7 +481,7 @@ const FlightsPage = () => {
                             <Button
                                 onClick={handleSearch}
                                 disabled={isSearching}
-                                className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 py-6 text-lg text-primary-foreground"
+                                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 py-6 text-lg text-white"
                             >
                                 {isSearching ? (
                                     <>
@@ -664,7 +664,7 @@ const FlightsPage = () => {
                                                 </div>
 
                                                 <div className="flex lg:flex-col space-x-2 lg:space-x-0 lg:space-y-2">
-                                                    <Button className="bg-gradient-to-r from-primary to-secondary text-primary-foreground hover:from-primary/90 hover:to-secondary/90">
+                                                    <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white">
                                                         Select Flight
                                                     </Button>
 
@@ -738,7 +738,7 @@ const FlightsPage = () => {
                             {chatMessages.map((msg, idx) => (
                                 <div key={idx} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
                                     <div className={`max-w-[80%] p-3 rounded-lg ${msg.type === 'user'
-                                        ? 'bg-primary text-primary-foreground'
+                                        ? 'bg-indigo-600 text-white'
                                         : 'bg-muted text-foreground'
                                         }`}>
                                         <p className="text-sm">{msg.message}</p>
@@ -752,7 +752,7 @@ const FlightsPage = () => {
                                     placeholder="Ask about flights, prices, or travel tips..."
                                     className="bg-input border-border flex-1"
                                 />
-                                <Button size="sm" className="bg-gradient-to-r from-primary to-secondary">
+                                <Button size="sm" className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
                                     <ArrowRight size={16} />
                                 </Button>
                             </div>

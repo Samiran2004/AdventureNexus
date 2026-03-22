@@ -660,7 +660,7 @@ const SearchPage = () => {
                           type="button"
                           onClick={() => setTravelers(t)}
                           className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${travelers === t
-                            ? "bg-primary text-primary-foreground shadow-lg scale-105"
+                            ? "bg-indigo-600 text-white shadow-lg scale-105"
                             : "bg-muted text-muted-foreground hover:bg-muted/80 border border-transparent"
                             }`}
                         >
@@ -701,7 +701,7 @@ const SearchPage = () => {
 
                 <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
                   <Button
-                    className="w-full sm:flex-1 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground px-8 cursor-pointer shadow-xl hover:shadow-2xl hover-lift"
+                    className="w-full sm:flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-8 cursor-pointer shadow-xl hover:shadow-2xl hover-lift"
                     size="lg"
                     onClick={() => handleSearchResult()}
                     disabled={isLoading}
@@ -740,14 +740,14 @@ const SearchPage = () => {
                 <TabsList className="bg-muted/50 backdrop-blur-sm p-1 rounded-xl shadow-lg">
                   <TabsTrigger
                     value="all"
-                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground cursor-pointer rounded-lg transition-all duration-300 data-[state=active]:shadow-lg font-medium px-6"
+                    className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white cursor-pointer rounded-lg transition-all duration-300 data-[state=active]:shadow-lg font-medium px-6"
                   >
                     <Sparkles size={16} className="mr-2" />
                     All Plans ({searchResults?.length || 0})
                   </TabsTrigger>
                   <TabsTrigger
                     value="liked"
-                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground cursor-pointer rounded-lg transition-all duration-300 data-[state=active]:shadow-lg font-medium px-6"
+                    className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white cursor-pointer rounded-lg transition-all duration-300 data-[state=active]:shadow-lg font-medium px-6"
                   >
                     <Heart size={16} className="mr-2" />
                     Liked Plans ({likedPlansData?.length || 0})
@@ -945,7 +945,7 @@ const SearchPage = () => {
                           <div className="pt-4 border-t border-border">
                             <div className="flex space-x-2">
                               <Button
-                                className="flex-1 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 cursor-pointer text-primary-foreground shadow-lg hover:shadow-xl transition-all"
+                                className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 cursor-pointer text-white shadow-lg hover:shadow-xl transition-all"
                                 onClick={() => handleViewDetails(result)}
                               >
                                 View Details

@@ -172,20 +172,20 @@ function NavBar() {
             )}
 
             {/* Main Navigation - Floating Island */}
-            <div className="fixed top-0 w-full z-50 flex justify-center pt-6 px-4">
+            <div className="fixed top-0 w-full z-50 flex justify-center pt-4 sm:pt-6 px-3 sm:px-4">
                 <nav
-                    className={`transition-all duration-500 ease-in-out px-6 py-2 rounded-full border border-white/10 glass-card flex items-center justify-between gap-8 ${
+                    className={`transition-all duration-500 ease-in-out px-4 sm:px-6 py-2 rounded-full border border-white/10 glass-card flex items-center justify-between gap-4 sm:gap-8 w-full max-w-5xl ${
                         scrolled ? 'scale-95' : 'scale-100'
                     }`}
                 >
-                    <div className="flex items-center gap-12">
+                    <div className="flex items-center gap-4 sm:gap-12">
                         {/* Logo */}
                         <Link
                             to="/"
                             className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
                         >
                             <AnimatedLogo size={28} />
-                            <span className="font-bold font-inter text-lg tracking-tight text-white">
+                            <span className="hidden sm:block font-bold font-inter text-lg tracking-tight text-white">
                                 AdventureNexus
                             </span>
                         </Link>
