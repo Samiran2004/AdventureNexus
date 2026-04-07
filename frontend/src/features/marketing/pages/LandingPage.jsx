@@ -110,7 +110,7 @@ const AdventureNexusLanding = () => {
     const featuresRef = useRef(null);
     const howItWorksRef = useRef(null);
     const testimonialsRef = useRef(null);
-    const pricingRef = useRef(null);
+    const personaRef = useRef(null);
     const ctaRef = useRef(null);
     const navRef = useRef(null);
     const heroContentRef = useRef(null);
@@ -189,19 +189,19 @@ const AdventureNexusLanding = () => {
                 ease: "back.out(1.7)"
             });
 
-            // Pricing cards animation - TEMPORARILY DISABLED
-            // gsap.from(".pricing-card", {
-            //     scrollTrigger: {
-            //         trigger: pricingRef.current,
-            //         start: "top 80%",
-            //     },
-            //     y: 80,
-            //     opacity: 0,
-            //     scale: 0.9,
-            //     duration: 1,
-            //     stagger: 0.15,
-            //     ease: "power2.out"
-            // });
+            // Persona cards animation
+            gsap.from(".persona-card", {
+                scrollTrigger: {
+                    trigger: personaRef.current,
+                    start: "top 80%",
+                },
+                y: 80,
+                opacity: 0,
+                scale: 0.9,
+                duration: 1,
+                stagger: 0.15,
+                ease: "power2.out"
+            });
 
             // CTA section animation
             gsap.from(ctaRef.current, {
@@ -304,7 +304,7 @@ const AdventureNexusLanding = () => {
                             <Button
                                 size="lg"
                                 className="h-14 px-10 bg-white text-black hover:bg-white/90 rounded-full font-bold text-sm uppercase tracking-widest transition-all hover:scale-105 active:scale-95 shadow-[0_0_40px_rgba(255,255,255,0.2)]"
-                                onClick={() => navigate('/build-trip')}
+                                onClick={() => navigate('/search')}
                             >
                                 Start planning
                             </Button>
@@ -471,101 +471,75 @@ const AdventureNexusLanding = () => {
                 </div>
             </section>
 
-            {/* Pricing Section */}
-            <section id="pricing" ref={pricingRef} className="py-24 bg-[#050505]">
+            {/* Dynamic Velocity Banner */}
+            <div className="py-12 bg-black border-y border-white/5 overflow-hidden">
+                <ScrollBasedVelocityDemo />
+            </div>
+
+            {/* Travel Personas Section */}
+            <section id="personas" ref={personaRef} className="py-24 bg-[#050505]">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center space-y-4 mb-16">
                         <div className="flex items-center justify-center gap-3 mb-4">
-                            <TrendingUp className="w-8 h-8 text-white" />
+                            <Compass className="w-8 h-8 text-white" />
                             <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-white/80 to-white/50 bg-clip-text text-transparent font-inter tracking-tight">
-                                Simple, Transparent Pricing
+                                Discover Your Travel Persona
                             </h2>
                         </div>
                         <p className="text-xl text-muted-foreground font-inter">
-                            Choose the plan that fits your travel style
+                            Our AI curates highly specialized journeys for every type of traveler.
                         </p>
                     </div>
 
-                    <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
                         {[
                             {
-                                name: "Explorer",
-                                price: "Free",
-                                period: "",
-                                description: "Perfect for occasional travelers",
-                                features: ["3 AI trip plans per month", "Basic itinerary creation", "Flight price alerts", "Community support"],
-                                popular: false,
-                                buttonText: "Start Free"
+                                name: "The Thrill Seeker",
+                                icon: <Sparkles className="w-8 h-8 text-white mb-4" />,
+                                description: "Adrenaline, extreme sports, and uncharted paths.",
+                                bg: "bg-gradient-to-br from-red-500/10 to-orange-500/10 hover:from-red-500/20 hover:to-orange-500/20",
+                                img: "https://images.unsplash.com/photo-1522163182402-834f871fd851?q=80&w=400&auto=format&fit=crop"
                             },
                             {
-                                name: "Adventurer",
-                                price: "₹999",
-                                period: "/year",
-                                description: "Most popular for frequent travelers",
-                                features: ["Unlimited AI trip plans", "Price tracking for flights", "Local transport suggestions", "Region-aware recommendations"],
-                                popular: true,
-                                buttonText: "Start Free Trial"
+                                name: "Cultural Connoisseur",
+                                icon: <Globe className="w-8 h-8 text-white mb-4" />,
+                                description: "Wine tasting, ancient history, and deep local immersion.",
+                                bg: "bg-gradient-to-br from-purple-500/10 to-indigo-500/10 hover:from-purple-500/20 hover:to-indigo-500/20",
+                                img: "https://images.unsplash.com/photo-1518398046578-8cca57782e17?q=80&w=400&auto=format&fit=crop"
                             },
                             {
-                                name: "Premium Pro",
-                                price: "₹2999",
-                                period: "/year",
-                                description: "For travel professionals",
-                                features: ["Everything in Adventurer", "Unlimited Group Trip Planning", "Custom integrations", "Priority Booking", "Guided Planning", "Smart Booking Redirection"],
-                                popular: false,
-                                buttonText: "Go Premium Pro"
+                                name: "The Escapist",
+                                icon: <MapPin className="w-8 h-8 text-white mb-4" />,
+                                description: "Maximum relaxation, hidden beaches, zero stress.",
+                                bg: "bg-gradient-to-br from-teal-500/10 to-emerald-500/10 hover:from-teal-500/20 hover:to-emerald-500/20",
+                                img: "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?q=80&w=400&auto=format&fit=crop"
+                            },
+                            {
+                                name: "Budget Backpacker",
+                                icon: <Compass className="w-8 h-8 text-white mb-4" />,
+                                description: "Hostels, raw experiences, and spontaneous living.",
+                                bg: "bg-gradient-to-br from-yellow-500/10 to-amber-500/10 hover:from-yellow-500/20 hover:to-amber-500/20",
+                                img: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?q=80&w=400&auto=format&fit=crop"
                             }
-                        ].map((plan, index) => (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 30 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: index * 0.1 }}
-                                className="h-full"
-                            >
-                                <Card
-                                    className={`pricing-card relative h-full flex flex-col bg-[#0A0A0A] shadow-2xl transition-all duration-300 ${plan.popular ? 'border-white/20' : 'border-white/5'
-                                        }`}
-                                >
-                                    {plan.popular && (
-                                        <div className="absolute -top-[1px] -left-[1px] -right-[1px] -bottom-[1px] rounded-xl bg-gradient-to-b from-white/20 to-transparent opacity-50 pointer-events-none z-0"></div>
-                                    )}
-                                    {plan.popular && (
-                                        <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white text-black hover:bg-white border-0 shadow-lg px-3 py-1 text-xs font-bold uppercase tracking-widest z-10">
-                                            Most Popular
-                                        </Badge>
-                                    )}
-                                    <CardHeader className="text-center z-10 pt-8">
-                                        <CardTitle className="text-xl font-bold text-white font-inter tracking-tight">{plan.name}</CardTitle>
-                                        <div className="space-y-2 mt-4">
-                                            <div className="text-5xl font-bold text-white font-inter tracking-tighter">
-                                                {plan.price}
-                                                <span className="text-lg font-normal text-muted-foreground tracking-normal">{plan.period}</span>
-                                            </div>
-                                            <CardDescription className="text-muted-foreground text-sm font-inter pt-2">{plan.description}</CardDescription>
+                        ].map((persona, index) => (
+                            <TiltWrapper key={index} className="persona-card h-full">
+                                <Card className={`h-full flex flex-col border border-white/5 backdrop-blur-xl transition-all duration-500 overflow-hidden cursor-pointer group ${persona.bg}`}>
+                                    <div className="absolute inset-0 z-0 opacity-20 group-hover:opacity-40 transition-opacity duration-500 bg-cover bg-center" style={{ backgroundImage: `url(${persona.img})`, filter: 'grayscale(100%)' }}></div>
+                                    <div className="absolute inset-0 bg-black/60 group-hover:bg-black/40 transition-colors duration-500 z-0"></div>
+                                    <CardContent className="p-8 flex flex-col items-center text-center justify-center h-full relative z-10">
+                                        <div className="transform group-hover:scale-110 transition-transform duration-500">
+                                            {persona.icon}
                                         </div>
-                                    </CardHeader>
-                                    <CardContent className="space-y-8 flex-1 flex flex-col z-10 pb-8 mt-4">
-                                        <ul className="space-y-4 flex-1">
-                                            {plan.features.map((feature, featureIndex) => (
-                                                <li key={featureIndex} className="flex items-start">
-                                                    <CheckCircle className="text-white/80 mr-3 shrink-0 mt-0.5" size={16} />
-                                                    <span className="text-sm text-muted-foreground font-inter">{feature}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                        <Button
-                                            className={`w-full h-12 rounded-full font-bold text-xs uppercase tracking-widest transition-all ${plan.popular
-                                                ? 'bg-white text-black btn-glow hover-scale shadow-[0_0_20px_rgba(255,255,255,0.15)]'
-                                                : 'bg-[#111] hover-scale text-white border border-white/10'
-                                                }`}
-                                        >
-                                            {plan.buttonText}
-                                        </Button>
+                                        <h3 className="text-2xl font-bold text-white font-inter tracking-tight mb-4">{persona.name}</h3>
+                                        <p className="text-sm text-muted-foreground font-inter">{persona.description}</p>
+                                        <div className="mt-8 opacity-0 group-hover:opacity-100 transition-opacity duration-500 translate-y-4 group-hover:translate-y-0">
+                                            <Button variant="outline" className="border-white/20 text-white hover:bg-white/10 rounded-full text-xs uppercase tracking-widest font-bold">
+                                                Select Persona
+                                            </Button>
+                                        </div>
                                     </CardContent>
                                 </Card>
-                            </motion.div>
+                            </TiltWrapper>
                         ))}
                     </div>
                 </div>

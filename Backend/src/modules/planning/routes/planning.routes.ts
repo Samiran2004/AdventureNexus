@@ -3,6 +3,7 @@ import searchNewDestination from '../../recommendations/controllers/searchNewDes
 import getDestinationImages from '../../recommendations/controllers/getDestinationImages.controller';
 import getPersonalizedRecommendations from '../../recommendations/controllers/getPersonalizedRecommendations.controller';
 import { getPlanById } from '../controllers/getPlanByIdController';
+import { deletePlanById } from '../controllers/deletePlanByIdController';
 import { savePlanToUser } from '../controllers/savePlanToUserController';
 import { unsavePlanFromUser } from '../controllers/unsavePlanFromUserController';
 import { createPlan } from '../controllers/newPlanController';
@@ -61,5 +62,11 @@ route.delete("/:planId/save", protect, unsavePlanFromUser);
  * @desc Fetch a plan by ID publicly (for shared links).
  */
 route.get("/public/:id", cacheMiddleware({ prefix: CACHE_CONFIG.PREFIX.PLAN }), getPlanById);
+
+/**
+ * @route DELETE /api/v1/plans/:id
+ * @desc Delete a manually created or generated plan.
+ */
+route.delete("/:id", protect, deletePlanById);
 
 export default route;

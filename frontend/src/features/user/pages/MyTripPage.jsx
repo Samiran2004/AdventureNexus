@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
+import { SignedIn, SignedOut, SignInButton, UserButton, useAuth } from '@clerk/clerk-react';
 import {
   MapPin,
   Calendar,
@@ -45,6 +45,7 @@ import {
 } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { toast } from 'react-hot-toast';
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/mvpblocks/footer-newsletter';
 
@@ -52,10 +53,17 @@ gsap.registerPlugin(ScrollTrigger);
 
 // MyTripsPage component manages and displays the user's trips
 const MyTripsPage = () => {
+  const { getToken } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
   const [selectedTrip, setSelectedTrip] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [viewMode, setViewMode] = useState('history'); // 'history' | 'liked'
+  const [likedTrips, setLikedTrips] = useState([]);
+  const [isLikedLoading, setIsLikedLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+  const inrFormat = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 });
   const [editingItem, setEditingItem] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
 
@@ -129,34 +137,56 @@ const MyTripsPage = () => {
     const fetchTrips = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'}/api/v1/plans/my-plans`, {
-          headers: {
-            'Content-Type': 'application/json',
-            // Auth should be handled by a global setup or passed here
-          }
-        });
-        const data = await response.json();
-        if (data.status === 'Success') {
-          // Transform backend data to match frontend expectations if necessary
-          const transformedTrips = data.data.map(plan => ({
-            id: plan._id,
-            title: plan.name,
-            destination: plan.to,
-            startDate: plan.date,
-            totalDays: plan.days,
-            status: new Date(plan.date) > new Date() ? 'upcoming' : 'completed', // Simple logic
-            budget: plan.budget,
-            spent: plan.cost || 0,
-            travelers: plan.travelers,
-            image: plan.image_url || 'https://images.unsplash.com/photo-1488085061387-422e29b40080?w=400',
-            aiGenerated: !!plan.ai_score
-          }));
-          setTrips(transformedTrips);
+        setIsLikedLoading(true);
+        const token = await getToken();
+        const headers = {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        };
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+
+        // Fetch My Plans (History)
+        const myPlansRes = await fetch(`${backendUrl}/api/v1/plans/my-plans`, { headers });
+        if (myPlansRes.ok) {
+            const myPlansData = await myPlansRes.json();
+            if (myPlansData.status === 'Success') {
+              const transformedTrips = (myPlansData.data || []).map(plan => {
+                if (!plan) return null;
+                return {
+                  id: plan._id, title: plan.name || 'Untitled Trip', destination: plan.to || 'Unknown Destination', startDate: plan.date || new Date().toISOString(),
+                  totalDays: plan.days || 1, status: new Date(plan.date || new Date()) > new Date() ? 'upcoming' : 'completed',
+                  budget: plan.budget || 20000, spent: plan.cost || Math.floor((plan.budget || 20000) * 0.4), travelers: plan.travelers || 1,
+                  image: plan.image_url || 'https://images.unsplash.com/photo-1488085061387-422e29b40080?w=400',
+                  aiGenerated: !!plan.ai_score, progress: 0, currentDay: 0
+                };
+              }).filter(Boolean);
+              setTrips(transformedTrips);
+            }
+        }
+
+        // Fetch Liked Plans
+        const likedRes = await fetch(`${backendUrl}/api/v1/liked-plans`, { headers });
+        if (likedRes.ok) {
+            const likedData = await likedRes.json();
+            if (likedData.success && likedData.likedPlans) {
+              const transformedLiked = (likedData.likedPlans || []).map(plan => {
+                if (!plan) return null;
+                return {
+                  id: plan._id, title: plan.name || 'Untitled Target', destination: plan.to || 'Unknown Destination', startDate: plan.date || new Date().toISOString(),
+                  totalDays: plan.days || 1, status: new Date(plan.date || new Date()) > new Date() ? 'upcoming' : 'completed',
+                  budget: plan.budget || 30000, spent: plan.cost || Math.floor((plan.budget || 30000) * 0.3), travelers: plan.travelers || 1,
+                  image: plan.image_url || 'https://images.unsplash.com/photo-1488085061387-422e29b40080?w=400',
+                  aiGenerated: !!plan.ai_score, progress: 0, currentDay: 0
+                };
+              }).filter(Boolean);
+              setLikedTrips(transformedLiked);
+            }
         }
       } catch (error) {
         console.error('Fetch Trips Error:', error);
       } finally {
         setLoading(false);
+        setIsLikedLoading(false);
       }
     };
 
@@ -377,12 +407,61 @@ const MyTripsPage = () => {
     return () => ctx.revert();
   }, [selectedTrip, activeTab]);
 
-  const filteredTrips = trips.filter(trip => {
-    const matchesSearch = trip.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      trip.destination.toLowerCase().includes(searchQuery.toLowerCase());
+  const currentArray = viewMode === 'history' ? trips : likedTrips;
+  const filteredTrips = currentArray.filter(trip => {
+    if (!trip) return false;
+    const title = trip.title || '';
+    const destination = trip.destination || '';
+    
+    const matchesSearch = title.toLowerCase().includes((searchQuery || '').toLowerCase()) ||
+                          destination.toLowerCase().includes((searchQuery || '').toLowerCase());
     const matchesFilter = filterStatus === 'all' || trip.status === filterStatus;
     return matchesSearch && matchesFilter;
   });
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, filterStatus, viewMode]);
+
+  const totalPages = Math.ceil(filteredTrips.length / itemsPerPage) || 1;
+  const paginatedTrips = filteredTrips.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  const totalSpent = currentArray.reduce((acc, trip) => acc + (trip.spent || 0), 0);
+
+  const handleDeleteTrip = async (tripId, e) => {
+    e.stopPropagation();
+    try {
+      const token = await getToken();
+      if (!token) return;
+
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+      const headers = {
+        'Authorization': `Bearer ${token}`
+      };
+
+      if (viewMode === 'history') {
+        const res = await fetch(`${backendUrl}/api/v1/plans/${tripId}`, { method: 'DELETE', headers });
+        if (res.ok) {
+          toast.success("Plan deleted permanently.");
+          setTrips(trips.filter(t => t.id !== tripId));
+        } else {
+          toast.error("Failed to delete plan.");
+        }
+      } else {
+        const res = await fetch(`${backendUrl}/api/v1/liked-plans/${tripId}`, { method: 'DELETE', headers });
+        if (res.ok) {
+          toast.success("Plan removed from Liked Plans.");
+          setLikedTrips(likedTrips.filter(t => t.id !== tripId));
+        } else {
+          toast.error("Failed to remove plan.");
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("An error occurred during deletion.");
+    }
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -422,191 +501,240 @@ const MyTripsPage = () => {
       {/* Header */}
       <NavBar />
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-12 relative z-10">
         {!selectedTrip ? (
-          // Trip Overview
           <div className="space-y-8">
+            {/* View Mode Tabs */}
+            <div className="flex justify-center mb-10 mt-4">
+              <div className="bg-card/40 backdrop-blur-md border border-white/10 rounded-2xl p-1.5 inline-flex shadow-sm relative">
+                <button
+                  onClick={() => { setViewMode('history'); setCurrentPage(1); }}
+                  className={`flex items-center space-x-2.5 py-3 px-8 rounded-xl transition-all duration-300 font-semibold z-10 ${
+                    viewMode === 'history' ? 'text-white' : 'text-muted-foreground hover:text-white'
+                  }`}
+                >
+                  <Compass size={18} />
+                  <span>Search History</span>
+                </button>
+                <button
+                  onClick={() => { setViewMode('liked'); setCurrentPage(1); }}
+                  className={`flex items-center space-x-2.5 py-3 px-8 rounded-xl transition-all duration-300 font-semibold z-10 ${
+                    viewMode === 'liked' ? 'text-white' : 'text-muted-foreground hover:text-white'
+                  }`}
+                >
+                  <Heart size={18} />
+                  <span>Saved & Liked Plans</span>
+                </button>
+                <div 
+                  className={`absolute top-1.5 bottom-1.5 bg-gradient-to-r from-primary to-secondary rounded-xl shadow-lg transition-transform duration-300 ease-in-out ${viewMode === 'history' ? 'translate-x-0' : 'translate-x-[calc(100%-0px)]'}`}
+                  style={{ width: 'calc(50% - 3px)' }}
+                >
+                  <div className="absolute inset-0 bg-white/20 rounded-xl" />
+                </div>
+              </div>
+            </div>
+
             {/* Controls */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-              <div className="flex items-center space-x-4">
-                <div className="relative">
-                  <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <div className="flex flex-col md:flex-row gap-6 justify-between items-start md:items-center bg-card/40 backdrop-blur-xl border border-white/10 p-4 rounded-2xl shadow-sm">
+              <div className="flex flex-col sm:flex-row flex-1 w-full gap-4 items-center">
+                <div className="relative w-full sm:max-w-md group">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Search size={18} className="text-muted-foreground group-focus-within:text-primary transition-colors" />
+                  </div>
                   <Input
-                    className="pl-10 bg-input border-input"
-                    placeholder="Search trips..."
+                    className="pl-11 h-12 w-full bg-background/50 border-white/10 hover:border-primary/30 text-white rounded-xl text-base"
+                    placeholder="Search past trips..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
-                <select
-                  className="bg-background border border-input rounded-md px-3 py-2 text-foreground"
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value)}
-                >
-                  <option value="all">All Status</option>
-                  <option value="upcoming">Upcoming</option>
-                  <option value="active">Active</option>
-                  <option value="completed">Completed</option>
-                </select>
+                <div className="relative w-full sm:w-auto">
+                  <select
+                    className="appearance-none h-12 w-full sm:w-48 bg-background/50 border border-white/10 hover:border-primary/30 rounded-xl px-4 py-2 pr-10 text-white cursor-pointer transition-all"
+                    value={filterStatus}
+                    onChange={(e) => setFilterStatus(e.target.value)}
+                  >
+                    <option value="all">All Trips</option>
+                    <option value="upcoming">Upcoming</option>
+                    <option value="active">Active</option>
+                    <option value="completed">Completed</option>
+                  </select>
+                </div>
               </div>
-              <Button className="bg-gradient-to-r from-primary to-secondary text-primary-foreground">
-                <Plus size={16} className="mr-2" />
-                New Trip
+              <Button className="w-full md:w-auto h-12 bg-gradient-to-r from-primary to-secondary text-white font-semibold px-8 rounded-xl shadow-lg">
+                <Plus size={18} className="mr-2" />
+                Plan New Trip
               </Button>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <Card className="bg-card border-border">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-muted-foreground text-sm">Total Trips</p>
-                      <p className="text-2xl font-bold text-foreground">{trips.length}</p>
+            {/* Stats Overview */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card className="relative overflow-hidden bg-card/60 backdrop-blur-xl border-white/5 shadow-xl group hover:border-white/10 transition-colors">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent opacity-0 group-hover:opacity-10 transition-opacity" />
+                  <CardContent className="p-6 relative z-10 flex items-center gap-4">
+                    <div className="p-4 rounded-2xl bg-primary/10 text-primary shadow-inner">
+                        <MapPin size={28} />
                     </div>
-                    <MapPin className="text-primary" size={32} />
-                  </div>
-                </CardContent>
+                    <div>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total Trips</p>
+                      <p className="text-3xl font-bold text-white">{currentArray.length}</p>
+                    </div>
+                  </CardContent>
               </Card>
-              <Card className="bg-card border-border">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-muted-foreground text-sm">Active Trips</p>
-                      <p className="text-2xl font-bold text-foreground">
-                        {trips.filter(t => t.status === 'active').length}
-                      </p>
+              <Card className="relative overflow-hidden bg-card/60 backdrop-blur-xl border-white/5 shadow-xl group hover:border-white/10 transition-colors">
+                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-transparent opacity-0 group-hover:opacity-10 transition-opacity" />
+                  <CardContent className="p-6 relative z-10 flex items-center gap-4">
+                    <div className="p-4 rounded-2xl bg-emerald-500/10 text-emerald-500 shadow-inner">
+                        <Navigation size={28} />
                     </div>
-                    <Navigation className="text-green-500" size={32} />
-                  </div>
-                </CardContent>
+                    <div>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Active Trips</p>
+                      <p className="text-3xl font-bold text-white">{currentArray.filter(t => t.status === 'active').length}</p>
+                    </div>
+                  </CardContent>
               </Card>
-              <Card className="bg-card border-border">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-muted-foreground text-sm">Countries Visited</p>
-                      <p className="text-2xl font-bold text-foreground">12</p>
+               <Card className="relative overflow-hidden bg-card/60 backdrop-blur-xl border-white/5 shadow-xl group hover:border-white/10 transition-colors">
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-transparent opacity-0 group-hover:opacity-10 transition-opacity" />
+                  <CardContent className="p-6 relative z-10 flex items-center gap-4">
+                    <div className="p-4 rounded-2xl bg-blue-500/10 text-blue-500 shadow-inner">
+                        <Camera size={28} />
                     </div>
-                    <Camera className="text-purple-500" size={32} />
-                  </div>
-                </CardContent>
+                    <div>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Destinations</p>
+                      <p className="text-3xl font-bold text-white">12</p>
+                    </div>
+                  </CardContent>
               </Card>
-              <Card className="bg-card border-border">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-muted-foreground text-sm">Total Spent</p>
-                      <p className="text-2xl font-bold text-foreground">$12.5K</p>
+               <Card className="relative overflow-hidden bg-card/60 backdrop-blur-xl border-white/5 shadow-xl group hover:border-white/10 transition-colors">
+                  <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-transparent opacity-0 group-hover:opacity-10 transition-opacity" />
+                  <CardContent className="p-6 relative z-10 flex items-center gap-4">
+                    <div className="p-4 rounded-2xl bg-amber-500/10 text-amber-500 shadow-inner">
+                        <Star size={28} />
                     </div>
-                    <Star className="text-yellow-500" size={32} />
-                  </div>
-                </CardContent>
+                    <div>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total Spent</p>
+                      <p className="text-2xl font-bold text-white">{inrFormat.format(totalSpent)}</p>
+                    </div>
+                  </CardContent>
               </Card>
             </div>
 
-            {/* Trip Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {loading ? (
-                <div className="col-span-full text-center py-12">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-                  <p className="text-muted-foreground">Loading your trips...</p>
+            {/* Trip Cards Container */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {(viewMode === 'history' ? loading : isLikedLoading) ? (
+                <div className="col-span-full py-20 flex flex-col items-center justify-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4" />
+                  <p className="text-muted-foreground">Fetching your adventures...</p>
                 </div>
-              ) : filteredTrips.length === 0 ? (
-                <div className="col-span-full text-center py-12">
-                  <Compass size={48} className="mx-auto mb-4 text-muted-foreground opacity-50" />
-                  <p className="text-xl font-semibold mb-2">No trips found</p>
-                  <p className="text-muted-foreground mb-6">Start planning your next adventure today!</p>
-                  <Button className="bg-gradient-to-r from-primary to-secondary text-primary-foreground">
-                    Build a Trip
-                  </Button>
+              ) : currentArray.length === 0 ? (
+                <div className="col-span-full py-20 text-center">
+                   <Compass size={48} className="mx-auto mb-4 text-muted-foreground opacity-50" />
+                   <h2 className="text-2xl font-bold text-white mb-2">No Plans Yet</h2>
+                   <p className="text-muted-foreground mb-6">Looks like you haven't {viewMode === 'history' ? 'generated' : 'saved'} any trips yet.</p>
                 </div>
               ) : (
-                filteredTrips.map((trip) => (
-                  <Card
+                paginatedTrips.map(trip => (
+                  <div
                     key={trip.id}
-                    className="trip-card bg-card border-border hover:border-primary/50 transition-all cursor-pointer group"
+                    className="group cursor-pointer relative rounded-3xl overflow-hidden min-h-[420px] shadow-lg hover:shadow-2xl transition-all duration-500 border border-white/5 hover:border-primary/30"
                     onClick={() => setSelectedTrip(trip)}
                   >
-                    <div className="relative">
-                      <img
-                        src={trip.image}
-                        alt={trip.title}
-                        className="w-full h-48 object-cover rounded-t-lg"
-                      />
-                      <div className="absolute top-4 left-4">
-                        <Badge className={getStatusColor(trip.status)}>
+                    <div className="absolute inset-0">
+                      <img src={trip.image} alt={trip.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#09090b]/95 via-[#09090b]/60 to-transparent" />
+                      <div className="absolute inset-0 bg-primary/10 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    </div>
+                    
+                    <div className="relative h-full p-6 flex flex-col justify-between z-10">
+                      <div className="flex justify-between items-start">
+                        <Badge className="backdrop-blur-md bg-white/10 text-white shadow-sm font-medium border-white/20 capitalize">
                           {trip.status}
                         </Badge>
-                      </div>
-                      <div className="absolute top-4 right-4">
-                        <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
-                          <MoreVertical size={16} />
-                        </Button>
-                      </div>
-                      {trip.aiGenerated && (
-                        <div className="absolute bottom-4 left-4">
-                          <Badge className="bg-gradient-to-r from-primary to-secondary text-primary-foreground">
-                            AI Generated
-                          </Badge>
+                        <div className="flex gap-2 items-center">
+                          {trip.aiGenerated && (
+                            <Badge className="bg-gradient-to-r from-violet-600/80 to-fuchsia-600/80 border-white/20 text-white shadow-lg backdrop-blur-md">
+                              ✨ AI
+                            </Badge>
+                          )}
+                          <button 
+                            onClick={(e) => handleDeleteTrip(trip.id, e)}
+                            className="p-1.5 rounded-full backdrop-blur-md bg-red-500/20 text-red-100 hover:bg-red-500 hover:text-white transition-all shadow-md border border-red-500/30 z-20 relative"
+                            title={viewMode === 'history' ? "Delete permanently" : "Remove from Liked"}
+                          >
+                            <Trash2 size={16} />
+                          </button>
                         </div>
-                      )}
+                      </div>
+
+                      <div className="space-y-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 ease-out">
+                         <div>
+                           <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-primary transition-colors drop-shadow-md line-clamp-1">{trip.title}</h3>
+                           <div className="flex items-center text-zinc-300 font-medium">
+                             <MapPin size={16} className="mr-1.5 text-primary" />
+                             {trip.destination}
+                           </div>
+                         </div>
+                         
+                         <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/10">
+                            <div className="space-y-1">
+                                <p className="text-xs text-zinc-400 uppercase tracking-wider font-semibold">Budget</p>
+                                <p className="text-white text-sm font-medium">{inrFormat.format(trip.budget)}</p>
+                            </div>
+                            <div className="space-y-1 text-right">
+                                <p className="text-xs text-zinc-400 uppercase tracking-wider font-semibold">Travelers</p>
+                                <p className="text-white text-sm font-medium">{trip.travelers} Pax</p>
+                            </div>
+                         </div>
+                      </div>
                     </div>
-                    <CardContent className="p-6">
-                      <div className="space-y-4">
-                        <div>
-                          <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
-                            {trip.title}
-                          </h3>
-                          <p className="text-muted-foreground">{trip.destination}</p>
-                        </div>
-
-                        <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                          <div className="flex items-center">
-                            <Calendar size={14} className="mr-1" />
-                            {new Date(trip.startDate).toLocaleDateString()}
-                          </div>
-                          <div className="flex items-center">
-                            <Clock size={14} className="mr-1" />
-                            {trip.totalDays} days
-                          </div>
-                        </div>
-
-                        {trip.status === 'active' && trip.currentDay && (
-                          <div>
-                            <div className="flex justify-between text-sm mb-2">
-                              <span className="text-muted-foreground">Progress</span>
-                              <span className="text-foreground">Day {trip.currentDay} of {trip.totalDays}</span>
-                            </div>
-                            <div className="w-full bg-muted rounded-full h-2">
-                              <div
-                                className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full"
-                                style={{ width: `${trip.progress}%` }}
-                              />
-                            </div>
-                          </div>
-                        )}
-
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <p className="text-sm text-muted-foreground">Budget</p>
-                            <p className="text-foreground font-semibold">${trip.budget}</p>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-sm text-muted-foreground">Travelers</p>
-                            <p className="text-foreground font-semibold">{trip.travelers}</p>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  </div>
                 ))
               )}
             </div>
+
+            {/* Pagination Controls */}
+            {!(viewMode === 'history' ? loading : isLikedLoading) && totalPages > 1 && (
+              <div className="flex justify-center items-center gap-2 mt-8 py-4 z-10 relative">
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="bg-card/40 backdrop-blur-md border border-white/10 text-white hover:text-black hover:bg-white"
+                >
+                  Previous
+                </Button>
+                
+                <div className="flex gap-1 hidden sm:flex">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                    <button
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                      className={`w-10 h-10 rounded-xl font-medium transition-all duration-300 ${
+                        currentPage === page
+                          ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg'
+                          : 'bg-card/40 backdrop-blur-md border border-white/10 text-muted-foreground hover:text-white hover:bg-white/10'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                </div>
+
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className="bg-card/40 backdrop-blur-md border border-white/10 text-white hover:text-black hover:bg-white"
+                >
+                  Next
+                </Button>
+              </div>
+            )}
+            
           </div>
         ) : (
           // Trip Detail View
-          <div className="space-y-6">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-12 relative z-10 space-y-6">
             {/* Back Button & Trip Header */}
             <div className="flex items-center justify-between">
               <Button
@@ -661,7 +789,7 @@ const MyTripsPage = () => {
                       </div>
                       <div>
                         <p className="text-sm text-muted-foreground">Budget</p>
-                        <p className="text-foreground font-semibold">${selectedTrip.budget}</p>
+                        <p className="text-foreground font-semibold">{inrFormat.format(selectedTrip.budget)}</p>
                       </div>
                       <div>
                         <p className="text-sm text-muted-foreground">Travelers</p>
@@ -760,12 +888,12 @@ const MyTripsPage = () => {
                         <div className="space-y-2">
                           <div className="flex justify-between">
                             <span className="text-muted-foreground">Spent</span>
-                            <span className="text-foreground">${selectedTrip.spent}</span>
+                            <span className="text-foreground">{inrFormat.format(selectedTrip.spent)}</span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-muted-foreground">Remaining</span>
                             <span className="text-green-500">
-                              ${selectedTrip.budget - selectedTrip.spent}
+                              {inrFormat.format(selectedTrip.budget - selectedTrip.spent)}
                             </span>
                           </div>
                           <div className="w-full bg-muted rounded-full h-2">
