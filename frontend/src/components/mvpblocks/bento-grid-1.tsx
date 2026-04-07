@@ -98,7 +98,7 @@ const items = [
     description: 'Let our smart AI create personalized itineraries based on your preferences and budget.',
     icon: <Compass className="size-6" />,
     size: 'large' as const,
-    web_link: '/build-trip',
+    web_link: '/search',
     requireAuth: true
   },
   {

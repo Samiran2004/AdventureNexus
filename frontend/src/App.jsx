@@ -15,7 +15,6 @@ import DestinationsPage from './features/planning/pages/DestinationPage';
 import IndividualDestinationPage from './features/planning/pages/IndividualDestinationPage';
 import TripInspirationPage from './features/planning/pages/TripInspirationPage';
 import SharedPlanPage from './features/planning/pages/SharedPlanPage';
-import TripBuilderPage from './features/planning/pages/TripBuilderPage';
 import AccommodationsPage from './features/planning/pages/HotelPage';
 import MyTripsPage from './features/user/pages/MyTripPage';
 import FlightsPage from './features/planning/pages/FlightsPage';
@@ -128,7 +127,6 @@ const AppContent = () => {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/destinations" element={<DestinationsPage />} />
         <Route path="/inspiration" element={<TripInspirationPage />} />
-        <Route path="/build-trip" element={<TripBuilderPage />} />
         <Route path='/hotels' element={<AccommodationsPage />} />
         <Route path='/flights' element={<FlightsPage />} />
         <Route path='/my-trips' element={<MyTripsPage />} />
