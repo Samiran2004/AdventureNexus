@@ -40,6 +40,7 @@ import hotelsRoute from './modules/hotels/routes/hotels.routes';
 import reviewRoute from './modules/reviews/routes/review.routes';
 import likedPlansRoute from './modules/planning/routes/likedPlans.routes';
 import bookingRoute from './modules/bookings/routes/booking.routes';
+import trainRoute from './modules/trains/routes/train.routes';
 
 // Swagger
 import swaggerJSDoc from 'swagger-jsdoc';
@@ -167,6 +168,9 @@ app.use('/api/v1/reviews', reviewRoute);
 
 // Booking Management Routes
 app.use('/api/v1/bookings', bookingRoute);
+
+// Train Management Routes
+app.use('/api/v1/trains', trainRoute);
 
 // Liked Plans Routes
 app.use('/api/v1/liked-plans', likedPlansRoute);
