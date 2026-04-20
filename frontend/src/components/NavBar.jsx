@@ -23,6 +23,7 @@ function NavBar() {
         { name: 'Home', path: '/' },
         { name: 'My Trips', path: '/my-trips' },
         { name: 'Destinations', path: '/destinations' },
+        { name: '🚂 Trains', path: '/trains' },
         { name: 'Review', path: '/review-page' }
     ];
 

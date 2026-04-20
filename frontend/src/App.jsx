@@ -18,6 +18,7 @@ import SharedPlanPage from './features/planning/pages/SharedPlanPage';
 import AccommodationsPage from './features/planning/pages/HotelPage';
 import MyTripsPage from './features/user/pages/MyTripPage';
 import FlightsPage from './features/planning/pages/FlightsPage';
+import TrainsPage from './features/planning/pages/TrainsPage';
 import ExperiencesPage from './features/planning/pages/ExperiencesPage';
 import ToursPage from './features/planning/pages/ToursPage';
 import MyBookingsPage from './features/planning/pages/MyBookingsPage';
@@ -129,6 +130,7 @@ const AppContent = () => {
         <Route path="/inspiration" element={<TripInspirationPage />} />
         <Route path='/hotels' element={<AccommodationsPage />} />
         <Route path='/flights' element={<FlightsPage />} />
+        <Route path='/trains' element={<TrainsPage />} />
         <Route path='/my-trips' element={<MyTripsPage />} />
         <Route path='/experiences' element={<ExperiencesPage />} />
         <Route path='/tours' element={<ToursPage />} />

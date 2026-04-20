@@ -13,6 +13,7 @@ import HomeScreen from './src/screens/HomeScreen';
 import SearchScreen from './src/screens/SearchScreen';
 import DetailsScreen from './src/screens/DetailsScreen';
 import ReviewsScreen from './src/screens/ReviewsScreen';
+import TrainsScreen from './src/screens/TrainsScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import UserProfileScreen from './src/screens/UserProfileScreen';
 import SignInScreen from './src/screens/SignInScreen';
@@ -54,6 +55,7 @@ function CustomTabBar({ state, navigation }: any) {
     const tabs: { name: string; icon: string }[] = [
         { name: 'Home', icon: '🏠' },
         { name: 'Search', icon: '🔍' },
+        { name: 'Trains', icon: '🚂' },
         { name: 'Reviews', icon: '⭐' },
         { name: 'Profile', icon: '👤' },
     ];
@@ -99,6 +101,7 @@ function HomeTabs() {
         >
             <Tab.Screen name="Home" component={HomeScreen} />
             <Tab.Screen name="Search" component={SearchScreen} />
+            <Tab.Screen name="Trains" component={TrainsScreen} />
             <Tab.Screen name="Reviews" component={ReviewsScreen} />
             <Tab.Screen name="Profile" component={ProfileScreen} />
         </Tab.Navigator>
