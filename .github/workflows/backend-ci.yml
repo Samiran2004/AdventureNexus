@@ -1,0 +1,68 @@
+name: 🚀 Backend CI Build Check
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - dev
+      - develop
+    paths:
+      - 'Backend/**'
+      - '.github/workflows/backend-ci.yml'
+  pull_request:
+    branches:
+      - main
+      - master
+      - dev
+      - develop
+    paths:
+      - 'Backend/**'
+      - '.github/workflows/backend-ci.yml'
+
+defaults:
+  run:
+    working-directory: Backend
+
+jobs:
+  build:
+    name: TypeScript Build Check
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x, 22.x]
+
+    steps:
+      - name: ⬇️ Checkout repository
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: 'Backend/package-lock.json'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🔍 Lint check
+        run: npm run lint
+        continue-on-error: true  # lint is informational, won't block build
+
+      - name: 🏗️ TypeScript compile check (tsc)
+        run: npm run build
+        env:
+          # Dummy values so tsc doesn't fail on missing env vars at build time
+          DB_URI: mongodb://localhost:27017/test
+          PORT: 5000
+          NODE_ENV: production
+
+      - name: ✅ Upload compiled output
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: backend-dist-node${{ matrix.node-version }}
+          path: Backend/dist/
+          retention-days: 7
