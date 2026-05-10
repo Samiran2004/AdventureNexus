@@ -143,7 +143,7 @@ const MyTripsPage = () => {
           'Content-Type': 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {})
         };
-        const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || 'https://adventure-nexus-backend.onrender.com';
 
         // Fetch My Plans (History)
         const myPlansRes = await fetch(`${backendUrl}/api/v1/plans/my-plans`, { headers });
@@ -435,7 +435,7 @@ const MyTripsPage = () => {
       const token = await getToken();
       if (!token) return;
 
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'https://adventure-nexus-backend.onrender.com';
       const headers = {
         'Authorization': `Bearer ${token}`
       };

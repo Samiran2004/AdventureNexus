@@ -19,11 +19,11 @@ export const swaggerOptions = {
         // List of API servers (Local, Production, etc.)
         servers: [
             {
-                url: 'http://localhost:8000',
+                url: 'https://adventure-nexus-backend.onrender.com',
                 description: 'Local server',
             },
             {
-                url: 'https://api-powered-interactive-travel-planner.onrender.com',
+                url: 'https://adventure-nexus-backend.onrender.com',
                 description: 'Production server',
             },
         ],

@@ -255,7 +255,7 @@ export default function HomeScreen({ navigation }: any) {
         }
         try {
             setSubscribing(true);
-            const res = await fetch('https://adventurenexus.onrender.com/api/v1/mail/subscribe', {
+            const res = await fetch('https://adventure-nexus-backend.onrender.com/api/v1/mail/subscribe', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userMail: email.trim() }),

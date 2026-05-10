@@ -13,8 +13,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     useEffect(() => {
         // Assuming Backend runs on port 8000
-        const newSocket = io(import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000');
-        console.log('[DEBUG] Admin socket connecting to:', import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000');
+        const newSocket = io(import.meta.env.VITE_BACKEND_URL || 'https://adventure-nexus-backend.onrender.com');
+        console.log('[DEBUG] Admin socket connecting to:', import.meta.env.VITE_BACKEND_URL || 'https://adventure-nexus-backend.onrender.com');
 
         setSocket(newSocket);
 

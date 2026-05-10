@@ -28,7 +28,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8000/api/v1/hotels/create/hotels",
+							"raw": "https://adventure-nexus-backend.onrender.com/api/v1/hotels/create/hotels",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -75,7 +75,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8000/api/v1/users/profile",
+					"raw": "https://adventure-nexus-backend.onrender.com/api/v1/users/profile",
 					"protocol": "http",
 					"host": [
 						"localhost"

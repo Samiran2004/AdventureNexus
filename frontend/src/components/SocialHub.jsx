@@ -58,7 +58,7 @@ const SocialHub = () => {
 
         let socket;
         import('socket.io-client').then(({ io }) => {
-            socket = io(import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000');
+            socket = io(import.meta.env.VITE_BACKEND_URL || 'https://adventure-nexus-backend.onrender.com');
 
             socket.on('connect', () => {
                 socket.emit('identity', clerkUserId);

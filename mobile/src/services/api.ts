@@ -4,7 +4,7 @@ import axios from 'axios';
 // Run 'hostname -I' on Linux/Mac to find your IP
 const LOCAL_IP = '10.221.215.107'; // Updated to match current machine IP
 const LOCAL_URL = `http://${LOCAL_IP}:8000/api/v1`;
-const PROD_URL = 'https://adventurenexus.onrender.com/api/v1';
+const PROD_URL = 'https://adventure-nexus-backend.onrender.com/api/v1';
 
 const api = axios.create({
     baseURL: PROD_URL, // Pointing to production Render URL per user request

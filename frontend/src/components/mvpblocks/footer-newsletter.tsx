@@ -8,7 +8,7 @@ import AnimatedLogo from '../AnimatedLogo';
 import FooterScene from '../FooterScene';
 
 const vite_backend_url = import.meta.env.VITE_BACKEND_URL;
-// const vite_backend_url = "http://localhost:8000"
+// const vite_backend_url = "https://adventure-nexus-backend.onrender.com"
 
 // Footer navigation columns data
 const footerColumns = [

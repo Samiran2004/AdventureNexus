@@ -19,7 +19,7 @@ export const useAuthStore = create((set) => ({
 
 
             // Add your actual API call here
-            const response = await fetch('http://localhost:8000/api/v1/signup/student', {
+            const response = await fetch('https://adventure-nexus-backend.onrender.com/api/v1/signup/student', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)

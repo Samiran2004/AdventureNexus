@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const api_url = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+const api_url = import.meta.env.VITE_BACKEND_URL || 'https://adventure-nexus-backend.onrender.com';
 
 const getAuthHeaders = () => {
     const token = localStorage.getItem('clerk-db-jwt'); // Or however you retrieve the token

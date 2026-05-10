@@ -21,7 +21,7 @@ import Footer from '@/components/mvpblocks/footer-newsletter';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://adventure-nexus-backend.onrender.com';
 
 // ── Class config ──────────────────────────────────────────────────────────────
 const SEAT_CLASSES = {
