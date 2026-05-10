@@ -12,9 +12,9 @@ const getAuthHeaders = () => {
 };
 
 export const communityService = {
-    getPosts: async (category = '', search = '') => {
+    getPosts: async (category = '', search = '', clerkUserId = '') => {
         const response = await axios.get(`${api_url}/api/v1/community/posts`, {
-            params: { category, search }
+            params: { category, search, clerkUserId }
         });
         return response.data;
     },

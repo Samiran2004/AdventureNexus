@@ -44,6 +44,8 @@ const CommunityPage = () => {
   const [isEventsLoading, setIsEventsLoading] = useState(true);
   const [isSpotlightLoading, setIsSpotlightLoading] = useState(true);
   const [isStatsLoading, setIsStatsLoading] = useState(true);
+  const [stories, setStories] = useState([]);
+  const [isStoriesLoading, setIsStoriesLoading] = useState(true);
 
   // Modals state
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
@@ -66,7 +68,7 @@ const CommunityPage = () => {
   const fetchPosts = async () => {
     try {
       setIsLoading(true);
-      const data = await communityService.getPosts(activeCategory, searchQuery);
+      const data = await communityService.getPosts(activeCategory, searchQuery, clerkUserId);
       if (data.success) {
         setPosts(data.data);
       }
@@ -75,6 +77,20 @@ const CommunityPage = () => {
       toast.error('Could not load discussions');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchStories = async () => {
+    try {
+      setIsStoriesLoading(true);
+      const data = await communityService.getStories();
+      if (data.success) {
+        setStories(data.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch stories:', error);
+    } finally {
+      setIsStoriesLoading(false);
     }
   };
 
@@ -128,6 +144,7 @@ const CommunityPage = () => {
     fetchEvents();
     fetchSpotlight();
     fetchStats();
+    fetchStories();
   }, []);
 
   const handleCreatePost = async (e) => {
@@ -329,6 +346,45 @@ const CommunityPage = () => {
       <div className="container mx-auto px-4 py-16 grid lg:grid-cols-3 gap-12">
         {/* Left Column: Discussions */}
         <div className="lg:col-span-2 space-y-12">
+
+          {/* Stories Bar - NEW SOCIAL UPGRADE */}
+          <div className="overflow-x-auto pb-4 scrollbar-hide">
+            <div className="flex gap-4">
+              <motion.div 
+                whileHover={{ scale: 1.05 }}
+                className="flex flex-col items-center gap-2 cursor-pointer group"
+                onClick={() => navigate('/stories')}
+              >
+                <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center border-2 border-dashed border-primary/50 group-hover:bg-primary/30 transition-all">
+                  <PlusCircle size={24} className="text-primary" />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-tighter">Add Story</span>
+              </motion.div>
+              {isStoriesLoading ? (
+                [1,2,3,4,5].map(i => (
+                  <div key={i} className="w-16 h-16 rounded-full bg-muted animate-pulse" />
+                ))
+              ) : (
+                stories.map((story) => (
+                  <motion.div 
+                    key={story._id}
+                    whileHover={{ scale: 1.05 }}
+                    className="flex flex-col items-center gap-2 cursor-pointer"
+                    onClick={() => navigate(`/stories?id=${story._id}`)}
+                  >
+                    <div className="w-16 h-16 rounded-full border-2 border-pink-500 p-0.5 shadow-lg shadow-pink-500/20">
+                      <img 
+                        src={story.userId?.profilepicture || 'https://via.placeholder.com/150'} 
+                        className="w-full h-full rounded-full object-cover"
+                        alt={story.userId?.username}
+                      />
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-tighter truncate w-16 text-center">{story.userId?.username || 'Traveler'}</span>
+                  </motion.div>
+                ))
+              )}
+            </div>
+          </div>
 
           {/* Categories */}
           <div>

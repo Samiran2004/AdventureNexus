@@ -31,13 +31,18 @@ const communityPostSchema = new Schema<ICommunityPost>({
         required: true,
         index: true,
     },
-    tags: [{
-        type: String,
-        trim: true,
+    images: [{
+        type: String, // URLs to images/videos
     }],
-    likes: [{
-        type: String, // Array of Clerk User IDs
-    }],
+    interactionScore: {
+        type: Number,
+        default: 0,
+        index: true,
+    },
+    viewCount: {
+        type: Number,
+        default: 0,
+    },
     repliesCount: {
         type: Number,
         default: 0,
