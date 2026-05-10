@@ -1,0 +1,14 @@
+node_modules
+npm-debug.log
+dist
+.env
+.git
+.gitignore
+README.md
+api.md
+AdventureNexus.postman_collection.json
+logs
+Images
+test-api.js
+Dockerfile
+.dockerignore
