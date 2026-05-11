@@ -20,6 +20,13 @@ export interface IUser extends Document {
     following?: string[];   // Array of clerkUserIds this user is following
     bio?: string;           // User bio
     coverImage?: string;    // URL to cover/background image
+    socialLinks?: {
+        twitter?: string;
+        instagram?: string;
+        website?: string;
+    };
+    isPrivate: boolean;     // Account privacy
+    onlineStatus: 'online' | 'offline';
     lastActive?: Date;      // Last active timestamp
     createdAt: Date;        // Timestamp
     updatedAt: Date;        // Timestamp
@@ -89,6 +96,14 @@ const userSchema = new Schema<IUser>(
         following: [{ type: String, ref: 'User' }], // Clerk User IDs
         bio: { type: String, default: "" },
         coverImage: { type: String, default: "" },
+        socialLinks: {
+            twitter: { type: String, default: "" },
+            instagram: { type: String, default: "" },
+            website: { type: String, default: "" },
+        },
+        isPrivate: { type: Boolean, default: false },
+        onlineStatus: { type: String, enum: ['online', 'offline'], default: 'offline' },
+        lastActive: { type: Date, default: Date.now },
     },
     {
         timestamps: true, // Automatically manage createdAt and updatedAt

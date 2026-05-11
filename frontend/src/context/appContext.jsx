@@ -1,6 +1,7 @@
 import { useAuth, useUser } from "@clerk/clerk-react";
 import axios from "axios";
-import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
+import { io } from "socket.io-client";
 import { useNavigate } from "react-router-dom";
 import { toast } from 'react-hot-toast';
 
@@ -19,6 +20,8 @@ function AppProvider({ children }) {
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [socket, setSocket] = useState(null);
+    const socketRef = useRef(null);
 
     const fetchUser = useCallback(async () => {
         if (!isSignedIn || !isLoaded) {
@@ -65,11 +68,29 @@ function AppProvider({ children }) {
     }, [isSignedIn, isLoaded, getToken]);
 
     useEffect(() => {
-        console.log("🔄 Auth state changed:", {
-            isLoaded,
-            isSignedIn,
-            userExists: !!user
-        });
+        if (isLoaded && isSignedIn && user) {
+            // Initialize Socket
+            if (!socketRef.current) {
+                const newSocket = io(import.meta.env.VITE_BACKEND_URL || 'https://adventure-nexus-backend.onrender.com');
+                socketRef.current = newSocket;
+                setSocket(newSocket);
+
+                newSocket.on('connect', () => {
+                    console.log('✅ Socket connected:', newSocket.id);
+                    newSocket.emit('identity', user.id);
+                });
+
+                newSocket.on('notification:new', (data) => {
+                    toast.success("New activity in your Nexus!", { icon: '🔔' });
+                });
+            }
+        } else if (isLoaded && !isSignedIn) {
+            if (socketRef.current) {
+                socketRef.current.disconnect();
+                socketRef.current = null;
+                setSocket(null);
+            }
+        }
 
         if (isLoaded) {
             if (isSignedIn) {
@@ -79,7 +100,11 @@ function AppProvider({ children }) {
                 setError(null);
             }
         }
-    }, [isLoaded, isSignedIn, fetchUser]);
+
+        return () => {
+            // Optional: don't disconnect on every render, only on unmount or signout
+        };
+    }, [isLoaded, isSignedIn, user, fetchUser]);
 
     useEffect(() => {
         console.log("📊 UserData state changed:", {
@@ -103,6 +128,7 @@ function AppProvider({ children }) {
         loading,
         error,
         fetchUser,
+        socket,
     };
 
     return (
@@ -121,8 +147,17 @@ function useAppContext() {
     return context;
 }
 
+// Custom hook to access the Socket
+function useSocket() {
+    const context = useContext(AppContext);
+    if (!context) {
+        throw new Error('useSocket must be used within an AppProvider');
+    }
+    return { socket: context.socket };
+}
+
 // ✅ Consistent named exports
-export { AppProvider, useAppContext };
+export { AppProvider, useAppContext, useSocket };
 
 // ✅ Optional: Add default export if needed
 export default AppProvider;

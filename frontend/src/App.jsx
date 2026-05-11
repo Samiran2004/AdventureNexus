@@ -10,7 +10,9 @@ import PageNotFound from './features/shared/pages/PageNotFound';
 import AdventureNexusReviews from './features/reviews/pages/ReviewPage';
 import SearchPage from './features/planning/pages/SearchPage';
 import AboutPage from './features/marketing/pages/AboutPage';
-import ProfilePage from './features/user/pages/ProfilePage';
+import SocialSearchPage from './features/social/pages/SocialSearchPage';
+import ProfilePage from './features/social/pages/ProfilePage';
+import ChatPage from './features/social/pages/ChatPage';
 import DestinationsPage from './features/planning/pages/DestinationPage';
 import IndividualDestinationPage from './features/planning/pages/IndividualDestinationPage';
 import TripInspirationPage from './features/planning/pages/TripInspirationPage';
@@ -70,44 +72,8 @@ const AppContent = () => {
     return () => clearTimeout(timer); // Cleanup timer
   }, []);
 
-  // Socket Connection for Online Status
-  useEffect(() => {
-    let socket;
-    if (isSignedIn && user) {
-      import('socket.io-client').then(({ io }) => {
-        socket = io(import.meta.env.VITE_BACKEND_URL || 'https://adventure-nexus-backend.onrender.com');
-        console.log('[DEBUG] User socket connecting to:', import.meta.env.VITE_BACKEND_URL || 'https://adventure-nexus-backend.onrender.com');
+  // Socket logic is now managed globally in AppContext
 
-        socket.on('connect', () => {
-          console.log('[DEBUG] User socket connected:', socket.id);
-          socket.emit('identity', user.id);
-        });
-
-        socket.on('connect_error', (err) => {
-          console.error('[DEBUG] User socket connection error:', err);
-        });
-
-        socket.on('system:announcement', (data) => {
-          console.log('[DEBUG] Announcement received on user side:', data);
-          toast(data.message, {
-            icon: '⚡',
-            duration: 6000,
-            style: {
-              background: '#111',
-              color: '#fff',
-              border: '1px solid #4f46e5',
-            }
-          });
-        });
-      });
-    }
-
-    return () => {
-      if (socket) {
-        socket.disconnect();
-      }
-    };
-  }, [isSignedIn, user]);
 
   return (
     <>
@@ -131,7 +97,7 @@ const AppContent = () => {
         <Route path='/hotels' element={<AccommodationsPage />} />
         <Route path='/flights' element={<FlightsPage />} />
         <Route path='/trains' element={<TrainsPage />} />
-        <Route path='/my-trips' element={<MyTripsPage />} />
+        <Route path='/trips' element={<MyTripsPage />} />
         <Route path='/experiences' element={<ExperiencesPage />} />
         <Route path='/tours' element={<ToursPage />} />
         <Route path='/press' element={<PressPage />} />
@@ -141,6 +107,13 @@ const AppContent = () => {
         <Route path='/community' element={<CommunityPage />} />
         <Route path='/stories' element={<TravelStoriesPage />} />
         <Route path='/guides' element={<TravelGuidesPage />} />
+        <Route path='/social-search' element={<SocialSearchPage />} />
+        <Route path='/chat' element={
+          <ProtectedRoute>
+            <ChatPage />
+          </ProtectedRoute>
+        } />
+        <Route path='/profile/:username' element={<ProfilePage />} />
         <Route path='/user/profile/:clerkUserId' element={<PublicProfilePage />} />
         <Route path='/terms' element={<TermsPage />} />
         <Route path='/privacy' element={<PrivacyPage />} />
@@ -163,7 +136,7 @@ const AppContent = () => {
             <SearchPage />
           </ProtectedRoute>
         } />
-        <Route path='/review-page' element={
+        <Route path='/reviews' element={
           <ProtectedRoute>
             <AdventureNexusReviews />
           </ProtectedRoute>

@@ -1,10 +1,15 @@
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react'; // Clerk components for auth UI
-import { Menu, X, Sun, Moon, ChevronDown, Compass, Users, Map as MapIcon, BookOpen, Sparkles, Tent } from 'lucide-react'; // Icons
+import { 
+    Menu, X, Sun, Moon, Search, Compass, ChevronDown, 
+    Sparkles, MapPin, Globe, Award, TrendingUp,
+    MessageSquare, Bell, User as UserIcon, UserPlus
+} from 'lucide-react'; // Icons
 import { useEffect, useState } from 'react'; // React hooks
 import { Link } from 'react-router-dom'; // Navigation link
 import { useTheme } from 'next-themes';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedLogo from './AnimatedLogo';
+import NotificationCenter from '@/features/social/components/NotificationCenter';
 
 import { Button } from '@/components/ui/button';
 
@@ -22,21 +27,22 @@ function NavBar() {
     // Navigation items
     const navItems = [
         { name: 'Home', path: '/' },
-        { name: 'My Trips', path: '/my-trips' },
+        { name: 'My Trips', path: '/trips' },
+        { name: 'Reviews', path: '/reviews' },
     ];
 
     const discoverItems = [
         { 
             name: 'Community', 
             path: '/community', 
-            icon: Users, 
+            icon: Globe, 
             desc: 'Join fellow travelers and share stories.',
             color: 'text-blue-500'
         },
         { 
             name: 'Destinations', 
             path: '/destinations', 
-            icon: MapIcon, 
+            icon: MapPin, 
             desc: 'Explore popular spots around the world.',
             color: 'text-emerald-500'
         },
@@ -50,7 +56,7 @@ function NavBar() {
         { 
             name: 'Travel Guides', 
             path: '/guides', 
-            icon: BookOpen, 
+            icon: Award, 
             desc: 'Expert advice for your next journey.',
             color: 'text-orange-500'
         },
@@ -62,10 +68,10 @@ function NavBar() {
             color: 'text-pink-500'
         },
         { 
-            name: 'Adventure Tours', 
-            path: '/tours', 
-            icon: Tent, 
-            desc: 'Thrilling group expeditions & treks.',
+            name: 'Inspiration', 
+            path: '/inspiration', 
+            icon: TrendingUp, 
+            desc: 'Get inspired for your next adventure.',
             color: 'text-indigo-500'
         }
     ];
@@ -87,21 +93,6 @@ function NavBar() {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // Close mobile menu when clicking outside
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (mobileMenuOpen && !event.target.closest('.mobile-menu')) {
-                setMobileMenuOpen(false);
-            }
-        };
-
-        if (mobileMenuOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-        }
-
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, [mobileMenuOpen]);
-
     if (!mounted) return null;
 
     return (
@@ -117,7 +108,6 @@ function NavBar() {
             {/* Mobile Menu */}
             {mobileMenuOpen && (
                 <div className="mobile-menu fixed top-0 right-0 h-full w-80 bg-background z-50 md:hidden border-l border-border transform transition-transform duration-300">
-                    {/* Mobile Menu Header */}
                     <div className="flex justify-between items-center p-6 border-b border-border">
                         <div className="flex items-center space-x-2">
                             <AnimatedLogo size={40} />
@@ -133,7 +123,6 @@ function NavBar() {
                         </button>
                     </div>
 
-                    {/* Mobile Menu Items */}
                     <div className="flex flex-col space-y-2 p-6">
                         {navItems.map((item) => (
                             <Link
@@ -159,47 +148,6 @@ function NavBar() {
                             </Link>
                         ))}
 
-                        <div className="flex items-center justify-between px-4 py-3">
-                            <span className="text-muted-foreground font-semibold">Theme</span>
-                            <button
-                                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                                className="relative w-16 h-8 rounded-full bg-gradient-to-r from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800 shadow-inner transition-shadow duration-300 hover:shadow-lg group"
-                            >
-                                {/* Track gradient overlay */}
-                                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400/20 via-purple-400/20 to-pink-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                                {/* Animated toggle ball */}
-                                <div
-                                    className="absolute top-0.5 w-7 h-7 rounded-full transition-all duration-300 ease-out will-change-transform"
-                                    style={{
-                                        transform: theme === 'dark' ? 'translateX(2px) scale(1)' : 'translateX(34px) scale(1)',
-                                        background: theme === 'dark'
-                                            ? 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)'
-                                            : 'linear-gradient(135deg, #fde047 0%, #facc15 50%, #fb923c 100%)',
-                                        boxShadow: theme === 'dark'
-                                            ? '0 2px 8px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.1)'
-                                            : '0 2px 8px rgba(251,191,36,0.4), inset 0 1px 2px rgba(255,255,255,0.5)'
-                                    }}
-                                    onMouseEnter={(e) => e.currentTarget.style.transform = theme === 'dark' ? 'translateX(2px) scale(1.1)' : 'translateX(34px) scale(1.1)'}
-                                    onMouseLeave={(e) => e.currentTarget.style.transform = theme === 'dark' ? 'translateX(2px) scale(1)' : 'translateX(34px) scale(1)'}
-                                >
-                                    {/* Inner glow */}
-                                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/40 to-transparent pointer-events-none"></div>
-
-                                    {/* Icon */}
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        {theme === 'dark' ? (
-                                            <Moon className="h-4 w-4 text-slate-300 drop-shadow transition-transform duration-300 group-hover:rotate-[-20deg]" />
-                                        ) : (
-                                            <Sun className="h-4 w-4 text-white drop-shadow transition-transform duration-300 group-hover:rotate-180" />
-                                        )}
-                                    </div>
-                                </div>
-
-                                <span className="sr-only">Toggle theme</span>
-                            </button>
-                        </div>
-
                         <div className="border-t border-border pt-4 mt-4 space-y-3">
                             <SignedOut>
                                 <SignInButton mode="modal">
@@ -210,138 +158,119 @@ function NavBar() {
                             </SignedOut>
                             <SignedIn>
                                 <div className="flex items-center justify-center">
-                                    <UserButton
-                                        appearance={{
-                                            elements: {
-                                                avatarBox: "w-10 h-10"
-                                            }
-                                        }}
-                                    />
+                                    <UserButton />
                                 </div>
                             </SignedIn>
-                            <Link to="/search">
-                                <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer">
-                                    Plan My Trip
-                                </Button>
-                            </Link>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* Main Navigation - Floating Island */}
+            {/* Main Navigation */}
             <div className="fixed top-0 w-full z-50 flex justify-center pt-4 sm:pt-6 px-3 sm:px-4">
                 <nav
-                    className={`transition-all duration-500 ease-in-out px-4 sm:px-6 py-2 rounded-full border border-white/10 glass-card flex items-center justify-between gap-4 sm:gap-8 w-full max-w-5xl ${
+                    className={`transition-all duration-500 ease-in-out px-4 sm:px-6 py-2 rounded-full border border-white/10 glass-card flex items-center justify-between gap-4 sm:gap-6 w-full max-w-6xl ${
                         scrolled ? 'scale-95' : 'scale-100'
                     }`}
                 >
-                    <div className="flex items-center gap-4 sm:gap-12">
-                        {/* Logo */}
-                        <Link
-                            to="/"
-                            className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
-                        >
-                            <AnimatedLogo size={28} />
-                            <span className="hidden sm:block font-bold font-inter text-lg tracking-tight text-white">
-                                AdventureNexus
-                            </span>
+                    <div className="flex items-center gap-4 lg:gap-8">
+                        <Link to="/" className="flex items-center gap-2 group">
+                            <AnimatedLogo size={32} />
+                            <span className="hidden lg:block font-black text-white tracking-tighter text-lg group-hover:text-primary transition-colors">AdventureNexus</span>
                         </Link>
-                        
-                        {/* Desktop Navigation */}
-                        <div className="hidden md:flex items-center space-x-1">
-                            {navItems.map((item) => (
-                                <Link
-                                    key={item.name}
-                                    to={item.path}
-                                    className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-white transition-colors"
-                                >
-                                    {item.name}
-                                </Link>
-                            ))}
 
-                            {/* Discover Mega Menu Trigger */}
-                            <div 
-                                className="relative group"
-                                onMouseEnter={() => setDiscoverOpen(true)}
-                                onMouseLeave={() => setDiscoverOpen(false)}
-                            >
-                                <button 
-                                    className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-muted-foreground group-hover:text-white transition-colors"
-                                >
-                                    Discover <ChevronDown size={14} className={`transition-transform duration-300 ${discoverOpen ? 'rotate-180' : ''}`} />
-                                </button>
-
-                                <AnimatePresence>
-                                    {discoverOpen && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                            className="absolute left-0 mt-2 w-[450px] bg-card/95 backdrop-blur-2xl border border-white/10 rounded-[2rem] shadow-2xl p-6 grid grid-cols-2 gap-4"
-                                        >
-                                            {discoverItems.map((item) => (
-                                                <Link
-                                                    key={item.name}
-                                                    to={item.path}
-                                                    className="flex items-start gap-4 p-3 rounded-2xl hover:bg-white/5 transition-all group/item"
-                                                >
-                                                    <div className={`p-2.5 rounded-xl bg-white/5 ${item.color} group-hover/item:scale-110 transition-transform`}>
-                                                        <item.icon size={20} />
-                                                    </div>
-                                                    <div>
-                                                        <div className="text-sm font-bold text-white group-hover/item:text-primary transition-colors">{item.name}</div>
-                                                        <div className="text-[10px] text-muted-foreground leading-tight mt-1">{item.desc}</div>
-                                                    </div>
-                                                </Link>
-                                            ))}
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
+                        {/* Desktop Search */}
+                        <form 
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                const query = e.target.search.value;
+                                if (query) navigate(`/social-search?q=${query}`);
+                            }}
+                            className="hidden lg:block relative group w-48 xl:w-64"
+                        >
+                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-blue-500 transition-colors">
+                                <Search size={14} />
                             </div>
-
-                            <Link
-                                to="/review-page"
-                                className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-white transition-colors"
-                            >
-                                Reviews
-                            </Link>
-                        </div>
+                            <input 
+                                name="search"
+                                type="text"
+                                placeholder="Search travelers..."
+                                className="w-full bg-white/5 border border-white/5 rounded-full py-2 pl-10 pr-4 text-xs text-white placeholder:text-white/20 focus:outline-none focus:bg-white/10 focus:border-white/20 transition-all"
+                            />
+                        </form>
                     </div>
 
-                    {/* Desktop CTA Buttons & Actions */}
-                    <div className="hidden md:flex items-center space-x-4">
+                    {/* Desktop Menu */}
+                    <div className="hidden md:flex items-center space-x-1 lg:space-x-2">
+                        <Link to="/" className="text-white/40 hover:text-white px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors">Home</Link>
+                        <Link to="/trips" className="text-white/40 hover:text-white px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors">My Trips</Link>
+                        
+                        <div className="relative group" onMouseEnter={() => setDiscoverOpen(true)} onMouseLeave={() => setDiscoverOpen(false)}>
+                            <button className="flex items-center gap-1.5 text-white/40 hover:text-white px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors">
+                                Discover
+                                <ChevronDown size={12} className="group-hover:rotate-180 transition-transform duration-300" />
+                            </button>
+                            <AnimatePresence>
+                                {discoverOpen && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        className="absolute top-full left-0 mt-4 w-80 bg-[#0A0A0A]/95 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-4 grid grid-cols-1 gap-2 shadow-2xl z-50"
+                                    >
+                                        {discoverItems.map((item) => (
+                                            <Link
+                                                key={item.name}
+                                                to={item.path}
+                                                className="flex items-start gap-4 p-4 rounded-2xl hover:bg-white/5 transition-all group/item"
+                                            >
+                                                <div className={`p-2 rounded-xl bg-white/5 ${item.color} group-hover/item:scale-110 transition-transform`}>
+                                                    <item.icon size={18} />
+                                                </div>
+                                                <div>
+                                                    <div className="text-xs font-black text-white group-hover/item:text-primary transition-colors uppercase tracking-widest">{item.name}</div>
+                                                    <div className="text-[10px] text-white/30 leading-tight mt-1">{item.desc}</div>
+                                                </div>
+                                            </Link>
+                                        ))}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+                        <Link to="/reviews" className="text-white/40 hover:text-white px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors">Reviews</Link>
+                    </div>
+
+                    {/* Social & Auth Actions */}
+                    <div className="flex items-center gap-2 sm:gap-4">
+                        <SignedIn>
+                            <div className="hidden sm:flex items-center gap-2 border-r border-white/5 pr-4 mr-2">
+                                <Link to="/chat">
+                                    <Button variant="ghost" size="icon" className="rounded-full hover:bg-white/5 relative">
+                                        <MessageSquare size={18} className="text-white/60" />
+                                        <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-blue-500 rounded-full border border-black animate-pulse"></span>
+                                    </Button>
+                                </Link>
+                                <NotificationCenter />
+                            </div>
+                            <UserButton appearance={{ elements: { avatarBox: "w-9 h-9 rounded-xl border border-white/10" } }} />
+                        </SignedIn>
                         <SignedOut>
                             <SignInButton mode="modal">
-                                <button className="text-sm font-medium text-muted-foreground hover:text-white transition-colors">
-                                    Sign In
-                                </button>
+                                <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-white">Sign In</Button>
                             </SignInButton>
                         </SignedOut>
-                        <SignedIn>
-                            <UserButton
-                                appearance={{
-                                    elements: {
-                                        avatarBox: "w-8 h-8 rounded-full border border-white/10"
-                                    }
-                                }}
-                            />
-                        </SignedIn>
 
-                        <Link to="/search">
-                            <Button className="h-9 px-6 bg-white text-black hover:bg-white/90 rounded-full text-xs font-bold uppercase tracking-widest transition-all hover:scale-105 active:scale-95">
+                        <Link to="/search" className="hidden sm:block">
+                            <Button className="h-10 px-6 bg-white text-black hover:bg-white/90 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-[0_0_20px_rgba(255,255,255,0.2)]">
                                 Plan Trip
                             </Button>
                         </Link>
-                    </div>
 
-                    {/* Mobile menu button */}
-                    <button
-                        className="md:hidden text-white p-1"
-                        onClick={toggleMobileMenu}
-                    >
-                        {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-                    </button>
+                        {/* Mobile Menu Trigger */}
+                        <button className="md:hidden text-white/60 hover:text-white transition-colors" onClick={toggleMobileMenu}>
+                            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                        </button>
+                    </div>
                 </nav>
             </div>
 

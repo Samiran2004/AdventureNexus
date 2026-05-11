@@ -7,6 +7,9 @@ export enum NotificationType {
     COMMENT_STORY = 'comment_story',
     FOLLOW = 'follow',
     MESSAGE = 'message',
+    FRIEND_REQUEST = 'friend_request',
+    FRIEND_ACCEPTED = 'friend_accepted',
+    GROUP_INVITE = 'group_invite',
 }
 
 export interface INotification extends Document {

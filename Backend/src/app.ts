@@ -41,6 +41,8 @@ import reviewRoute from './modules/reviews/routes/review.routes';
 import likedPlansRoute from './modules/planning/routes/likedPlans.routes';
 import bookingRoute from './modules/bookings/routes/booking.routes';
 import trainRoute from './modules/trains/routes/train.routes';
+import socialRoute from './modules/social/routes/socialRoutes';
+import messagingRoute from './modules/messaging/routes/messagingRoutes';
 
 // Swagger
 import swaggerJSDoc from 'swagger-jsdoc';
@@ -187,6 +189,10 @@ app.use('/api/v1/admin', adminRoutes);
 // Community Hub Routes
 import communityRoutes from './modules/community/community.routes';
 app.use('/api/v1/community', communityRoutes);
+
+// Social & Messaging Routes
+app.use('/api/v1/social', socialRoute);
+app.use('/api/v1/messaging', messagingRoute);
 
 
 
