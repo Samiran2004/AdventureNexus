@@ -1,8 +1,9 @@
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react'; // Clerk components for auth UI
-import { Menu, X, Sun, Moon } from 'lucide-react'; // Icons
+import { Menu, X, Sun, Moon, ChevronDown, Compass, Users, Map as MapIcon, BookOpen, Sparkles, Tent } from 'lucide-react'; // Icons
 import { useEffect, useState } from 'react'; // React hooks
 import { Link } from 'react-router-dom'; // Navigation link
 import { useTheme } from 'next-themes';
+import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedLogo from './AnimatedLogo';
 
 import { Button } from '@/components/ui/button';
@@ -22,10 +23,54 @@ function NavBar() {
     const navItems = [
         { name: 'Home', path: '/' },
         { name: 'My Trips', path: '/my-trips' },
-        { name: 'Destinations', path: '/destinations' },
-        { name: '🚂 Trains', path: '/trains' },
-        { name: 'Review', path: '/review-page' }
     ];
+
+    const discoverItems = [
+        { 
+            name: 'Community', 
+            path: '/community', 
+            icon: Users, 
+            desc: 'Join fellow travelers and share stories.',
+            color: 'text-blue-500'
+        },
+        { 
+            name: 'Destinations', 
+            path: '/destinations', 
+            icon: MapIcon, 
+            desc: 'Explore popular spots around the world.',
+            color: 'text-emerald-500'
+        },
+        { 
+            name: 'Trip Planner', 
+            path: '/search', 
+            icon: Compass, 
+            desc: 'AI-powered smart itinerary builder.',
+            color: 'text-purple-500'
+        },
+        { 
+            name: 'Travel Guides', 
+            path: '/guides', 
+            icon: BookOpen, 
+            desc: 'Expert advice for your next journey.',
+            color: 'text-orange-500'
+        },
+        { 
+            name: 'Experiences', 
+            path: '/experiences', 
+            icon: Sparkles, 
+            desc: 'Curated local activities and hidden gems.',
+            color: 'text-pink-500'
+        },
+        { 
+            name: 'Adventure Tours', 
+            path: '/tours', 
+            icon: Tent, 
+            desc: 'Thrilling group expeditions & treks.',
+            color: 'text-indigo-500'
+        }
+    ];
+
+    const [discoverOpen, setDiscoverOpen] = useState(false);
 
     // Mobile menu toggle
     const toggleMobileMenu = () => {
@@ -97,6 +142,19 @@ function NavBar() {
                                 className="text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg px-4 py-3 transition-all duration-300"
                                 onClick={toggleMobileMenu}
                             >
+                                {item.name}
+                            </Link>
+                        ))}
+
+                        <div className="py-2 px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-50">Discover</div>
+                        {discoverItems.map((item) => (
+                            <Link
+                                key={item.name}
+                                to={item.path}
+                                className="flex items-center gap-4 text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg px-4 py-3 transition-all duration-300"
+                                onClick={toggleMobileMenu}
+                            >
+                                <item.icon size={18} className={item.color} />
                                 {item.name}
                             </Link>
                         ))}
@@ -201,6 +259,53 @@ function NavBar() {
                                     {item.name}
                                 </Link>
                             ))}
+
+                            {/* Discover Mega Menu Trigger */}
+                            <div 
+                                className="relative group"
+                                onMouseEnter={() => setDiscoverOpen(true)}
+                                onMouseLeave={() => setDiscoverOpen(false)}
+                            >
+                                <button 
+                                    className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-muted-foreground group-hover:text-white transition-colors"
+                                >
+                                    Discover <ChevronDown size={14} className={`transition-transform duration-300 ${discoverOpen ? 'rotate-180' : ''}`} />
+                                </button>
+
+                                <AnimatePresence>
+                                    {discoverOpen && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            className="absolute left-0 mt-2 w-[450px] bg-card/95 backdrop-blur-2xl border border-white/10 rounded-[2rem] shadow-2xl p-6 grid grid-cols-2 gap-4"
+                                        >
+                                            {discoverItems.map((item) => (
+                                                <Link
+                                                    key={item.name}
+                                                    to={item.path}
+                                                    className="flex items-start gap-4 p-3 rounded-2xl hover:bg-white/5 transition-all group/item"
+                                                >
+                                                    <div className={`p-2.5 rounded-xl bg-white/5 ${item.color} group-hover/item:scale-110 transition-transform`}>
+                                                        <item.icon size={20} />
+                                                    </div>
+                                                    <div>
+                                                        <div className="text-sm font-bold text-white group-hover/item:text-primary transition-colors">{item.name}</div>
+                                                        <div className="text-[10px] text-muted-foreground leading-tight mt-1">{item.desc}</div>
+                                                    </div>
+                                                </Link>
+                                            ))}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+
+                            <Link
+                                to="/review-page"
+                                className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-white transition-colors"
+                            >
+                                Reviews
+                            </Link>
                         </div>
                     </div>
 

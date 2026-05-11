@@ -49,6 +49,16 @@ export const toggleLike = async (req: Request, res: Response) => {
 
         await target.save();
 
+        // Real-time broadcast
+        import('../../../shared/socket/socket').then(({ broadcastRealtimeEvent }) => {
+            broadcastRealtimeEvent('community:like', {
+                targetType,
+                targetId,
+                likes: target.likes,
+                clerkUserId
+            });
+        });
+
         return res.status(StatusCodes.OK).json({
             success: true,
             data: {

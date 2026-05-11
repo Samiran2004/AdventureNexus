@@ -30,6 +30,14 @@ export const createStory = async (req: Request, res: Response) => {
 
         logger.info(`New travel story created: ${newStory._id} by ${clerkUserId}`);
 
+        // Real-time broadcast
+        import('../../../shared/socket/socket').then(({ broadcastRealtimeEvent }) => {
+            broadcastRealtimeEvent('community:story', {
+                story: newStory,
+                clerkUserId
+            });
+        });
+
         return res.status(StatusCodes.CREATED).json({
             success: true,
             data: newStory

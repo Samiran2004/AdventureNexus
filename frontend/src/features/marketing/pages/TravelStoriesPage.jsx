@@ -25,6 +25,7 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import toast from 'react-hot-toast';
+import { io } from 'socket.io-client';
 
 const TravelStoriesPage = () => {
     const navigate = useNavigate();
@@ -54,6 +55,25 @@ const TravelStoriesPage = () => {
 
     useEffect(() => {
         fetchStories();
+
+        const socket = io(import.meta.env.VITE_BACKEND_URL || 'https://adventure-nexus-backend.onrender.com');
+
+        socket.on('community:story', (data) => {
+            setStories(prev => [data.story, ...prev]);
+            toast.success('A new story was just shared!', { icon: '✨' });
+        });
+
+        socket.on('community:like', (data) => {
+            if (data.targetType === 'story') {
+                setStories(prev => prev.map(s => 
+                    s._id === data.targetId ? { ...s, likes: data.likes } : s
+                ));
+            }
+        });
+
+        return () => {
+            socket.disconnect();
+        };
     }, [search, locationFilter]);
 
     const handleCreateStory = async (e) => {

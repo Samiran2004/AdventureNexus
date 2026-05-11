@@ -27,6 +27,7 @@ import toast from 'react-hot-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
+import { io } from 'socket.io-client';
 
 const CommunityPage = () => {
   const navigate = useNavigate();
@@ -145,7 +146,46 @@ const CommunityPage = () => {
     fetchSpotlight();
     fetchStats();
     fetchStories();
-  }, []);
+
+    // Socket.io Real-time Listeners
+    const socket = io(import.meta.env.VITE_BACKEND_URL || 'https://adventure-nexus-backend.onrender.com');
+
+    socket.on('community:like', (data) => {
+        setPosts(prev => prev.map(post => 
+            post._id === data.targetId ? { ...post, likes: data.likes } : post
+        ));
+        if (selectedPost?._id === data.targetId) {
+            setSelectedPost(prev => ({ ...prev, likes: data.likes }));
+        }
+    });
+
+    socket.on('community:comment', (data) => {
+        setPosts(prev => prev.map(post => 
+            post._id === data.postId ? { ...post, repliesCount: post.repliesCount + 1 } : post
+        ));
+        if (selectedPost?._id === data.postId) {
+            setSelectedPost(prev => ({ 
+                ...prev, 
+                comments: [...(prev.comments || []), data.comment],
+                repliesCount: prev.repliesCount + 1 
+            }));
+        }
+    });
+
+    socket.on('community:story', (data) => {
+        setStories(prev => [data.story, ...prev]);
+        toast.success(`New travel story from ${data.clerkUserId}!`, { icon: '📖' });
+    });
+
+    socket.on('community:post', (data) => {
+        setPosts(prev => [data.post, ...prev]);
+        toast.success('New discussion started!', { icon: '💬' });
+    });
+
+    return () => {
+        socket.disconnect();
+    };
+  }, [selectedPost?._id]);
 
   const handleCreatePost = async (e) => {
     e.preventDefault();

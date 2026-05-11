@@ -68,10 +68,19 @@ export const getIO = (): Server => {
 };
 
 /**
+ * Helper to broadcast an event to everyone connected.
+ */
+export const broadcastRealtimeEvent = (event: string, data: any) => {
+    if (io) {
+        io.emit(event, data);
+    }
+};
+
+/**
  * Helper to emit a notification to a specific user if they are online.
  */
 export const sendRealtimeNotification = (recipientClerkUserId: string, notification: any) => {
-    if (onlineUsers.has(recipientClerkUserId)) {
+    if (io && onlineUsers.has(recipientClerkUserId)) {
         onlineUsers.get(recipientClerkUserId)?.forEach(socketId => {
             io.to(socketId).emit('notification', notification);
         });
@@ -82,7 +91,7 @@ export const sendRealtimeNotification = (recipientClerkUserId: string, notificat
  * Helper to emit a message to a specific user if they are online.
  */
 export const sendRealtimeMessage = (recipientClerkUserId: string, message: any) => {
-    if (onlineUsers.has(recipientClerkUserId)) {
+    if (io && onlineUsers.has(recipientClerkUserId)) {
         onlineUsers.get(recipientClerkUserId)?.forEach(socketId => {
             io.to(socketId).emit('message:direct', message);
         });

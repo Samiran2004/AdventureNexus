@@ -32,32 +32,19 @@ export default function Globe2() {
   // Prevent hydration mismatch
   if (!mounted) {
     return (
-      <div className="bg-background flex flex-col items-center justify-center overflow-hidden rounded-3xl mb-7 w-full">
-        <article className="relative mx-auto h-[350px] min-h-60 w-full overflow-hidden rounded-3xl border border-border bg-gradient-to-b from-primary/10 to-transparent p-6 md:h-[450px] md:min-h-80 md:p-8">
-          <span className="block max-w-[80%] z-20 relative text-3xl tracking-tight text-foreground md:text-5xl md:leading-[1.1] lg:text-6xl font-outfit font-bold">
-            Discover the world with intelligent trip planning at your fingertips.
-          </span>
-        </article>
-      </div>
+      <div className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-3xl" />
     );
   }
 
   return (
-    <>
-      <div className="bg-background flex flex-col items-center justify-center overflow-hidden rounded-3xl mb-7 w-full">
-        <article className="relative mx-auto h-[350px] min-h-60 w-full overflow-hidden rounded-3xl border border-border bg-gradient-to-b from-primary/10 to-transparent p-6 text-3xl tracking-tight text-foreground md:h-[450px] md:min-h-80 md:p-8 md:text-5xl md:leading-[1.1] lg:text-6xl font-outfit font-bold">
-          <span className="block max-w-[80%] z-20 relative">
-            Discover the world with intelligent trip planning at your fingertips.
-          </span>
-          <div className="absolute -right-20 -bottom-20 z-10 mx-auto flex h-full w-full max-w-[300px] items-center justify-center transition-all duration-700 hover:scale-105 md:-right-20 md:-bottom-20 md:max-w-[550px] pointer-events-none opacity-80 mix-blend-plus-lighter">
-            <Earth
-              baseColor={globeColors.baseColor}
-              markerColor={globeColors.markerColor}
-              glowColor={globeColors.glowColor}
-            />
-          </div>
-        </article>
+    <div className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-3xl">
+      <div className="absolute inset-0 z-10 flex items-center justify-center transition-all duration-700 hover:scale-105 pointer-events-none opacity-80 mix-blend-plus-lighter">
+        <Earth
+          baseColor={globeColors.baseColor}
+          markerColor={globeColors.markerColor}
+          glowColor={globeColors.glowColor}
+        />
       </div>
-    </>
+    </div>
   );
 }

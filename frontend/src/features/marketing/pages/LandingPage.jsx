@@ -112,24 +112,15 @@ const AdventureNexusLanding = () => {
     const testimonialsRef = useRef(null);
     const personaRef = useRef(null);
     const ctaRef = useRef(null);
-    const navRef = useRef(null);
     const heroContentRef = useRef(null);
     const heroImageRef = useRef(null);
+    const rootRef = useRef(null);
 
     useEffect(() => {
         let ctx = gsap.context(() => {
             // Initial page load animation
-            gsap.set(navRef.current, { y: -100, opacity: 0 });
             gsap.set(heroContentRef.current, { x: -100, opacity: 0 });
             gsap.set(heroImageRef.current, { x: 100, opacity: 0, scale: 0.8 });
-
-            // Navbar animation
-            gsap.to(navRef.current, {
-                y: 0,
-                opacity: 1,
-                duration: 1,
-                ease: "power2.out"
-            });
 
             // Hero content animation with stagger
             gsap.timeline({ delay: 0.3 })
@@ -148,83 +139,95 @@ const AdventureNexusLanding = () => {
                 }, "-=0.8");
 
             // Features section animation
-            gsap.from(".feature-card", {
-                scrollTrigger: {
-                    trigger: featuresRef.current,
-                    start: "top 80%",
-                    end: "bottom 20%",
-                    toggleActions: "play none none reverse"
-                },
-                y: 60,
-                opacity: 0,
-                duration: 0.8,
-                stagger: 0.2,
-                ease: "power2.out"
-            });
+            if (featuresRef.current) {
+                gsap.from(".feature-card", {
+                    scrollTrigger: {
+                        trigger: featuresRef.current,
+                        start: "top 80%",
+                        end: "bottom 20%",
+                        toggleActions: "play none none reverse"
+                    },
+                    y: 60,
+                    opacity: 0,
+                    duration: 0.8,
+                    stagger: 0.2,
+                    ease: "power2.out"
+                });
+            }
 
             // How it works animation
-            gsap.from(".step-item", {
-                scrollTrigger: {
-                    trigger: howItWorksRef.current,
-                    start: "top 80%",
-                },
-                y: 50,
-                opacity: 0,
-                duration: 1,
-                stagger: 0.3,
-                ease: "power2.out"
-            });
+            if (howItWorksRef.current) {
+                gsap.from(".step-item", {
+                    scrollTrigger: {
+                        trigger: howItWorksRef.current,
+                        start: "top 80%",
+                    },
+                    y: 50,
+                    opacity: 0,
+                    duration: 1,
+                    stagger: 0.3,
+                    ease: "power2.out"
+                });
+            }
 
             // Testimonials animation
-            gsap.from(".testimonial-card", {
-                scrollTrigger: {
-                    trigger: testimonialsRef.current,
-                    start: "top 80%",
-                },
-                y: 50,
-                opacity: 0,
-                rotation: 5,
-                duration: 1,
-                stagger: 0.2,
-                ease: "back.out(1.7)"
-            });
+            if (testimonialsRef.current) {
+                gsap.from(".testimonial-card", {
+                    scrollTrigger: {
+                        trigger: testimonialsRef.current,
+                        start: "top 80%",
+                    },
+                    y: 50,
+                    opacity: 0,
+                    rotation: 5,
+                    duration: 1,
+                    stagger: 0.2,
+                    ease: "back.out(1.7)"
+                });
+            }
 
             // Persona cards animation
-            gsap.from(".persona-card", {
-                scrollTrigger: {
-                    trigger: personaRef.current,
-                    start: "top 80%",
-                },
-                y: 80,
-                opacity: 0,
-                scale: 0.9,
-                duration: 1,
-                stagger: 0.15,
-                ease: "power2.out"
-            });
+            if (personaRef.current) {
+                gsap.from(".persona-card", {
+                    scrollTrigger: {
+                        trigger: personaRef.current,
+                        start: "top 80%",
+                    },
+                    y: 80,
+                    opacity: 0,
+                    scale: 0.9,
+                    duration: 1,
+                    stagger: 0.15,
+                    ease: "power2.out"
+                });
+            }
 
             // CTA section animation
-            gsap.from(ctaRef.current, {
-                scrollTrigger: {
-                    trigger: ctaRef.current,
-                    start: "top 90%",
-                },
-                scale: 0.8,
-                opacity: 0,
-                duration: 1.2,
-                ease: "back.out(1.7)"
-            });
+            if (ctaRef.current) {
+                gsap.from(ctaRef.current, {
+                    scrollTrigger: {
+                        trigger: ctaRef.current,
+                        start: "top 90%",
+                    },
+                    scale: 0.8,
+                    opacity: 0,
+                    duration: 1.2,
+                    ease: "back.out(1.7)"
+                });
+            }
 
             // Floating animation for hero image
-            gsap.to(heroImageRef.current, {
-                y: -10,
-                duration: 2,
-                repeat: -1,
-                yoyo: true,
-                ease: "power2.inOut"
-            });
+            if (heroImageRef.current) {
+                gsap.to(heroImageRef.current, {
+                    y: -10,
+                    duration: 2,
+                    repeat: -1,
+                    yoyo: true,
+                    ease: "power2.inOut"
+                });
+            }
 
-        });
+        }, rootRef); // Scope to rootRef
 
         return () => ctx.revert(); // Cleanup
     }, []);
@@ -249,7 +252,7 @@ const AdventureNexusLanding = () => {
     const navigate = useNavigate();
 
     return (
-        <div className="min-h-screen bg-background overflow-hidden">
+        <div ref={rootRef} className="min-h-screen bg-background overflow-hidden">
 
             <NavBar />
 
@@ -271,7 +274,7 @@ const AdventureNexusLanding = () => {
                 ></motion.div>
  
                 <div className="container mx-auto px-4 relative z-10">
-                    <div className="max-w-4xl mx-auto text-center space-y-10">
+                    <div ref={heroContentRef} className="max-w-4xl mx-auto text-center space-y-10">
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -285,13 +288,14 @@ const AdventureNexusLanding = () => {
                                 </span>
                             </div>
                             
-                            <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold text-white tracking-tighter leading-[0.9] font-inter">
-                                YOUR DREAM <br /> ADVENTURE <br />
-                                <span className="text-white/40">STARTS HERE</span>
+                            <h1 className="text-5xl sm:text-7xl md:text-9xl font-black text-white tracking-tighter leading-[0.85] font-inter">
+                                YOUR DREAM <br /> 
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-white to-purple-400">ADVENTURE</span> <br />
+                                <span className="text-white/20">STARTS HERE</span>
                             </h1>
 
-                            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium">
-                                Experience intelligent travel planning powered by AI. Get personalized itineraries and discover hidden destinations instantly.
+                            <p className="text-lg md:text-2xl text-white/60 max-w-2xl mx-auto font-medium leading-relaxed">
+                                Experience intelligent travel planning powered by AI. <br className="hidden md:block" /> Get personalized itineraries and discover hidden destinations instantly.
                             </p>
                         </motion.div>
  
@@ -311,12 +315,31 @@ const AdventureNexusLanding = () => {
                             <Button
                                 variant="outline"
                                 size="lg"
-                                className="h-14 px-10 border-white/10 bg-transparent text-white hover:bg-white/5 rounded-full font-bold text-sm uppercase tracking-widest transition-all"
-                                onClick={() => navigate('/works')}
+                                className="h-14 px-10 border-white/10 bg-transparent text-white hover-scale rounded-full font-bold text-sm uppercase tracking-widest"
+                                onClick={() => {
+                                    document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
+                                }}
                             >
                                 See how it works
                             </Button>
                         </motion.div>
+                    </div>
+
+                    {/* Hero Image / Illustration */}
+                    <div ref={heroImageRef} className="mt-20 relative max-w-5xl mx-auto">
+                        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10"></div>
+                        <div className="rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl bg-muted/20 backdrop-blur-sm aspect-video flex items-center justify-center group">
+                             <img 
+                                src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2000&auto=format&fit=crop" 
+                                alt="Adventure" 
+                                className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-1000"
+                             />
+                             <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="w-20 h-20 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 cursor-pointer hover:scale-110 transition-transform">
+                                    <Play fill="white" size={32} className="ml-1" />
+                                </div>
+                             </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -337,14 +360,20 @@ const AdventureNexusLanding = () => {
                             initial={{ opacity: 0, scale: 0.95 }}
                             whileInView={{ opacity: 1, scale: 1 }}
                             viewport={{ once: true }}
-                            className="md:col-span-2 md:row-span-2 glass-card rounded-3xl overflow-hidden relative flex flex-col items-center justify-center p-8 group border border-white/5"
+                            className="feature-card md:col-span-2 md:row-span-2 rounded-[3rem] overflow-hidden relative flex flex-col p-12 group border border-white/10 bg-[#050505]"
                         >
-                            <div className="absolute inset-0 opacity-20 pointer-events-none">
+                            <div className="absolute inset-0 opacity-40 pointer-events-none group-hover:opacity-60 transition-opacity duration-700">
                                 <Globe2 />
                             </div>
-                            <div className="relative z-10 mt-auto text-center space-y-2">
-                                <h3 className="text-2xl font-bold text-white font-inter">Global Reach</h3>
-                                <p className="text-muted-foreground max-w-sm text-sm">Every destination at your fingertips with AI-driven insights.</p>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+                            <div className="relative z-10 mt-auto space-y-4">
+                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-bold uppercase tracking-widest">
+                                    <Globe size={12} /> Global Discovery
+                                </div>
+                                <h3 className="text-4xl md:text-5xl font-bold text-white font-inter tracking-tight leading-tight">
+                                    Explore the world <br /> with <span className="text-blue-500">AI precision.</span>
+                                </h3>
+                                <p className="text-white/50 max-w-md text-lg leading-relaxed">Every destination at your fingertips with real-time AI-driven insights and local hidden gems.</p>
                             </div>
                         </TiltWrapper>
 
@@ -353,13 +382,15 @@ const AdventureNexusLanding = () => {
                             initial={{ opacity: 0, x: 20 }}
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
-                            className="glass-card rounded-3xl p-8 flex flex-col justify-between group overflow-hidden relative border border-white/5"
+                            className="feature-card glass-card rounded-[2.5rem] p-10 flex flex-col justify-between group overflow-hidden relative border border-white/10 bg-white/[0.02]"
                         >
-                            <div className="absolute top-[-20%] right-[-20%] w-40 h-40 bg-white/5 blur-3xl rounded-full group-hover:bg-white/10 transition-colors"></div>
-                            <Sparkles className="text-white w-8 h-8 mb-4" />
-                            <div className="space-y-2">
-                                <h3 className="text-xl font-bold text-white font-inter">Smart Itineraries</h3>
-                                <p className="text-sm text-muted-foreground">Personalized routes based on your preferences and local trends.</p>
+                            <div className="absolute top-[-20%] right-[-20%] w-64 h-64 bg-purple-500/10 blur-[80px] rounded-full group-hover:bg-purple-500/20 transition-colors duration-700"></div>
+                            <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mb-6">
+                                <Sparkles className="text-purple-400 w-6 h-6" />
+                            </div>
+                            <div className="space-y-3">
+                                <h3 className="text-2xl font-bold text-white font-inter tracking-tight">Smart Itineraries</h3>
+                                <p className="text-white/40 leading-relaxed">Personalized routes based on your preferences, budget, and local trends.</p>
                             </div>
                         </TiltWrapper>
 
@@ -369,12 +400,15 @@ const AdventureNexusLanding = () => {
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.1 }}
-                            className="glass-card rounded-3xl p-8 flex flex-col justify-between group overflow-hidden relative border border-white/5"
+                            className="feature-card glass-card rounded-[2.5rem] p-10 flex flex-col justify-between group overflow-hidden relative border border-white/10 bg-white/[0.02]"
                         >
-                            <Search className="text-white w-8 h-8 mb-4" />
-                            <div className="space-y-2">
-                                <h3 className="text-xl font-bold text-white font-inter">Infinite Discovery</h3>
-                                <p className="text-sm text-muted-foreground">Find hidden gems that other planners simply overlook.</p>
+                            <div className="absolute top-[-20%] right-[-20%] w-64 h-64 bg-emerald-500/10 blur-[80px] rounded-full group-hover:bg-emerald-500/20 transition-colors duration-700"></div>
+                            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-6">
+                                <Search className="text-emerald-400 w-6 h-6" />
+                            </div>
+                            <div className="space-y-3">
+                                <h3 className="text-2xl font-bold text-white font-inter tracking-tight">Infinite Discovery</h3>
+                                <p className="text-white/40 leading-relaxed">Find hidden spots that other travelers simply overlook with our neural search.</p>
                             </div>
                         </TiltWrapper>
 
@@ -383,15 +417,19 @@ const AdventureNexusLanding = () => {
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            className="md:col-span-3 glass-card rounded-3xl p-8 overflow-hidden relative border border-white/5"
+                            className="feature-card md:col-span-3 rounded-[3rem] p-12 overflow-hidden relative border border-white/10 bg-[#080808]"
                         >
-                            <div className="flex flex-col md:flex-row items-center justify-between gap-8 h-full">
-                                <div className="space-y-4 max-w-md">
-                                    <h3 className="text-2xl font-bold text-white leading-tight font-inter">Curated Experiences</h3>
-                                    <p className="text-muted-foreground text-sm">From luxury stays to local street food, we map out the perfect journey for every vibe.</p>
-                                    <Button variant="outline" className="rounded-full border-white/10 text-[10px] px-6 uppercase tracking-widest font-bold text-white hover:bg-white/5">Explore Features</Button>
+                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(59,130,246,0.1),transparent)] pointer-events-none"></div>
+                            <div className="flex flex-col md:flex-row items-center justify-between gap-12 h-full relative z-10">
+                                <div className="space-y-6 max-w-lg">
+                                    <div className="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+                                        <TrendingUp className="text-blue-400 w-6 h-6" />
+                                    </div>
+                                    <h3 className="text-3xl md:text-4xl font-bold text-white leading-tight font-inter tracking-tight">Curated Local <span className="text-blue-500">Experiences.</span></h3>
+                                    <p className="text-white/50 text-lg leading-relaxed">From luxury stays to local street food, we map out the perfect journey for every vibe.</p>
+                                    <Button className="h-12 px-8 rounded-full bg-white text-black font-bold hover:scale-105 transition-transform">Explore All Features</Button>
                                 </div>
-                                <div className="w-full md:w-1/2 min-h-[150px]">
+                                <div className="w-full md:w-1/2 min-h-[250px]">
                                     <CardSlider />
                                 </div>
                             </div>
@@ -400,19 +438,73 @@ const AdventureNexusLanding = () => {
                 </div>
             </section>
 
-
-            {/* Testimonials Section */}
-            <section id="testimonials" ref={testimonialsRef} className="py-24 relative overflow-hidden">
-                <div className="absolute inset-0 developer-grid opacity-10"></div>
+            {/* How It Works Section */}
+            <section id="how-it-works" ref={howItWorksRef} className="py-32 bg-[#020202] relative overflow-hidden">
+                <div className="absolute inset-0 developer-grid-dot opacity-10"></div>
                 <div className="container mx-auto px-4 relative z-10">
-                    <div className="text-center mb-16 space-y-4">
-                        <span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold font-inter">Voices of Adventure</span>
-                        <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight font-inter">
-                            COMMUNITY <span className="text-white/30">TRUST</span>
+                    <div className="text-center mb-24 space-y-6">
+                        <span className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] uppercase tracking-[0.3em] text-white/60 font-black">The Workflow</span>
+                        <h2 className="text-5xl md:text-7xl font-bold text-white tracking-tighter font-inter">
+                            HOW THE <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">NEXUS WORKS</span>
                         </h2>
                     </div>
 
-                    <div className="grid md:grid-cols-3 gap-6">
+                    <div className="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto">
+                        {[
+                            { 
+                                step: "01", 
+                                title: "Share Your Vibe", 
+                                desc: "Tell our AI what kind of adventure you're looking for - from chill beaches to intense treks.",
+                                icon: MessageCircle,
+                                color: "blue"
+                            },
+                            { 
+                                step: "02", 
+                                title: "AI Generation", 
+                                desc: "Our neural engine crafts a hyper-personalized itinerary in seconds, checking live data.",
+                                icon: Bot,
+                                color: "purple"
+                            },
+                            { 
+                                step: "03", 
+                                title: "Hit the Road", 
+                                desc: "Follow your interactive smart guide and explore the world with zero friction.",
+                                icon: Navigation,
+                                color: "emerald"
+                            }
+                        ].map((item, i) => (
+                            <div key={i} className="step-item group p-12 rounded-[3.5rem] bg-white/[0.02] border border-white/5 space-y-6 relative overflow-hidden hover:bg-white/[0.04] transition-all duration-500">
+                                <div className="absolute top-[-10%] right-[-10%] text-9xl font-black text-white/[0.03] group-hover:text-white/[0.06] transition-colors duration-500">{item.step}</div>
+                                <div className={`w-16 h-16 rounded-[1.5rem] bg-${item.color}-500/10 flex items-center justify-center border border-${item.color}-500/20 group-hover:scale-110 transition-transform duration-500`}>
+                                    <item.icon size={32} className={`text-${item.color}-400`} />
+                                </div>
+                                <div className="space-y-4">
+                                    <h3 className="text-3xl font-bold text-white font-inter tracking-tight">{item.title}</h3>
+                                    <p className="text-white/40 text-lg leading-relaxed">{item.desc}</p>
+                                </div>
+                                <div className="pt-4 flex items-center gap-2 text-white/20 group-hover:text-white/60 transition-colors">
+                                    <span className="text-[10px] font-bold uppercase tracking-widest">Learn More</span>
+                                    <ArrowRight size={14} />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+
+            {/* Testimonials Section */}
+            <section id="testimonials" ref={testimonialsRef} className="py-32 relative overflow-hidden bg-black">
+                <div className="absolute inset-0 developer-grid opacity-10"></div>
+                <div className="container mx-auto px-4 relative z-10">
+                    <div className="text-center mb-24 space-y-6">
+                        <span className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] uppercase tracking-[0.3em] text-white/60 font-black">Community Trust</span>
+                        <h2 className="text-5xl md:text-7xl font-bold text-white tracking-tighter font-inter">
+                            VOICES OF <span className="text-white/20">ADVENTURE</span>
+                        </h2>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
                         {[
                             {
                                 name: "Samiran Samanta",
@@ -443,24 +535,26 @@ const AdventureNexusLanding = () => {
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.1 }}
                             >
-                                <Card className="testimonial-card bg-[#0A0A0A]/80 backdrop-blur-xl border border-white/5 shadow-2xl hover:bg-[#111] transition-colors duration-300 h-full flex flex-col group">
-                                    <CardContent className="p-8 space-y-6 flex-1 flex flex-col">
-                                        <div className="flex text-white/80 gap-1">
-                                            {[...Array(testimonial.rating)].map((_, i) => (
-                                                <Star key={i} size={16} fill="currentColor" strokeWidth={0} />
-                                            ))}
-                                            <span className="ml-2 text-xs font-bold font-inter text-muted-foreground">{testimonial.rating}.0</span>
+                                <Card className="testimonial-card bg-white/[0.02] backdrop-blur-3xl border border-white/5 shadow-2xl hover:bg-white/[0.04] transition-all duration-500 h-full flex flex-col group rounded-[2.5rem] overflow-hidden">
+                                    <CardContent className="p-10 space-y-8 flex-1 flex flex-col relative">
+                                        <div className="absolute top-8 right-10 opacity-10 group-hover:opacity-20 transition-opacity">
+                                            <Sparkles size={40} className="text-white" />
                                         </div>
-                                        <p className="text-muted-foreground text-sm leading-relaxed flex-1 font-inter">
+                                        <div className="flex text-amber-400 gap-1">
+                                            {[...Array(5)].map((_, i) => (
+                                                <Star key={i} size={14} fill={i < testimonial.rating ? "currentColor" : "none"} strokeWidth={1} />
+                                            ))}
+                                        </div>
+                                        <p className="text-white/70 text-lg leading-relaxed flex-1 font-inter italic font-medium">
                                             "{testimonial.content}"
                                         </p>
-                                        <div className="flex items-center space-x-4 pt-4 border-t border-white/5">
-                                            <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white font-bold text-sm tracking-widest font-inter">
+                                        <div className="flex items-center space-x-5 pt-8 border-t border-white/5">
+                                            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-black text-lg tracking-widest shadow-lg">
                                                 {testimonial.name.split(' ').map(n => n[0]).join('')}
                                             </div>
                                             <div>
-                                                <div className="font-bold text-white text-sm font-inter tracking-tight">{testimonial.name}</div>
-                                                <div className="text-xs text-muted-foreground font-inter tracking-wide">{testimonial.role} &bull; {testimonial.location}</div>
+                                                <div className="font-bold text-white text-lg font-inter tracking-tight">{testimonial.name}</div>
+                                                <div className="text-sm text-white/40 font-inter tracking-wide">{testimonial.role} &bull; {testimonial.location}</div>
                                             </div>
                                         </div>
                                     </CardContent>
@@ -477,116 +571,111 @@ const AdventureNexusLanding = () => {
             </div>
 
             {/* Travel Personas Section */}
-            <section id="personas" ref={personaRef} className="py-24 bg-[#050505]">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center space-y-4 mb-16">
-                        <div className="flex items-center justify-center gap-3 mb-4">
-                            <Compass className="w-8 h-8 text-white" />
-                            <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-white/80 to-white/50 bg-clip-text text-transparent font-inter tracking-tight">
-                                Discover Your Travel Persona
-                            </h2>
-                        </div>
-                        <p className="text-xl text-muted-foreground font-inter">
-                            Our AI curates highly specialized journeys for every type of traveler.
-                        </p>
+            <section id="personas" ref={personaRef} className="py-32 bg-[#050505] relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
+                <div className="container mx-auto px-4">
+                    <div className="text-center space-y-6 mb-24">
+                        <span className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] uppercase tracking-[0.3em] text-white/60 font-black">Tailored Journeys</span>
+                        <h2 className="text-5xl md:text-7xl font-bold text-white tracking-tighter font-inter">
+                            CHOOSE YOUR <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500">VIBE</span>
+                        </h2>
                     </div>
 
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
                         {[
                             {
                                 name: "The Thrill Seeker",
-                                icon: <Sparkles className="w-8 h-8 text-white mb-4" />,
+                                icon: <Zap className="w-6 h-6 text-orange-400" />,
                                 description: "Adrenaline, extreme sports, and uncharted paths.",
-                                bg: "bg-gradient-to-br from-red-500/10 to-orange-500/10 hover:from-red-500/20 hover:to-orange-500/20",
-                                img: "https://images.unsplash.com/photo-1522163182402-834f871fd851?q=80&w=400&auto=format&fit=crop"
+                                accent: "orange",
+                                img: "https://images.unsplash.com/photo-1522163182402-834f871fd851?q=80&w=600&auto=format&fit=crop"
                             },
                             {
                                 name: "Cultural Connoisseur",
-                                icon: <Globe className="w-8 h-8 text-white mb-4" />,
+                                icon: <Globe className="w-6 h-6 text-purple-400" />,
                                 description: "Wine tasting, ancient history, and deep local immersion.",
-                                bg: "bg-gradient-to-br from-purple-500/10 to-indigo-500/10 hover:from-purple-500/20 hover:to-indigo-500/20",
-                                img: "https://images.unsplash.com/photo-1518398046578-8cca57782e17?q=80&w=400&auto=format&fit=crop"
+                                accent: "purple",
+                                img: "https://images.unsplash.com/photo-1518398046578-8cca57782e17?q=80&w=600&auto=format&fit=crop"
                             },
                             {
-                                name: "The Escapist",
-                                icon: <MapPin className="w-8 h-8 text-white mb-4" />,
-                                description: "Maximum relaxation, hidden beaches, zero stress.",
-                                bg: "bg-gradient-to-br from-teal-500/10 to-emerald-500/10 hover:from-teal-500/20 hover:to-emerald-500/20",
-                                img: "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?q=80&w=400&auto=format&fit=crop"
+                                name: "Nature Nomad",
+                                icon: <MapPin className="w-6 h-6 text-emerald-400" />,
+                                description: "Hidden forests, serene lakes, and sustainable living.",
+                                accent: "emerald",
+                                img: "https://images.unsplash.com/photo-1501555088652-021faa106b9b?q=80&w=600&auto=format&fit=crop"
                             },
                             {
-                                name: "Budget Backpacker",
-                                icon: <Compass className="w-8 h-8 text-white mb-4" />,
-                                description: "Hostels, raw experiences, and spontaneous living.",
-                                bg: "bg-gradient-to-br from-yellow-500/10 to-amber-500/10 hover:from-yellow-500/20 hover:to-amber-500/20",
-                                img: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?q=80&w=400&auto=format&fit=crop"
+                                name: "Luxury Explorer",
+                                icon: <Sparkles className="w-6 h-6 text-amber-400" />,
+                                description: "Private villas, boutique hotels, and five-star comfort.",
+                                accent: "amber",
+                                img: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=600&auto=format&fit=crop"
                             }
                         ].map((persona, index) => (
-                            <TiltWrapper key={index} className="persona-card h-full">
-                                <Card className={`h-full flex flex-col border border-white/5 backdrop-blur-xl transition-all duration-500 overflow-hidden cursor-pointer group ${persona.bg}`}>
-                                    <div className="absolute inset-0 z-0 opacity-20 group-hover:opacity-40 transition-opacity duration-500 bg-cover bg-center" style={{ backgroundImage: `url(${persona.img})`, filter: 'grayscale(100%)' }}></div>
-                                    <div className="absolute inset-0 bg-black/60 group-hover:bg-black/40 transition-colors duration-500 z-0"></div>
-                                    <CardContent className="p-8 flex flex-col items-center text-center justify-center h-full relative z-10">
-                                        <div className="transform group-hover:scale-110 transition-transform duration-500">
-                                            {persona.icon}
-                                        </div>
-                                        <h3 className="text-2xl font-bold text-white font-inter tracking-tight mb-4">{persona.name}</h3>
-                                        <p className="text-sm text-muted-foreground font-inter">{persona.description}</p>
-                                        <div className="mt-8 opacity-0 group-hover:opacity-100 transition-opacity duration-500 translate-y-4 group-hover:translate-y-0">
-                                            <Button variant="outline" className="border-white/20 text-white hover:bg-white/10 rounded-full text-xs uppercase tracking-widest font-bold">
-                                                Select Persona
-                                            </Button>
-                                        </div>
-                                    </CardContent>
-                                </Card>
+                            <TiltWrapper key={index} className="persona-card group h-[500px] rounded-[3rem] overflow-hidden relative border border-white/10">
+                                <img src={persona.img} alt={persona.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+                                <div className="absolute inset-0 p-10 flex flex-col justify-end space-y-4">
+                                    <div className={`w-12 h-12 rounded-2xl bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center mb-2`}>
+                                        {persona.icon}
+                                    </div>
+                                    <h3 className="text-3xl font-bold text-white font-inter tracking-tight leading-tight">{persona.name}</h3>
+                                    <p className="text-white/60 text-sm leading-relaxed">{persona.description}</p>
+                                    <div className="pt-4 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-4 group-hover:translate-y-0 duration-500">
+                                        <Button className="w-full h-12 rounded-2xl bg-white text-black font-bold text-xs uppercase tracking-widest">Select Vibe</Button>
+                                    </div>
+                                </div>
                             </TiltWrapper>
                         ))}
                     </div>
                 </div>
             </section>
 
-            {/* Call to Action Section */}
-            <section ref={ctaRef} className="py-32 bg-black relative overflow-hidden border-t border-white/5">
-                <div className="absolute inset-0">
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-white/5 rounded-full blur-[100px] pointer-events-none"></div>
-                    <div className="absolute inset-0 developer-grid opacity-20 pointer-events-none"></div>
-                </div>
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-                    <div className="max-w-3xl mx-auto space-y-10">
-                        <div className="flex flex-col items-center justify-center gap-6 mb-4">
-                            <Sparkles className="w-12 h-12 text-white/80 animate-pulse" />
-                            <h2 className="text-5xl md:text-7xl font-bold font-inter tracking-tighter text-white leading-tight">
-                                Ready to Plan Your Next Adventure?
-                            </h2>
+            {/* Final CTA Section */}
+            <section ref={ctaRef} className="py-40 bg-black relative overflow-hidden">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.15),transparent_70%)]"></div>
+                <div className="container mx-auto px-4 relative z-10">
+                    <div className="max-w-5xl mx-auto text-center space-y-12">
+                        <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-xl animate-pulse">
+                            <Zap size={20} className="text-blue-400 fill-blue-400" />
+                            <span className="text-xs font-bold text-white tracking-[0.3em] uppercase">Ready for Takeoff?</span>
                         </div>
-                        <p className="text-xl md:text-2xl text-muted-foreground font-inter max-w-2xl mx-auto">
-                            Join thousands of adventurers who trust AdventureNexus to create unforgettable journeys.
+                        <h2 className="text-6xl md:text-9xl font-black text-white tracking-tighter leading-[0.8] font-inter">
+                            ADVENTURE IS <br /> 
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">CALLING YOU.</span>
+                        </h2>
+                        <p className="text-xl md:text-3xl text-white/40 max-w-3xl mx-auto font-medium leading-relaxed italic">
+                            "Stop dreaming about the world. Start exploring it with intelligence and passion."
                         </p>
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
-                            <Button
-                                size="lg"
-                                className="h-14 px-10 bg-white text-black btn-glow hover-scale rounded-full font-bold text-sm uppercase tracking-widest shadow-[0_0_40px_rgba(255,255,255,0.2)]"
+                        <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8">
+                            <Button 
+                                size="lg" 
+                                className="h-20 px-16 bg-white text-black hover:bg-white/90 rounded-[2rem] font-black text-lg uppercase tracking-widest transition-all hover:scale-105 shadow-[0_0_50px_rgba(255,255,255,0.3)]"
+                                onClick={() => navigate('/search')}
                             >
-                                Start planning
-                                <ArrowRight className="ml-2" size={16} />
+                                Start planning now
                             </Button>
-                            <Button
-                                size="lg"
-                                variant="outline"
-                                className="h-14 px-10 border-white/10 bg-transparent text-white hover-scale rounded-full font-bold text-sm uppercase tracking-widest"
+                            <Button 
+                                variant="outline" 
+                                size="lg" 
+                                className="h-20 px-16 border-white/10 bg-transparent text-white hover:bg-white/5 rounded-[2rem] font-black text-lg uppercase tracking-widest"
+                                onClick={() => navigate('/community')}
                             >
-                                <MessageCircle className="mr-2" size={16} />
-                                Talk to Our AI
+                                Join Community
                             </Button>
                         </div>
-                        <div className="flex items-center justify-center space-x-8 text-sm text-muted-foreground font-inter pt-8 border-t border-white/5 mt-12 w-full max-w-lg mx-auto">
+                        <div className="flex items-center justify-center space-x-8 text-sm text-white/20 font-inter pt-12 border-t border-white/5 mt-16 w-full max-w-2xl mx-auto">
                             <div className="flex items-center">
                                 <Award className="mr-2 w-4 h-4" />
-                                Smart recommendations
+                                Smart AI
                             </div>
                             <div className="flex items-center">
                                 <Clock className="mr-2 w-4 h-4" />
-                                Instant planning
+                                Instant Plans
+                            </div>
+                            <div className="flex items-center">
+                                <Shield className="mr-2 w-4 h-4" />
+                                Trusted by 10k+
                             </div>
                         </div>
                     </div>

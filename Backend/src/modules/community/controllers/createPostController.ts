@@ -30,6 +30,14 @@ export const createPost = async (req: Request, res: Response) => {
 
         logger.info(`New community post created: ${newPost._id} by ${clerkUserId}`);
 
+        // Real-time broadcast
+        import('../../../shared/socket/socket').then(({ broadcastRealtimeEvent }) => {
+            broadcastRealtimeEvent('community:post', {
+                post: newPost,
+                clerkUserId
+            });
+        });
+
         return res.status(StatusCodes.CREATED).json({
             success: true,
             data: newPost

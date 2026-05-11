@@ -41,6 +41,15 @@ export const addComment = async (req: Request, res: Response) => {
 
         logger.info(`New comment added to post ${postId} by ${clerkUserId}`);
 
+        // Real-time broadcast
+        import('../../../shared/socket/socket').then(({ broadcastRealtimeEvent }) => {
+            broadcastRealtimeEvent('community:comment', {
+                postId,
+                comment: newComment,
+                clerkUserId
+            });
+        });
+
         return res.status(StatusCodes.CREATED).json({
             success: true,
             data: newComment
