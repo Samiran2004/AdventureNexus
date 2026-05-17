@@ -26,7 +26,7 @@ import PressPage from './features/marketing/pages/PressPage';
 import PartnersPage from './features/marketing/pages/PartnersPage';
 import HelpPage from './features/support/pages/HelpPage';
 import SafetyPage from './features/legal/pages/SafetyPage';
-import CommunityPage from './features/marketing/pages/CommunityPage';
+import { SocialHubPage } from './features/community/pages/SocialHubPage';
 import PublicProfilePage from './features/user/pages/PublicProfilePage';
 import TravelStoriesPage from './features/marketing/pages/TravelStoriesPage';
 import TravelGuidesPage from './features/marketing/pages/TravelGuidesPage';
@@ -107,7 +107,7 @@ const AppContent = () => {
         <Route path='/partners' element={<PartnersPage />} />
         <Route path='/help' element={<HelpPage />} />
         <Route path='/safety' element={<SafetyPage />} />
-        <Route path='/community' element={<CommunityPage />} />
+        <Route path='/community' element={<SocialHubPage />} />
         <Route path='/stories' element={<TravelStoriesPage />} />
         <Route path='/guides' element={<TravelGuidesPage />} />
         <Route path='/social-search' element={<SocialSearchPage />} />

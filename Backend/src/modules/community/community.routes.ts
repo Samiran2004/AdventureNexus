@@ -18,6 +18,8 @@ import { toggleFollow } from './controllers/followController';
 import { createStory, getAllStories, toggleLikeStory } from './controllers/storyController';
 import { getNotifications, markAsRead } from './controllers/notificationController';
 import { getMessageHistory, sendMessage } from './controllers/messageController';
+import { createGroup, getMyGroups, joinGroup } from './controllers/groupController';
+import { getCommunities, joinCommunity } from './controllers/communityController';
 
 const route: Router = express.Router();
 
@@ -148,5 +150,13 @@ route.get('/messages/:otherClerkUserId', protect, getMessageHistory);
  * @access Private
  */
 route.post('/messages', protect, sendMessage);
+
+// V3 Architecture Routes
+route.post('/groups/create', protect, createGroup);
+route.get('/groups/my', protect, getMyGroups);
+route.post('/groups/join/:groupId', protect, joinGroup);
+
+route.get('/communities', getCommunities);
+route.post('/communities/join/:communityId', protect, joinCommunity);
 
 export default route;

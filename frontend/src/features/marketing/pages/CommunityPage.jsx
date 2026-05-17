@@ -31,6 +31,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { io } from 'socket.io-client';
+import { useCommunitySocket } from '../../community/hooks/useCommunitySocket';
+import { PostCard } from '../../community/components/PostCard';
+import { CommentTree } from '../../community/components/CommentTree';
+import { StoryBar } from '../../community/components/StoryBar';
 
 const CommunityPage = () => {
   const navigate = useNavigate();
@@ -67,94 +71,6 @@ const CommunityPage = () => {
 
   // --- SOCKET ARCHITECTURE ---
   const socketRef = useRef(null);
-
-  const buildCommentTree = useCallback((flatComments) => {
-    if (!Array.isArray(flatComments)) return [];
-    const map = {};
-    const roots = [];
-    
-    flatComments.forEach(comment => {
-      if (comment && comment._id) {
-        map[comment._id] = { ...comment, replies: [] };
-      }
-    });
-    
-    flatComments.forEach(comment => {
-      if (comment && comment._id) {
-        const mapped = map[comment._id];
-        if (comment.parentId && map[comment.parentId]) {
-          map[comment.parentId].replies.push(mapped);
-        } else {
-          roots.push(mapped);
-        }
-      }
-    });
-    
-    return roots;
-  }, []);
-
-  const renderComment = (comment, i, depth = 0) => {
-    const isReply = depth > 0;
-    return (
-      <div key={comment._id} className="space-y-4">
-        <motion.div
-          initial={{ opacity: 0, x: -10 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: i * 0.05 }}
-          className={`flex gap-5 group relative ${isReply ? 'ml-6 md:ml-12' : ''}`}
-        >
-          {isReply && (
-            <div className="absolute top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary/30 via-primary/10 to-transparent pointer-events-none -left-6 md:-left-12" />
-          )}
-          <div
-            className="w-10 h-10 rounded-full bg-muted overflow-hidden shrink-0 border-2 border-border/50 shadow-lg group-hover:border-primary/50 transition-colors cursor-pointer"
-            onClick={(e) => {
-              e.stopPropagation();
-              navigate(`/user/profile/${comment.clerkUserId}`);
-            }}
-          >
-            {comment.userId?.profilepicture ? (
-              <img src={comment.userId.profilepicture} alt={comment.userId.username} className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-sm font-black bg-secondary/30">{comment.userId?.username?.charAt(0)}</div>
-            )}
-          </div>
-          <div className="flex-1 bg-muted/40 p-5 rounded-[1.5rem] rounded-tl-none group-hover:bg-muted/60 transition-all shadow-sm border border-transparent group-hover:border-white/5">
-            <div className="flex items-center justify-between mb-3">
-              <span
-                className="font-black text-sm tracking-tight cursor-pointer hover:text-primary transition-colors flex items-center gap-2"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate(`/user/profile/${comment.clerkUserId}`);
-                }}
-              >
-                {comment.userId?.fullname || comment.userId?.username || 'Traveler'}
-                {selectedPost && comment.clerkUserId === selectedPost.clerkUserId && (
-                  <Badge className="bg-primary/20 text-primary border-none shadow-none text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full">Author</Badge>
-                )}
-              </span>
-              <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">{getTimeAgo(comment.createdAt)}</span>
-            </div>
-            <p className="text-sm leading-relaxed text-foreground/80 font-medium">{comment.content}</p>
-            <div className="mt-3 flex items-center gap-4">
-              <button 
-                className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
-                onClick={() => setReplyingTo(comment._id)}
-              >
-                <MessageSquare size={12} /> Reply
-              </button>
-            </div>
-          </div>
-        </motion.div>
-        
-        {comment.replies && comment.replies.length > 0 && (
-          <div className="space-y-4 pl-4 border-l border-white/5">
-            {comment.replies.map((reply, index) => renderComment(reply, index, depth + 1))}
-          </div>
-        )}
-      </div>
-    );
-  };
 
   const categories = [
     { name: "Travel Hacks", icon: TrendingUp, color: "text-blue-500", bg: "bg-blue-500/10" },
@@ -243,63 +159,10 @@ const CommunityPage = () => {
     fetchSpotlight();
     fetchStats();
     fetchStories();
-
-    // Socket.io Real-time Listeners (Mounts once, no connection storm!)
-    socketRef.current = io(import.meta.env.VITE_BACKEND_URL || 'https://adventure-nexus-backend.onrender.com');
-
-    socketRef.current.on('community:like', (data) => {
-        setPosts(prev => prev.map(post => 
-            post._id === data.targetId ? { ...post, likes: data.likes } : post
-        ));
-        setSelectedPost(prev => {
-            if (prev && prev._id === data.targetId) {
-                return { ...prev, likes: data.likes };
-            }
-            return prev;
-        });
-    });
-
-    socketRef.current.on('community:comment', (data) => {
-        setPosts(prev => prev.map(post => 
-            post._id === data.postId ? { ...post, repliesCount: post.repliesCount + 1 } : post
-        ));
-        setSelectedPost(prev => {
-            if (prev && prev._id === data.postId) {
-                const commentsList = prev.comments || [];
-                const alreadyExists = commentsList.some(c => c._id === data.comment._id);
-                if (alreadyExists) return prev;
-                return { 
-                    ...prev, 
-                    comments: [...commentsList, data.comment],
-                    repliesCount: prev.repliesCount + 1 
-                };
-            }
-            return prev;
-        });
-    });
-
-    socketRef.current.on('community:story', (data) => {
-        setStories(prev => {
-            const alreadyExists = prev.some(s => s._id === data.story._id);
-            if (alreadyExists) return prev;
-            return [data.story, ...prev];
-        });
-        toast.success(`New travel story from ${data.clerkUserId}!`, { icon: '📖' });
-    });
-
-    socketRef.current.on('community:post', (data) => {
-        setPosts(prev => {
-            const alreadyExists = prev.some(p => p._id === data.post._id);
-            if (alreadyExists) return prev;
-            return [data.post, ...prev];
-        });
-        toast.success('New discussion started!', { icon: '💬' });
-    });
-
-    return () => {
-        if (socketRef.current) socketRef.current.disconnect();
-    };
   }, []);
+
+  // Hook-driven real-time architecture
+  useCommunitySocket({ setPosts, setSelectedPost, setStories });
 
   const handleCreatePost = async (e) => {
     e.preventDefault();
@@ -631,43 +494,7 @@ const CommunityPage = () => {
         <div className="lg:col-span-2 space-y-12">
 
           {/* Stories Bar - NEW SOCIAL UPGRADE */}
-          <div className="overflow-x-auto pb-4 scrollbar-hide">
-            <div className="flex gap-4">
-              <motion.div 
-                whileHover={{ scale: 1.05 }}
-                className="flex flex-col items-center gap-2 cursor-pointer group"
-                onClick={() => navigate('/stories')}
-              >
-                <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center border-2 border-dashed border-primary/50 group-hover:bg-primary/30 transition-all">
-                  <PlusCircle size={24} className="text-primary" />
-                </div>
-                <span className="text-[10px] font-black uppercase tracking-tighter">Add Story</span>
-              </motion.div>
-              {isStoriesLoading ? (
-                [1,2,3,4,5].map(i => (
-                  <div key={i} className="w-16 h-16 rounded-full bg-muted animate-pulse" />
-                ))
-              ) : (
-                stories.map((story) => (
-                  <motion.div 
-                    key={story._id}
-                    whileHover={{ scale: 1.05 }}
-                    className="flex flex-col items-center gap-2 cursor-pointer"
-                    onClick={() => navigate(`/stories?id=${story._id}`)}
-                  >
-                    <div className="w-16 h-16 rounded-full border-2 border-pink-500 p-0.5 shadow-lg shadow-pink-500/20">
-                      <img 
-                        src={story.userId?.profilepicture || 'https://via.placeholder.com/150'} 
-                        className="w-full h-full rounded-full object-cover"
-                        alt={story.userId?.username}
-                      />
-                    </div>
-                    <span className="text-[10px] font-black uppercase tracking-tighter truncate w-16 text-center">{story.userId?.username || 'Traveler'}</span>
-                  </motion.div>
-                ))
-              )}
-            </div>
-          </div>
+          <StoryBar stories={stories} isStoriesLoading={isStoriesLoading} />
 
           {/* Categories */}
           <div>
@@ -742,102 +569,14 @@ const CommunityPage = () => {
                       visible: { y: 0, opacity: 1 }
                     }}
                   >
-                    <Card className="hover:border-primary/50 transition-all hover:-translate-y-2 group bg-card/40 backdrop-blur-sm border-white/5 shadow-xl hover:shadow-primary/5 rounded-[2rem] overflow-hidden">
-                      <CardContent className="p-8">
-                        <div className="flex items-start gap-6">
-                          <div
-                            className="w-16 h-16 rounded-3xl bg-primary/10 flex items-center justify-center overflow-hidden border border-primary/10 shrink-0 group-hover:scale-110 transition-transform shadow-inner cursor-pointer"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigate(`/user/profile/${discussion.userId?.clerkUserId || discussion.clerkUserId}`);
-                            }}
-                          >
-                            {discussion.userId?.profilepicture ? (
-                              <img src={discussion.userId.profilepicture} alt={discussion.userId.username} className="w-full h-full object-cover" />
-                            ) : (
-                              <Users size={32} className="text-primary opacity-50" />
-                            )}
-                          </div>
-
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <span
-                                className="font-black text-sm hover:text-primary cursor-pointer transition-colors leading-none uppercase tracking-tighter"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  navigate(`/user/profile/${discussion.userId?.clerkUserId || discussion.clerkUserId}`);
-                                }}
-                              >
-                                {discussion.userId?.fullname || discussion.userId?.username || 'Traveler'}
-                              </span>
-                              <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest opacity-60">• {getTimeAgo(discussion.createdAt)}</span>
-                              <Badge className="text-[9px] h-5 px-3 ml-auto bg-primary/20 text-primary border-none font-black uppercase tracking-widest">
-                                {discussion.category}
-                              </Badge>
-                            </div>
-                            <h3
-                              className="text-2xl font-black mb-3 group-hover:text-primary cursor-pointer transition-colors leading-[1.1] tracking-tighter"
-                              onClick={() => openPostDetail(discussion)}
-                            >
-                              {discussion.title}
-                            </h3>
-                            <p className="text-base text-muted-foreground line-clamp-2 mb-4 leading-relaxed font-medium opacity-80">
-                              {discussion.content}
-                            </p>
-                            
-                            {/* Rich Media Images */}
-                            {discussion.images && discussion.images.length > 0 && (
-                                <div className="flex gap-2 mb-4 overflow-x-auto pb-2 scrollbar-hide">
-                                    {discussion.images.map((img, i) => (
-                                        <img key={i} src={img} alt="attachment" className="h-32 w-auto object-cover rounded-xl border border-white/10" />
-                                    ))}
-                                </div>
-                            )}
-
-                            {/* Shared Trip Card Preview */}
-                            {discussion.tripId && (
-                                <div className="mb-4 p-4 rounded-xl border border-primary/20 bg-primary/5 flex items-center justify-between cursor-pointer hover:bg-primary/10" onClick={() => navigate(`/plan/${discussion.tripId._id}`)}>
-                                    <div className="flex flex-col">
-                                        <span className="text-xs uppercase tracking-widest text-primary font-bold mb-1">Shared Trip</span>
-                                        <span className="font-bold text-lg">{discussion.tripId.title || 'Adventure Trip'}</span>
-                                        <span className="text-sm text-muted-foreground">
-                                            {discussion.tripId.destinations?.length || 0} Destinations • {discussion.tripId.budget?.currency} {discussion.tripId.budget?.amount}
-                                        </span>
-                                    </div>
-                                    <ArrowRight className="text-primary" />
-                                </div>
-                            )}
-
-                            <div className="flex items-center gap-8 text-sm font-black uppercase tracking-widest">
-                              <span
-                                className="flex items-center gap-2 text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
-                                onClick={() => openPostDetail(discussion)}
-                              >
-                                <MessageSquare size={18} className="text-indigo-400" /> {discussion.repliesCount} <span className="hidden md:inline">Replies</span>
-                              </span>
-                              <span
-                                className={`flex items-center gap-2 cursor-pointer transition-all ${(clerkUserId && discussion.likes?.includes(clerkUserId)) ? 'text-pink-500 scale-110' : 'text-muted-foreground hover:text-pink-500'}`}
-                                onClick={() => handleLike(discussion._id)}
-                              >
-                                <Heart size={18} fill={(clerkUserId && discussion.likes?.includes(clerkUserId)) ? 'currentColor' : 'none'} /> {discussion.likes?.length || 0} <span className="hidden md:inline">Likes</span>
-                              </span>
-                              <span
-                                className="flex items-center gap-2 cursor-pointer text-muted-foreground hover:text-primary transition-colors ml-auto"
-                                onClick={(e) => { e.stopPropagation(); handleSavePost(discussion._id); }}
-                              >
-                                <Bookmark size={18} />
-                              </span>
-                              <span
-                                className="flex items-center gap-2 cursor-pointer text-muted-foreground hover:text-indigo-400 transition-colors"
-                                onClick={(e) => { e.stopPropagation(); handleExternalShare(discussion._id, discussion.title, discussion.content); }}
-                              >
-                                <Share2 size={18} />
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
+                    <PostCard
+                      discussion={discussion}
+                      clerkUserId={clerkUserId}
+                      onLike={handleLike}
+                      onSave={handleSavePost}
+                      onShare={handleExternalShare}
+                      onOpenDetail={openPostDetail}
+                    />
                   </motion.div>
                 ))}
               </motion.div>
@@ -1036,13 +775,13 @@ const CommunityPage = () => {
         {/* Calendar Modal - NEW */}
         {isCalendarOpen && (
           <Dialog open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
-            <DialogContent className="sm:max-w-[450px] p-0 overflow-hidden bg-card border-border shadow-2xl rounded-3xl">
-              <DialogHeader className="p-6 border-b border-border bg-muted/20">
-                <DialogTitle className="text-3xl font-black italic flex items-center gap-3 tracking-tighter">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <CalendarIcon className="text-primary" size={20} />
+            <DialogContent className="w-[95vw] sm:max-w-[450px] p-0 overflow-hidden bg-card border-border shadow-2xl rounded-[2rem]">
+              <DialogHeader className="p-5 sm:p-6 border-b border-border bg-muted/20 relative">
+                <DialogTitle className="text-xl sm:text-2xl font-black italic flex items-center flex-wrap gap-2 sm:gap-3 tracking-tighter pr-6">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-primary/10 flex shrink-0 items-center justify-center">
+                    <CalendarIcon className="text-primary" size={18} />
                   </div>
-                  Community <span className="text-primary">Nexus</span> Calendar
+                  <span>Community <span className="text-primary">Nexus</span> Calendar</span>
                 </DialogTitle>
               </DialogHeader>
               <div className="p-6 flex flex-col items-center">
@@ -1154,9 +893,12 @@ const CommunityPage = () => {
                           No replies yet. Be the first to start the conversation!
                         </div>
                       ) : (
-                        <div className="space-y-8">
-                          {buildCommentTree(selectedPost.comments).map((comment, i) => renderComment(comment, i))}
-                        </div>
+                        <CommentTree 
+                          comments={selectedPost.comments} 
+                          selectedPost={selectedPost} 
+                          getTimeAgo={getTimeAgo} 
+                          setReplyingTo={setReplyingTo} 
+                        />
                       )}
                     </div>
                   </div>

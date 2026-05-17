@@ -17,6 +17,16 @@ const communityPostSchema = new Schema<ICommunityPost>({
         required: true,
         index: true,
     },
+    communityId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Community',
+        index: true,
+    },
+    groupId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Group',
+        index: true,
+    },
     title: {
         type: String,
         required: true,

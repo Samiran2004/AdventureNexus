@@ -5,34 +5,58 @@ import { Schema, Document } from "mongoose";
  * Extends Mongoose Document.
  */
 export interface ICommunityPost extends Document {
-    userId: Schema.Types.ObjectId; // Reference to local User ID
-    clerkUserId: string;           // Reference to Clerk User ID
-    title: string;                 // Title of the discussion
-    content: string;               // Main content of the post
-    category: string;             // Topic category
-    tags: string[];                // Optional tags
-    destinationTags?: string[];    // Kaggle destination tags
-    images?: string[];             // URLs of attached media
-    tripId?: Schema.Types.ObjectId;// Attached Trip ID from My Trips
-    likes: string[];               // Array of ClerkUserIds who liked the post
-    repliesCount: number;          // Total number of replies (denormalized)
+    userId: Schema.Types.ObjectId;
+    clerkUserId: string;
+    communityId?: Schema.Types.ObjectId; // NEW: Topic-based community
+    groupId?: Schema.Types.ObjectId;     // NEW: Private/Public Group
+    title: string;
+    content: string;
+    category: string;
+    tags: string[];
+    destinationTags?: string[];
+    images?: string[];
+    tripId?: Schema.Types.ObjectId;
+    likes: string[];
+    repliesCount: number;
     interactionScore?: number;
     viewCount?: number;
     createdAt: Date;
     updatedAt: Date;
 }
 
-/**
- * Interface for Community Comments.
- * Extends Mongoose Document.
- */
 export interface ICommunityComment extends Document {
-    postId: Schema.Types.ObjectId; // Reference to the parent Post
-    userId: Schema.Types.ObjectId; // Reference to local User ID
-    clerkUserId: string;           // Reference to Clerk User ID
-    content: string;               // Comment content
-    parentId?: Schema.Types.ObjectId; // For nested replies
-    likes: string[];               // Array of ClerkUserIds who liked the comment
+    postId: Schema.Types.ObjectId;
+    userId: Schema.Types.ObjectId;
+    clerkUserId: string;
+    content: string;
+    parentId?: Schema.Types.ObjectId;
+    likes: string[];
     createdAt: Date;
     updatedAt: Date;
+}
+
+export interface ICommunity extends Document {
+    name: string;
+    displayName: string;
+    bannerImage?: string;
+    followersCount: number;
+    rules: string[];
+    createdAt: Date;
+}
+
+export interface IGroup extends Document {
+    creatorId: Schema.Types.ObjectId;
+    name: string;
+    privacy: 'PUBLIC' | 'PRIVATE' | 'HIDDEN';
+    memberCount: number;
+    pendingRequests: Schema.Types.ObjectId[];
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export interface IGroupMembership extends Document {
+    groupId: Schema.Types.ObjectId;
+    userId: Schema.Types.ObjectId;
+    role: 'ADMIN' | 'MODERATOR' | 'MEMBER';
+    joinedAt: Date;
 }
