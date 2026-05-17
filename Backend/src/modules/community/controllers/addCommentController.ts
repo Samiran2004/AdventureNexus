@@ -71,7 +71,7 @@ export const addComment = async (req: Request, res: Response) => {
 
         // Fetch populated comment for real-time broadcast
         const populatedComment = await CommunityComment.findById(newComment._id)
-            .populate('userId', 'username profilepicture fullname');
+            .populate('userId', 'username profilepicture fullname clerkUserId');
 
         // Real-time broadcast
         import('../../../shared/socket/socket').then(({ broadcastRealtimeEvent }) => {

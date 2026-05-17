@@ -105,7 +105,7 @@ export const getPosts = async (req: Request, res: Response) => {
         // Populate userId manually since aggregate doesn't support populate directly as easily
         let populatedPosts = await CommunityPost.populate(posts, {
             path: 'userId',
-            select: 'username profilepicture fullname'
+            select: 'username profilepicture fullname clerkUserId'
         });
         
         populatedPosts = await CommunityPost.populate(populatedPosts, {

@@ -12,7 +12,7 @@ export const getPostById = async (req: Request, res: Response) => {
         const { id } = req.params;
 
         const post = await CommunityPost.findById(id)
-            .populate('userId', 'username profilepicture fullname');
+            .populate('userId', 'username profilepicture fullname clerkUserId');
 
         if (!post) {
             return res.status(StatusCodes.NOT_FOUND).json({
@@ -23,7 +23,7 @@ export const getPostById = async (req: Request, res: Response) => {
 
         const comments = await CommunityComment.find({ postId: id })
             .sort({ createdAt: 1 })
-            .populate('userId', 'username profilepicture fullname');
+            .populate('userId', 'username profilepicture fullname clerkUserId');
 
         return res.status(StatusCodes.OK).json({
             success: true,

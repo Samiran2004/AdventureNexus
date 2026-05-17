@@ -72,7 +72,7 @@ export const getAllStories = async (req: Request, res: Response) => {
 
         const stories = await TravelStory.find(query)
             .sort({ createdAt: -1 })
-            .populate('userId', 'username profilepicture fullname');
+            .populate('userId', 'username profilepicture fullname clerkUserId');
 
         return res.status(StatusCodes.OK).json({
             success: true,

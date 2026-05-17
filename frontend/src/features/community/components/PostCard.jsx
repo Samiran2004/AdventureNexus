@@ -26,7 +26,7 @@ export const PostCard = memo(({
           {/* Avatar Column */}
           <div 
             className="w-10 h-10 sm:w-16 sm:h-16 rounded-[1.25rem] sm:rounded-3xl bg-gradient-to-tr from-primary/20 to-indigo-500/20 flex items-center justify-center overflow-hidden flex-shrink-0 cursor-pointer hover:scale-105 transition-transform border border-white/5 shadow-inner"
-            onClick={(e) => { e.stopPropagation(); navigate(`/profile/${discussion.userId?.clerkUserId}`); }}
+            onClick={(e) => { e.stopPropagation(); navigate(`/user/profile/${discussion.userId?.clerkUserId}`); }}
           >
             {discussion.userId?.profilepicture ? (
               <img src={discussion.userId.profilepicture} alt={discussion.userId.username} className="w-full h-full object-cover" />
@@ -42,7 +42,7 @@ export const PostCard = memo(({
             <div className="flex flex-wrap items-center gap-1.5 sm:gap-3 mb-2">
               <span 
                 className="font-black text-xs sm:text-sm uppercase tracking-widest text-foreground/90 hover:text-primary cursor-pointer transition-colors truncate max-w-[80px] sm:max-w-none"
-                onClick={(e) => { e.stopPropagation(); navigate(`/profile/${discussion.userId?.clerkUserId}`); }}
+                onClick={(e) => { e.stopPropagation(); navigate(`/user/profile/${discussion.userId?.clerkUserId}`); }}
               >
                 {discussion.userId?.username || 'Traveler'}
               </span>
