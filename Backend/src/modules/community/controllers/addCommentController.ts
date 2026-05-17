@@ -42,11 +42,15 @@ export const addComment = async (req: Request, res: Response) => {
 
         logger.info(`New comment added to post ${postId} by ${clerkUserId}`);
 
+        // Fetch populated comment for real-time broadcast
+        const populatedComment = await CommunityComment.findById(newComment._id)
+            .populate('userId', 'username profilepicture fullname');
+
         // Real-time broadcast
         import('../../../shared/socket/socket').then(({ broadcastRealtimeEvent }) => {
             broadcastRealtimeEvent('community:comment', {
                 postId,
-                comment: newComment,
+                comment: populatedComment || newComment,
                 clerkUserId
             });
         });
