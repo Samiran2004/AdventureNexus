@@ -178,41 +178,11 @@ function SplineSkeleton() {
 // ║  SplineScene — lazy + IntersectionObserver + Error Boundary                 ║
 // ╚══════════════════════════════════════════════════════════════════════════════╝
 function SplineScene() {
-    const [mounted, setMounted] = useState(false);
-    const [loaded, setLoaded] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
-
-    // Only mount the heavy Spline canvas when footer scrolls into view
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            ([entry]) => { if (entry.isIntersecting) { setMounted(true); observer.disconnect(); } },
-            { threshold: 0.05 }
-        );
-        if (containerRef.current) observer.observe(containerRef.current);
-        return () => observer.disconnect();
-    }, []);
 
     return (
         <div ref={containerRef} style={{ width: '100%', height: '100%', position: 'relative' }}>
-            {/* Skeleton while loading */}
-            {!loaded && <SplineSkeleton />}
-
-            {mounted && (
-                <SplineErrorBoundary fallback={<CanvasFallback />}>
-                    <Suspense fallback={null}>
-                        <Spline
-                            scene={SCENE_URL}
-                            onLoad={() => setLoaded(true)}
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                opacity: loaded ? 1 : 0,
-                                transition: 'opacity 0.9s ease',
-                            }}
-                        />
-                    </Suspense>
-                </SplineErrorBoundary>
-            )}
+            <CanvasFallback />
         </div>
     );
 }

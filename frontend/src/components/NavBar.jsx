@@ -5,7 +5,7 @@ import {
     MessageSquare, Bell, User as UserIcon, UserPlus
 } from 'lucide-react'; // Icons
 import { useEffect, useState } from 'react'; // React hooks
-import { Link } from 'react-router-dom'; // Navigation link
+import { Link, useNavigate } from 'react-router-dom'; // Navigation link
 import { useTheme } from 'next-themes';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedLogo from './AnimatedLogo';
@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 function NavBar() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
+    const navigate = useNavigate();
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
 

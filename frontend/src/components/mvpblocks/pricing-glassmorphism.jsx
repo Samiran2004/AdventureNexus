@@ -236,4 +236,4 @@ const BillingToggle = ({ isAnnual, onCheckedChange, className }) => {
 };
 
 export default PricingPage;
-export { pricingPlans, PriceDisplay, PricingFeatures, PricingCard, BillingToggle };
+export { PriceDisplay, PricingFeatures, PricingCard, BillingToggle };

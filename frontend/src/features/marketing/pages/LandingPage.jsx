@@ -119,24 +119,28 @@ const AdventureNexusLanding = () => {
     useEffect(() => {
         let ctx = gsap.context(() => {
             // Initial page load animation
-            gsap.set(heroContentRef.current, { x: -100, opacity: 0 });
-            gsap.set(heroImageRef.current, { x: 100, opacity: 0, scale: 0.8 });
+            if (heroContentRef.current) gsap.set(heroContentRef.current, { x: -100, opacity: 0 });
+            if (heroImageRef.current) gsap.set(heroImageRef.current, { x: 100, opacity: 0, scale: 0.8 });
 
             // Hero content animation with stagger
-            gsap.timeline({ delay: 0.3 })
-                .to(heroContentRef.current, {
+            const tl = gsap.timeline({ delay: 0.3 });
+            if (heroContentRef.current) {
+                tl.to(heroContentRef.current, {
                     x: 0,
                     opacity: 1,
                     duration: 1.2,
                     ease: "power2.out"
-                })
-                .to(heroImageRef.current, {
+                });
+            }
+            if (heroImageRef.current) {
+                tl.to(heroImageRef.current, {
                     x: 0,
                     opacity: 1,
                     scale: 1,
                     duration: 1,
                     ease: "back.out(1.7)"
                 }, "-=0.8");
+            }
 
             // Features section animation
             if (featuresRef.current) {
@@ -151,7 +155,8 @@ const AdventureNexusLanding = () => {
                     opacity: 0,
                     duration: 0.8,
                     stagger: 0.2,
-                    ease: "power2.out"
+                    ease: "power2.out",
+                    immediateRender: false
                 });
             }
 
@@ -166,7 +171,8 @@ const AdventureNexusLanding = () => {
                     opacity: 0,
                     duration: 1,
                     stagger: 0.3,
-                    ease: "power2.out"
+                    ease: "power2.out",
+                    immediateRender: false
                 });
             }
 
@@ -182,7 +188,8 @@ const AdventureNexusLanding = () => {
                     rotation: 5,
                     duration: 1,
                     stagger: 0.2,
-                    ease: "back.out(1.7)"
+                    ease: "back.out(1.7)",
+                    immediateRender: false
                 });
             }
 
@@ -198,7 +205,8 @@ const AdventureNexusLanding = () => {
                     scale: 0.9,
                     duration: 1,
                     stagger: 0.15,
-                    ease: "power2.out"
+                    ease: "power2.out",
+                    immediateRender: false
                 });
             }
 
@@ -212,7 +220,8 @@ const AdventureNexusLanding = () => {
                     scale: 0.8,
                     opacity: 0,
                     duration: 1.2,
-                    ease: "back.out(1.7)"
+                    ease: "back.out(1.7)",
+                    immediateRender: false
                 });
             }
 

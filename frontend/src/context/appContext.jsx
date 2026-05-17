@@ -157,6 +157,7 @@ function useSocket() {
 }
 
 // ✅ Consistent named exports
+// eslint-disable-next-line react-refresh/only-export-components
 export { AppProvider, useAppContext, useSocket };
 
 // ✅ Optional: Add default export if needed
