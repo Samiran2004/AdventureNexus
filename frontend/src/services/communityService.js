@@ -197,6 +197,43 @@ export const communityService = {
         return response.data;
     },
 
+    // --- Private Real-Time Chat APIs ---
+    getOrCreateChatConversation: async (recipientClerkUserId, token) => {
+        const response = await axios.post(`${api_url}/api/v1/messaging/conversation`, { recipientClerkUserId }, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    },
+
+    getUserConversations: async (token) => {
+        const response = await axios.get(`${api_url}/api/v1/messaging/conversations`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    },
+
+    sendChatMessage: async (conversationId, content, token) => {
+        const response = await axios.post(`${api_url}/api/v1/messaging/message`, { conversationId, content }, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    },
+
+    getChatMessages: async (conversationId, token) => {
+        const response = await axios.get(`${api_url}/api/v1/messaging/messages/${conversationId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    },
+
     // --- V3 Architecture APIs ---
 
     getCommunities: async () => {

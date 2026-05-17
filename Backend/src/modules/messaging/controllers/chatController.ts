@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import Conversation from '../../../shared/database/models/conversationModel';
 import Message from '../../../shared/database/models/messageModel';
-import { broadcastRealtimeEvent } from '../../../shared/socket/socket';
+import User from '../../../shared/database/models/userModel';
+import { broadcastRealtimeEvent, sendChatRealtimeMessage } from '../../../shared/socket/socket';
 
 /**
  * Get or create a private conversation between two users
@@ -30,9 +31,36 @@ export const getOrCreateConversation = async (req: Request, res: Response) => {
             await conversation.save();
         }
 
+        const users = await User.find({ clerkUserId: { $in: conversation.participants } })
+            .select('clerkUserId username fullname profilepicture onlineStatus lastActive');
+
+        const userMap = new Map(users.map(u => [u.clerkUserId, u]));
+
+        const enrichedParticipants = conversation.participants.map(pId => {
+            const u = userMap.get(pId);
+            return u ? {
+                clerkUserId: u.clerkUserId,
+                username: u.username,
+                fullname: u.fullname || u.username,
+                profilepicture: u.profilepicture,
+                onlineStatus: u.onlineStatus,
+                lastActive: u.lastActive
+            } : {
+                clerkUserId: pId,
+                username: 'Traveler',
+                fullname: 'Traveler',
+                profilepicture: '',
+                onlineStatus: 'offline',
+                lastActive: null
+            };
+        });
+
         return res.status(200).json({
             success: true,
-            data: conversation
+            data: {
+                ...conversation.toObject(),
+                participantDetails: enrichedParticipants
+            }
         });
     } catch (error: any) {
         console.error('Error getting conversation:', error);
@@ -71,7 +99,7 @@ export const sendMessage = async (req: Request, res: Response) => {
         // Broadcast to all participants except sender
         conversation.participants.forEach(participantId => {
             if (participantId !== senderClerkUserId) {
-                broadcastRealtimeEvent(participantId, 'chat:message', {
+                sendChatRealtimeMessage(participantId, {
                     conversationId,
                     message
                 });
@@ -134,9 +162,45 @@ export const getConversations = async (req: Request, res: Response) => {
         .populate('lastMessage')
         .sort({ updatedAt: -1 });
 
+        // Fetch user details for participants
+        const allParticipantIds = Array.from(
+            new Set(conversations.flatMap(c => c.participants))
+        );
+
+        const users = await User.find({ clerkUserId: { $in: allParticipantIds } })
+            .select('clerkUserId username fullname profilepicture onlineStatus lastActive');
+
+        const userMap = new Map(users.map(u => [u.clerkUserId, u]));
+
+        const enrichedConversations = conversations.map(c => {
+            const enrichedParticipants = c.participants.map(pId => {
+                const u = userMap.get(pId);
+                return u ? {
+                    clerkUserId: u.clerkUserId,
+                    username: u.username,
+                    fullname: u.fullname || u.username,
+                    profilepicture: u.profilepicture,
+                    onlineStatus: u.onlineStatus,
+                    lastActive: u.lastActive
+                } : {
+                    clerkUserId: pId,
+                    username: 'Traveler',
+                    fullname: 'Traveler',
+                    profilepicture: '',
+                    onlineStatus: 'offline',
+                    lastActive: null
+                };
+            });
+
+            return {
+                ...c.toObject(),
+                participantDetails: enrichedParticipants
+            };
+        });
+
         return res.status(200).json({
             success: true,
-            data: conversations
+            data: enrichedConversations
         });
     } catch (error: any) {
         console.error('Error fetching conversations:', error);

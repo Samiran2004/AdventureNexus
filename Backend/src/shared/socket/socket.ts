@@ -112,6 +112,17 @@ export const sendRealtimeMessage = (recipientClerkUserId: string, message: any) 
 };
 
 /**
+ * Helper to emit a message to a specific user if they are online.
+ */
+export const sendChatRealtimeMessage = (recipientClerkUserId: string, data: any) => {
+    if (io && onlineUsers.has(recipientClerkUserId)) {
+        onlineUsers.get(recipientClerkUserId)?.forEach(socketId => {
+            io.to(socketId).emit('chat:message', data);
+        });
+    }
+};
+
+/**
  * Helper to emit a message to a group room.
  */
 export const sendRealtimeGroupMessage = (groupId: string, message: any) => {

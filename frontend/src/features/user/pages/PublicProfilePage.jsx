@@ -42,6 +42,7 @@ const PublicProfilePage = () => {
     const [messageContent, setMessageContent] = useState('');
     const [isSendingMessage, setIsSendingMessage] = useState(false);
     const [activeTab, setActiveTab] = useState('stories'); // 'stories' | 'discussions' | 'trips'
+    const [isInitiatingChat, setIsInitiatingChat] = useState(false);
 
     // Edit Profile State
     const [isEditOpen, setIsEditOpen] = useState(false);
@@ -137,6 +138,25 @@ const PublicProfilePage = () => {
             toast.error('Failed to send message');
         } finally {
             setIsSendingMessage(false);
+        }
+    };
+
+    const handleInitiateChat = async () => {
+        try {
+            setIsInitiatingChat(true);
+            const token = await getToken();
+            const res = await communityService.getOrCreateChatConversation(clerkUserId, token);
+            if (res.success) {
+                navigate('/chat', { 
+                    state: { 
+                        activeConversationId: res.data._id
+                    } 
+                });
+            }
+        } catch (error) {
+            toast.error('Failed to initiate secure travel chat line');
+        } finally {
+            setIsInitiatingChat(false);
         }
     };
 
@@ -241,38 +261,13 @@ const PublicProfilePage = () => {
                                         >
                                             {isFollowing ? 'Following' : <><UserPlus size={20} /> Follow</>}
                                         </Button>
-                                        <Dialog open={isMessageOpen} onOpenChange={setIsMessageOpen}>
-                                            <DialogTrigger asChild>
-                                                <Button 
-                                                    className="h-14 px-8 bg-white/5 border border-white/10 text-white hover:bg-white/10 rounded-2xl font-bold gap-2"
-                                                >
-                                                    <MessageSquare size={20} /> Message
-                                                </Button>
-                                            </DialogTrigger>
-                                            <DialogContent className="sm:max-w-[425px] bg-card border-border rounded-3xl p-8">
-                                                <DialogHeader>
-                                                    <DialogTitle className="text-2xl font-black italic tracking-tight">Direct Message</DialogTitle>
-                                                </DialogHeader>
-                                                <form onSubmit={handleSendMessage} className="space-y-6 mt-4">
-                                                    <div className="space-y-2">
-                                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">To: {profile.username}</label>
-                                                        <Textarea
-                                                            placeholder="Type your message here..."
-                                                            className="min-h-[150px] rounded-2xl bg-muted/20 border-border resize-none"
-                                                            value={messageContent}
-                                                            onChange={(e) => setMessageContent(e.target.value)}
-                                                        />
-                                                    </div>
-                                                    <Button
-                                                        type="submit"
-                                                        className="w-full h-12 rounded-xl font-black uppercase tracking-widest text-[10px]"
-                                                        disabled={isSendingMessage}
-                                                    >
-                                                        {isSendingMessage ? <Loader2 className="animate-spin" /> : "Send Signal"}
-                                                    </Button>
-                                                </form>
-                                            </DialogContent>
-                                        </Dialog>
+                                        <Button 
+                                            onClick={handleInitiateChat}
+                                            disabled={isInitiatingChat}
+                                            className="h-14 px-8 bg-white/5 border border-white/10 text-white hover:bg-white/10 rounded-2xl font-bold gap-2"
+                                        >
+                                            {isInitiatingChat ? <Loader2 className="animate-spin" /> : <><MessageSquare size={20} /> Message</>}
+                                        </Button>
                                     </>
                                 ) : (
                                     <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
