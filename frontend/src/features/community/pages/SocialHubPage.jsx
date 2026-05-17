@@ -25,6 +25,8 @@ export const SocialHubPage = () => {
   const [groups, setGroups] = useState([]);
   const [discoverGroups, setDiscoverGroups] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [trendingTags, setTrendingTags] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // --- V3 Core States ---
   const [posts, setPosts] = useState([]);
@@ -100,6 +102,17 @@ export const SocialHubPage = () => {
     }
   };
 
+   const fetchTrendingTags = async () => {
+    try {
+      const res = await communityService.getTrendingTags();
+      if (res.success) {
+        setTrendingTags(res.data || []);
+      }
+    } catch (error) {
+      console.error("Failed to fetch trending tags:", error);
+    }
+  };
+
   const fetchFeedData = async () => {
     try {
       setIsPostsLoading(true);
@@ -112,7 +125,7 @@ export const SocialHubPage = () => {
       const communityFilter = selectedCommunity?._id || '';
 
       const [postRes, storyRes] = await Promise.all([
-        communityService.getPosts(categoryFilter, '', clerkUserId, groupFilter, communityFilter),
+        communityService.getPosts(categoryFilter, searchQuery, clerkUserId, groupFilter, communityFilter),
         communityService.getStories()
       ]);
 
@@ -133,11 +146,15 @@ export const SocialHubPage = () => {
 
   useEffect(() => {
     fetchSidebarData();
+    fetchTrendingTags();
   }, [user]);
 
   useEffect(() => {
-    fetchFeedData();
-  }, [activeTab, selectedCommunity, user]);
+    const delayDebounce = setTimeout(() => {
+      fetchFeedData();
+    }, 300);
+    return () => clearTimeout(delayDebounce);
+  }, [activeTab, selectedCommunity, searchQuery, user]);
 
   useEffect(() => {
     if (!socket) return;
@@ -358,6 +375,7 @@ export const SocialHubPage = () => {
         title: composerData.title,
         content: composerData.content,
         category: composerData.category,
+        tags: tagsArray,
         destinationTags: tagsArray,
         images: imagesArray
       };
@@ -368,6 +386,7 @@ export const SocialHubPage = () => {
         setIsCreatePostOpen(false);
         setComposerData({ title: '', content: '', category: 'General', tags: '', images: '' });
         fetchFeedData(); // Refresh feed
+        fetchTrendingTags(); // Refresh trending tags dynamically!
       }
     } catch (error) {
       toast.error("Failed to publish post");
@@ -437,7 +456,9 @@ export const SocialHubPage = () => {
           <div className="flex-1 max-w-xl mx-8 relative hidden md:block">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
             <Input 
-              placeholder="Search communities, groups, or destinations..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search groups, hashtags, or destinations..." 
               className="w-full bg-muted/40 border-none rounded-full pl-12 h-12 text-sm font-medium focus-visible:ring-primary/30"
             />
           </div>
@@ -457,66 +478,13 @@ export const SocialHubPage = () => {
         {/* 3-Column Layout */}
         <div className="grid lg:grid-cols-12 gap-8">
           
-          {/* LEFT SIDEBAR: Navigation & Communities */}
+          {/* LEFT SIDEBAR: Navigation & Groups */}
           <div className="hidden lg:block lg:col-span-3 space-y-8">
             
-            {/* Communities Section */}
-            <div className="bg-card/40 backdrop-blur-xl rounded-[2rem] p-6 border border-white/5 shadow-xl space-y-6">
-              <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                <Compass size={14} /> Discover Communities
-              </h3>
-              <div className="space-y-3">
-                {communities.map(community => {
-                  const isSelected = selectedCommunity?._id === community._id;
-                  return (
-                    <div 
-                      key={community._id} 
-                      className={`flex items-center justify-between group p-2 rounded-xl transition-all duration-300 ${
-                        isSelected 
-                          ? 'bg-primary/20 border border-primary/20 shadow-md scale-[1.02]' 
-                          : 'hover:bg-primary/5 border border-transparent'
-                      }`}
-                    >
-                      <div 
-                        onClick={() => setSelectedCommunity(isSelected ? null : community)} 
-                        className="flex items-center gap-3 cursor-pointer flex-1 min-w-0"
-                      >
-                        <div className={`w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center text-lg shadow-inner transition-colors shrink-0 ${
-                          isSelected ? 'bg-primary/30 text-primary' : 'group-hover:bg-primary/25'
-                        }`}>
-                          {community.icon || '🌍'}
-                        </div>
-                        <div className="truncate">
-                          <div className={`font-bold text-sm truncate transition-colors ${
-                            isSelected ? 'text-primary' : 'group-hover:text-primary'
-                          }`}>{community.name}</div>
-                          <div className="text-[10px] text-muted-foreground">{community.followersCount} followers</div>
-                        </div>
-                      </div>
-                      <button 
-                        disabled={!user}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleJoinCommunity(community._id);
-                        }}
-                        className={`text-[9px] font-black uppercase tracking-wider px-2.5 py-1.5 rounded-lg border transition-all ${
-                          isSelected 
-                            ? 'bg-primary border-primary text-white hover:bg-primary/80' 
-                            : 'border-white/10 hover:border-primary/50 text-muted-foreground hover:text-foreground'
-                        }`}
-                      >
-                        {isSelected ? 'Joined' : 'Join'}
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
             {/* My Groups Section */}
             <div className="bg-card/40 backdrop-blur-xl rounded-[2rem] p-6 border border-white/5 shadow-xl">
               <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-6 flex items-center gap-2">
-                <Users size={14} /> My Groups
+                <Compass size={14} /> My Groups
               </h3>
               <div className="space-y-4">
                 {groups.length === 0 && <div className="text-xs text-muted-foreground italic">You haven't joined any groups yet.</div>}
@@ -562,12 +530,12 @@ export const SocialHubPage = () => {
             
             {/* Feed Tabs */}
             <div className="flex items-center justify-center gap-1.5 p-1 bg-muted/30 backdrop-blur-md rounded-full w-max mx-auto border border-white/5 shadow-inner">
-              {['global', 'communities', 'groups'].map(tab => (
+              {['global', 'groups'].map(tab => (
                 <button
                   key={tab}
                   onClick={() => {
                     setActiveTab(tab);
-                    if (tab !== 'communities') setSelectedCommunity(null);
+                    setSelectedCommunity(null);
                   }}
                   className={`px-4 sm:px-6 py-2.5 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all duration-300 ${
                     activeTab === tab 
@@ -744,12 +712,23 @@ export const SocialHubPage = () => {
                 <Sparkles size={14} className="text-pink-400" /> Trending Now
               </h3>
               <div className="space-y-4 relative z-10">
-                {['#KyotoAutumn', '#SwissAlps', '#BaliLife', '#VanLife'].map((tag, i) => (
-                  <div key={i} className="flex items-center justify-between group cursor-pointer">
-                    <span className="font-bold text-sm group-hover:text-pink-400 transition-colors">{tag}</span>
-                    <span className="text-[10px] text-muted-foreground uppercase">{Math.floor(Math.random() * 50) + 10} posts</span>
-                  </div>
-                ))}
+                {trendingTags.length > 0 ? (
+                  trendingTags.map((t, i) => (
+                    <div 
+                      key={i} 
+                      onClick={() => {
+                        setSearchQuery(t.tag);
+                        toast.success(`Filtering by ${t.tag}`);
+                      }}
+                      className="flex items-center justify-between group cursor-pointer hover:scale-[1.02] transition-transform duration-200"
+                    >
+                      <span className="font-bold text-sm group-hover:text-pink-400 transition-colors">{t.tag}</span>
+                      <span className="text-[10px] text-muted-foreground uppercase">{t.postCount || 0} posts</span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-xs text-muted-foreground italic">No trending topics yet.</div>
+                )}
               </div>
             </div>
           </div>

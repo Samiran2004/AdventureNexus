@@ -111,6 +111,32 @@ export const joinGroup = async (req: Request, res: Response): Promise<void> => {
             $addToSet: { members: userId }
         });
 
+        // Trigger Group Join notification to creator
+        try {
+            const creatorUser = await User.findById(group.createdBy);
+            if (creatorUser && creatorUser.clerkUserId) {
+                const { createAndSendNotification } = await import('../../../shared/utils/notificationHelper');
+                const { NotificationType } = await import('../../../shared/database/models/notificationModel');
+                
+                await createAndSendNotification({
+                    recipientClerkUserId: creatorUser.clerkUserId,
+                    senderClerkUserId: (req as any).user.clerkUserId,
+                    type: NotificationType.GROUP_INVITE,
+                    relatedId: group._id.toString()
+                });
+            }
+        } catch (err) {
+            console.error('Failed to send group join notification:', err);
+        }
+
+        // Track activity
+        try {
+            const { trackActivity } = await import('../../../shared/utils/activityTracker');
+            await trackActivity((req as any).user.clerkUserId, 'group_joined', group._id.toString());
+        } catch (err) {
+            console.error('Failed to track group_joined activity:', err);
+        }
+
         res.status(200).json({ success: true, message: 'Successfully joined group' });
     } catch (error) {
         console.error('Error joining group:', error);

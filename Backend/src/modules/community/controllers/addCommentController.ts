@@ -40,6 +40,33 @@ export const addComment = async (req: Request, res: Response) => {
         post.repliesCount += 1;
         await post.save();
 
+        // Send real-time notification
+        const { createAndSendNotification } = await import('../../../shared/utils/notificationHelper');
+        const { NotificationType } = await import('../../../shared/database/models/notificationModel');
+
+        if (parentId) {
+            // Reply to a comment
+            const parentComment = await CommunityComment.findById(parentId);
+            if (parentComment && parentComment.clerkUserId) {
+                createAndSendNotification({
+                    recipientClerkUserId: parentComment.clerkUserId,
+                    senderClerkUserId: clerkUserId!,
+                    type: NotificationType.COMMENT_POST,
+                    relatedId: postId
+                });
+            }
+        } else {
+            // Direct comment on post
+            if (post.clerkUserId) {
+                createAndSendNotification({
+                    recipientClerkUserId: post.clerkUserId,
+                    senderClerkUserId: clerkUserId!,
+                    type: NotificationType.COMMENT_POST,
+                    relatedId: postId
+                });
+            }
+        }
+
         logger.info(`New comment added to post ${postId} by ${clerkUserId}`);
 
         // Fetch populated comment for real-time broadcast

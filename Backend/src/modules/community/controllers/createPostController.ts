@@ -75,6 +75,14 @@ export const createPost = async (req: Request, res: Response) => {
 
         logger.info(`New community post created: ${newPost._id} by ${clerkUserId}`);
 
+        // Track activity
+        try {
+            const { trackActivity } = await import('../../../shared/utils/activityTracker');
+            await trackActivity(clerkUserId!, 'post_created', newPost._id.toString());
+        } catch (err) {
+            logger.error('Failed to track post_created activity:', err);
+        }
+
         // Real-time broadcast
         import('../../../shared/socket/socket').then(({ broadcastRealtimeEvent }) => {
             broadcastRealtimeEvent('community:post', {

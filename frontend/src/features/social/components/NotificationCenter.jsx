@@ -44,15 +44,83 @@ const NotificationCenter = () => {
     };
 
     const markAsRead = async (id) => {
-        // Logic to mark as read
+        try {
+            const token = await getToken();
+            if (!token) return;
+            const res = await axios.patch(`/api/v1/social/notifications/read/${id}`, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            if (res.data.success) {
+                setNotifications(prev => prev.map(n => n._id === id ? { ...n, isRead: true } : n));
+            }
+        } catch (error) {
+            console.error("Error marking notification as read", error);
+        }
+    };
+
+    const markAllAsRead = async () => {
+        try {
+            const token = await getToken();
+            if (!token) return;
+            const res = await axios.patch('/api/v1/social/notifications/read-all', {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            if (res.data.success) {
+                setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+            }
+        } catch (error) {
+            console.error("Error marking all notifications as read", error);
+        }
+    };
+
+    const getNotificationContent = (n) => {
+        const actorName = n.sender?.fullname || n.sender?.username || 'Someone';
+        switch (n.type) {
+            case 'like_post':
+                return {
+                    title: 'Liked your post',
+                    body: `${actorName} liked your discussion post.`,
+                };
+            case 'comment_post':
+                return {
+                    title: 'Commented on your post',
+                    body: `${actorName} shared a thought on your discussion post.`,
+                };
+            case 'friend_request':
+                return {
+                    title: 'New Friend Request',
+                    body: `${actorName} sent you a friend request.`,
+                };
+            case 'friend_accepted':
+                return {
+                    title: 'Friend Request Accepted',
+                    body: `${actorName} accepted your friend request.`,
+                };
+            case 'group_invite':
+                return {
+                    title: 'New Group Activity',
+                    body: `${actorName} recently joined your group.`,
+                };
+            default:
+                return {
+                    title: 'New Notification',
+                    body: `${actorName} performed an action.`,
+                };
+        }
     };
 
     const getIcon = (type) => {
         switch (type) {
-            case 'like_post': return <Heart size={16} className="text-pink-500" />;
-            case 'friend_request': return <UserPlus size={16} className="text-blue-500" />;
-            case 'message': return <MessageSquare size={16} className="text-emerald-500" />;
-            default: return <Bell size={16} className="text-white/40" />;
+            case 'like_post': return <Heart size={10} className="text-pink-500 fill-pink-500" />;
+            case 'comment_post': return <MessageSquare size={10} className="text-blue-500 fill-blue-500" />;
+            case 'friend_request':
+            case 'friend_accepted': return <UserPlus size={10} className="text-emerald-500" />;
+            case 'group_invite': return <Bell size={10} className="text-purple-500 fill-purple-500" />;
+            default: return <Bell size={10} className="text-white/40" />;
         }
     };
 
@@ -86,35 +154,57 @@ const NotificationCenter = () => {
                         >
                             <div className="p-6 border-b border-white/5 flex items-center justify-between">
                                 <h3 className="font-black text-white tracking-tight">NOTIFICATIONS</h3>
-                                <Button variant="ghost" size="sm" className="text-[10px] font-bold text-white/40 hover:text-white uppercase tracking-widest">Mark all as read</Button>
+                                <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    onClick={markAllAsRead}
+                                    className="text-[10px] font-bold text-white/40 hover:text-white uppercase tracking-widest"
+                                >
+                                    Mark all as read
+                                </Button>
                             </div>
 
                             <div className="max-h-[450px] overflow-y-auto custom-scrollbar">
                                 {notifications.length > 0 ? (
-                                    notifications.map((n) => (
-                                        <div 
-                                            key={n._id} 
-                                            className={`p-6 flex gap-4 transition-colors hover:bg-white/[0.02] border-b border-white/5 last:border-0 ${!n.isRead ? 'bg-blue-500/5' : ''}`}
-                                        >
-                                            <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 flex-shrink-0">
-                                                {getIcon(n.type)}
-                                            </div>
-                                            <div className="flex-1 space-y-1">
-                                                <p className="text-sm text-white/80 leading-relaxed font-medium">
-                                                    <span className="text-white font-bold">New Friend Request</span> from @samiransamanta
-                                                </p>
-                                                <div className="flex items-center gap-2 text-[10px] text-white/20 font-bold uppercase tracking-widest">
-                                                    <Clock size={10} /> 2m ago
-                                                </div>
-                                                {n.type === 'friend_request' && (
-                                                    <div className="flex gap-2 pt-2">
-                                                        <Button size="sm" className="h-9 rounded-xl bg-white text-black font-bold text-xs px-4">Accept</Button>
-                                                        <Button size="sm" variant="outline" className="h-9 rounded-xl border-white/10 text-white font-bold text-xs px-4">Ignore</Button>
+                                    notifications.map((n) => {
+                                        const content = getNotificationContent(n);
+                                        return (
+                                            <div 
+                                                key={n._id} 
+                                                onClick={() => !n.isRead && markAsRead(n._id)}
+                                                className={`p-6 flex gap-4 transition-colors hover:bg-white/[0.02] border-b border-white/5 last:border-0 cursor-pointer ${!n.isRead ? 'bg-white/[0.02]' : ''}`}
+                                            >
+                                                <div className="relative flex-shrink-0">
+                                                    {n.sender?.profilepicture ? (
+                                                        <img 
+                                                            src={n.sender.profilepicture} 
+                                                            alt="Avatar" 
+                                                            className="w-12 h-12 rounded-2xl object-cover border border-white/10"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10">
+                                                            {getIcon(n.type)}
+                                                        </div>
+                                                    )}
+                                                    <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-black rounded-full flex items-center justify-center border border-white/10">
+                                                        {getIcon(n.type)}
                                                     </div>
-                                                )}
+                                                </div>
+                                                <div className="flex-1 space-y-1">
+                                                    <div className="flex items-center justify-between">
+                                                        <p className="text-xs font-black text-white/40 uppercase tracking-widest">{content.title}</p>
+                                                        {!n.isRead && <span className="w-2 h-2 rounded-full bg-red-500" />}
+                                                    </div>
+                                                    <p className="text-sm text-white/80 leading-relaxed font-medium">
+                                                        {content.body}
+                                                    </p>
+                                                    <div className="flex items-center gap-2 text-[10px] text-white/20 font-bold uppercase tracking-widest pt-1">
+                                                        <Clock size={10} /> {new Date(n.createdAt).toLocaleDateString()}
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))
+                                        );
+                                    })
                                 ) : (
                                     <div className="p-12 text-center space-y-4">
                                         <div className="w-16 h-16 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto opacity-20">

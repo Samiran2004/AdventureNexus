@@ -1,5 +1,6 @@
 import express, { Router } from 'express';
 import { getPosts } from './controllers/getPostsController';
+import { getTrending } from './controllers/getTrendingController';
 import { createPost } from './controllers/createPostController';
 import { getPostById } from './controllers/getPostByIdController';
 import { toggleLike } from './controllers/toggleLikeController';
@@ -24,6 +25,13 @@ import { getGroupMessages, sendGroupMessage } from './controllers/groupMessageCo
 import { getCommunities, joinCommunity } from './controllers/communityController';
 
 const route: Router = express.Router();
+
+/**
+ * @route GET /api/v1/community/posts/trending
+ * @desc Get dynamically aggregated trending hashtags
+ * @access Public
+ */
+route.get('/posts/trending', getTrending);
 
 /**
  * @route GET /api/v1/community/posts

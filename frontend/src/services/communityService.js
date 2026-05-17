@@ -24,6 +24,11 @@ export const communityService = {
         return response.data;
     },
 
+    getTrendingTags: async () => {
+        const response = await axios.get(`${api_url}/api/v1/community/posts/trending`);
+        return response.data;
+    },
+
     createPost: async (postData, token) => {
         const isFormData = postData instanceof FormData;
         const headers = { Authorization: `Bearer ${token}` };

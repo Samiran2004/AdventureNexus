@@ -95,6 +95,7 @@ export const sendRealtimeNotification = (recipientClerkUserId: string, notificat
     if (io && onlineUsers.has(recipientClerkUserId)) {
         onlineUsers.get(recipientClerkUserId)?.forEach(socketId => {
             io.to(socketId).emit('notification', notification);
+            io.to(socketId).emit('notification:new', notification);
         });
     }
 };

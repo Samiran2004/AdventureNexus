@@ -45,6 +45,27 @@ export const toggleLike = async (req: Request, res: Response) => {
         } else {
             // Like
             target.likes.push(clerkUserId);
+
+            // Send notification
+            const { createAndSendNotification } = await import('../../../shared/utils/notificationHelper');
+            const { NotificationType } = await import('../../../shared/database/models/notificationModel');
+            
+            if (target.clerkUserId) {
+                createAndSendNotification({
+                    recipientClerkUserId: target.clerkUserId,
+                    senderClerkUserId: clerkUserId!,
+                    type: NotificationType.LIKE_POST,
+                    relatedId: targetType === 'post' ? targetId : undefined
+                });
+            }
+
+            // Track activity
+            try {
+                const { trackActivity } = await import('../../../shared/utils/activityTracker');
+                await trackActivity(clerkUserId!, 'like_given', targetId);
+            } catch (err) {
+                logger.error('Failed to track like_given activity:', err);
+            }
         }
 
         await target.save();

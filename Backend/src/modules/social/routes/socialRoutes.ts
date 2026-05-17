@@ -19,5 +19,7 @@ router.get('/friends', protect, friendshipController.getFriends);
 // Notifications
 router.get('/notifications', protect, notificationController.getNotifications);
 router.post('/notifications/:id/read', protect, notificationController.markAsRead);
+router.patch('/notifications/read/:id', protect, notificationController.markAsRead);
+router.patch('/notifications/read-all', protect, notificationController.markAllAsRead);
 
 export default router;
