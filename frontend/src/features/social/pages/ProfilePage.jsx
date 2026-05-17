@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
     UserPlus, MessageSquare, MapPin, Link as LinkIcon, 
     Calendar, Shield, Award, Zap, Globe, Heart, 
     Share2, MoreHorizontal, Settings, Camera,
-    Users, Compass, TrendingUp
+    Users, Compass, TrendingUp, Lock, Unlock
 } from 'lucide-react';
-import { useUser } from '@clerk/clerk-react';
+import { useAuth, useUser } from '@clerk/clerk-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -16,10 +16,15 @@ import axios from 'axios';
 const ProfilePage = () => {
     const { username } = useParams();
     const navigate = useNavigate();
-    const { user: currentUser } = useUser();
+    const { user: currentUser, isLoaded } = useUser();
+    const { getToken } = useAuth();
     const [profileUser, setProfileUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isFollowing, setIsFollowing] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+    
+    const coverInputRef = useRef(null);
+    const profileInputRef = useRef(null);
 
     useEffect(() => {
         fetchProfile();
@@ -42,8 +47,80 @@ const ProfilePage = () => {
         }
     };
 
+    const handleImageUpload = async (e, type) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        try {
+            setIsUploading(true);
+            const token = await getToken();
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('imageType', type);
+
+            // Need to use the backendUrl env variable
+            const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080';
+            const res = await axios.patch(`${backendUrl}/api/v1/users/profile`, formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            if (res.data.success) {
+                // Instantly update UI with new user data
+                setProfileUser(res.data.data);
+            }
+        } catch (error) {
+            console.error("Error uploading image", error);
+        } finally {
+            setIsUploading(false);
+            e.target.value = ''; // Reset input
+        }
+    };
+
     const handleFollow = async () => {
-        // Logic to follow/unfollow
+        try {
+            const token = await getToken();
+            const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080';
+            const res = await axios.post(`${backendUrl}/api/v1/social/follow/${profileUser.clerkUserId}`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (res.data.success) {
+                setIsFollowing(res.data.isFollowing);
+                // Optimistically update followers count locally
+                setProfileUser(prev => ({
+                    ...prev,
+                    followers: res.data.isFollowing 
+                        ? [...prev.followers, currentUser.id]
+                        : prev.followers.filter(id => id !== currentUser.id)
+                }));
+            }
+        } catch (error) {
+            console.error("Error toggling follow state", error);
+        }
+    };
+
+    const handlePrivacyToggle = async () => {
+        try {
+            const token = await getToken();
+            const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080';
+            
+            const newPrivacyState = !profileUser.isPrivate;
+            const formData = new FormData();
+            formData.append('isPrivate', String(newPrivacyState));
+
+            const res = await axios.patch(`${backendUrl}/api/v1/users/profile`, formData, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (res.data.success) {
+                setProfileUser(prev => ({ ...prev, isPrivate: newPrivacyState }));
+            }
+        } catch (error) {
+            console.error("Error toggling privacy", error);
+        }
     };
 
     const handleMessage = async () => {
@@ -86,11 +163,19 @@ const ProfilePage = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
                 
                 {isOwnProfile && (
-                    <Button className="absolute bottom-8 right-8 bg-black/40 backdrop-blur-md border border-white/10 text-white rounded-2xl hover:bg-black/60 gap-2">
-                        <Camera size={18} /> Edit Cover
+                    <Button 
+                        onClick={() => coverInputRef.current?.click()}
+                        disabled={isUploading}
+                        className="absolute bottom-8 right-8 bg-black/40 backdrop-blur-md border border-white/10 text-white rounded-2xl hover:bg-black/60 gap-2 z-20"
+                    >
+                        <Camera size={18} /> {isUploading ? 'Uploading...' : 'Edit Cover'}
                     </Button>
                 )}
             </div>
+
+            {/* Hidden Inputs */}
+            <input type="file" ref={coverInputRef} className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e, 'cover')} />
+            <input type="file" ref={profileInputRef} className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e, 'profile')} />
 
             {/* Profile Content */}
             <div className="container mx-auto px-4 -mt-24 relative z-10">
@@ -107,7 +192,10 @@ const ProfilePage = () => {
                             </div>
                         </div>
                         {isOwnProfile && (
-                            <div className="absolute inset-0 rounded-[3.5rem] bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                            <div 
+                                onClick={() => !isUploading && profileInputRef.current?.click()}
+                                className="absolute inset-0 rounded-[3.5rem] bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-20"
+                            >
                                 <Camera size={32} className="text-white" />
                             </div>
                         )}
@@ -129,8 +217,12 @@ const ProfilePage = () => {
                                         <Button className="h-14 px-8 bg-white text-black hover:bg-white/90 rounded-2xl font-bold gap-2">
                                             <Settings size={20} /> Edit Profile
                                         </Button>
-                                        <Button variant="outline" className="h-14 w-14 border-white/10 rounded-2xl">
-                                            <Share2 size={20} className="text-white" />
+                                        <Button 
+                                            onClick={handlePrivacyToggle}
+                                            variant="outline" 
+                                            className={`h-14 px-4 rounded-2xl border-white/10 ${profileUser.isPrivate ? 'bg-red-500/10 text-red-400' : 'bg-emerald-500/10 text-emerald-400'}`}
+                                        >
+                                            {profileUser.isPrivate ? <><Lock size={20} className="mr-2"/> Private</> : <><Unlock size={20} className="mr-2"/> Public</>}
                                         </Button>
                                     </>
                                 ) : (
@@ -165,13 +257,21 @@ const ProfilePage = () => {
                                 <span className="text-sm font-bold uppercase tracking-widest text-white/20">Following</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <span className="text-white font-black text-xl">42</span>
+                                <span className="text-white font-black text-xl">{profileUser.tripsCount || 0}</span>
                                 <span className="text-sm font-bold uppercase tracking-widest text-white/20">Trips</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                {/* Locked Profile State */}
+                {profileUser.isPrivate && !isOwnProfile && !isFollowing ? (
+                    <div className="mt-16 flex flex-col items-center justify-center text-center p-16 border border-white/5 rounded-[2.5rem] bg-white/[0.02]">
+                        <Lock size={64} className="text-white/20 mb-6" />
+                        <h2 className="text-3xl font-black text-white mb-2">This Account is Private</h2>
+                        <p className="text-white/40">Follow to see their photos, trips, and videos.</p>
+                    </div>
+                ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mt-16">
                     {/* Left Sidebar */}
                     <div className="lg:col-span-4 space-y-8">
@@ -267,6 +367,7 @@ const ProfilePage = () => {
                         </Tabs>
                     </div>
                 </div>
+                )}
             </div>
         </div>
     );

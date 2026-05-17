@@ -9,6 +9,7 @@ const router = Router();
 // User search and public profile
 router.get('/search', protect, socialController.searchUsers);
 router.get('/profile/:username', protect, socialController.getUserProfile);
+router.post('/follow/:targetId', protect, socialController.toggleFollow);
 
 // Friend system
 router.post('/friend-request', protect, friendshipController.sendFriendRequest);

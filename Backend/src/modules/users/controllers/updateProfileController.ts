@@ -3,6 +3,8 @@ import User from '../../../shared/database/models/userModel';
 import createHttpError from 'http-errors';
 import logger from '../../../shared/utils/logger';
 import { clerkClient } from '@clerk/express';
+import cloudinary from '../../../shared/services/cloudinaryService';
+import fs from 'fs';
 
 /**
  * Controller to update User Profile.
@@ -28,7 +30,8 @@ export const updateProfile = async (
             phonenumber,
             gender,
             country,
-            preferences
+            preferences,
+            isPrivate
         } = req.body;
 
         // 1. Update Clerk if firstName/lastName provided
@@ -54,10 +57,41 @@ export const updateProfile = async (
         if (gender !== undefined) updateData.gender = gender;
         if (country !== undefined) updateData.country = country;
         if (preferences !== undefined) updateData.preferences = preferences;
+        if (isPrivate !== undefined) updateData.isPrivate = isPrivate === 'true' || isPrivate === true;
 
         // Also sync names if they changed
         if (firstName !== undefined) updateData.firstName = firstName;
         if (lastName !== undefined) updateData.lastName = lastName;
+
+        // 3. Handle Image Upload to Cloudinary
+        if (req.file) {
+            try {
+                const result = await cloudinary.uploader.upload(req.file.path, {
+                    folder: 'adventurenexus/profiles',
+                    width: 800,
+                    crop: 'scale',
+                });
+                
+                // If it's a cover image update
+                if (req.body.imageType === 'cover') {
+                    updateData.coverImage = result.secure_url;
+                } else if (req.body.imageType === 'profile') {
+                    updateData.profilepicture = result.secure_url;
+                }
+
+                // Delete the file from local storage after upload
+                fs.unlinkSync(req.file.path);
+                
+                logger.info(`✅ Image uploaded to Cloudinary: ${result.secure_url}`);
+            } catch (uploadError: any) {
+                logger.error(`❌ Cloudinary upload failed: ${uploadError.message}`);
+                // Ensure local file is deleted even if upload fails
+                if (fs.existsSync(req.file.path)) {
+                    fs.unlinkSync(req.file.path);
+                }
+                return next(createHttpError(500, 'Image upload failed'));
+            }
+        }
 
         const updatedUser = await User.findOneAndUpdate(
             { clerkUserId },

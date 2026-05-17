@@ -20,6 +20,7 @@ export interface IUser extends Document {
     following?: string[];   // Array of clerkUserIds this user is following
     bio?: string;           // User bio
     coverImage?: string;    // URL to cover/background image
+    isPrivate?: boolean;    // Whether the profile is public or private
     socialLinks?: {
         twitter?: string;
         instagram?: string;
@@ -96,6 +97,7 @@ const userSchema = new Schema<IUser>(
         following: [{ type: String, ref: 'User' }], // Clerk User IDs
         bio: { type: String, default: "" },
         coverImage: { type: String, default: "" },
+        isPrivate: { type: Boolean, default: false },
         socialLinks: {
             twitter: { type: String, default: "" },
             instagram: { type: String, default: "" },

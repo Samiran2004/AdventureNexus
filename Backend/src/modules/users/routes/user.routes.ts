@@ -4,6 +4,7 @@ import userProfile, {
 } from '../controllers/userProfileController';
 import { updateProfile } from '../controllers/updateProfileController';
 import { protect } from '../../../shared/middleware/authClerkTokenMiddleware';
+import { upload } from '../../../shared/middleware/multer';
 
 const route: Router = express.Router();
 
@@ -18,9 +19,9 @@ route.get('/profile', protect, (req, res, next) => {
 
 /**
  * @route PATCH /api/v1/users/profile
- * @desc Update the current user's profile information.
+ * @desc Update the current user's profile information, optionally uploading a cover image.
  * @access Private
  */
-route.patch('/profile', protect, updateProfile);
+route.patch('/profile', protect, upload.single('image'), updateProfile);
 
 export default route;
