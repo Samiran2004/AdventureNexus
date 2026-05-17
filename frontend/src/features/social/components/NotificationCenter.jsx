@@ -3,16 +3,20 @@ import { Bell, Heart, UserPlus, MessageSquare, Check, Trash2, Clock } from 'luci
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useSocket } from '@/context/appContext';
+import { useAuth } from '@clerk/clerk-react';
 import axios from 'axios';
 
 const NotificationCenter = () => {
     const [notifications, setNotifications] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const { socket } = useSocket();
+    const { getToken, isSignedIn } = useAuth();
 
     useEffect(() => {
-        fetchNotifications();
-    }, []);
+        if (isSignedIn) {
+            fetchNotifications();
+        }
+    }, [isSignedIn]);
 
     useEffect(() => {
         if (!socket) return;
@@ -24,7 +28,13 @@ const NotificationCenter = () => {
 
     const fetchNotifications = async () => {
         try {
-            const res = await axios.get('/api/v1/social/notifications'); // Corrected route
+            const token = await getToken();
+            if (!token) return;
+            const res = await axios.get('/api/v1/social/notifications', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
             if (res.data.success) {
                 setNotifications(res.data.data);
             }

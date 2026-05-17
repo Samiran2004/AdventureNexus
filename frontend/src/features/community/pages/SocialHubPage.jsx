@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAuth } from '@clerk/clerk-react';
+import { useAuth, useUser } from '@clerk/clerk-react';
 import { Compass, Users, Map, Globe, Search, Bell, Sparkles, X, Heart, MessageSquare, Lock, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,7 +14,8 @@ import { StoryBar } from '../components/StoryBar';
 import { CommentTree } from '../components/CommentTree';
 
 export const SocialHubPage = () => {
-  const { user, getToken } = useAuth();
+  const { getToken } = useAuth();
+  const { user } = useUser();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('global'); // global, communities, groups
   
@@ -64,7 +65,17 @@ export const SocialHubPage = () => {
       ]);
 
       if (commRes.success) setCommunities(commRes.communities);
-      if (groupRes.success) setGroups(groupRes.groups);
+      if (groupRes.success) {
+        const uniqueGroups = [];
+        const seen = new Set();
+        (groupRes.groups || []).forEach(g => {
+          if (g && g._id && !seen.has(g._id)) {
+            seen.add(g._id);
+            uniqueGroups.push(g);
+          }
+        });
+        setGroups(uniqueGroups);
+      }
     } catch (error) {
       console.error("Failed to load sidebar data:", error);
     }
@@ -125,7 +136,11 @@ export const SocialHubPage = () => {
       const res = await communityService.createGroup(groupComposer, token);
       if (res.success) {
         toast.success(`Group "${groupComposer.name}" created successfully!`);
-        setGroups(prev => [...prev, res.group]);
+        setGroups(prev => {
+          const exists = prev.some(g => g._id === res.group._id);
+          if (exists) return prev;
+          return [...prev, res.group];
+        });
         setIsCreateGroupOpen(false);
         setGroupComposer({ name: '', description: '', coverImage: '', privacy: 'PUBLIC' });
       }

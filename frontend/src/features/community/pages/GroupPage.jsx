@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAuth } from '@clerk/clerk-react';
+import { useAuth, useUser } from '@clerk/clerk-react';
 import { ArrowLeft, Users, Shield, Lock, Globe, Plus, MessageSquare, Heart, X, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,7 +14,8 @@ import NavBar from '@/components/NavBar';
 export const GroupPage = () => {
   const { groupId } = useParams();
   const navigate = useNavigate();
-  const { user, getToken } = useAuth();
+  const { getToken } = useAuth();
+  const { user } = useUser();
 
   const [group, setGroup] = useState(null);
   const [posts, setPosts] = useState([]);
