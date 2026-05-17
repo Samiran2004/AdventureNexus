@@ -21,6 +21,7 @@ export const SocialHubPage = () => {
   
   const [communities, setCommunities] = useState([]);
   const [groups, setGroups] = useState([]);
+  const [discoverGroups, setDiscoverGroups] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // --- V3 Core States ---
@@ -59,22 +60,37 @@ export const SocialHubPage = () => {
     try {
       const token = await getToken();
       
-      const [commRes, groupRes] = await Promise.all([
+      const [commRes, myGroupsRes, allGroupsRes] = await Promise.all([
         communityService.getCommunities(),
-        token ? communityService.getMyGroups(token) : { groups: [] }
+        token ? communityService.getMyGroups(token) : { groups: [] },
+        token ? communityService.getGroups(token) : { groups: [] }
       ]);
 
       if (commRes.success) setCommunities(commRes.communities);
-      if (groupRes.success) {
-        const uniqueGroups = [];
+      
+      if (myGroupsRes.success) {
+        const uniqueMyGroups = [];
         const seen = new Set();
-        (groupRes.groups || []).forEach(g => {
+        (myGroupsRes.groups || []).forEach(g => {
           if (g && g._id && !seen.has(g._id)) {
             seen.add(g._id);
-            uniqueGroups.push(g);
+            uniqueMyGroups.push(g);
           }
         });
-        setGroups(uniqueGroups);
+        setGroups(uniqueMyGroups);
+      }
+
+      if (allGroupsRes.success) {
+        const myGroupIds = new Set((myGroupsRes.groups || []).map(g => g && g._id));
+        const uniqueDiscoverGroups = [];
+        const seen = new Set();
+        (allGroupsRes.groups || []).forEach(g => {
+          if (g && g._id && !seen.has(g._id) && !myGroupIds.has(g._id)) {
+            seen.add(g._id);
+            uniqueDiscoverGroups.push(g);
+          }
+        });
+        setDiscoverGroups(uniqueDiscoverGroups);
       }
     } catch (error) {
       console.error("Failed to load sidebar data:", error);
@@ -422,6 +438,26 @@ export const SocialHubPage = () => {
               <Button onClick={handleCreateGroup} className="w-full mt-6 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors text-xs font-bold">
                 + Create Group
               </Button>
+            </div>
+
+            {/* Discover Groups Section */}
+            <div className="bg-card/40 backdrop-blur-xl rounded-[2rem] p-6 border border-white/5 shadow-xl">
+              <h3 className="text-xs font-black uppercase tracking-widest text-pink-400 mb-6 flex items-center gap-2">
+                <Globe size={14} className="text-pink-400 animate-pulse" /> Discover Groups
+              </h3>
+              <div className="space-y-4">
+                {discoverGroups.length === 0 && <div className="text-xs text-muted-foreground italic">No new groups to discover.</div>}
+                {discoverGroups.map(group => (
+                  <div 
+                    key={group._id} 
+                    onClick={() => navigate(`/community/group/${group._id}`)}
+                    className="flex flex-col gap-1 cursor-pointer p-3 rounded-xl hover:bg-muted/50 transition-all border border-transparent hover:border-white/5 hover:border-pink-500/20 group"
+                  >
+                    <div className="font-bold text-sm truncate group-hover:text-pink-400 transition-colors">{group.name}</div>
+                    <div className="text-[10px] text-muted-foreground uppercase tracking-widest">{group.privacy} Group</div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 

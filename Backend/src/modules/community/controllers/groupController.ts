@@ -144,3 +144,89 @@ export const leaveGroup = async (req: Request, res: Response): Promise<void> => 
         res.status(500).json({ success: false, message: 'Server error' });
     }
 };
+
+export const addMemberToGroup = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { groupId, username } = req.body;
+        const adminUserId = (req as any).user._id;
+
+        const group = await Group.findById(groupId);
+        if (!group) {
+            res.status(404).json({ success: false, message: 'Group not found' });
+            return;
+        }
+
+        // Check if requester is admin or creator
+        const isAdmin = group.admins.some((a: any) => a.toString() === adminUserId.toString()) || group.createdBy.toString() === adminUserId.toString();
+        if (!isAdmin) {
+            res.status(403).json({ success: false, message: 'Only group admins can add members' });
+            return;
+        }
+
+        const targetUser = await User.findOne({ username });
+        if (!targetUser) {
+            res.status(404).json({ success: false, message: 'User not found' });
+            return;
+        }
+
+        const existingMembership = await GroupMembership.findOne({ groupId, userId: targetUser._id });
+        if (existingMembership) {
+            res.status(400).json({ success: false, message: 'User is already a member of this group' });
+            return;
+        }
+
+        await GroupMembership.create({
+            groupId: group._id,
+            userId: targetUser._id,
+            role: 'MEMBER'
+        });
+
+        await Group.findByIdAndUpdate(groupId, {
+            $inc: { memberCount: 1 },
+            $addToSet: { members: targetUser._id }
+        });
+
+        res.status(200).json({ success: true, message: `Successfully added ${username} to the group` });
+    } catch (error) {
+        console.error('Error adding member to group:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+
+export const makeUserAdmin = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { groupId, targetUserId } = req.body;
+        const adminUserId = (req as any).user._id;
+
+        const group = await Group.findById(groupId);
+        if (!group) {
+            res.status(404).json({ success: false, message: 'Group not found' });
+            return;
+        }
+
+        // Check if requester is admin or creator
+        const isAdmin = group.admins.some((a: any) => a.toString() === adminUserId.toString()) || group.createdBy.toString() === adminUserId.toString();
+        if (!isAdmin) {
+            res.status(403).json({ success: false, message: 'Only group admins can promote other members' });
+            return;
+        }
+
+        const targetMembership = await GroupMembership.findOne({ groupId, userId: targetUserId });
+        if (!targetMembership) {
+            res.status(400).json({ success: false, message: 'User is not a member of this group' });
+            return;
+        }
+
+        targetMembership.role = 'ADMIN';
+        await targetMembership.save();
+
+        await Group.findByIdAndUpdate(groupId, {
+            $addToSet: { admins: targetUserId }
+        });
+
+        res.status(200).json({ success: true, message: 'Successfully promoted user to Admin' });
+    } catch (error) {
+        console.error('Error promoting member to admin:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+};

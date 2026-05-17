@@ -225,6 +225,20 @@ export const communityService = {
         return response.data;
     },
 
+    addMemberToGroup: async (groupId, username, token) => {
+        const response = await axios.post(`${api_url}/api/v1/community/groups/add-member`, { groupId, username }, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data;
+    },
+
+    makeUserAdmin: async (groupId, targetUserId, token) => {
+        const response = await axios.post(`${api_url}/api/v1/community/groups/make-admin`, { groupId, targetUserId }, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data;
+    },
+
     getGroupPosts: async (groupId, token) => {
         const response = await axios.get(`${api_url}/api/v1/community/posts/group/${groupId}`, {
             headers: { Authorization: `Bearer ${token}` }

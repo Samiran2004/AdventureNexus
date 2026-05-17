@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth, useUser } from '@clerk/clerk-react';
+import { useAppContext } from '@/context/appContext';
 import { ArrowLeft, Users, Shield, Lock, Globe, Plus, MessageSquare, Heart, X, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,6 +28,8 @@ export const GroupPage = () => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [commentContent, setCommentContent] = useState('');
   const [replyingTo, setReplyingTo] = useState(null);
+  const [newMemberUsername, setNewMemberUsername] = useState('');
+  const [isAddingMember, setIsAddingMember] = useState(false);
 
   // Composer Form for posting inside this group
   const [composerData, setComposerData] = useState({
@@ -37,8 +40,18 @@ export const GroupPage = () => {
     images: ''
   });
 
-  const isUserMember = group?.members?.some(m => m === user?.id || m._id === user?.id);
-  const isUserAdmin = group?.admins?.some(a => a === user?.id || a._id === user?.id) || group?.createdBy?._id === user?.id;
+  const { userData } = useAppContext();
+  const mongoUserId = userData?.userData?._id || userData?._id;
+
+  const isUserMember = group?.members?.some(m => {
+    const mId = typeof m === 'object' ? m?._id : m;
+    return mId === mongoUserId;
+  });
+
+  const isUserAdmin = group?.admins?.some(a => {
+    const aId = typeof a === 'object' ? a?._id : a;
+    return aId === mongoUserId;
+  }) || (typeof group?.createdBy === 'object' ? group?.createdBy?._id : group?.createdBy) === mongoUserId;
 
   const fetchGroupDetails = async () => {
     try {
@@ -108,6 +121,44 @@ export const GroupPage = () => {
       }
     } catch (error) {
       toast.error("Failed to update membership");
+    }
+  };
+
+  const handleAddMember = async (e) => {
+    e.preventDefault();
+    if (!newMemberUsername.trim()) return toast.error("Please enter a username");
+    try {
+      setIsAddingMember(true);
+      const token = await getToken();
+      const res = await communityService.addMemberToGroup(groupId, newMemberUsername.trim(), token);
+      if (res.success) {
+        toast.success(res.message || "Member added successfully!");
+        setNewMemberUsername('');
+        fetchGroupDetails(); // Refresh members list
+      } else {
+        toast.error(res.message || "Failed to add member");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "Failed to add member");
+    } finally {
+      setIsAddingMember(false);
+    }
+  };
+
+  const handlePromoteToAdmin = async (targetUserId) => {
+    try {
+      const token = await getToken();
+      const res = await communityService.makeUserAdmin(groupId, targetUserId, token);
+      if (res.success) {
+        toast.success("Successfully promoted member to admin!");
+        fetchGroupDetails(); // Refresh members/admins list
+      } else {
+        toast.error(res.message || "Failed to promote member");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "Failed to promote member");
     }
   };
 
@@ -301,19 +352,30 @@ export const GroupPage = () => {
                   </div>
                 </div>
 
-                <div className="shrink-0 flex items-center gap-4">
-                  <Button 
-                    onClick={handleJoinLeave}
-                    disabled={!user}
-                    variant={isUserMember ? 'outline' : 'default'}
-                    className={`h-12 px-8 rounded-2xl font-black uppercase tracking-widest text-xs transition-all duration-300 w-full md:w-auto ${
-                      isUserMember 
-                        ? 'border-white/10 hover:border-pink-500/50 hover:text-pink-500' 
-                        : 'bg-primary hover:bg-primary/80 text-white'
-                    }`}
-                  >
-                    {isUserMember ? 'Leave Group' : 'Join Group'}
-                  </Button>
+                <div className="shrink-0 flex flex-col items-end gap-2 w-full md:w-auto">
+                  {((group.privacy === 'PRIVATE' || group.isPrivate) && !isUserMember) ? (
+                    <Button 
+                      disabled
+                      className="h-12 px-8 rounded-2xl font-black uppercase tracking-widest text-xs bg-white/5 border border-white/10 text-muted-foreground cursor-not-allowed w-full md:w-auto flex items-center gap-2"
+                    >
+                      <Lock size={14} /> Private Group
+                    </Button>
+                  ) : (
+                    <Button 
+                      onClick={handleJoinLeave}
+                      disabled={!user || isUserMember}
+                      className={`h-12 px-8 rounded-2xl font-black uppercase tracking-widest text-xs transition-all duration-300 w-full md:w-auto ${
+                        isUserMember 
+                          ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 cursor-not-allowed opacity-80' 
+                          : 'bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:scale-[1.02] border-0'
+                      }`}
+                    >
+                      {isUserMember ? 'Joined' : 'Join Group'}
+                    </Button>
+                  )}
+                  {((group.privacy === 'PRIVATE' || group.isPrivate) && !isUserMember) && (
+                    <span className="text-[10px] text-muted-foreground uppercase font-black tracking-wider">Admins must add you to join</span>
+                  )}
                 </div>
               </div>
             </div>
@@ -341,12 +403,88 @@ export const GroupPage = () => {
                     </div>
                   </div>
 
-                  <div>
+                   <div>
                     <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-2">About Group</h3>
                     <p className="text-xs text-muted-foreground font-medium leading-relaxed">
                       Welcome to {group.name}! Participate in local meetups, discuss itineraries, share premium travel deals, or post solo traveling checklists with group members.
                     </p>
                   </div>
+
+                  {/* Admin Member Management Panel */}
+                  {isUserAdmin && (
+                    <div className="pt-4 border-t border-white/5 space-y-4">
+                      <div>
+                        <h3 className="text-xs font-black uppercase tracking-widest text-primary mb-3 flex items-center gap-1.5">
+                          <Plus size={14} /> Add Group Member
+                        </h3>
+                        <form onSubmit={handleAddMember} className="flex gap-2">
+                          <Input 
+                            type="text" 
+                            placeholder="Enter username..." 
+                            value={newMemberUsername}
+                            onChange={(e) => setNewMemberUsername(e.target.value)}
+                            className="h-10 rounded-xl bg-white/5 border-white/10 text-xs focus-visible:ring-primary text-foreground"
+                          />
+                          <Button 
+                            type="submit" 
+                            disabled={isAddingMember}
+                            className="h-10 px-4 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white text-xs font-bold shrink-0 border-0"
+                          >
+                            Add
+                          </Button>
+                        </form>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Members List Panel */}
+                  {isUserMember && (
+                    <div className="pt-4 border-t border-white/5 space-y-4">
+                      <div>
+                        <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-1.5">
+                          <Users size={14} /> Group Members
+                        </h3>
+                        <div className="space-y-3 max-h-[200px] overflow-y-auto pr-1">
+                          {(group.members || []).map((member, index) => {
+                            const isMemberAdmin = group.admins?.some(a => {
+                              const aId = typeof a === 'object' ? a?._id : a;
+                              const mId = typeof member === 'object' ? member?._id : member;
+                              return aId === mId;
+                            }) || (typeof group.createdBy === 'object' ? group.createdBy?._id : group.createdBy) === (typeof member === 'object' ? member?._id : member);
+
+                            const memberName = typeof member === 'object' ? member?.username : 'Group Member';
+                            const memberPic = typeof member === 'object' ? member?.profilepicture : 'https://via.placeholder.com/150';
+                            const memberId = typeof member === 'object' ? member?._id : member;
+
+                            return (
+                              <div key={index} className="flex items-center justify-between gap-2 p-1.5 rounded-lg hover:bg-white/[0.02]">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <div className="w-7 h-7 rounded-full overflow-hidden border border-white/10 shrink-0">
+                                    <img src={memberPic || 'https://via.placeholder.com/150'} alt="Member" className="w-full h-full object-cover" />
+                                  </div>
+                                  <div className="text-xs font-bold truncate">{memberName}</div>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  {isMemberAdmin ? (
+                                    <span className="text-[8px] bg-primary/10 text-primary border border-primary/20 px-1.5 py-0.5 rounded font-black uppercase tracking-widest flex items-center gap-0.5"><Shield size={8} /> Admin</span>
+                                  ) : (
+                                    isUserAdmin && (
+                                      <button 
+                                        onClick={() => handlePromoteToAdmin(memberId)}
+                                        className="text-[8px] bg-pink-500/10 hover:bg-pink-500 text-pink-400 hover:text-white border border-pink-500/20 px-1.5 py-0.5 rounded font-black uppercase tracking-widest transition-all"
+                                      >
+                                        Make Admin
+                                      </button>
+                                    )
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
