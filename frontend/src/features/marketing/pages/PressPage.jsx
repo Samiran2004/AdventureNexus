@@ -213,7 +213,7 @@ const PressPage = () => {
              </CardHeader>
              <CardContent className="space-y-3">
                 <Input placeholder="Enter your email" className="bg-background" />
-                <Button className="w-full bg-secondary hover:bg-secondary/90 text-white">Subscribe to News</Button>
+                <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-md hover:scale-105 transition-all duration-300">Subscribe to News</Button>
              </CardContent>
           </Card>
         </div>

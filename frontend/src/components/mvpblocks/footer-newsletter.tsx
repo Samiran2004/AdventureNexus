@@ -27,7 +27,6 @@ const footerColumns = [
     links: [
       { name: 'About Us', href: '/about' },
       { name: 'How It Works', href: '/works' },
-      { name: 'Careers', href: '/careers' },
       { name: 'Press & Media', href: '/press' },
       { name: 'Partners', href: '/partners' },
     ],
@@ -37,7 +36,6 @@ const footerColumns = [
     links: [
       { name: 'Help Center', href: '/help' },
       { name: 'Contact Us', href: '/contact' },
-      { name: 'Travel Insurance', href: '/insurance' },
       { name: 'Safety Guidelines', href: '/safety' },
       { name: 'Community', href: '/community' },
     ],
