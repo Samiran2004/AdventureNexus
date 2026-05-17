@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
+import mongoose from 'mongoose';
 import CommunityPost from '../../../shared/database/models/communityPostModel';
 import User from '../../../shared/database/models/userModel';
 import logger from '../../../shared/utils/logger';
@@ -10,10 +11,24 @@ import logger from '../../../shared/utils/logger';
  */
 export const getPosts = async (req: Request, res: Response) => {
     try {
-        const { category, search, clerkUserId } = req.query;
+        const { category, search, clerkUserId, groupId, communityId } = { ...req.query, ...req.params } as any;
         let query: any = {};
 
         if (category) query.category = category;
+        
+        if (groupId) {
+            if (groupId === 'all_groups') {
+                query.groupId = { $exists: true, $ne: null };
+            } else if (groupId === 'none') {
+                query.groupId = { $exists: false };
+            } else {
+                query.groupId = new mongoose.Types.ObjectId(groupId);
+            }
+        }
+        
+        if (communityId) {
+            query.communityId = new mongoose.Types.ObjectId(communityId);
+        }
 
         if (search) {
             query.$or = [

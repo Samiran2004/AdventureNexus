@@ -12,9 +12,9 @@ const getAuthHeaders = () => {
 };
 
 export const communityService = {
-    getPosts: async (category = '', search = '', clerkUserId = '') => {
+    getPosts: async (category = '', search = '', clerkUserId = '', groupId = '', communityId = '') => {
         const response = await axios.get(`${api_url}/api/v1/community/posts`, {
-            params: { category, search, clerkUserId }
+            params: { category, search, clerkUserId, groupId, communityId }
         });
         return response.data;
     },
@@ -201,6 +201,39 @@ export const communityService = {
         const response = await axios.post(`${api_url}/api/v1/community/groups/join/${groupId}`, {}, {
             headers: { Authorization: `Bearer ${token}` }
         });
+        return response.data;
+    },
+
+    leaveGroup: async (groupId, token) => {
+        const response = await axios.post(`${api_url}/api/v1/community/groups/leave/${groupId}`, {}, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data;
+    },
+
+    getGroups: async (token) => {
+        const response = await axios.get(`${api_url}/api/v1/community/groups`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data;
+    },
+
+    getGroupById: async (groupId, token) => {
+        const response = await axios.get(`${api_url}/api/v1/community/groups/${groupId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data;
+    },
+
+    getGroupPosts: async (groupId, token) => {
+        const response = await axios.get(`${api_url}/api/v1/community/posts/group/${groupId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data;
+    },
+
+    getCommunityPosts: async (communityId) => {
+        const response = await axios.get(`${api_url}/api/v1/community/posts/community/${communityId}`);
         return response.data;
     }
 };

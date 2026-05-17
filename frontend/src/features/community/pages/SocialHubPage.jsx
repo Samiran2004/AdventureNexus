@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@clerk/clerk-react';
-import { Compass, Users, Map, Globe, Search, Bell, Sparkles, X, Heart, MessageSquare } from 'lucide-react';
+import { Compass, Users, Map, Globe, Search, Bell, Sparkles, X, Heart, MessageSquare, Lock, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { communityService } from '@/services/communityService';
@@ -13,6 +14,7 @@ import { CommentTree } from '../components/CommentTree';
 
 export const SocialHubPage = () => {
   const { user, getToken } = useAuth();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('global'); // global, communities, groups
   
   const [communities, setCommunities] = useState([]);
@@ -30,6 +32,16 @@ export const SocialHubPage = () => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [commentContent, setCommentContent] = useState('');
   const [replyingTo, setReplyingTo] = useState(null);
+
+  // Community Feed Filters & Group Creation Modals
+  const [selectedCommunity, setSelectedCommunity] = useState(null);
+  const [isCreateGroupOpen, setIsCreateGroupOpen] = useState(false);
+  const [groupComposer, setGroupComposer] = useState({
+    name: '',
+    description: '',
+    coverImage: '',
+    privacy: 'PUBLIC'
+  });
 
   // Composer Form
   const [composerData, setComposerData] = useState({
@@ -64,11 +76,12 @@ export const SocialHubPage = () => {
 
       const clerkUserId = user?.id || '';
       
-      // Request activeTab category filter
       const categoryFilter = activeTab === 'global' ? '' : (activeTab === 'communities' ? 'General' : activeTab);
+      const groupFilter = activeTab === 'groups' ? 'all_groups' : 'none';
+      const communityFilter = selectedCommunity?._id || '';
 
       const [postRes, storyRes] = await Promise.all([
-        communityService.getPosts(categoryFilter, '', clerkUserId),
+        communityService.getPosts(categoryFilter, '', clerkUserId, groupFilter, communityFilter),
         communityService.getStories()
       ]);
 
@@ -93,20 +106,27 @@ export const SocialHubPage = () => {
 
   useEffect(() => {
     fetchFeedData();
-  }, [activeTab, user]);
+  }, [activeTab, selectedCommunity, user]);
 
   // --- ACTION HANDLERS ---
-  const handleCreateGroup = async () => {
+  const handleCreateGroup = () => {
     if (!user) return toast.error("Please login to create a group");
-    const name = window.prompt("Enter new group name:");
-    if (!name) return;
-    
+    setIsCreateGroupOpen(true);
+  };
+
+  const handleCreateGroupSubmit = async (e) => {
+    e.preventDefault();
+    if (!user) return toast.error("Please login to create a group");
+    if (!groupComposer.name.trim()) return toast.error("Group name is required");
+
     try {
       const token = await getToken();
-      const res = await communityService.createGroup({ name, privacy: 'PUBLIC' }, token);
+      const res = await communityService.createGroup(groupComposer, token);
       if (res.success) {
-        toast.success(`Group "${name}" created successfully!`);
-        setGroups(prev => [...prev, res.group]); // Optimistic UI
+        toast.success(`Group "${groupComposer.name}" created successfully!`);
+        setGroups(prev => [...prev, res.group]);
+        setIsCreateGroupOpen(false);
+        setGroupComposer({ name: '', description: '', coverImage: '', privacy: 'PUBLIC' });
       }
     } catch (error) {
       toast.error("Failed to create group");
@@ -312,28 +332,56 @@ export const SocialHubPage = () => {
           <div className="hidden lg:block lg:col-span-3 space-y-8">
             
             {/* Communities Section */}
-            <div className="bg-card/40 backdrop-blur-xl rounded-[2rem] p-6 border border-white/5 shadow-xl">
-              <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-6 flex items-center gap-2">
+            <div className="bg-card/40 backdrop-blur-xl rounded-[2rem] p-6 border border-white/5 shadow-xl space-y-6">
+              <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                 <Compass size={14} /> Discover Communities
               </h3>
-              <div className="space-y-4">
-                {communities.map(community => (
-                  <div key={community._id} onClick={() => handleJoinCommunity(community._id)} className="flex items-center justify-between group cursor-pointer p-2 rounded-xl hover:bg-primary/10 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center text-lg shadow-inner group-hover:bg-primary/20 transition-colors">
-                        {community.icon || '🌍'}
+              <div className="space-y-3">
+                {communities.map(community => {
+                  const isSelected = selectedCommunity?._id === community._id;
+                  return (
+                    <div 
+                      key={community._id} 
+                      className={`flex items-center justify-between group p-2 rounded-xl transition-all duration-300 ${
+                        isSelected 
+                          ? 'bg-primary/20 border border-primary/20 shadow-md scale-[1.02]' 
+                          : 'hover:bg-primary/5 border border-transparent'
+                      }`}
+                    >
+                      <div 
+                        onClick={() => setSelectedCommunity(isSelected ? null : community)} 
+                        className="flex items-center gap-3 cursor-pointer flex-1 min-w-0"
+                      >
+                        <div className={`w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center text-lg shadow-inner transition-colors shrink-0 ${
+                          isSelected ? 'bg-primary/30 text-primary' : 'group-hover:bg-primary/25'
+                        }`}>
+                          {community.icon || '🌍'}
+                        </div>
+                        <div className="truncate">
+                          <div className={`font-bold text-sm truncate transition-colors ${
+                            isSelected ? 'text-primary' : 'group-hover:text-primary'
+                          }`}>{community.name}</div>
+                          <div className="text-[10px] text-muted-foreground">{community.followersCount} followers</div>
+                        </div>
                       </div>
-                      <div>
-                        <div className="font-bold text-sm group-hover:text-primary transition-colors">{community.name}</div>
-                        <div className="text-[10px] text-muted-foreground">{community.followersCount} followers</div>
-                      </div>
+                      <button 
+                        disabled={!user}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleJoinCommunity(community._id);
+                        }}
+                        className={`text-[9px] font-black uppercase tracking-wider px-2.5 py-1.5 rounded-lg border transition-all ${
+                          isSelected 
+                            ? 'bg-primary border-primary text-white hover:bg-primary/80' 
+                            : 'border-white/10 hover:border-primary/50 text-muted-foreground hover:text-foreground'
+                        }`}
+                      >
+                        {isSelected ? 'Joined' : 'Join'}
+                      </button>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
-              <Button variant="outline" className="w-full mt-6 rounded-xl border-dashed border-white/10 hover:border-primary/50 text-xs font-bold">
-                View All Communities
-              </Button>
             </div>
 
             {/* My Groups Section */}
@@ -344,8 +392,12 @@ export const SocialHubPage = () => {
               <div className="space-y-4">
                 {groups.length === 0 && <div className="text-xs text-muted-foreground italic">You haven't joined any groups yet.</div>}
                 {groups.map(group => (
-                  <div key={group._id} className="flex flex-col gap-1 cursor-pointer p-3 rounded-xl hover:bg-muted/50 transition-colors border border-transparent hover:border-white/5">
-                    <div className="font-bold text-sm truncate">{group.name}</div>
+                  <div 
+                    key={group._id} 
+                    onClick={() => navigate(`/community/group/${group._id}`)}
+                    className="flex flex-col gap-1 cursor-pointer p-3 rounded-xl hover:bg-muted/50 transition-all border border-transparent hover:border-white/5 hover:border-primary/20 group"
+                  >
+                    <div className="font-bold text-sm truncate group-hover:text-primary transition-colors">{group.name}</div>
                     <div className="text-[10px] text-muted-foreground uppercase tracking-widest">{group.privacy} Group</div>
                   </div>
                 ))}
@@ -378,6 +430,27 @@ export const SocialHubPage = () => {
 
             {/* Story Bar */}
             <StoryBar stories={stories} isStoriesLoading={isStoriesLoading} />
+
+            {/* Selected Community Filter Header */}
+            {selectedCommunity && (
+              <div className="bg-primary/10 border border-primary/20 p-5 rounded-[2rem] flex items-center justify-between shadow-inner">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-xl shadow-inner">
+                    {selectedCommunity.icon || '🌍'}
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-black">Filtered by {selectedCommunity.name}</h4>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-black">Showing discussions in this community</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setSelectedCommunity(null)}
+                  className="text-muted-foreground hover:text-foreground hover:bg-muted/50 p-2 rounded-full transition-colors"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            )}
 
             {/* Post Composer Input (Functional) */}
             {user && (
@@ -533,6 +606,79 @@ export const SocialHubPage = () => {
                 </div>
                 <Button type="submit" className="w-full h-12 rounded-2xl font-black uppercase tracking-widest text-xs mt-6">
                   Publish Adventure
+                </Button>
+              </form>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Create Group Modal */}
+        {isCreateGroupOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsCreateGroupOpen(false)}
+              className="absolute inset-0 bg-background/80 backdrop-blur-md"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-card border border-white/10 w-full max-w-lg rounded-[2.5rem] p-8 shadow-2xl relative z-10 max-h-[90vh] overflow-y-auto"
+            >
+              <button 
+                onClick={() => setIsCreateGroupOpen(false)}
+                className="absolute top-6 right-6 text-muted-foreground hover:text-foreground hover:bg-muted p-2 rounded-full transition-colors"
+              >
+                <X size={20} />
+              </button>
+              <h2 className="text-2xl font-black mb-6">Create Wanderlust Group</h2>
+              <form onSubmit={handleCreateGroupSubmit} className="space-y-4">
+                <div>
+                  <label className="text-xs uppercase tracking-widest font-black text-muted-foreground block mb-2">Group Name</label>
+                  <Input 
+                    required
+                    placeholder="e.g. Kyoto Solo Backpackers" 
+                    value={groupComposer.name}
+                    onChange={(e) => setGroupComposer(prev => ({ ...prev, name: e.target.value }))}
+                    className="bg-muted/50 border-white/5 rounded-2xl h-12 text-sm font-medium"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs uppercase tracking-widest font-black text-muted-foreground block mb-2">Description</label>
+                  <textarea 
+                    required
+                    rows={3}
+                    placeholder="What is this group about? Talk about travel preferences, tips, or guidelines..." 
+                    value={groupComposer.description}
+                    onChange={(e) => setGroupComposer(prev => ({ ...prev, description: e.target.value }))}
+                    className="w-full bg-muted/50 border border-white/5 rounded-2xl p-4 text-sm font-medium focus:outline-none focus:border-primary resize-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs uppercase tracking-widest font-black text-muted-foreground block mb-2">Cover Image URL</label>
+                  <Input 
+                    placeholder="https://images.unsplash.com/photo-..." 
+                    value={groupComposer.coverImage}
+                    onChange={(e) => setGroupComposer(prev => ({ ...prev, coverImage: e.target.value }))}
+                    className="bg-muted/50 border-white/5 rounded-2xl h-12 text-sm font-medium"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs uppercase tracking-widest font-black text-muted-foreground block mb-2">Privacy</label>
+                  <select 
+                    value={groupComposer.privacy}
+                    onChange={(e) => setGroupComposer(prev => ({ ...prev, privacy: e.target.value }))}
+                    className="w-full bg-muted/50 border border-white/5 rounded-2xl p-4 text-sm font-bold focus:outline-none focus:border-primary"
+                  >
+                    <option value="PUBLIC">Public (Anyone can browse and join)</option>
+                    <option value="PRIVATE">Private (Approval required, members-only posts)</option>
+                  </select>
+                </div>
+                <Button type="submit" className="w-full h-12 rounded-2xl font-black uppercase tracking-widest text-xs mt-6">
+                  Build Group
                 </Button>
               </form>
             </motion.div>

@@ -6,14 +6,21 @@ import mongoose from 'mongoose';
 
 export const createGroup = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { name, privacy } = req.body;
+        const { name, description, coverImage, privacy } = req.body;
         const userId = (req as any).user._id;
 
+        const isPrivate = privacy === 'PRIVATE';
+
         const newGroup = await Group.create({
-            creatorId: userId,
+            createdBy: userId,
             name,
+            description,
+            coverImage,
             privacy: privacy || 'PUBLIC',
-            memberCount: 1 // Creator is the first member
+            isPrivate,
+            memberCount: 1,
+            members: [userId],
+            admins: [userId]
         });
 
         await GroupMembership.create({
@@ -25,6 +32,31 @@ export const createGroup = async (req: Request, res: Response): Promise<void> =>
         res.status(201).json({ success: true, group: newGroup });
     } catch (error) {
         console.error('Error creating group:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+
+export const getGroups = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const groups = await Group.find().sort({ createdAt: -1 });
+        res.status(200).json({ success: true, groups });
+    } catch (error) {
+        console.error('Error fetching groups:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+
+export const getGroupById = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const group = await Group.findById(id).populate('createdBy', 'username profilepicture');
+        if (!group) {
+            res.status(404).json({ success: false, message: 'Group not found' });
+            return;
+        }
+        res.status(200).json({ success: true, group });
+    } catch (error) {
+        console.error('Error fetching group details:', error);
         res.status(500).json({ success: false, message: 'Server error' });
     }
 };
@@ -72,11 +104,43 @@ export const joinGroup = async (req: Request, res: Response): Promise<void> => {
             role: 'MEMBER'
         });
 
-        await Group.findByIdAndUpdate(groupId, { $inc: { memberCount: 1 } });
+        await Group.findByIdAndUpdate(groupId, { 
+            $inc: { memberCount: 1 },
+            $addToSet: { members: userId }
+        });
 
         res.status(200).json({ success: true, message: 'Successfully joined group' });
     } catch (error) {
         console.error('Error joining group:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+
+export const leaveGroup = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { groupId } = req.params;
+        const userId = (req as any).user._id;
+
+        const group = await Group.findById(groupId);
+        if (!group) {
+            res.status(404).json({ success: false, message: 'Group not found' });
+            return;
+        }
+
+        const deletedMembership = await GroupMembership.findOneAndDelete({ groupId, userId });
+        if (!deletedMembership) {
+            res.status(400).json({ success: false, message: 'Not a member of this group' });
+            return;
+        }
+
+        await Group.findByIdAndUpdate(groupId, {
+            $inc: { memberCount: -1 },
+            $pull: { members: userId, admins: userId }
+        });
+
+        res.status(200).json({ success: true, message: 'Successfully left group' });
+    } catch (error) {
+        console.error('Error leaving group:', error);
         res.status(500).json({ success: false, message: 'Server error' });
     }
 };

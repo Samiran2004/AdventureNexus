@@ -18,7 +18,7 @@ import { toggleFollow } from './controllers/followController';
 import { createStory, getAllStories, toggleLikeStory } from './controllers/storyController';
 import { getNotifications, markAsRead } from './controllers/notificationController';
 import { getMessageHistory, sendMessage } from './controllers/messageController';
-import { createGroup, getMyGroups, joinGroup } from './controllers/groupController';
+import { createGroup, getMyGroups, joinGroup, leaveGroup, getGroups, getGroupById } from './controllers/groupController';
 import { getCommunities, joinCommunity } from './controllers/communityController';
 
 const route: Router = express.Router();
@@ -154,7 +154,13 @@ route.post('/messages', protect, sendMessage);
 // V3 Architecture Routes
 route.post('/groups/create', protect, createGroup);
 route.get('/groups/my', protect, getMyGroups);
+route.get('/groups', protect, getGroups);
+route.get('/groups/:id', protect, getGroupById);
 route.post('/groups/join/:groupId', protect, joinGroup);
+route.post('/groups/leave/:groupId', protect, leaveGroup);
+
+route.get('/posts/group/:groupId', protect, getPosts);
+route.get('/posts/community/:communityId', getPosts);
 
 route.get('/communities', getCommunities);
 route.post('/communities/join/:communityId', protect, joinCommunity);

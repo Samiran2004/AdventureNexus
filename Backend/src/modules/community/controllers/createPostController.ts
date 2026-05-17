@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import CommunityPost from '../../../shared/database/models/communityPostModel';
+import Group from '../../../shared/database/models/groupModel';
 import logger from '../../../shared/utils/logger';
 import cloudinary from '../../../shared/services/cloudinaryService';
 import fs from 'fs';
@@ -10,7 +11,7 @@ import fs from 'fs';
  */
 export const createPost = async (req: Request, res: Response) => {
     try {
-        const { title, content, category, tags, destinationTags, tripId } = req.body;
+        const { title, content, category, tags, destinationTags, tripId, groupId, communityId, images } = req.body;
         const userId = req.user?._id;
         const clerkUserId = req.user?.clerkUserId;
 
@@ -21,8 +22,26 @@ export const createPost = async (req: Request, res: Response) => {
             });
         }
 
+        // Only members can post in private groups
+        if (groupId && userId) {
+            const group = await Group.findById(groupId);
+            if (group && (group.privacy === 'PRIVATE' || group.isPrivate)) {
+                const isMember = group.members.some(m => m.toString() === userId.toString());
+                if (!isMember) {
+                    return res.status(StatusCodes.FORBIDDEN).json({
+                        success: false,
+                        message: 'Only members can post in private groups'
+                    });
+                }
+            }
+        }
+
         // Upload images if any
         const imageUrls: string[] = [];
+        if (images && Array.isArray(images)) {
+            imageUrls.push(...images);
+        }
+
         if (req.files && Array.isArray(req.files)) {
             for (const file of req.files) {
                 try {
@@ -46,9 +65,11 @@ export const createPost = async (req: Request, res: Response) => {
             title,
             content,
             category,
-            tags: tags ? JSON.parse(tags) : [],
-            destinationTags: destinationTags ? JSON.parse(destinationTags) : [],
+            tags: tags ? (typeof tags === 'string' ? JSON.parse(tags) : tags) : [],
+            destinationTags: destinationTags ? (typeof destinationTags === 'string' ? JSON.parse(destinationTags) : destinationTags) : [],
             tripId: tripId || undefined,
+            groupId: groupId || undefined,
+            communityId: communityId || undefined,
             images: imageUrls
         });
 

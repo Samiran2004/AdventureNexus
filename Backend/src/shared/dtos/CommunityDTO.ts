@@ -45,10 +45,15 @@ export interface ICommunity extends Document {
 }
 
 export interface IGroup extends Document {
-    creatorId: Schema.Types.ObjectId;
+    createdBy: Schema.Types.ObjectId;
     name: string;
+    description?: string;
+    coverImage?: string;
+    isPrivate: boolean;
     privacy: 'PUBLIC' | 'PRIVATE' | 'HIDDEN';
     memberCount: number;
+    members: Schema.Types.ObjectId[];
+    admins: Schema.Types.ObjectId[];
     pendingRequests: Schema.Types.ObjectId[];
     createdAt: Date;
     updatedAt: Date;
