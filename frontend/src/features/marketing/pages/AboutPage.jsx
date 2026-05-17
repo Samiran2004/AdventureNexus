@@ -112,8 +112,8 @@ const AboutPage = () => {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
                         {[
                             { label: "Countries", value: 195, icon: Globe },
-                            { label: "Travelers", value: 50, suffix: "k+", icon: Users },
-                            { label: "Planned Trips", value: 120, suffix: "k+", icon: MapPin },
+                            { label: "Travelers", value: 50, suffix: "", icon: Users },
+                            { label: "Planned Trips", value: 120, suffix: "", icon: MapPin },
                             { label: "Satisfaction", value: 99, suffix: "%", icon: Heart },
                         ].map((stat, idx) => (
                             <motion.div
@@ -126,7 +126,7 @@ const AboutPage = () => {
                             >
                                 <stat.icon className="text-primary/60 w-6 h-6 mb-2" />
                                 <div className="text-4xl font-bold tracking-tight">
-                                    <NumberCounter targetNumber={stat.value} duration={2} />{stat.suffix || "+"}
+                                    <NumberCounter targetNumber={stat.value} duration={2} />{stat.suffix !== undefined ? stat.suffix : "+"}
                                 </div>
                                 <div className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{stat.label}</div>
                             </motion.div>

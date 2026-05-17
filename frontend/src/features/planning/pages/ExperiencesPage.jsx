@@ -27,7 +27,7 @@ const ExperiencesPage = () => {
       id: 1,
       title: "Hot Air Balloon Over Cappadocia",
       location: "Cappadocia, Turkey",
-      image: "https://images.unsplash.com/photo-1540304383669-7be2194d35d1?w=800&auto=format&fit=crop&q=60",
+      image: "https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?w=800&auto=format&fit=crop&q=60",
       price: 250,
       rating: 4.9,
       reviews: 128,
@@ -40,7 +40,7 @@ const ExperiencesPage = () => {
       id: 2,
       title: "Traditional Tea Ceremony",
       location: "Kyoto, Japan",
-      image: "https://images.unsplash.com/photo-1545620573-04b3941b3438?w=800&auto=format&fit=crop&q=60",
+      image: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=800&auto=format&fit=crop&q=60",
       price: 85,
       rating: 4.8,
       reviews: 95,
@@ -53,7 +53,7 @@ const ExperiencesPage = () => {
       id: 3,
       title: "Santorini Sunset Wine Tasting",
       location: "Santorini, Greece",
-      image: "https://images.unsplash.com/photo-1515967008889-be260b457c4f?w=800&auto=format&fit=crop&q=60",
+      image: "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=800&auto=format&fit=crop&q=60",
       price: 120,
       rating: 4.9,
       reviews: 210,
@@ -79,7 +79,7 @@ const ExperiencesPage = () => {
       id: 5,
       title: "Northern Lights Photography Tour",
       location: "Reykjavik, Iceland",
-      image: "https://images.unsplash.com/photo-1483347752404-8fe7960f26d1?w=800&auto=format&fit=crop&q=60",
+      image: "https://images.unsplash.com/photo-1482862549707-f63cb32c5fd9?w=800&auto=format&fit=crop&q=60",
       price: 180,
       rating: 4.8,
       reviews: 89,
@@ -92,7 +92,7 @@ const ExperiencesPage = () => {
       id: 6,
       title: "Tuscan Cooking Class",
       location: "Florence, Italy",
-      image: "https://images.unsplash.com/photo-1556910103-1c02745a30bf?w=800&auto=format&fit=crop&q=60",
+      image: "https://images.unsplash.com/photo-1595295333158-4742f28fbd85?w=800&auto=format&fit=crop&q=60",
       price: 110,
       rating: 5.0,
       reviews: 342,
@@ -199,7 +199,7 @@ const ExperiencesPage = () => {
                   </Button>
                   <Button
                     size="icon"
-                    className="rounded-full bg-white/90 hover:bg-white text-primary hover:text-primary/80 shadow-sm hover:shadow-md w-9 h-9 transition-colors"
+                    className="rounded-full bg-white/90 hover:bg-white text-slate-800 hover:text-indigo-600 shadow-sm hover:shadow-md w-9 h-9 transition-colors"
                   >
                     <Share size={18} />
                   </Button>
