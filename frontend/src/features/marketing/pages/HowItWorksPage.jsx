@@ -227,6 +227,15 @@ const HowItWorks = () => {
   const [showBackToTop, setShowBackToTop] = useState(false);
   const heroRef = useRef(null);
 
+  // Scroll to top immediately and on a tiny delay to handle animation height shifts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    const timer = setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
+
   // Back to Top Logic
   useEffect(() => {
     const handleScroll = () => {

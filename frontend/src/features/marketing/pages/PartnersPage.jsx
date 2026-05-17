@@ -73,7 +73,7 @@ const PartnersPage = () => {
             Join the world's fastest-growing AI travel platform. Connect with millions of travelers and take your business to new heights.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Button size="lg" className="bg-primary hover:bg-primary/90 text-white rounded-full px-8 text-lg h-14">
+            <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8 text-lg h-14 font-semibold">
               Become a Partner
             </Button>
             <Button size="lg" variant="outline" className="border-white text-white hover:bg-blue hover:!text-white rounded-full px-8 text-lg h-14 bg-blue/10 backdrop-blur-sm">
@@ -200,7 +200,7 @@ const PartnersPage = () => {
           <p className="text-xl text-muted-foreground">
             Join thousands of successful partners who are redefining travel with AdventureNexus.
           </p>
-          <Button size="lg" className="bg-primary hover:bg-primary/90 text-white rounded-full px-10 py-6 text-lg h-auto shadow-lg hover:shadow-primary/25 transition-all hover:scale-105">
+          <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-10 py-6 text-lg h-auto shadow-lg hover:shadow-primary/25 transition-all hover:scale-105 font-bold">
             Join Partner Network <ArrowRight className="ml-2" />
           </Button>
           <p className="text-sm text-muted-foreground">
