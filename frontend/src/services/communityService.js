@@ -118,6 +118,15 @@ export const communityService = {
         return response.data;
     },
 
+    updateProfile: async (updateData, token) => {
+        const response = await axios.patch(`${api_url}/api/v1/users/profile`, updateData, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    },
+
     toggleFollow: async (targetClerkUserId, token) => {
         const response = await axios.post(`${api_url}/api/v1/community/follow`, { targetClerkUserId }, {
             headers: {

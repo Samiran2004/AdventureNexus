@@ -92,6 +92,8 @@ export const getUserProfile = async (req: Request, res: Response) => {
                     coverImage: user.coverImage || '',
                     country: user.country || '',
                     phonenumber: user.phonenumber,
+                    gender: user.gender || '',
+                    preferences: user.preferences || [],
                     followersCount: user.followers?.length || 0,
                     followingCount: user.following?.length || 0,
                     isFollowing,
