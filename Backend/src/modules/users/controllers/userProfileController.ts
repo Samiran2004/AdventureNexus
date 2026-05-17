@@ -67,6 +67,7 @@ async function userProfile(
             return res.status(200).send({
                 status: 'Success',
                 userData: {
+                    _id: userData._id,
                     fullname: userData.fullname,
                     firstname: userData.firstName,
                     lastname: userData.lastName,

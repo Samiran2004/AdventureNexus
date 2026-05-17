@@ -44,14 +44,16 @@ export const GroupPage = () => {
   const mongoUserId = userData?.userData?._id || userData?._id;
 
   const isUserMember = group?.members?.some(m => {
-    const mId = typeof m === 'object' ? m?._id : m;
-    return mId === mongoUserId;
+    if (!m) return false;
+    const mId = typeof m === 'object' && m?._id ? m?._id.toString() : m.toString();
+    return mId === mongoUserId?.toString();
   });
 
   const isUserAdmin = group?.admins?.some(a => {
-    const aId = typeof a === 'object' ? a?._id : a;
-    return aId === mongoUserId;
-  }) || (typeof group?.createdBy === 'object' ? group?.createdBy?._id : group?.createdBy) === mongoUserId;
+    if (!a) return false;
+    const aId = typeof a === 'object' && a?._id ? a?._id.toString() : a.toString();
+    return aId === mongoUserId?.toString();
+  }) || (group?.createdBy && (typeof group.createdBy === 'object' ? group.createdBy?._id : group.createdBy)?.toString() === mongoUserId?.toString());
 
   const fetchGroupDetails = async () => {
     try {
@@ -104,7 +106,10 @@ export const GroupPage = () => {
           setGroup(prev => ({
             ...prev,
             memberCount: prev.memberCount - 1,
-            members: prev.members.filter(m => m !== user.id && m._id !== user.id)
+            members: prev.members.filter(m => {
+              const mId = typeof m === 'object' ? m?._id : m;
+              return mId?.toString() !== mongoUserId?.toString();
+            })
           }));
         }
       } else {
@@ -112,11 +117,7 @@ export const GroupPage = () => {
         const res = await communityService.joinGroup(groupId, token);
         if (res.success) {
           toast.success(res.message || "Joined group!");
-          setGroup(prev => ({
-            ...prev,
-            memberCount: prev.memberCount + 1,
-            members: [...prev.members, user.id]
-          }));
+          fetchGroupDetails();
         }
       }
     } catch (error) {
