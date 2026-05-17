@@ -44,6 +44,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/mvpblocks/footer-newsletter';
 import toast from 'react-hot-toast';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 // Register GSAP Plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -71,8 +72,66 @@ const AdventureNexusReviews = () => {
         rating: 0,
         comment: '',
         tripType: 'solo',
-        travelers: 'Solo'
+        travelers: 'Solo',
+        tripId: '',
+        ratingsBreakdown: {
+            adventure: 5,
+            culinary: 5,
+            value: 5,
+            transit: 5
+        }
     });
+
+    const [userPlans, setUserPlans] = useState([]);
+    const [isLoadingPlans, setIsLoadingPlans] = useState(false);
+
+    const fetchUserPlans = async () => {
+        if (!user) return;
+        setIsLoadingPlans(true);
+        try {
+            const token = await getToken();
+            const headers = {
+                'Content-Type': 'application/json',
+                ...(token ? { Authorization: `Bearer ${token}` } : {})
+            };
+            const backendUrl = import.meta.env.VITE_BACKEND_URL || 'https://adventure-nexus-backend.onrender.com';
+            const res = await fetch(`${backendUrl}/api/v1/plans/my-plans`, { headers });
+            if (res.ok) {
+                const data = await res.json();
+                if (data.status === 'Success') {
+                    setUserPlans(data.data || []);
+                }
+            }
+        } catch (error) {
+            console.error('Failed to fetch user plans:', error);
+        } finally {
+            setIsLoadingPlans(false);
+        }
+    };
+
+    const handleTripSelect = (planId) => {
+        if (!planId) {
+            setNewReview(prev => ({ ...prev, tripId: '', location: '', tripDuration: '', travelers: 'Solo' }));
+            return;
+        }
+        const selected = userPlans.find(p => p._id === planId);
+        if (selected) {
+            setNewReview(prev => ({
+                ...prev,
+                tripId: planId,
+                location: selected.to || '',
+                tripDuration: selected.days ? `${selected.days} days` : '',
+                travelers: selected.travelers === 1 ? 'Solo' : selected.travelers === 2 ? 'Couple' : 'Group',
+                tripType: selected.travel_style ? selected.travel_style.toLowerCase() : prev.tripType
+            }));
+        }
+    };
+
+    useEffect(() => {
+        if (showWriteReview && user) {
+            fetchUserPlans();
+        }
+    }, [showWriteReview, user]);
 
     // Refs for GSAP animations
     const headerRef = useRef(null);
@@ -181,7 +240,14 @@ const AdventureNexusReviews = () => {
                 rating: 0,
                 comment: '',
                 tripType: 'solo',
-                travelers: 'Solo'
+                travelers: 'Solo',
+                tripId: '',
+                ratingsBreakdown: {
+                    adventure: 5,
+                    culinary: 5,
+                    value: 5,
+                    transit: 5
+                }
             });
             fetchReviews();
         } catch (error) {
@@ -376,6 +442,30 @@ const AdventureNexusReviews = () => {
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="flex flex-col gap-1.5 md:col-span-2">
+                                        <label className="text-zinc-300 text-sm font-medium">Link to One of Your AI Trips (Optional)</label>
+                                        {isLoadingPlans ? (
+                                            <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
+                                                <Loader2 className="animate-spin text-primary" size={14} /> Loading plans...
+                                            </div>
+                                        ) : userPlans.length === 0 ? (
+                                            <p className="text-xs text-zinc-500 font-mono italic">No plans generated yet. Create a trip to link it!</p>
+                                        ) : (
+                                            <Select value={newReview.tripId || 'none'} onValueChange={(val) => handleTripSelect(val === 'none' ? '' : val)}>
+                                                <SelectTrigger className="h-10 bg-white/10 border-white/10 text-white rounded-xl hover:bg-white/15 transition-colors">
+                                                    <SelectValue placeholder="Select a trip to link & auto-fill details" />
+                                                </SelectTrigger>
+                                                <SelectContent className="bg-popover border-border text-foreground">
+                                                    <SelectItem value="none">Don't link any trip</SelectItem>
+                                                    {userPlans.map(plan => (
+                                                        <SelectItem key={plan._id} value={plan._id}>
+                                                            {plan.name || plan.to || 'Untitled Trip'} ({plan.days || 1} days to {plan.to})
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        )}
+                                    </div>
                                     <Input
                                         placeholder="Trip destination (e.g. Tokyo, Japan)"
                                         value={newReview.location}
@@ -422,7 +512,7 @@ const AdventureNexusReviews = () => {
                                 </div>
 
                                 <div>
-                                    <label className="text-slate-300 mb-2 block text-sm font-medium">Your Rating</label>
+                                    <label className="text-slate-300 mb-2 block text-sm font-medium">Your Overall Rating</label>
                                     <div className="flex space-x-1">
                                         {[1, 2, 3, 4, 5].map((star) => (
                                             <Star
@@ -431,6 +521,49 @@ const AdventureNexusReviews = () => {
                                                 onClick={() => setNewReview({ ...newReview, rating: star })}
                                                 className={`cursor-pointer transition-transform hover:scale-110 ${star <= newReview.rating ? 'text-yellow-400 fill-current' : 'text-slate-700'}`}
                                             />
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4 border-t border-white/5 pt-4">
+                                    <h4 className="text-white text-base font-bold flex items-center gap-2">
+                                        <Compass className="text-primary animate-pulse" size={18} />
+                                        Detail Aspect Ratings
+                                    </h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {[
+                                            { key: 'adventure', label: '🗺️ Adventure & Sights', desc: 'Quality of spots and activities' },
+                                            { key: 'culinary', label: '🍜 Culinary & Food', desc: 'Local delicacies and dining choices' },
+                                            { key: 'value', label: '💸 Value for Money', desc: 'Is the destination budget-friendly?' },
+                                            { key: 'transit', label: '🚇 Ease of Transit', desc: 'Local commuting and directions ease' }
+                                        ].map(aspect => (
+                                            <div key={aspect.key} className="space-y-2 bg-white/5 p-4 rounded-2xl border border-white/5">
+                                                <div className="flex justify-between items-center">
+                                                    <div>
+                                                        <label className="text-white text-sm font-semibold">{aspect.label}</label>
+                                                        <p className="text-[10px] text-zinc-400 font-medium">{aspect.desc}</p>
+                                                    </div>
+                                                    <Badge variant="secondary" className="bg-primary/20 text-primary border-none shadow-none text-xs font-black px-2 py-0.5 rounded-full">
+                                                        {newReview.ratingsBreakdown[aspect.key]}.0
+                                                    </Badge>
+                                                </div>
+                                                <div className="flex space-x-1">
+                                                    {[1, 2, 3, 4, 5].map((star) => (
+                                                        <Star
+                                                            key={star}
+                                                            size={20}
+                                                            onClick={() => setNewReview(prev => ({
+                                                                ...prev,
+                                                                ratingsBreakdown: {
+                                                                    ...prev.ratingsBreakdown,
+                                                                    [aspect.key]: star
+                                                                }
+                                                            }))}
+                                                            className={`cursor-pointer transition-transform hover:scale-110 ${star <= newReview.ratingsBreakdown[aspect.key] ? 'text-yellow-400 fill-current' : 'text-slate-700'}`}
+                                                        />
+                                                    ))}
+                                                </div>
+                                            </div>
                                         ))}
                                     </div>
                                 </div>
@@ -532,7 +665,7 @@ const AdventureNexusReviews = () => {
                                                     </div>
                                                 </div>
 
-                                                <div className="flex flex-wrap gap-2">
+                                                <div className="flex flex-wrap gap-2 items-center">
                                                     <Badge variant="secondary" className="bg-indigo-500/10 text-indigo-300 border-indigo-500/20 hover:bg-indigo-500/20 transition-colors px-3 py-1">
                                                         <Compass size={12} className="mr-1.5" />
                                                         {review.tripType}
@@ -545,11 +678,89 @@ const AdventureNexusReviews = () => {
                                                         <Users size={12} className="mr-1.5" />
                                                         {review.travelers}
                                                     </Badge>
+                                                    {review.tripId && (
+                                                        <Dialog>
+                                                            <DialogTrigger asChild>
+                                                                <Badge className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30 transition-colors px-3 py-1 cursor-pointer flex items-center gap-1.5 shadow-sm animate-pulse">
+                                                                    <CheckCircle size={12} className="text-emerald-400" />
+                                                                    Verified Itinerary
+                                                                </Badge>
+                                                            </DialogTrigger>
+                                                            <DialogContent className="max-w-2xl bg-zinc-950/95 backdrop-blur-2xl border border-white/10 text-white rounded-3xl overflow-y-auto max-h-[85vh] p-8">
+                                                                <DialogHeader>
+                                                                    <DialogTitle className="text-2xl font-black tracking-tighter flex items-center gap-3">
+                                                                        <Compass className="text-primary animate-pulse" size={24} />
+                                                                        {review.tripId.name || 'Verified Itinerary Plan'}
+                                                                    </DialogTitle>
+                                                                </DialogHeader>
+                                                                <div className="space-y-6 mt-4">
+                                                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-white/5 p-5 rounded-2xl border border-white/5">
+                                                                        <div>
+                                                                            <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">Destination</p>
+                                                                            <p className="text-sm font-black text-white">{review.tripId.to}</p>
+                                                                        </div>
+                                                                        <div>
+                                                                            <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">Budget</p>
+                                                                            <p className="text-sm font-black text-white">${review.tripId.budget?.toLocaleString()}</p>
+                                                                        </div>
+                                                                        <div>
+                                                                            <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">Duration</p>
+                                                                            <p className="text-sm font-black text-white">{review.tripId.days} Days</p>
+                                                                        </div>
+                                                                        <div>
+                                                                            <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">Style</p>
+                                                                            <p className="text-sm font-black text-white">{review.tripId.travel_style || 'Adventure'}</p>
+                                                                        </div>
+                                                                    </div>
+                                                                    
+                                                                    <div className="space-y-4">
+                                                                        <h4 className="text-lg font-bold tracking-tight text-white flex items-center gap-2">Itinerary Preview</h4>
+                                                                        <div className="space-y-4 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
+                                                                            {review.tripId.suggested_itinerary?.map((day, dIdx) => (
+                                                                                <div key={dIdx} className="bg-white/5 p-4 rounded-xl border border-white/5 space-y-2">
+                                                                                    <h5 className="font-black text-primary text-xs">Day {day.day}: {day.title || `Exploring ${review.tripId.to}`}</h5>
+                                                                                    <p className="text-[11px] text-zinc-300 leading-relaxed font-medium">{day.description || `${day.morning} - ${day.afternoon} - ${day.evening}`}</p>
+                                                                                </div>
+                                                                            ))}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </DialogContent>
+                                                        </Dialog>
+                                                    )}
                                                 </div>
 
                                                 <p className="text-zinc-300 leading-relaxed text-lg font-light italic border-l-2 border-primary/30 pl-4 py-1">
                                                     "{review.comment}"
                                                 </p>
+
+                                                {review.ratingsBreakdown && (
+                                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-4 border-t border-white/5 bg-white/5 p-4 rounded-2xl border border-white/5">
+                                                        {[
+                                                            { key: 'adventure', label: '🗺️ Adventure', color: 'from-blue-500 to-indigo-500' },
+                                                            { key: 'culinary', label: '🍜 Culinary', color: 'from-orange-500 to-red-500' },
+                                                            { key: 'value', label: '💸 Value', color: 'from-emerald-500 to-teal-500' },
+                                                            { key: 'transit', label: '🚇 Transit', color: 'from-purple-500 to-pink-500' }
+                                                        ].map(aspect => {
+                                                            const value = review.ratingsBreakdown[aspect.key] || 5;
+                                                            const percentage = (value / 5) * 100;
+                                                            return (
+                                                                <div key={aspect.key} className="space-y-1.5">
+                                                                    <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+                                                                        <span>{aspect.label}</span>
+                                                                        <span className="text-white">{value}.0/5</span>
+                                                                    </div>
+                                                                    <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden border border-white/5">
+                                                                        <div 
+                                                                            className={`h-full rounded-full bg-gradient-to-r ${aspect.color}`} 
+                                                                            style={{ width: `${percentage}%` }}
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                )}
 
                                                 <div className="flex items-center gap-6 pt-4 mt-2 border-t border-white/5">
                                                     <button

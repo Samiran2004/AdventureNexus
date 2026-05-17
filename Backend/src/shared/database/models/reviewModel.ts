@@ -48,6 +48,12 @@ const reviewSchema = new mongoose.Schema({
         max: 5,
         required: true
     },
+    ratingsBreakdown: {
+        adventure: { type: Number, default: 5 },
+        culinary: { type: Number, default: 5 },
+        value: { type: Number, default: 5 },
+        transit: { type: Number, default: 5 }
+    },
     comment: {
         type: String,
         required: true

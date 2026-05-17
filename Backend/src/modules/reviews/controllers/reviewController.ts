@@ -43,7 +43,11 @@ export const getAllReviews = async (req: Request, res: Response) => {
         const limit = Number(req.query.limit) || 6;
         const skip = (page - 1) * limit;
 
-        const reviews = await Review.find(query).sort(sortOption).skip(skip).limit(limit);
+        const reviews = await Review.find(query)
+            .populate('tripId')
+            .sort(sortOption)
+            .skip(skip)
+            .limit(limit);
         const total = await Review.countDocuments(query);
 
         res.status(StatusCodes.OK).json({
