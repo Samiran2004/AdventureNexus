@@ -13,8 +13,6 @@ import AboutPage from './features/marketing/pages/AboutPage';
 import SocialSearchPage from './features/social/pages/SocialSearchPage';
 import ProfilePage from './features/social/pages/ProfilePage';
 import ChatPage from './features/social/pages/ChatPage';
-import DestinationsPage from './features/planning/pages/DestinationPage';
-import IndividualDestinationPage from './features/planning/pages/IndividualDestinationPage';
 import TripInspirationPage from './features/planning/pages/TripInspirationPage';
 import SharedPlanPage from './features/planning/pages/SharedPlanPage';
 import AccommodationsPage from './features/planning/pages/HotelPage';
@@ -92,7 +90,6 @@ const AppContent = () => {
         <Route path='/works' element={<HowItWorks />} />
         <Route path='/about' element={<AboutPage />} />
         <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/destinations" element={<DestinationsPage />} />
         <Route path="/inspiration" element={<TripInspirationPage />} />
         <Route path='/hotels' element={<AccommodationsPage />} />
         <Route path='/flights' element={<FlightsPage />} />
@@ -126,9 +123,6 @@ const AppContent = () => {
             <MyBookingsPage />
           </ProtectedRoute>
         } />
-
-        {/* --- Dynamic Routes (Routes with parameters) --- */}
-        <Route path="/destination/:country/:city" element={<IndividualDestinationPage />} />
 
         {/* --- Protected Routes (Accessible only when logged in) --- */}
         <Route path='/search' element={

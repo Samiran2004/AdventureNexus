@@ -343,6 +343,89 @@ const SearchPage = () => {
     fetchRecommendations();
   }, [getToken, VITE_BACKEND_URL]);
 
+  // Parse query parameters on mount to auto-trigger generation
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const toParam = params.get("to");
+    const fromParam = params.get("from");
+    const travelersParam = params.get("travelers");
+    const budgetParam = params.get("budget");
+    const dateParam = params.get("date");
+    const durationParam = params.get("duration");
+
+    let hasParams = false;
+
+    if (toParam) {
+      setTo(toParam);
+      hasParams = true;
+    }
+    if (fromParam) {
+      setFrom(fromParam);
+      hasParams = true;
+    }
+    if (travelersParam) {
+      setTravelers(travelersParam);
+      hasParams = true;
+    }
+    if (budgetParam) {
+      setBudget(budgetParam);
+      hasParams = true;
+    }
+    if (dateParam) {
+      setFromDate(dateParam);
+      const days = durationParam ? parseInt(durationParam) : 7;
+      setToDate(format(addDays(new Date(dateParam), days), "yyyy-MM-dd"));
+      hasParams = true;
+    }
+
+    if (hasParams && toParam && fromParam) {
+      setTimeout(() => {
+        const triggerSearch = async () => {
+          setIsLoading(true);
+          try {
+            const token = await getToken();
+            const budgetMap = {
+              "budget": 25000,
+              "mid": 65000,
+              "luxury": 200000
+            };
+            const budgetLimit = budgetMap[budgetParam || "mid"] || 65000;
+            const start = new Date(dateParam || format(new Date(), "yyyy-MM-dd"));
+            const days = durationParam ? parseInt(durationParam) : 7;
+            const duration = days + 1;
+
+            const payload = {
+              to: toParam,
+              from: fromParam || "London, UK",
+              date: dateParam || format(new Date(), "yyyy-MM-dd"),
+              travelers: isNaN(parseInt(travelersParam || "2")) ? 2 : parseInt(travelersParam || "2"),
+              budget: budgetLimit,
+              budget_range: budgetParam || "mid",
+              duration: duration
+            };
+
+            const response = await axios.post(
+              `${VITE_BACKEND_URL}/api/v1/plans/search/destination`,
+              payload,
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
+
+            setSearchResults(response.data.data);
+            toast.success("AI plan generated from query!");
+          } catch (err) {
+            console.error("Query search failed:", err);
+            toast.error("Failed to generate plan from link");
+          } finally {
+            setIsLoading(false);
+          }
+        };
+        triggerSearch();
+      }, 500);
+    }
+  }, [getToken, VITE_BACKEND_URL]);
+
   // Fetch Liked Plans on Mount
   useEffect(() => {
     const fetchLikedPlans = async () => {

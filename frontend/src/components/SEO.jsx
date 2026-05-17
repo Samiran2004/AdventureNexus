@@ -52,15 +52,6 @@ const routeSeoConfig = [
     },
   },
   {
-    test: (pathname) => pathname.startsWith('/destination/'),
-    seo: {
-      title: `Destination Details - ${SITE_NAME}`,
-      description:
-        'Explore destination-specific highlights, activities, and planning insights for your next trip.',
-      keywords: 'destination details, travel highlights, city travel guide',
-    },
-  },
-  {
     test: (pathname) => pathname.startsWith('/shared-plan/'),
     seo: {
       title: `Shared Travel Plan - ${SITE_NAME}`,

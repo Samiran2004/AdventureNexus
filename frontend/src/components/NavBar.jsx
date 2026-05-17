@@ -41,13 +41,6 @@ function NavBar() {
             color: 'text-blue-500'
         },
         { 
-            name: 'Destinations', 
-            path: '/destinations', 
-            icon: MapPin, 
-            desc: 'Explore popular spots around the world.',
-            color: 'text-emerald-500'
-        },
-        { 
             name: 'Trip Planner', 
             path: '/search', 
             icon: Compass, 

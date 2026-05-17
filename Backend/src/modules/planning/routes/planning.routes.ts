@@ -2,6 +2,7 @@ import express from 'express';
 import searchNewDestination from '../../recommendations/controllers/searchNewDestination.controller';
 import getDestinationImages from '../../recommendations/controllers/getDestinationImages.controller';
 import getPersonalizedRecommendations from '../../recommendations/controllers/getPersonalizedRecommendations.controller';
+import matchmakerController from '../../recommendations/controllers/matchmaker.controller';
 import { getPlanById } from '../controllers/getPlanByIdController';
 import { deletePlanById } from '../controllers/deletePlanByIdController';
 import { savePlanToUser } from '../controllers/savePlanToUserController';
@@ -38,6 +39,7 @@ route.post("/search/destination", searchNewDestination);
  * @desc Get personalized travel recommendations based on user history
  */
 route.get("/recommendations", cacheMiddleware({ prefix: CACHE_CONFIG.PREFIX.RECOMMENDATIONS, useUserPrefix: true }), getPersonalizedRecommendations);
+route.post("/recommendations/matchmaker", matchmakerController);
 
 /**
  * @route POST /api/v1/plans/search/destination-images

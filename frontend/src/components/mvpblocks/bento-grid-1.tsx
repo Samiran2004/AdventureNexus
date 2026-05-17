@@ -122,7 +122,7 @@ const items = [
     description: 'AI-optimized daily schedules that maximize your time and experiences.',
     icon: <Calendar className="size-6" />,
     size: 'medium' as const,
-    web_link: '/destinations',
+    web_link: '/search',
     requireAuth: true
   },
   {
@@ -130,7 +130,7 @@ const items = [
     description: 'Explore trending locations and hidden gems with insider recommendations.',
     icon: <MapPin className="size-6" />,
     size: 'small' as const,
-    web_link: '/destinations',
+    web_link: '/search',
     requireAuth: false
   },
   {
