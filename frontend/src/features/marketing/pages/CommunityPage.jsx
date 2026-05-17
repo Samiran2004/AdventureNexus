@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth, useUser } from '@clerk/clerk-react';
 import NavBar from '@/components/NavBar';
@@ -65,7 +65,10 @@ const CommunityPage = () => {
   const [replyingTo, setReplyingTo] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const buildCommentTree = (flatComments) => {
+  // --- SOCKET ARCHITECTURE ---
+  const socketRef = useRef(null);
+
+  const buildCommentTree = useCallback((flatComments) => {
     if (!Array.isArray(flatComments)) return [];
     const map = {};
     const roots = [];
@@ -88,7 +91,7 @@ const CommunityPage = () => {
     });
     
     return roots;
-  };
+  }, []);
 
   const renderComment = (comment, i, depth = 0) => {
     const isReply = depth > 0;
@@ -242,9 +245,9 @@ const CommunityPage = () => {
     fetchStories();
 
     // Socket.io Real-time Listeners (Mounts once, no connection storm!)
-    const socket = io(import.meta.env.VITE_BACKEND_URL || 'https://adventure-nexus-backend.onrender.com');
+    socketRef.current = io(import.meta.env.VITE_BACKEND_URL || 'https://adventure-nexus-backend.onrender.com');
 
-    socket.on('community:like', (data) => {
+    socketRef.current.on('community:like', (data) => {
         setPosts(prev => prev.map(post => 
             post._id === data.targetId ? { ...post, likes: data.likes } : post
         ));
@@ -256,7 +259,7 @@ const CommunityPage = () => {
         });
     });
 
-    socket.on('community:comment', (data) => {
+    socketRef.current.on('community:comment', (data) => {
         setPosts(prev => prev.map(post => 
             post._id === data.postId ? { ...post, repliesCount: post.repliesCount + 1 } : post
         ));
@@ -275,7 +278,7 @@ const CommunityPage = () => {
         });
     });
 
-    socket.on('community:story', (data) => {
+    socketRef.current.on('community:story', (data) => {
         setStories(prev => {
             const alreadyExists = prev.some(s => s._id === data.story._id);
             if (alreadyExists) return prev;
@@ -284,7 +287,7 @@ const CommunityPage = () => {
         toast.success(`New travel story from ${data.clerkUserId}!`, { icon: '📖' });
     });
 
-    socket.on('community:post', (data) => {
+    socketRef.current.on('community:post', (data) => {
         setPosts(prev => {
             const alreadyExists = prev.some(p => p._id === data.post._id);
             if (alreadyExists) return prev;
@@ -294,7 +297,7 @@ const CommunityPage = () => {
     });
 
     return () => {
-        socket.disconnect();
+        if (socketRef.current) socketRef.current.disconnect();
     };
   }, []);
 
@@ -375,7 +378,7 @@ const CommunityPage = () => {
     }
   };
 
-  const handleAddComment = async (e) => {
+  const handleAddComment = useCallback(async (e) => {
     e.preventDefault();
     if (!clerkUserId) {
       toast.error('Please sign in to comment');
@@ -421,9 +424,9 @@ const CommunityPage = () => {
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [clerkUserId, newComment, replyingTo, selectedPost, getToken]);
 
-  const handleLike = async (postId, targetType = 'post') => {
+  const handleLike = useCallback(async (postId, targetType = 'post') => {
     if (!clerkUserId) {
       toast.error('Please sign in to like');
       return;
@@ -483,7 +486,7 @@ const CommunityPage = () => {
       });
       toast.error('Failed to update like');
     }
-  };
+  }, [clerkUserId, getToken]);
 
   const handleRSVP = async (eventId) => {
     if (!clerkUserId) {
