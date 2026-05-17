@@ -57,7 +57,7 @@ const ToursPage = () => {
       id: 3,
       title: "Swiss Alps & Chocolate Express",
       locations: ["Zurich", "Interlaken", "Zermatt"],
-      image: "https://images.unsplash.com/photo-1483347752404-8fe7960f26d1?w=800&auto=format&fit=crop&q=60",
+      image: "https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?w=800&auto=format&fit=crop&q=60",
       price: 2150,
       rating: 5.0,
       reviews: 189,
@@ -71,7 +71,7 @@ const ToursPage = () => {
       id: 4,
       title: "Vietnam & Cambodia Discovery",
       locations: ["Hanoi", "Ha Long Bay", "Siem Reap"],
-      image: "https://images.unsplash.com/photo-1528127269322-53995332718d?w=800&auto=format&fit=crop&q=60",
+      image: "https://images.unsplash.com/photo-1504457047772-27faf1c00561?w=800&auto=format&fit=crop&q=60",
       price: 1450,
       rating: 4.7,
       reviews: 410,
@@ -206,7 +206,7 @@ const ToursPage = () => {
                   </Button>
                   <Button
                     size="icon"
-                    className="rounded-full bg-white/90 hover:bg-white text-primary hover:text-primary/80 shadow-md hover:shadow-lg w-10 h-10 transition-colors"
+                    className="rounded-full bg-white/90 hover:bg-white text-slate-800 hover:text-indigo-600 shadow-md hover:shadow-lg w-10 h-10 transition-colors"
                   >
                     <Share size={20} />
                   </Button>
