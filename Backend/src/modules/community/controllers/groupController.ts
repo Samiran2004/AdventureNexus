@@ -7,16 +7,10 @@ import mongoose from 'mongoose';
 export const createGroup = async (req: Request, res: Response): Promise<void> => {
     try {
         const { name, privacy } = req.body;
-        const clerkUserId = (req as any).user.id; // From Clerk auth middleware
-
-        const user = await User.findOne({ clerkUserId });
-        if (!user) {
-            res.status(404).json({ success: false, message: 'User not found' });
-            return;
-        }
+        const userId = (req as any).user._id;
 
         const newGroup = await Group.create({
-            creatorId: user._id,
+            creatorId: userId,
             name,
             privacy: privacy || 'PUBLIC',
             memberCount: 1 // Creator is the first member
@@ -24,7 +18,7 @@ export const createGroup = async (req: Request, res: Response): Promise<void> =>
 
         await GroupMembership.create({
             groupId: newGroup._id,
-            userId: user._id,
+            userId: userId,
             role: 'ADMIN'
         });
 
@@ -37,15 +31,10 @@ export const createGroup = async (req: Request, res: Response): Promise<void> =>
 
 export const getMyGroups = async (req: Request, res: Response): Promise<void> => {
     try {
-        const clerkUserId = (req as any).user.id;
-        const user = await User.findOne({ clerkUserId });
-        if (!user) {
-            res.status(404).json({ success: false, message: 'User not found' });
-            return;
-        }
+        const userId = (req as any).user._id;
 
-        const memberships = await GroupMembership.find({ userId: user._id }).populate('groupId');
-        const groups = memberships.map(m => m.groupId);
+        const memberships = await GroupMembership.find({ userId }).populate('groupId');
+        const groups = memberships.map(m => m.groupId).filter(Boolean);
 
         res.status(200).json({ success: true, groups });
     } catch (error) {
@@ -57,13 +46,7 @@ export const getMyGroups = async (req: Request, res: Response): Promise<void> =>
 export const joinGroup = async (req: Request, res: Response): Promise<void> => {
     try {
         const { groupId } = req.params;
-        const clerkUserId = (req as any).user.id;
-
-        const user = await User.findOne({ clerkUserId });
-        if (!user) {
-            res.status(404).json({ success: false, message: 'User not found' });
-            return;
-        }
+        const userId = (req as any).user._id;
 
         const group = await Group.findById(groupId);
         if (!group) {
@@ -71,21 +54,21 @@ export const joinGroup = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        const existingMembership = await GroupMembership.findOne({ groupId, userId: user._id });
+        const existingMembership = await GroupMembership.findOne({ groupId, userId });
         if (existingMembership) {
             res.status(400).json({ success: false, message: 'Already a member' });
             return;
         }
 
         if (group.privacy === 'PRIVATE') {
-            await Group.findByIdAndUpdate(groupId, { $addToSet: { pendingRequests: user._id } });
+            await Group.findByIdAndUpdate(groupId, { $addToSet: { pendingRequests: userId } });
             res.status(200).json({ success: true, message: 'Request sent to join private group' });
             return;
         }
 
         await GroupMembership.create({
             groupId: group._id,
-            userId: user._id,
+            userId: userId,
             role: 'MEMBER'
         });
 
