@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth, useUser } from '@clerk/clerk-react';
 import NavBar from '@/components/NavBar';
@@ -65,7 +65,10 @@ const CommunityPage = () => {
   const [replyingTo, setReplyingTo] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const buildCommentTree = (flatComments) => {
+  // --- SOCKET ARCHITECTURE ---
+  const socketRef = useRef(null);
+
+  const buildCommentTree = useCallback((flatComments) => {
     if (!Array.isArray(flatComments)) return [];
     const map = {};
     const roots = [];
@@ -88,7 +91,7 @@ const CommunityPage = () => {
     });
     
     return roots;
-  };
+  }, []);
 
   const renderComment = (comment, i, depth = 0) => {
     const isReply = depth > 0;
@@ -241,45 +244,62 @@ const CommunityPage = () => {
     fetchStats();
     fetchStories();
 
-    // Socket.io Real-time Listeners
-    const socket = io(import.meta.env.VITE_BACKEND_URL || 'https://adventure-nexus-backend.onrender.com');
+    // Socket.io Real-time Listeners (Mounts once, no connection storm!)
+    socketRef.current = io(import.meta.env.VITE_BACKEND_URL || 'https://adventure-nexus-backend.onrender.com');
 
-    socket.on('community:like', (data) => {
+    socketRef.current.on('community:like', (data) => {
         setPosts(prev => prev.map(post => 
             post._id === data.targetId ? { ...post, likes: data.likes } : post
         ));
-        if (selectedPost?._id === data.targetId) {
-            setSelectedPost(prev => ({ ...prev, likes: data.likes }));
-        }
+        setSelectedPost(prev => {
+            if (prev && prev._id === data.targetId) {
+                return { ...prev, likes: data.likes };
+            }
+            return prev;
+        });
     });
 
-    socket.on('community:comment', (data) => {
+    socketRef.current.on('community:comment', (data) => {
         setPosts(prev => prev.map(post => 
             post._id === data.postId ? { ...post, repliesCount: post.repliesCount + 1 } : post
         ));
-        if (selectedPost?._id === data.postId) {
-            setSelectedPost(prev => ({ 
-                ...prev, 
-                comments: [...(prev.comments || []), data.comment],
-                repliesCount: prev.repliesCount + 1 
-            }));
-        }
+        setSelectedPost(prev => {
+            if (prev && prev._id === data.postId) {
+                const commentsList = prev.comments || [];
+                const alreadyExists = commentsList.some(c => c._id === data.comment._id);
+                if (alreadyExists) return prev;
+                return { 
+                    ...prev, 
+                    comments: [...commentsList, data.comment],
+                    repliesCount: prev.repliesCount + 1 
+                };
+            }
+            return prev;
+        });
     });
 
-    socket.on('community:story', (data) => {
-        setStories(prev => [data.story, ...prev]);
+    socketRef.current.on('community:story', (data) => {
+        setStories(prev => {
+            const alreadyExists = prev.some(s => s._id === data.story._id);
+            if (alreadyExists) return prev;
+            return [data.story, ...prev];
+        });
         toast.success(`New travel story from ${data.clerkUserId}!`, { icon: '📖' });
     });
 
-    socket.on('community:post', (data) => {
-        setPosts(prev => [data.post, ...prev]);
+    socketRef.current.on('community:post', (data) => {
+        setPosts(prev => {
+            const alreadyExists = prev.some(p => p._id === data.post._id);
+            if (alreadyExists) return prev;
+            return [data.post, ...prev];
+        });
         toast.success('New discussion started!', { icon: '💬' });
     });
 
     return () => {
-        socket.disconnect();
+        if (socketRef.current) socketRef.current.disconnect();
     };
-  }, [selectedPost?._id]);
+  }, []);
 
   const handleCreatePost = async (e) => {
     e.preventDefault();
@@ -358,7 +378,7 @@ const CommunityPage = () => {
     }
   };
 
-  const handleAddComment = async (e) => {
+  const handleAddComment = useCallback(async (e) => {
     e.preventDefault();
     if (!clerkUserId) {
       toast.error('Please sign in to comment');
@@ -376,39 +396,97 @@ const CommunityPage = () => {
       }, token);
 
       if (response.success) {
+        const addedComment = response.data;
+        
         setNewComment('');
         setReplyingTo(null);
-        // Refresh selected post to show new comment
-        const updatedPost = await communityService.getPostById(selectedPost._id);
-        setSelectedPost(updatedPost.data);
-        fetchPosts(); // Refresh list to update count
+
+        // Update selectedPost with the new comment locally (avoiding duplicate network fetches)
+        setSelectedPost(prev => {
+          if (!prev) return prev;
+          const commentsList = prev.comments || [];
+          const alreadyExists = commentsList.some(c => c._id === addedComment._id);
+          if (alreadyExists) return prev;
+          return {
+            ...prev,
+            comments: [...commentsList, addedComment],
+            repliesCount: (prev.repliesCount || 0) + 1
+          };
+        });
+
+        // Update posts count in main feed list locally
+        setPosts(prev => prev.map(post => 
+          post._id === selectedPost._id ? { ...post, repliesCount: (post.repliesCount || 0) + 1 } : post
+        ));
       }
     } catch (error) {
       toast.error('Failed to post comment');
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [clerkUserId, newComment, replyingTo, selectedPost, getToken]);
 
-  const handleLike = async (postId, targetType = 'post') => {
+  const handleLike = useCallback(async (postId, targetType = 'post') => {
     if (!clerkUserId) {
       toast.error('Please sign in to like');
       return;
     }
+    
+    // Optimistic Update: instantly update client state
+    let wasLiked = false;
+    setPosts(prev => prev.map(post => {
+      if (post._id === postId) {
+        const hasLiked = post.likes?.includes(clerkUserId);
+        wasLiked = hasLiked;
+        const newLikes = hasLiked
+          ? (post.likes || []).filter(id => id !== clerkUserId)
+          : [...(post.likes || []), clerkUserId];
+        return { ...post, likes: newLikes };
+      }
+      return post;
+    }));
+
+    setSelectedPost(prev => {
+      if (prev && prev._id === postId && targetType === 'post') {
+        const hasLiked = prev.likes?.includes(clerkUserId);
+        const newLikes = hasLiked
+          ? (prev.likes || []).filter(id => id !== clerkUserId)
+          : [...(prev.likes || []), clerkUserId];
+        return { ...prev, likes: newLikes };
+      }
+      return prev;
+    });
+
     try {
       const token = await getToken();
       const response = await communityService.toggleLike(targetType, postId, token);
-      if (response.success) {
-        if (targetType === 'post' && selectedPost?._id === postId) {
-          const updatedPost = await communityService.getPostById(postId);
-          setSelectedPost(updatedPost.data);
-        }
-        fetchPosts();
+      if (!response.success) {
+        throw new Error('Server update failed');
       }
     } catch (error) {
+      // Rollback local state on failure
+      setPosts(prev => prev.map(post => {
+        if (post._id === postId) {
+          const newLikes = wasLiked
+            ? [...(post.likes || []), clerkUserId]
+            : (post.likes || []).filter(id => id !== clerkUserId);
+          return { ...post, likes: newLikes };
+        }
+        return post;
+      }));
+
+      setSelectedPost(prev => {
+        if (prev && prev._id === postId && targetType === 'post') {
+          const newLikes = wasLiked
+            ? [...(prev.likes || []), clerkUserId]
+            : (prev.likes || []).filter(id => id !== clerkUserId);
+          return { ...prev, likes: newLikes };
+        }
+        return prev;
+      });
       toast.error('Failed to update like');
     }
-  };
+  }, [clerkUserId, getToken]);
 
   const handleRSVP = async (eventId) => {
     if (!clerkUserId) {
@@ -738,10 +816,10 @@ const CommunityPage = () => {
                                 <MessageSquare size={18} className="text-indigo-400" /> {discussion.repliesCount} <span className="hidden md:inline">Replies</span>
                               </span>
                               <span
-                                className={`flex items-center gap-2 cursor-pointer transition-all ${discussion.likes?.includes(clerkUserId) ? 'text-pink-500 scale-110' : 'text-muted-foreground hover:text-pink-500'}`}
+                                className={`flex items-center gap-2 cursor-pointer transition-all ${(clerkUserId && discussion.likes?.includes(clerkUserId)) ? 'text-pink-500 scale-110' : 'text-muted-foreground hover:text-pink-500'}`}
                                 onClick={() => handleLike(discussion._id)}
                               >
-                                <Heart size={18} fill={discussion.likes?.includes(clerkUserId) ? 'currentColor' : 'none'} /> {discussion.likes?.length || 0} <span className="hidden md:inline">Likes</span>
+                                <Heart size={18} fill={(clerkUserId && discussion.likes?.includes(clerkUserId)) ? 'currentColor' : 'none'} /> {discussion.likes?.length || 0} <span className="hidden md:inline">Likes</span>
                               </span>
                               <span
                                 className="flex items-center gap-2 cursor-pointer text-muted-foreground hover:text-primary transition-colors ml-auto"
@@ -867,10 +945,10 @@ const CommunityPage = () => {
                           <Button
                             size="sm"
                             variant="link"
-                            className={`h-auto p-0 mt-3 font-black text-xs uppercase tracking-tighter ${event.attendees?.includes(clerkUserId) ? 'text-emerald-400' : 'text-primary'}`}
+                            className={`h-auto p-0 mt-3 font-black text-xs uppercase tracking-tighter ${(clerkUserId && event.attendees?.includes(clerkUserId)) ? 'text-emerald-400' : 'text-primary'}`}
                             onClick={() => handleRSVP(event._id)}
                           >
-                            {event.attendees?.includes(clerkUserId) ? '✓ Attending' : 'RSVP Now'}
+                            {(clerkUserId && event.attendees?.includes(clerkUserId)) ? '✓ Attending' : 'RSVP Now'}
                           </Button>
                         </div>
                       </motion.div>
@@ -1056,10 +1134,10 @@ const CommunityPage = () => {
                       <motion.span
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
-                        className={`flex items-center gap-2 cursor-pointer text-lg font-black transition-colors ${selectedPost.likes?.includes(clerkUserId) ? 'text-pink-500' : 'text-muted-foreground hover:text-pink-500'}`}
+                        className={`flex items-center gap-2 cursor-pointer text-lg font-black transition-colors ${(clerkUserId && selectedPost.likes?.includes(clerkUserId)) ? 'text-pink-500' : 'text-muted-foreground hover:text-pink-500'}`}
                         onClick={() => handleLike(selectedPost._id)}
                       >
-                        <Heart size={24} fill={selectedPost.likes?.includes(clerkUserId) ? 'currentColor' : 'none'} /> {selectedPost.likes?.length || 0}
+                        <Heart size={24} fill={(clerkUserId && selectedPost.likes?.includes(clerkUserId)) ? 'currentColor' : 'none'} /> {selectedPost.likes?.length || 0}
                       </motion.span>
                       <span className="flex items-center gap-2 text-lg font-black text-muted-foreground">
                         <MessageSquare size={24} /> {selectedPost.comments?.length || 0}
