@@ -133,107 +133,145 @@ const PublicProfilePage = () => {
         <div className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-primary-foreground">
             <NavBar />
 
-            <main className="max-w-6xl mx-auto px-4 py-12 md:py-20">
+            {/* Cover Image */}
+            <div className="relative h-[350px] md:h-[450px] overflow-hidden group">
+                <img 
+                    src={profile.coverImage || "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2000&auto=format&fit=crop"} 
+                    alt="Cover" 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[2s]"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
+                
                 <Button
                     variant="ghost"
                     onClick={() => navigate(-1)}
-                    className="mb-8 hover:bg-muted rounded-2xl group transition-all"
+                    className="absolute top-24 left-8 bg-black/40 backdrop-blur-md border border-white/10 text-white rounded-2xl hover:bg-black/60 group transition-all"
                 >
                     <ArrowLeft className="mr-2 group-hover:-translate-x-1 transition-transform" size={18} /> Back
                 </Button>
+            </div>
 
+            <main className="max-w-6xl mx-auto px-4 -mt-24 relative z-10 pb-20">
                 {/* Profile Header */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
-                    <div className="flex flex-col items-center md:items-start text-center md:text-left gap-6">
-                        <motion.div
-                            initial={{ scale: 0.8, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            className="relative"
-                        >
-                            <div className="w-32 h-32 md:w-48 md:h-48 rounded-[3rem] overflow-hidden border-4 border-primary shadow-2xl rotate-3 hover:rotate-0 transition-transform duration-500">
-                                {profile.profilepicture ? (
-                                    <img src={profile.profilepicture} alt={profile.username} className="w-full h-full object-cover scale-110" />
-                                ) : (
-                                    <div className="w-full h-full bg-primary/20 flex items-center justify-center">
-                                        <Users size={64} className="text-primary opacity-50" />
-                                    </div>
-                                )}
+                <div className="flex flex-col md:flex-row gap-8 items-end mb-16">
+                    {/* Avatar */}
+                    <div className="relative group">
+                        <div className="w-48 h-48 rounded-[3.5rem] p-1.5 bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500">
+                            <div className="w-full h-full rounded-[3.2rem] overflow-hidden border-4 border-black bg-[#111]">
+                                <img 
+                                    src={profile.profilepicture || "https://api.dicebear.com/7.x/avataaars/svg?seed=" + profile.username} 
+                                    alt={profile.username} 
+                                    className="w-full h-full object-cover"
+                                />
                             </div>
-                            <div className="absolute -bottom-2 -right-2 bg-emerald-500 w-8 h-8 rounded-full border-4 border-background shadow-lg" />
-                        </motion.div>
+                        </div>
+                        <div className="absolute bottom-4 right-4 w-6 h-6 rounded-full bg-emerald-500 border-4 border-black shadow-lg" />
+                    </div>
 
-                        <div className="space-y-4">
-                            <h1 className="text-4xl md:text-5xl font-black italic tracking-tighter leading-none">
-                                {profile.fullname || profile.username || 'Traveler'}
-                            </h1>
-                            <p className="text-lg text-muted-foreground font-medium flex items-center justify-center md:justify-start gap-2 opacity-80">
-                                <MapPin size={20} className="text-primary" /> {profile.bio || 'Exploring the Nexus'}
-                            </p>
-
-                            <div className="flex items-center justify-center md:justify-start gap-6 mt-6">
-                                <div className="text-center md:text-left">
-                                    <div className="text-2xl font-black leading-none">{profile.followersCount}</div>
-                                    <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mt-1">Followers</div>
-                                </div>
-                                <div className="text-center md:text-left border-x border-border px-6">
-                                    <div className="text-2xl font-black leading-none">{profile.followingCount}</div>
-                                    <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mt-1">Following</div>
-                                </div>
-                                <div className="text-center md:text-left">
-                                    <div className="text-2xl font-black leading-none">{activity.stories.length + activity.posts.length}</div>
-                                    <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mt-1">Contributions</div>
-                                </div>
+                    {/* Stats & Actions */}
+                    <div className="flex-1 pb-4 space-y-6">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                            <div>
+                                <h1 className="text-5xl font-black text-white tracking-tighter leading-none mb-2">
+                                    {profile.fullname || profile.username}
+                                </h1>
+                                <p className="text-xl text-white/40 font-medium tracking-tight">@{profile.username}</p>
+                            </div>
+                            
+                            <div className="flex items-center gap-4">
+                                {currentUserId !== profile.clerkUserId ? (
+                                    <>
+                                        <Button 
+                                            onClick={handleToggleFollow}
+                                            disabled={isFollowLoading}
+                                            className={`h-14 px-8 rounded-2xl font-bold gap-2 ${isFollowing ? 'bg-white/10 text-white border border-white/10' : 'bg-blue-600 text-white hover:bg-blue-500 shadow-[0_0_20px_rgba(37,99,235,0.3)]'}`}
+                                        >
+                                            {isFollowing ? 'Following' : <><UserPlus size={20} /> Follow</>}
+                                        </Button>
+                                        <Dialog open={isMessageOpen} onOpenChange={setIsMessageOpen}>
+                                            <DialogTrigger asChild>
+                                                <Button 
+                                                    className="h-14 px-8 bg-white/5 border border-white/10 text-white hover:bg-white/10 rounded-2xl font-bold gap-2"
+                                                >
+                                                    <MessageSquare size={20} /> Message
+                                                </Button>
+                                            </DialogTrigger>
+                                            <DialogContent className="sm:max-w-[425px] bg-card border-border rounded-3xl p-8">
+                                                <DialogHeader>
+                                                    <DialogTitle className="text-2xl font-black italic tracking-tight">Direct Message</DialogTitle>
+                                                </DialogHeader>
+                                                <form onSubmit={handleSendMessage} className="space-y-6 mt-4">
+                                                    <div className="space-y-2">
+                                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">To: {profile.username}</label>
+                                                        <Textarea
+                                                            placeholder="Type your message here..."
+                                                            className="min-h-[150px] rounded-2xl bg-muted/20 border-border resize-none"
+                                                            value={messageContent}
+                                                            onChange={(e) => setMessageContent(e.target.value)}
+                                                        />
+                                                    </div>
+                                                    <Button
+                                                        type="submit"
+                                                        className="w-full h-12 rounded-xl font-black uppercase tracking-widest text-[10px]"
+                                                        disabled={isSendingMessage}
+                                                    >
+                                                        {isSendingMessage ? <Loader2 className="animate-spin" /> : "Send Signal"}
+                                                    </Button>
+                                                </form>
+                                            </DialogContent>
+                                        </Dialog>
+                                    </>
+                                ) : (
+                                    <Button onClick={() => navigate('/profile')} className="h-14 px-8 bg-white text-black hover:bg-white/90 rounded-2xl font-bold">
+                                        Own Profile
+                                    </Button>
+                                )}
                             </div>
                         </div>
 
-                        {currentUserId !== profile.clerkUserId && (
-                            <div className="flex gap-4 w-full">
-                                <Button
-                                    onClick={handleToggleFollow}
-                                    disabled={isFollowLoading}
-                                    className={`flex-1 h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl ${isFollowing ? 'bg-muted text-foreground' : 'bg-primary text-primary-foreground hover:scale-105 transition-transform'}`}
-                                >
-                                    {isFollowing ? <><UserMinus className="mr-2" size={18} /> Unfollow</> : <><UserPlus className="mr-2" size={18} /> Follow</>}
-                                </Button>
-                                <Dialog open={isMessageOpen} onOpenChange={setIsMessageOpen}>
-                                    <DialogTrigger asChild>
-                                        <Button
-                                            variant="outline"
-                                            className="h-14 w-14 rounded-2xl border-white/10 bg-white/5 hover:bg-white/10"
-                                        >
-                                            <MessageSquare size={20} />
-                                        </Button>
-                                    </DialogTrigger>
-                                    <DialogContent className="sm:max-w-[425px] bg-card border-border rounded-3xl p-8">
-                                        <DialogHeader>
-                                            <DialogTitle className="text-2xl font-black italic tracking-tight">Direct Message</DialogTitle>
-                                        </DialogHeader>
-                                        <form onSubmit={handleSendMessage} className="space-y-6 mt-4">
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">To: {profile.username}</label>
-                                                <Textarea
-                                                    placeholder="Type your message here..."
-                                                    className="min-h-[150px] rounded-2xl bg-muted/20 border-border resize-none"
-                                                    value={messageContent}
-                                                    onChange={(e) => setMessageContent(e.target.value)}
-                                                />
-                                            </div>
-                                            <Button
-                                                type="submit"
-                                                className="w-full h-12 rounded-xl font-black uppercase tracking-widest text-[10px]"
-                                                disabled={isSendingMessage}
-                                            >
-                                                {isSendingMessage ? <Loader2 className="animate-spin" /> : "Send Signal"}
-                                            </Button>
-                                        </form>
-                                    </DialogContent>
-                                </Dialog>
+                        <div className="flex items-center gap-8 text-white/60">
+                            <div className="flex items-center gap-2">
+                                <span className="text-white font-black text-xl">{profile.followersCount}</span>
+                                <span className="text-sm font-bold uppercase tracking-widest text-white/20">Followers</span>
                             </div>
-                        )}
+                            <div className="flex items-center gap-2">
+                                <span className="text-white font-black text-xl">{profile.followingCount}</span>
+                                <span className="text-sm font-bold uppercase tracking-widest text-white/20">Following</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-white font-black text-xl">{activity.stories.length + activity.posts.length}</span>
+                                <span className="text-sm font-bold uppercase tracking-widest text-white/20">Contributions</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mt-16">
+                    {/* Left Sidebar */}
+                    <div className="lg:col-span-4 space-y-8">
+                        <Card className="bg-white/[0.02] border-white/5 rounded-[2.5rem] p-8">
+                            <CardContent className="p-0 space-y-8">
+                                <div className="space-y-4">
+                                    <h3 className="text-xs font-black text-white/20 uppercase tracking-[0.3em]">About</h3>
+                                    <p className="text-white/60 leading-relaxed font-medium">
+                                        {profile.bio || "No bio yet. Exploring the Nexus!"}
+                                    </p>
+                                </div>
+                                <div className="space-y-4">
+                                    <h3 className="text-xs font-black text-white/20 uppercase tracking-[0.3em]">Details</h3>
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-4 text-white/60">
+                                            <MapPin size={20} className="text-blue-500" />
+                                            <span className="font-medium">{profile.country || "Earth Explorer"}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
                     </div>
 
                     {/* Activity Section */}
-                    <div className="md:col-span-2 space-y-12">
+                    <div className="lg:col-span-8 space-y-12">
                         <div>
                             <h2 className="text-2xl font-black italic tracking-tight mb-8 flex items-center gap-3">
                                 <ImageIcon className="text-primary" /> Recent Travel Stories
