@@ -7,6 +7,7 @@ import { addComment } from './controllers/addCommentController';
 import { protect, optionalProtect } from '../../shared/middleware/authClerkTokenMiddleware';
 import { upload } from '../../shared/middleware/multer';
 import { toggleSavePost } from './controllers/toggleSavePostController';
+import { updatePost, deletePost } from './controllers/updatePostController';
 
 import { getEvents } from './controllers/getEventsController';
 import { getSpotlight } from './controllers/getSpotlightController';
@@ -18,7 +19,8 @@ import { toggleFollow } from './controllers/followController';
 import { createStory, getAllStories, toggleLikeStory } from './controllers/storyController';
 import { getNotifications, markAsRead } from './controllers/notificationController';
 import { getMessageHistory, sendMessage } from './controllers/messageController';
-import { createGroup, getMyGroups, joinGroup, leaveGroup, getGroups, getGroupById, addMemberToGroup, makeUserAdmin } from './controllers/groupController';
+import { createGroup, getMyGroups, joinGroup, leaveGroup, getGroups, getGroupById, addMemberToGroup, makeUserAdmin, removeUserAdmin, removeMemberFromGroup, updateGroup } from './controllers/groupController';
+import { getGroupMessages, sendGroupMessage } from './controllers/groupMessageController';
 import { getCommunities, joinCommunity } from './controllers/communityController';
 
 const route: Router = express.Router();
@@ -36,6 +38,8 @@ route.get('/posts', getPosts);
  * @access Private
  */
 route.post('/posts', protect, upload.array('images', 5), createPost);
+route.put('/posts/:id', protect, updatePost);
+route.delete('/posts/:id', protect, deletePost);
 
 /**
  * @route GET /api/v1/community/posts/:id
@@ -160,6 +164,11 @@ route.post('/groups/join/:groupId', protect, joinGroup);
 route.post('/groups/leave/:groupId', protect, leaveGroup);
 route.post('/groups/add-member', protect, addMemberToGroup);
 route.post('/groups/make-admin', protect, makeUserAdmin);
+route.put('/groups/:id', protect, updateGroup);
+route.post('/groups/remove-admin', protect, removeUserAdmin);
+route.post('/groups/remove-member', protect, removeMemberFromGroup);
+route.get('/groups/:groupId/messages', protect, getGroupMessages);
+route.post('/groups/:groupId/messages', protect, sendGroupMessage);
 
 route.get('/posts/group/:groupId', protect, getPosts);
 route.get('/posts/community/:communityId', getPosts);

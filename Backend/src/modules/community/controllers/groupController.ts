@@ -49,7 +49,9 @@ export const getGroups = async (req: Request, res: Response): Promise<void> => {
 export const getGroupById = async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params;
-        const group = await Group.findById(id).populate('createdBy', 'username profilepicture');
+        const group = await Group.findById(id)
+            .populate('createdBy', 'username profilepicture')
+            .populate('members', 'username profilepicture');
         if (!group) {
             res.status(404).json({ success: false, message: 'Group not found' });
             return;
@@ -227,6 +229,123 @@ export const makeUserAdmin = async (req: Request, res: Response): Promise<void> 
         res.status(200).json({ success: true, message: 'Successfully promoted user to Admin' });
     } catch (error) {
         console.error('Error promoting member to admin:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+
+export const removeUserAdmin = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { groupId, targetUserId } = req.body;
+        const adminUserId = (req as any).user._id;
+
+        const group = await Group.findById(groupId);
+        if (!group) {
+            res.status(404).json({ success: false, message: 'Group not found' });
+            return;
+        }
+
+        const isAdmin = group.admins.some((a: any) => a.toString() === adminUserId.toString()) || group.createdBy.toString() === adminUserId.toString();
+        if (!isAdmin) {
+            res.status(403).json({ success: false, message: 'Only group admins can revoke admin privileges' });
+            return;
+        }
+
+        if (group.createdBy.toString() === targetUserId.toString()) {
+            res.status(400).json({ success: false, message: 'Cannot revoke founder admin privileges' });
+            return;
+        }
+
+        const targetMembership = await GroupMembership.findOne({ groupId, userId: targetUserId });
+        if (!targetMembership) {
+            res.status(400).json({ success: false, message: 'User is not a member of this group' });
+            return;
+        }
+
+        targetMembership.role = 'MEMBER';
+        await targetMembership.save();
+
+        await Group.findByIdAndUpdate(groupId, {
+            $pull: { admins: targetUserId }
+        });
+
+        res.status(200).json({ success: true, message: 'Successfully demoted user to Member' });
+    } catch (error) {
+        console.error('Error demoting admin:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+
+export const removeMemberFromGroup = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { groupId, targetUserId } = req.body;
+        const adminUserId = (req as any).user._id;
+
+        const group = await Group.findById(groupId);
+        if (!group) {
+            res.status(404).json({ success: false, message: 'Group not found' });
+            return;
+        }
+
+        const isAdmin = group.admins.some((a: any) => a.toString() === adminUserId.toString()) || group.createdBy.toString() === adminUserId.toString();
+        if (!isAdmin) {
+            res.status(403).json({ success: false, message: 'Only group admins can remove members' });
+            return;
+        }
+
+        if (group.createdBy.toString() === targetUserId.toString()) {
+            res.status(400).json({ success: false, message: 'Cannot remove group creator' });
+            return;
+        }
+
+        const deletedMembership = await GroupMembership.findOneAndDelete({ groupId, userId: targetUserId });
+        if (!deletedMembership) {
+            res.status(400).json({ success: false, message: 'User is not a member of this group' });
+            return;
+        }
+
+        await Group.findByIdAndUpdate(groupId, {
+            $inc: { memberCount: -1 },
+            $pull: { members: targetUserId, admins: targetUserId }
+        });
+
+        res.status(200).json({ success: true, message: 'Successfully removed member from group' });
+    } catch (error) {
+        console.error('Error removing member:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+
+export const updateGroup = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const { name, description, coverImage, privacy } = req.body;
+        const adminUserId = (req as any).user._id;
+
+        const group = await Group.findById(id);
+        if (!group) {
+            res.status(404).json({ success: false, message: 'Group not found' });
+            return;
+        }
+
+        const isAdmin = group.admins.some((a: any) => a.toString() === adminUserId.toString()) || group.createdBy.toString() === adminUserId.toString();
+        if (!isAdmin) {
+            res.status(403).json({ success: false, message: 'Only group admins can update details' });
+            return;
+        }
+
+        if (name) group.name = name;
+        if (description !== undefined) group.description = description;
+        if (coverImage) group.coverImage = coverImage;
+        if (privacy) {
+            group.privacy = privacy;
+            group.isPrivate = privacy === 'PRIVATE';
+        }
+
+        await group.save();
+
+        res.status(200).json({ success: true, group });
+    } catch (error) {
+        console.error('Error updating group details:', error);
         res.status(500).json({ success: false, message: 'Server error' });
     }
 };

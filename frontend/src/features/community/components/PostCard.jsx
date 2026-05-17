@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MessageSquare, Heart, Bookmark, Share2, ArrowRight } from 'lucide-react';
+import { MessageSquare, Heart, Bookmark, Share2, ArrowRight, Edit, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export const PostCard = memo(({ 
@@ -11,9 +11,12 @@ export const PostCard = memo(({
   onLike, 
   onSave,
   onShare,
-  onOpenDetail 
+  onOpenDetail,
+  onEdit,
+  onDelete
 }) => {
   const navigate = useNavigate();
+  const isAuthor = clerkUserId && discussion.userId?.clerkUserId === clerkUserId;
   const isLiked = clerkUserId && discussion.likes?.includes(clerkUserId);
 
   return (
@@ -50,6 +53,28 @@ export const PostCard = memo(({
               <Badge variant="outline" className="ml-auto bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 uppercase tracking-widest text-[8px] sm:text-[10px] font-black shrink-0">
                 {discussion.category}
               </Badge>
+              {isAuthor && (
+                <div className="flex items-center gap-2 ml-2 flex-shrink-0">
+                  {onEdit && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onEdit(discussion); }}
+                      className="text-muted-foreground hover:text-primary transition-all p-1 rounded-md hover:bg-white/5 hover:scale-105"
+                      title="Edit Post"
+                    >
+                      <Edit size={14} />
+                    </button>
+                  )}
+                  {onDelete && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onDelete(discussion._id); }}
+                      className="text-muted-foreground hover:text-pink-500 transition-all p-1 rounded-md hover:bg-white/5 hover:scale-105"
+                      title="Delete Post"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
 
             <h3 

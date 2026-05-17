@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth, useUser } from '@clerk/clerk-react';
+import { useSocket } from '@/context/appContext';
 import { Compass, Users, Map, Globe, Search, Bell, Sparkles, X, Heart, MessageSquare, Lock, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,6 +17,7 @@ import { CommentTree } from '../components/CommentTree';
 export const SocialHubPage = () => {
   const { getToken } = useAuth();
   const { user } = useUser();
+  const { socket } = useSocket();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('global'); // global, communities, groups
   
@@ -33,6 +35,7 @@ export const SocialHubPage = () => {
   // Modals & Panels
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
+  const [editingPost, setEditingPost] = useState(null);
   const [commentContent, setCommentContent] = useState('');
   const [replyingTo, setReplyingTo] = useState(null);
 
@@ -104,7 +107,7 @@ export const SocialHubPage = () => {
 
       const clerkUserId = user?.id || '';
       
-      const categoryFilter = activeTab === 'global' ? '' : (activeTab === 'communities' ? 'General' : activeTab);
+      const categoryFilter = (activeTab === 'global' || activeTab === 'groups') ? '' : (activeTab === 'communities' ? 'General' : activeTab);
       const groupFilter = activeTab === 'groups' ? 'all_groups' : 'none';
       const communityFilter = selectedCommunity?._id || '';
 
@@ -136,7 +139,100 @@ export const SocialHubPage = () => {
     fetchFeedData();
   }, [activeTab, selectedCommunity, user]);
 
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleIncomingLike = (data) => {
+      const { targetType, targetId, likes } = data;
+      if (targetType === 'post') {
+        setPosts(prev => prev.map(p => p._id === targetId ? { ...p, likes } : p));
+        setSelectedPost(prev => prev && prev._id === targetId ? { ...prev, likes } : prev);
+      }
+    };
+
+    const handleIncomingComment = (data) => {
+      const { postId, comment } = data;
+      setPosts(prev => prev.map(p => p._id === postId ? { ...p, repliesCount: (p.repliesCount || 0) + 1 } : p));
+      setSelectedPost(prev => {
+        if (prev && prev._id === postId) {
+          const commentsList = prev.comments || [];
+          if (commentsList.some(c => c._id === comment._id)) return prev;
+          return { 
+            ...prev, 
+            repliesCount: (prev.repliesCount || 0) + 1,
+            comments: [...commentsList, comment] 
+          };
+        }
+        return prev;
+      });
+    };
+
+    const handleIncomingPost = (data) => {
+      const { post } = data;
+      setPosts(prev => {
+        if (prev.some(p => p._id === post._id)) return prev;
+        return [post, ...prev];
+      });
+    };
+
+    socket.on('community:like', handleIncomingLike);
+    socket.on('community:comment', handleIncomingComment);
+    socket.on('community:post', handleIncomingPost);
+
+    return () => {
+      socket.off('community:like', handleIncomingLike);
+      socket.off('community:comment', handleIncomingComment);
+      socket.off('community:post', handleIncomingPost);
+    };
+  }, [socket]);
+
   // --- ACTION HANDLERS ---
+  const handlePostDelete = async (postId) => {
+    const confirm = window.confirm("Are you sure you want to delete this discussion?");
+    if (!confirm) return;
+    try {
+      const token = await getToken();
+      const res = await communityService.deletePost(postId, token);
+      if (res.success) {
+        toast.success("Post deleted successfully");
+        setPosts(prev => prev.filter(p => p._id !== postId));
+      }
+    } catch (error) {
+      console.error("Failed to delete post:", error);
+      toast.error("Failed to delete post");
+    }
+  };
+
+  const handlePostEditSubmit = async (e) => {
+    e.preventDefault();
+    if (!editingPost?.title || !editingPost?.content) {
+      toast.error("Title and Content are required");
+      return;
+    }
+    try {
+      const token = await getToken();
+      const payload = {
+        title: editingPost.title,
+        content: editingPost.content,
+        category: editingPost.category || 'General',
+        destinationTags: Array.isArray(editingPost.destinationTags)
+          ? editingPost.destinationTags
+          : typeof editingPost.destinationTags === 'string'
+            ? editingPost.destinationTags.split(',').map(t => t.trim()).filter(Boolean)
+            : []
+      };
+
+      const res = await communityService.updatePost(editingPost._id, payload, token);
+      if (res.success) {
+        toast.success("Post updated successfully");
+        setPosts(prev => prev.map(p => p._id === editingPost._id ? { ...p, ...res.data } : p));
+        setEditingPost(null);
+      }
+    } catch (error) {
+      console.error("Failed to update post:", error);
+      toast.error("Failed to update post");
+    }
+  };
   const handleCreateGroup = () => {
     if (!user) return toast.error("Please login to create a group");
     setIsCreateGroupOpen(true);
@@ -630,6 +726,8 @@ export const SocialHubPage = () => {
                       onSave={handleSave}
                       onShare={handleShare}
                       onOpenDetail={handleOpenDetail}
+                      onEdit={(post) => setEditingPost(post)}
+                      onDelete={handlePostDelete}
                     />
                   ))
                 )
@@ -740,6 +838,94 @@ export const SocialHubPage = () => {
                 <Button type="submit" className="w-full h-12 rounded-2xl font-black uppercase tracking-widest text-xs mt-6">
                   Publish Adventure
                 </Button>
+              </form>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Edit Post Modal */}
+        {editingPost && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setEditingPost(null)}
+              className="absolute inset-0 bg-background/80 backdrop-blur-md"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-[#0f0f13] border border-white/10 w-full max-w-lg rounded-[2.5rem] p-8 shadow-2xl relative z-10 max-h-[90vh] overflow-y-auto"
+            >
+              <button 
+                onClick={() => setEditingPost(null)}
+                className="absolute top-6 right-6 text-muted-foreground hover:text-foreground hover:bg-muted p-2 rounded-full transition-colors"
+              >
+                <X size={20} />
+              </button>
+              <h2 className="text-2xl font-black mb-6">✏️ Edit Discussion</h2>
+              <form onSubmit={handlePostEditSubmit} className="space-y-4">
+                <div>
+                  <label className="text-xs uppercase tracking-widest font-black text-muted-foreground block mb-2">Category</label>
+                  <select 
+                    value={editingPost.category || 'General'}
+                    onChange={(e) => setEditingPost(prev => ({ ...prev, category: e.target.value }))}
+                    className="w-full bg-[#16161a] border border-white/10 rounded-2xl p-4 text-sm font-bold text-white focus:outline-none focus:border-primary"
+                  >
+                    <option value="General">General</option>
+                    <option value="Solo Backpackers">Solo Backpackers</option>
+                    <option value="Luxury Escapes">Luxury Escapes</option>
+                    <option value="Digital Nomads">Digital Nomads</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs uppercase tracking-widest font-black text-muted-foreground block mb-2">Title</label>
+                  <Input 
+                    required
+                    placeholder="Give your post a title..." 
+                    value={editingPost.title || ''}
+                    onChange={(e) => setEditingPost(prev => ({ ...prev, title: e.target.value }))}
+                    className="bg-[#16161a] border-white/10 rounded-2xl h-12 text-sm font-medium text-white focus-visible:ring-primary"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs uppercase tracking-widest font-black text-muted-foreground block mb-2">Description</label>
+                  <textarea 
+                    required
+                    rows={4}
+                    placeholder="Update your adventure description..." 
+                    value={editingPost.content || ''}
+                    onChange={(e) => setEditingPost(prev => ({ ...prev, content: e.target.value }))}
+                    className="w-full bg-[#16161a] border border-white/10 rounded-2xl p-4 text-sm font-medium text-white focus:outline-none focus:border-primary resize-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs uppercase tracking-widest font-black text-muted-foreground block mb-2">Destination Tags (comma separated)</label>
+                  <Input 
+                    placeholder="kyoto, autumn, japan" 
+                    value={Array.isArray(editingPost.destinationTags) ? editingPost.destinationTags.join(', ') : editingPost.destinationTags || ''}
+                    onChange={(e) => setEditingPost(prev => ({ ...prev, destinationTags: e.target.value }))}
+                    className="bg-[#16161a] border-white/10 rounded-2xl h-12 text-sm font-medium text-white focus-visible:ring-primary"
+                  />
+                </div>
+                <div className="flex gap-4 mt-6">
+                  <Button 
+                    type="button" 
+                    onClick={() => setEditingPost(null)}
+                    variant="outline" 
+                    className="flex-1 h-12 rounded-2xl font-black uppercase tracking-widest text-xs border-white/10 text-white hover:bg-white/5"
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    type="submit" 
+                    className="flex-1 h-12 rounded-2xl font-black uppercase tracking-widest text-xs bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 border-0"
+                  >
+                    Save Changes
+                  </Button>
+                </div>
               </form>
             </motion.div>
           </div>

@@ -35,6 +35,20 @@ export const communityService = {
         return response.data;
     },
 
+    updatePost: async (postId, postData, token) => {
+        const response = await axios.put(`${api_url}/api/v1/community/posts/${postId}`, postData, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data;
+    },
+
+    deletePost: async (postId, token) => {
+        const response = await axios.delete(`${api_url}/api/v1/community/posts/${postId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data;
+    },
+
     toggleSavePost: async (postId, token) => {
         const response = await axios.post(`${api_url}/api/v1/community/posts/${postId}/save`, {}, {
             headers: { Authorization: `Bearer ${token}` }
@@ -234,6 +248,49 @@ export const communityService = {
 
     makeUserAdmin: async (groupId, targetUserId, token) => {
         const response = await axios.post(`${api_url}/api/v1/community/groups/make-admin`, { groupId, targetUserId }, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data;
+    },
+
+    removeUserAdmin: async (groupId, targetUserId, token) => {
+        const response = await axios.post(`${api_url}/api/v1/community/groups/remove-admin`, { groupId, targetUserId }, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data;
+    },
+
+    removeMemberFromGroup: async (groupId, targetUserId, token) => {
+        const response = await axios.post(`${api_url}/api/v1/community/groups/remove-member`, { groupId, targetUserId }, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data;
+    },
+
+    updateGroup: async (groupId, groupData, token) => {
+        const response = await axios.put(`${api_url}/api/v1/community/groups/${groupId}`, groupData, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data;
+    },
+
+    getGroupMessages: async (groupId, token) => {
+        const response = await axios.get(`${api_url}/api/v1/community/groups/${groupId}/messages`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data;
+    },
+
+    sendGroupMessage: async (groupId, content, token) => {
+        const response = await axios.post(`${api_url}/api/v1/community/groups/${groupId}/messages`, { content }, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data;
+    },
+
+    searchUsers: async (query, token) => {
+        const response = await axios.get(`${api_url}/api/v1/social/search`, {
+            params: { q: query },
             headers: { Authorization: `Bearer ${token}` }
         });
         return response.data;

@@ -41,6 +41,18 @@ export const initSocket = (server: HttpServer): Server => {
             socket.emit('online-users-list', onlineIds);
         });
 
+        socket.on('group:join', (groupId: string) => {
+            if (!groupId) return;
+            socket.join(`group:${groupId}`);
+            console.log(`[DEBUG] Socket ${socket.id} joined room group:${groupId}`);
+        });
+
+        socket.on('group:leave', (groupId: string) => {
+            if (!groupId) return;
+            socket.leave(`group:${groupId}`);
+            console.log(`[DEBUG] Socket ${socket.id} left room group:${groupId}`);
+        });
+
         socket.on('disconnect', () => {
             const userId = (socket as any).userId;
             if (userId && onlineUsers.has(userId)) {
@@ -95,5 +107,14 @@ export const sendRealtimeMessage = (recipientClerkUserId: string, message: any) 
         onlineUsers.get(recipientClerkUserId)?.forEach(socketId => {
             io.to(socketId).emit('message:direct', message);
         });
+    }
+};
+
+/**
+ * Helper to emit a message to a group room.
+ */
+export const sendRealtimeGroupMessage = (groupId: string, message: any) => {
+    if (io) {
+        io.to(`group:${groupId}`).emit('group:message', message);
     }
 };
