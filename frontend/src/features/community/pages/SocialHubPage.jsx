@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { communityService } from '@/services/communityService';
 import toast from 'react-hot-toast';
+import NavBar from '@/components/NavBar';
 
 import { PostCard } from '../components/PostCard';
 import { StoryBar } from '../components/StoryBar';
@@ -285,6 +286,7 @@ export const SocialHubPage = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground pt-24 pb-12 relative overflow-hidden">
+      <NavBar />
       {/* Background Ambience */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-0 left-1/4 w-[50vw] h-[50vw] bg-indigo-500/10 rounded-full blur-[120px] mix-blend-screen" />
@@ -412,14 +414,17 @@ export const SocialHubPage = () => {
           <div className="lg:col-span-6 space-y-8">
             
             {/* Feed Tabs */}
-            <div className="flex items-center justify-center gap-2 p-1 bg-muted/30 backdrop-blur-md rounded-full w-max mx-auto border border-white/5 shadow-inner">
+            <div className="flex items-center justify-center gap-1.5 p-1 bg-muted/30 backdrop-blur-md rounded-full w-max mx-auto border border-white/5 shadow-inner">
               {['global', 'communities', 'groups'].map(tab => (
                 <button
                   key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`px-6 py-2 rounded-full text-xs font-black uppercase tracking-widest transition-all duration-300 ${
+                  onClick={() => {
+                    setActiveTab(tab);
+                    if (tab !== 'communities') setSelectedCommunity(null);
+                  }}
+                  className={`px-4 sm:px-6 py-2.5 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all duration-300 ${
                     activeTab === tab 
-                      ? 'bg-primary text-white shadow-[0_0_20px_rgba(var(--primary),0.4)]' 
+                      ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-[0_0_20px_rgba(99,102,241,0.3)] scale-[1.02]' 
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
@@ -469,37 +474,114 @@ export const SocialHubPage = () => {
 
             {/* Feed Content */}
             <div className="space-y-6">
-              {isPostsLoading ? (
-                [1, 2].map(i => (
-                  <div key={i} className="h-96 rounded-[2rem] bg-card/40 backdrop-blur-xl border border-white/5 shadow-xl animate-pulse flex flex-col p-6 gap-4">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full bg-muted/50" />
-                      <div className="space-y-2">
-                        <div className="h-4 w-32 bg-muted/50 rounded-full" />
-                        <div className="h-3 w-24 bg-muted/50 rounded-full" />
-                      </div>
-                    </div>
-                    <div className="flex-1 bg-muted/30 rounded-2xl" />
+              
+              {/* Mobile-only Communities View */}
+              {activeTab === 'communities' && !selectedCommunity && (
+                <div className="lg:hidden bg-card/40 backdrop-blur-xl rounded-[2rem] p-6 border border-white/5 shadow-xl space-y-6">
+                  <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                    <Compass size={14} /> Discover Communities
+                  </h3>
+                  <div className="space-y-3">
+                    {communities.map(community => {
+                      const isSelected = selectedCommunity?._id === community._id;
+                      return (
+                        <div 
+                          key={community._id} 
+                          className="flex items-center justify-between group p-2 rounded-xl border border-transparent hover:bg-primary/5 transition-all duration-300"
+                        >
+                          <div 
+                            onClick={() => setSelectedCommunity(community)} 
+                            className="flex items-center gap-3 cursor-pointer flex-1 min-w-0"
+                          >
+                            <div className="w-10 h-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center text-lg shadow-inner shrink-0 group-hover:bg-primary/30 transition-colors">
+                              {community.icon || '🌍'}
+                            </div>
+                            <div className="truncate">
+                              <div className="font-bold text-sm truncate group-hover:text-primary transition-colors">{community.name}</div>
+                              <div className="text-[10px] text-muted-foreground">{community.followersCount} followers</div>
+                            </div>
+                          </div>
+                          <button 
+                            disabled={!user}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleJoinCommunity(community._id);
+                            }}
+                            className="text-[9px] font-black uppercase tracking-wider px-2.5 py-1.5 rounded-lg border border-white/10 hover:border-primary/50 text-muted-foreground hover:text-foreground transition-all"
+                          >
+                            Join
+                          </button>
+                        </div>
+                      );
+                    })}
                   </div>
-                ))
-              ) : posts.length === 0 ? (
-                <div className="text-center py-20 bg-card/30 backdrop-blur-md rounded-[2.5rem] border border-white/5">
-                  <Globe className="mx-auto text-muted-foreground mb-4 opacity-50" size={48} />
-                  <p className="font-black text-lg">No posts yet</p>
-                  <p className="text-sm text-muted-foreground mt-1">Be the first to share an adventure on this tab!</p>
                 </div>
-              ) : (
-                posts.map(post => (
-                  <PostCard 
-                    key={post._id}
-                    discussion={post}
-                    clerkUserId={user?.id}
-                    onLike={handleLike}
-                    onSave={handleSave}
-                    onShare={handleShare}
-                    onOpenDetail={handleOpenDetail}
-                  />
-                ))
+              )}
+
+              {/* Mobile-only Groups View */}
+              {activeTab === 'groups' && (
+                <div className="lg:hidden bg-card/40 backdrop-blur-xl rounded-[2rem] p-6 border border-white/5 shadow-xl space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                      <Users size={14} /> My Groups
+                    </h3>
+                    <Button onClick={handleCreateGroup} className="h-8 px-3 rounded-xl bg-primary/15 text-primary hover:bg-primary hover:text-white text-[10px] font-black uppercase tracking-wider transition-colors">
+                      + Create Group
+                    </Button>
+                  </div>
+                  <div className="space-y-3">
+                    {groups.length === 0 && <div className="text-xs text-muted-foreground italic text-center py-4">You haven't joined any groups yet.</div>}
+                    {groups.map(group => (
+                      <div 
+                        key={group._id} 
+                        onClick={() => navigate(`/community/group/${group._id}`)}
+                        className="flex items-center justify-between p-3 rounded-xl hover:bg-muted/50 transition-all border border-transparent hover:border-white/5 hover:border-primary/20 group cursor-pointer"
+                      >
+                        <div>
+                          <div className="font-bold text-sm group-hover:text-primary transition-colors">{group.name}</div>
+                          <div className="text-[9px] text-muted-foreground uppercase tracking-widest font-bold mt-0.5">{group.privacy} Group</div>
+                        </div>
+                        <span className="text-[10px] text-muted-foreground font-black uppercase tracking-wider shrink-0">{group.memberCount || 1} members</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Main Feed List (Only shown if browsing general Global posts, or if a Community filter is active) */}
+              {!(activeTab === 'communities' && !selectedCommunity) && (
+                isPostsLoading ? (
+                  [1, 2].map(i => (
+                    <div key={i} className="h-96 rounded-[2rem] bg-card/40 backdrop-blur-xl border border-white/5 shadow-xl animate-pulse flex flex-col p-6 gap-4">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-full bg-muted/50" />
+                        <div className="space-y-2">
+                          <div className="h-4 w-32 bg-muted/50 rounded-full" />
+                          <div className="h-3 w-24 bg-muted/50 rounded-full" />
+                        </div>
+                      </div>
+                      <div className="flex-1 bg-muted/30 rounded-2xl" />
+                    </div>
+                  ))
+                ) : posts.length === 0 ? (
+                  <div className="text-center py-20 bg-card/30 backdrop-blur-md rounded-[2.5rem] border border-white/5">
+                    <Globe className="mx-auto text-muted-foreground mb-4 opacity-50" size={48} />
+                    <p className="font-black text-lg">No posts yet</p>
+                    <p className="text-sm text-muted-foreground mt-1">Be the first to share an adventure on this tab!</p>
+                  </div>
+                ) : (
+                  posts.map(post => (
+                    <PostCard 
+                      key={post._id}
+                      discussion={post}
+                      clerkUserId={user?.id}
+                      onLike={handleLike}
+                      onSave={handleSave}
+                      onShare={handleShare}
+                      onOpenDetail={handleOpenDetail}
+                    />
+                  ))
+                )
               )}
             </div>
 

@@ -9,6 +9,7 @@ import { communityService } from '@/services/communityService';
 import { PostCard } from '../components/PostCard';
 import { CommentTree } from '../components/CommentTree';
 import toast from 'react-hot-toast';
+import NavBar from '@/components/NavBar';
 
 export const GroupPage = () => {
   const { groupId } = useParams();
@@ -236,6 +237,7 @@ export const GroupPage = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground pt-24 pb-12 relative overflow-hidden">
+      <NavBar />
       {/* Background Ambience */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-0 left-1/4 w-[50vw] h-[50vw] bg-indigo-500/10 rounded-full blur-[120px] mix-blend-screen" />
@@ -287,10 +289,10 @@ export const GroupPage = () => {
               </div>
 
               {/* Group Info Overlay */}
-              <div className="p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10 bg-card/60 backdrop-blur-3xl border-t border-white/5">
+              <div className="p-5 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10 bg-card/60 backdrop-blur-3xl border-t border-white/5">
                 <div className="space-y-2">
-                  <h1 className="text-3xl font-black tracking-tight">{group.name}</h1>
-                  <p className="text-sm text-muted-foreground font-medium leading-relaxed max-w-xl">{group.description || 'No description provided for this wanderlust group.'}</p>
+                  <h1 className="text-xl sm:text-3xl font-black tracking-tight">{group.name}</h1>
+                  <p className="text-xs sm:text-sm text-muted-foreground font-medium leading-relaxed max-w-xl">{group.description || 'No description provided for this wanderlust group.'}</p>
                   
                   <div className="flex items-center gap-4 text-xs font-bold text-muted-foreground uppercase tracking-widest pt-2">
                     <span className="flex items-center gap-1.5"><Users size={14} /> {group.memberCount} members</span>
@@ -303,7 +305,7 @@ export const GroupPage = () => {
                     onClick={handleJoinLeave}
                     disabled={!user}
                     variant={isUserMember ? 'outline' : 'default'}
-                    className={`h-12 px-8 rounded-2xl font-black uppercase tracking-widest text-xs transition-all duration-300 ${
+                    className={`h-12 px-8 rounded-2xl font-black uppercase tracking-widest text-xs transition-all duration-300 w-full md:w-auto ${
                       isUserMember 
                         ? 'border-white/10 hover:border-pink-500/50 hover:text-pink-500' 
                         : 'bg-primary hover:bg-primary/80 text-white'
@@ -319,7 +321,7 @@ export const GroupPage = () => {
             <div className="grid md:grid-cols-12 gap-8 items-start">
               
               {/* Left Details Panel */}
-              <div className="md:col-span-4 space-y-6">
+              <div className="md:col-span-4 order-2 md:order-1 space-y-6">
                 <div className="bg-card/40 backdrop-blur-xl border border-white/5 rounded-[2rem] p-6 shadow-xl space-y-6">
                   <div>
                     <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-3">Group Creator</h3>
@@ -348,7 +350,7 @@ export const GroupPage = () => {
               </div>
 
               {/* Right Feed Panel */}
-              <div className="md:col-span-8 space-y-6">
+              <div className="md:col-span-8 order-1 md:order-2 space-y-6">
                 {/* Check privacy block */}
                 {((group.privacy === 'PRIVATE' || group.isPrivate) && !isUserMember) ? (
                   <div className="text-center py-20 bg-card/30 backdrop-blur-md rounded-[2.5rem] border border-white/5 p-8">
