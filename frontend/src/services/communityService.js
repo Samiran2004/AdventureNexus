@@ -167,5 +167,40 @@ export const communityService = {
             }
         });
         return response.data;
+    },
+
+    // --- V3 Architecture APIs ---
+
+    getCommunities: async () => {
+        const response = await axios.get(`${api_url}/api/v1/community/communities`);
+        return response.data;
+    },
+
+    joinCommunity: async (communityId, token) => {
+        const response = await axios.post(`${api_url}/api/v1/community/communities/join/${communityId}`, {}, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data;
+    },
+
+    getMyGroups: async (token) => {
+        const response = await axios.get(`${api_url}/api/v1/community/groups/my`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data;
+    },
+
+    createGroup: async (groupData, token) => {
+        const response = await axios.post(`${api_url}/api/v1/community/groups/create`, groupData, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data;
+    },
+
+    joinGroup: async (groupId, token) => {
+        const response = await axios.post(`${api_url}/api/v1/community/groups/join/${groupId}`, {}, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data;
     }
 };

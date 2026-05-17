@@ -1,25 +1,78 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@clerk/clerk-react';
 import { Compass, Users, Map, Globe, Search, Bell, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-
-// Mock Data for UI Scaffolding
-const MOCK_COMMUNITIES = [
-  { id: 1, name: "Solo Backpackers", members: "12.4k", icon: "🎒" },
-  { id: 2, name: "Luxury Escapes", members: "8.2k", icon: "🥂" },
-  { id: 3, name: "Digital Nomads", members: "45.1k", icon: "💻" },
-];
-
-const MOCK_GROUPS = [
-  { id: 1, name: "Europe Summer 2026", privacy: "Private" },
-  { id: 2, name: "Himalayan Trekkers", privacy: "Public" },
-];
+import { communityService } from '@/services/communityService';
+import toast from 'react-hot-toast';
 
 export const SocialHubPage = () => {
-  const { user } = useAuth();
+  const { user, getToken } = useAuth();
   const [activeTab, setActiveTab] = useState('global'); // global, communities, groups
+  
+  const [communities, setCommunities] = useState([]);
+  const [groups, setGroups] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // --- API DATA FETCHING ---
+  const fetchSidebarData = async () => {
+    try {
+      const token = await getToken();
+      
+      const [commRes, groupRes] = await Promise.all([
+        communityService.getCommunities(),
+        token ? communityService.getMyGroups(token) : { groups: [] }
+      ]);
+
+      if (commRes.success) setCommunities(commRes.communities);
+      if (groupRes.success) setGroups(groupRes.groups);
+    } catch (error) {
+      console.error("Failed to load sidebar data:", error);
+      toast.error("Could not load communities & groups");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSidebarData();
+  }, [user]);
+
+  // --- ACTION HANDLERS ---
+  const handleCreateGroup = async () => {
+    if (!user) return toast.error("Please login to create a group");
+    const name = window.prompt("Enter new group name:");
+    if (!name) return;
+    
+    try {
+      const token = await getToken();
+      const res = await communityService.createGroup({ name, privacy: 'PUBLIC' }, token);
+      if (res.success) {
+        toast.success(`Group "${name}" created successfully!`);
+        setGroups(prev => [...prev, res.group]); // Optimistic UI
+      }
+    } catch (error) {
+      toast.error("Failed to create group");
+    }
+  };
+
+  const handleJoinCommunity = async (communityId) => {
+    if (!user) return toast.error("Please login first");
+    try {
+      const token = await getToken();
+      const res = await communityService.joinCommunity(communityId, token);
+      if (res.success) {
+        toast.success("Joined community!");
+        // Optimistic update count
+        setCommunities(prev => prev.map(c => 
+          c._id === communityId ? { ...c, followersCount: c.followersCount + 1 } : c
+        ));
+      }
+    } catch (error) {
+      toast.error("Failed to join community");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground pt-24 pb-12 relative overflow-hidden">
@@ -75,15 +128,15 @@ export const SocialHubPage = () => {
                 <Compass size={14} /> Discover Communities
               </h3>
               <div className="space-y-4">
-                {MOCK_COMMUNITIES.map(community => (
-                  <div key={community.id} className="flex items-center justify-between group cursor-pointer p-2 rounded-xl hover:bg-primary/10 transition-colors">
+                {communities.map(community => (
+                  <div key={community._id} onClick={() => handleJoinCommunity(community._id)} className="flex items-center justify-between group cursor-pointer p-2 rounded-xl hover:bg-primary/10 transition-colors">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center text-lg shadow-inner group-hover:bg-primary/20 transition-colors">
-                        {community.icon}
+                        {community.icon || '🌍'}
                       </div>
                       <div>
                         <div className="font-bold text-sm group-hover:text-primary transition-colors">{community.name}</div>
-                        <div className="text-[10px] text-muted-foreground">{community.members} travelers</div>
+                        <div className="text-[10px] text-muted-foreground">{community.followersCount} followers</div>
                       </div>
                     </div>
                   </div>
@@ -100,14 +153,15 @@ export const SocialHubPage = () => {
                 <Users size={14} /> My Groups
               </h3>
               <div className="space-y-4">
-                {MOCK_GROUPS.map(group => (
-                  <div key={group.id} className="flex flex-col gap-1 cursor-pointer p-3 rounded-xl hover:bg-muted/50 transition-colors border border-transparent hover:border-white/5">
+                {groups.length === 0 && <div className="text-xs text-muted-foreground italic">You haven't joined any groups yet.</div>}
+                {groups.map(group => (
+                  <div key={group._id} className="flex flex-col gap-1 cursor-pointer p-3 rounded-xl hover:bg-muted/50 transition-colors border border-transparent hover:border-white/5">
                     <div className="font-bold text-sm truncate">{group.name}</div>
                     <div className="text-[10px] text-muted-foreground uppercase tracking-widest">{group.privacy} Group</div>
                   </div>
                 ))}
               </div>
-              <Button className="w-full mt-6 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors text-xs font-bold">
+              <Button onClick={handleCreateGroup} className="w-full mt-6 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors text-xs font-bold">
                 + Create Group
               </Button>
             </div>
