@@ -19,7 +19,9 @@ import {
   Send,
   Zap,
   Globe,
-  Award
+  Award,
+  ArrowRight,
+  Bookmark
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { communityService } from '@/services/communityService';
@@ -56,7 +58,10 @@ const CommunityPage = () => {
 
   // Form state
   const [newPost, setNewPost] = useState({ title: '', content: '', category: 'Travel Hacks' });
+  const [postImages, setPostImages] = useState([]);
+  const [destinationTags, setDestinationTags] = useState('');
   const [newComment, setNewComment] = useState('');
+  const [replyingTo, setReplyingTo] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const categories = [
@@ -201,17 +206,66 @@ const CommunityPage = () => {
     try {
       setIsSubmitting(true);
       const token = await getToken();
-      const response = await communityService.createPost(newPost, token);
+      
+      const formData = new FormData();
+      formData.append('title', newPost.title);
+      formData.append('content', newPost.content);
+      formData.append('category', newPost.category);
+      if (destinationTags.trim()) {
+         formData.append('destinationTags', JSON.stringify(destinationTags.split(',').map(t => t.trim())));
+      }
+      postImages.forEach(file => {
+          formData.append('images', file);
+      });
+
+      const response = await communityService.createPost(formData, token);
       if (response.success) {
         toast.success('Discussion started!');
         setIsPostModalOpen(false);
         setNewPost({ title: '', content: '', category: 'Travel Hacks' });
+        setPostImages([]);
+        setDestinationTags('');
         fetchPosts();
       }
     } catch (error) {
       toast.error('Failed to create post');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleSavePost = async (postId) => {
+    if (!clerkUserId) {
+      toast.error('Please sign in to save posts');
+      return;
+    }
+    try {
+      const token = await getToken();
+      const response = await communityService.toggleSavePost(postId, token);
+      if (response.success) {
+        toast.success(response.message);
+      }
+    } catch (error) {
+      toast.error('Failed to save post');
+    }
+  };
+
+  const handleExternalShare = async (postId, title, text) => {
+    const shareData = {
+        title: title,
+        text: text,
+        url: window.location.origin + '/community/post/' + postId,
+    };
+    if (navigator.share) {
+        try {
+            await navigator.share(shareData);
+            toast.success('Post shared successfully!');
+        } catch (err) {
+            console.error('Error sharing:', err);
+        }
+    } else {
+        navigator.clipboard.writeText(shareData.url);
+        toast.success('Link copied to clipboard!');
     }
   };
 
@@ -228,11 +282,13 @@ const CommunityPage = () => {
       const token = await getToken();
       const response = await communityService.addComment({
         postId: selectedPost._id,
-        content: newComment
+        content: newComment,
+        parentId: replyingTo
       }, token);
 
       if (response.success) {
         setNewComment('');
+        setReplyingTo(null);
         // Refresh selected post to show new comment
         const updatedPost = await communityService.getPostById(selectedPost._id);
         setSelectedPost(updatedPost.data);
@@ -366,6 +422,26 @@ const CommunityPage = () => {
                       className="min-h-[150px] bg-muted border-none focus-visible:ring-1 ring-primary/50"
                       value={newPost.content}
                       onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Destination Tags (comma separated)</label>
+                    <input
+                      type="text"
+                      placeholder="e.g., Paris, Tokyo, Alps"
+                      className="w-full bg-muted border-none rounded-lg p-2.5 outline-none focus:ring-1 ring-primary/50"
+                      value={destinationTags}
+                      onChange={(e) => setDestinationTags(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Attach Images (Max 5)</label>
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      className="w-full bg-muted border-none rounded-lg p-2.5 outline-none focus:ring-1 ring-primary/50 text-sm"
+                      onChange={(e) => setPostImages(Array.from(e.target.files).slice(0, 5))}
                     />
                   </div>
                   <Button type="submit" className="w-full py-6 text-lg font-bold" disabled={isSubmitting}>
@@ -538,9 +614,33 @@ const CommunityPage = () => {
                             >
                               {discussion.title}
                             </h3>
-                            <p className="text-base text-muted-foreground line-clamp-2 mb-6 leading-relaxed font-medium opacity-80">
+                            <p className="text-base text-muted-foreground line-clamp-2 mb-4 leading-relaxed font-medium opacity-80">
                               {discussion.content}
                             </p>
+                            
+                            {/* Rich Media Images */}
+                            {discussion.images && discussion.images.length > 0 && (
+                                <div className="flex gap-2 mb-4 overflow-x-auto pb-2 scrollbar-hide">
+                                    {discussion.images.map((img, i) => (
+                                        <img key={i} src={img} alt="attachment" className="h-32 w-auto object-cover rounded-xl border border-white/10" />
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Shared Trip Card Preview */}
+                            {discussion.tripId && (
+                                <div className="mb-4 p-4 rounded-xl border border-primary/20 bg-primary/5 flex items-center justify-between cursor-pointer hover:bg-primary/10" onClick={() => navigate(`/plan/${discussion.tripId._id}`)}>
+                                    <div className="flex flex-col">
+                                        <span className="text-xs uppercase tracking-widest text-primary font-bold mb-1">Shared Trip</span>
+                                        <span className="font-bold text-lg">{discussion.tripId.title || 'Adventure Trip'}</span>
+                                        <span className="text-sm text-muted-foreground">
+                                            {discussion.tripId.destinations?.length || 0} Destinations • {discussion.tripId.budget?.currency} {discussion.tripId.budget?.amount}
+                                        </span>
+                                    </div>
+                                    <ArrowRight className="text-primary" />
+                                </div>
+                            )}
+
                             <div className="flex items-center gap-8 text-sm font-black uppercase tracking-widest">
                               <span
                                 className="flex items-center gap-2 text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
@@ -553,6 +653,18 @@ const CommunityPage = () => {
                                 onClick={() => handleLike(discussion._id)}
                               >
                                 <Heart size={18} fill={discussion.likes?.includes(clerkUserId) ? 'currentColor' : 'none'} /> {discussion.likes?.length || 0} <span className="hidden md:inline">Likes</span>
+                              </span>
+                              <span
+                                className="flex items-center gap-2 cursor-pointer text-muted-foreground hover:text-primary transition-colors ml-auto"
+                                onClick={(e) => { e.stopPropagation(); handleSavePost(discussion._id); }}
+                              >
+                                <Bookmark size={18} />
+                              </span>
+                              <span
+                                className="flex items-center gap-2 cursor-pointer text-muted-foreground hover:text-indigo-400 transition-colors"
+                                onClick={(e) => { e.stopPropagation(); handleExternalShare(discussion._id, discussion.title, discussion.content); }}
+                              >
+                                <Share2 size={18} />
                               </span>
                             </div>
                           </div>
@@ -911,6 +1023,14 @@ const CommunityPage = () => {
                                   <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">{getTimeAgo(comment.createdAt)}</span>
                                 </div>
                                 <p className="text-sm leading-relaxed text-foreground/80 font-medium">{comment.content}</p>
+                                <div className="mt-3 flex items-center gap-4">
+                                    <button 
+                                      className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
+                                      onClick={() => setReplyingTo(comment._id)}
+                                    >
+                                        <MessageSquare size={12} /> Reply
+                                    </button>
+                                </div>
                               </div>
                             </motion.div>
                           ))}
@@ -921,6 +1041,12 @@ const CommunityPage = () => {
 
                   {/* Reply Input */}
                   <div className="p-6 border-t border-border bg-card/80 backdrop-blur-xl">
+                    {replyingTo && (
+                        <div className="flex items-center justify-between bg-primary/10 text-primary px-4 py-2 rounded-xl mb-4 text-sm font-bold">
+                            <span>Replying to comment...</span>
+                            <button onClick={() => setReplyingTo(null)} className="hover:text-foreground"><X size={16} /></button>
+                        </div>
+                    )}
                     <form onSubmit={handleAddComment} className="flex gap-4 items-end">
                       <div className="flex-1">
                         <Textarea

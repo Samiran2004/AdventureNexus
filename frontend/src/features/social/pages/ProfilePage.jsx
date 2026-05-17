@@ -321,6 +321,7 @@ const ProfilePage = () => {
                                 <TabsTrigger value="posts" className="rounded-xl px-8 font-bold data-[state=active]:bg-white data-[state=active]:text-black">Posts</TabsTrigger>
                                 <TabsTrigger value="trips" className="rounded-xl px-8 font-bold data-[state=active]:bg-white data-[state=active]:text-black">Trips</TabsTrigger>
                                 <TabsTrigger value="media" className="rounded-xl px-8 font-bold data-[state=active]:bg-white data-[state=active]:text-black">Media</TabsTrigger>
+                                {isOwnProfile && <TabsTrigger value="saved" className="rounded-xl px-8 font-bold data-[state=active]:bg-white data-[state=active]:text-black">Saved</TabsTrigger>}
                             </TabsList>
 
                             <TabsContent value="posts" className="space-y-6">
@@ -364,6 +365,16 @@ const ProfilePage = () => {
                                     </Card>
                                 ))}
                             </TabsContent>
+
+                            {isOwnProfile && (
+                                <TabsContent value="saved" className="space-y-6">
+                                    <div className="flex flex-col items-center justify-center p-12 border border-white/5 bg-white/[0.02] rounded-[2.5rem]">
+                                        <Bookmark size={48} className="text-white/20 mb-4" />
+                                        <h3 className="text-2xl font-bold text-white mb-2">Saved Posts</h3>
+                                        <p className="text-white/40 text-center">Posts you save will appear here. Only you can see what you've saved.</p>
+                                    </div>
+                                </TabsContent>
+                            )}
                         </Tabs>
                     </div>
                 </div>

@@ -5,6 +5,8 @@ import { getPostById } from './controllers/getPostByIdController';
 import { toggleLike } from './controllers/toggleLikeController';
 import { addComment } from './controllers/addCommentController';
 import { protect, optionalProtect } from '../../shared/middleware/authClerkTokenMiddleware';
+import { upload } from '../../shared/middleware/multer';
+import { toggleSavePost } from './controllers/toggleSavePostController';
 
 import { getEvents } from './controllers/getEventsController';
 import { getSpotlight } from './controllers/getSpotlightController';
@@ -28,10 +30,10 @@ route.get('/posts', getPosts);
 
 /**
  * @route POST /api/v1/community/posts
- * @desc Create a new community post
+ * @desc Create a new community post with optional images
  * @access Private
  */
-route.post('/posts', protect, createPost);
+route.post('/posts', protect, upload.array('images', 5), createPost);
 
 /**
  * @route GET /api/v1/community/posts/:id
@@ -39,6 +41,13 @@ route.post('/posts', protect, createPost);
  * @access Public
  */
 route.get('/posts/:id', getPostById);
+
+/**
+ * @route POST /api/v1/community/posts/:id/save
+ * @desc Save or bookmark a community post
+ * @access Private
+ */
+route.post('/posts/:id/save', protect, toggleSavePost);
 
 /**
  * @route POST /api/v1/community/like

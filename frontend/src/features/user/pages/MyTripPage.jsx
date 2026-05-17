@@ -463,6 +463,43 @@ const MyTripsPage = () => {
     }
   };
 
+  const handleShareTrip = async (trip) => {
+    const message = window.prompt("Write something about your trip to share with the community:");
+    if (message === null) return;
+
+    try {
+        const token = await getToken();
+        if (!token) {
+           toast.error('Please sign in to share your trip');
+           return;
+        }
+
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || 'https://adventure-nexus-backend.onrender.com';
+        const formData = new FormData();
+        formData.append('title', `My Trip: ${trip.title}`);
+        formData.append('content', message || `I planned a trip to ${trip.destination}! Check it out.`);
+        formData.append('category', 'Trip Sharing');
+        formData.append('tripId', trip.id);
+
+        const res = await fetch(`${backendUrl}/api/v1/community/posts`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            body: formData
+        });
+
+        if (res.ok) {
+            toast.success("Trip successfully shared to the community feed!");
+        } else {
+            toast.error("Failed to share trip.");
+        }
+    } catch (error) {
+        console.error("Error sharing trip:", error);
+        toast.error("An error occurred while sharing.");
+    }
+  };
+
   const getStatusColor = (status) => {
     switch (status) {
       case 'upcoming': return 'bg-blue-500/10 text-blue-500 border-blue-500/50';
@@ -745,11 +782,14 @@ const MyTripsPage = () => {
                 ← Back to Trips
               </Button>
               <div className="flex space-x-2">
-                <Button variant="outline" size="sm" className="text-green-500 border-green-500/20 hover:bg-green-500/10">
-                  <Heart size={16} className="mr-2" />
-                  Save
+                <Button 
+                  onClick={() => handleShareTrip(selectedTrip)}
+                  variant="outline" size="sm" className="text-primary border-primary/20 hover:bg-primary/10 transition-colors"
+                >
+                  <Share2 size={16} className="mr-2" />
+                  Share to Community
                 </Button>
-                <Button variant="outline" size="sm" className="text-muted-foreground border-border hover:bg-muted">
+                <Button variant="outline" size="sm" className="text-muted-foreground border-border hover:bg-muted transition-colors">
                   <Settings size={16} className="mr-2" />
                   Settings
                 </Button>

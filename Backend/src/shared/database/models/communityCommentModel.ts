@@ -27,6 +27,10 @@ const communityCommentSchema = new Schema<ICommunityComment>({
         type: String,
         required: true,
     },
+    parentId: {
+        type: Schema.Types.ObjectId,
+        ref: 'CommunityComment',
+    },
     likes: [{
         type: String, // Array of Clerk User IDs
     }],

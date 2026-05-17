@@ -25,10 +25,19 @@ export const communityService = {
     },
 
     createPost: async (postData, token) => {
-        const response = await axios.post(`${api_url}/api/v1/community/posts`, postData, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+        const isFormData = postData instanceof FormData;
+        const headers = { Authorization: `Bearer ${token}` };
+        if (isFormData) {
+            headers['Content-Type'] = 'multipart/form-data';
+        }
+        
+        const response = await axios.post(`${api_url}/api/v1/community/posts`, postData, { headers });
+        return response.data;
+    },
+
+    toggleSavePost: async (postId, token) => {
+        const response = await axios.post(`${api_url}/api/v1/community/posts/${postId}/save`, {}, {
+            headers: { Authorization: `Bearer ${token}` }
         });
         return response.data;
     },

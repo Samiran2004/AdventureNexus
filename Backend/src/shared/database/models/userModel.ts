@@ -21,6 +21,7 @@ export interface IUser extends Document {
     bio?: string;           // User bio
     coverImage?: string;    // URL to cover/background image
     isPrivate?: boolean;    // Whether the profile is public or private
+    savedPosts?: Schema.Types.ObjectId[]; // Bookmarked community posts
     socialLinks?: {
         twitter?: string;
         instagram?: string;
@@ -98,6 +99,7 @@ const userSchema = new Schema<IUser>(
         bio: { type: String, default: "" },
         coverImage: { type: String, default: "" },
         isPrivate: { type: Boolean, default: false },
+        savedPosts: [{ type: Schema.Types.ObjectId, ref: 'CommunityPost' }],
         socialLinks: {
             twitter: { type: String, default: "" },
             instagram: { type: String, default: "" },

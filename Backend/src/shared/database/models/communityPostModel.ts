@@ -31,8 +31,21 @@ const communityPostSchema = new Schema<ICommunityPost>({
         required: true,
         index: true,
     },
+    tags: [{
+        type: String,
+    }],
+    destinationTags: [{
+        type: String, // IDs or names of destinations from Kaggle dataset
+    }],
     images: [{
         type: String, // URLs to images/videos
+    }],
+    tripId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Plan',
+    },
+    likes: [{
+        type: String, // Clerk User IDs
     }],
     interactionScore: {
         type: Number,

@@ -9,7 +9,7 @@ import logger from '../../../shared/utils/logger';
  */
 export const addComment = async (req: Request, res: Response) => {
     try {
-        const { postId, content } = req.body;
+        const { postId, content, parentId } = req.body;
         const userId = req.user?._id;
         const clerkUserId = req.user?.clerkUserId;
 
@@ -32,7 +32,8 @@ export const addComment = async (req: Request, res: Response) => {
             postId,
             userId,
             clerkUserId,
-            content
+            content,
+            parentId: parentId || undefined
         });
 
         // Increment replies count on the post
