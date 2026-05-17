@@ -441,17 +441,12 @@ export const GroupPage = () => {
     try {
       const token = await getToken();
       const res = await communityService.toggleLike('post', postId, token);
-      if (res.success) {
-        setPosts(prev => prev.map(p => {
-          if (p._id === postId) {
-            const alreadyLiked = p.likes?.includes(user.id);
-            const newLikes = alreadyLiked 
-              ? p.likes.filter(id => id !== user.id) 
-              : [...(p.likes || []), user.id];
-            return { ...p, likes: newLikes };
-          }
-          return p;
-        }));
+      if (res.success && res.data) {
+        const newLikes = res.data.likes;
+        setPosts(prev => prev.map(p => p._id === postId ? { ...p, likes: newLikes } : p));
+        if (selectedPost && selectedPost._id === postId) {
+          setSelectedPost(prev => ({ ...prev, likes: newLikes }));
+        }
       }
     } catch (error) {
       toast.error("Failed to like post");

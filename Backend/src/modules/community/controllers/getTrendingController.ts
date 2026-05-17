@@ -9,11 +9,21 @@ import logger from '../../../shared/utils/logger';
 export const getTrending = async (req: Request, res: Response) => {
     try {
         const result = await CommunityPost.aggregate([
-            { $project: { tags: 1, interactionScore: 1 } },
-            { $unwind: "$tags" },
+            { 
+                $project: { 
+                    combinedTags: { 
+                        $concatArrays: [ 
+                            { $ifNull: ["$tags", []] }, 
+                            { $ifNull: ["$destinationTags", []] } 
+                        ] 
+                    },
+                    interactionScore: 1 
+                } 
+            },
+            { $unwind: "$combinedTags" },
             { 
                 $group: {
-                    _id: "$tags",
+                    _id: "$combinedTags",
                     count: { $sum: 1 },
                     score: { $sum: { $ifNull: ["$interactionScore", 0] } }
                 }
@@ -26,7 +36,7 @@ export const getTrending = async (req: Request, res: Response) => {
                 }
             },
             { $sort: { popularityScore: -1 } },
-            { $limit: 6 }
+            { $limit: 10 } // Fetch more to allow deduplication
         ]);
 
         // Hand-curated travel tags as high-quality fallback
@@ -38,33 +48,44 @@ export const getTrending = async (req: Request, res: Response) => {
             { tag: '#AdventureNexus', postCount: 24 }
         ];
 
-        // Format aggregated database tags
-        const dynamicTags = result
-            .filter(item => item && item.tag && typeof item.tag === 'string' && item.tag.trim().length > 0)
-            .map(item => {
-                let formattedTag = item.tag.trim();
-                // Ensure correct hashtag prefixing
-                if (!formattedTag.startsWith('#')) {
-                    formattedTag = '#' + formattedTag;
-                }
-                return {
+        // Format aggregated database tags and deduplicate
+        const seen = new Set<string>();
+        const dynamicTags: any[] = [];
+        
+        for (const item of result) {
+            if (!item || !item.tag || typeof item.tag !== 'string') continue;
+            let formattedTag = item.tag.trim();
+            if (formattedTag.length === 0) continue;
+            
+            // Format to start with '#' and be capitalized
+            if (!formattedTag.startsWith('#')) {
+                formattedTag = '#' + formattedTag;
+            }
+            
+            const lowerTag = formattedTag.toLowerCase();
+            if (!seen.has(lowerTag)) {
+                seen.add(lowerTag);
+                dynamicTags.push({
                     tag: formattedTag,
                     postCount: item.postCount
-                };
-            });
+                });
+            }
+        }
 
-        // Merge dynamic tags with fallbacks to guarantee 4+ beautiful trending tags
+        // Merge dynamic tags with fallbacks to guarantee 5 beautiful trending tags
         const mergedTags = [...dynamicTags];
         for (const fallback of defaultTags) {
             if (mergedTags.length >= 5) break;
-            if (!mergedTags.some(t => t.tag.toLowerCase() === fallback.tag.toLowerCase())) {
+            const lowerFallback = fallback.tag.toLowerCase();
+            if (!seen.has(lowerFallback)) {
+                seen.add(lowerFallback);
                 mergedTags.push(fallback);
             }
         }
 
         return res.status(StatusCodes.OK).json({
             success: true,
-            data: mergedTags
+            data: mergedTags.slice(0, 5)
         });
     } catch (error: any) {
         logger.error(`Error fetching trending tags: ${error.message}`);
