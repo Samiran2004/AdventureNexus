@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'; // Hooks for state and side effects
 import { Toaster, toast } from 'react-hot-toast'; // Component for toast notifications
-import { Route, Routes } from 'react-router-dom'; // Components for defining routes
+import { Route, Routes, useLocation } from 'react-router-dom'; // Components for defining routes
 import Preloader from './components/Preloader'; // Modern 3D smooth loader
 import ProtectedRoute from './components/ProtectedRoute'; // Component to protect private routes
 import { AppProvider, useAppContext } from './context/appContext.jsx'; // Context for accessing global state
@@ -59,9 +59,15 @@ import { Navigate } from 'react-router-dom';
 
 // App content component that uses the context
 const AppContent = () => {
+  const { pathname } = useLocation();
   // Local state to handle the initial loading screen
   const [loading, setLoading] = useState(true);
   const { isSignedIn, user } = useAppContext(); // Access user auth state from context
+
+  // Scroll to top automatically when navigating to any new route
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
   // Effect to simulate a loading delay on mount
   useEffect(() => {
