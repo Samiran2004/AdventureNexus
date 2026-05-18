@@ -234,6 +234,15 @@ export const communityService = {
         return response.data;
     },
 
+    markChatMessageAsRead: async (conversationId, token) => {
+        const response = await axios.put(`${api_url}/api/v1/messaging/messages/read/${conversationId}`, {}, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    },
+
     // --- V3 Architecture APIs ---
 
     getCommunities: async () => {

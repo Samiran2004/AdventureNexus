@@ -130,3 +130,7 @@ export const sendRealtimeGroupMessage = (groupId: string, message: any) => {
         io.to(`group:${groupId}`).emit('group:message', message);
     }
 };
+
+export const isUserOnline = (userId: string): boolean => {
+    return onlineUsers.has(userId);
+};

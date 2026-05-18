@@ -10,6 +10,7 @@ router.post('/conversation', protect, chatController.getOrCreateConversation);
 router.get('/conversations', protect, chatController.getConversations);
 router.post('/message', protect, chatController.sendMessage);
 router.get('/messages/:conversationId', protect, chatController.getMessages);
+router.put('/messages/read/:conversationId', protect, chatController.markAsRead);
 
 // Group chats
 router.post('/group', protect, groupController.createGroup);

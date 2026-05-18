@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     Send, Image as ImageIcon, Paperclip, Smile, Search, 
-    Phone, Video, Info, User, Users, CheckCheck, 
+    Phone, Video, Info, User, Users, CheckCheck, Check,
     Zap, ArrowLeft, MoreVertical, ShieldAlert, Loader2, MapPin
 } from 'lucide-react';
 import { useAuth, useUser } from '@clerk/clerk-react';
@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { useSocket } from '@/context/appContext';
 import { communityService } from '@/services/communityService';
 import toast from 'react-hot-toast';
+import NavBar from '@/components/NavBar';
 
 const ChatPage = () => {
     const { userId: clerkUserId, getToken } = useAuth();
@@ -28,6 +29,7 @@ const ChatPage = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [showMobileSidebar, setShowMobileSidebar] = useState(true);
     const [isSending, setIsSending] = useState(false);
+    const [onlineUserIds, setOnlineUserIds] = useState(new Set());
 
     const messagesEndRef = useRef(null);
 
@@ -74,6 +76,9 @@ const ChatPage = () => {
             if (!activeConversation) return;
             try {
                 const token = await getToken();
+                // Mark messages as read early
+                await communityService.markChatMessageAsRead(activeConversation._id, token);
+                
                 const res = await communityService.getChatMessages(activeConversation._id, token);
                 if (res.success) {
                     setMessages(res.data);
@@ -92,40 +97,94 @@ const ChatPage = () => {
         if (!socket) return;
 
         socket.on('chat:message', (data) => {
-            if (activeConversation && data.conversationId === activeConversation._id) {
+            // Handle seen status update
+            if (data && data.type === 'messages:seen') {
+                if (activeConversation && data.conversationId === activeConversation._id) {
+                    setMessages(prev => prev.map(m => 
+                        m && m.senderClerkUserId === clerkUserId ? { ...m, status: 'seen' } : m
+                    ).filter(Boolean));
+                }
+                return;
+            }
+
+            // Handle incoming message
+            if (activeConversation && data && data.conversationId === activeConversation._id) {
+                if (!data.message) return;
                 setMessages(prev => {
-                    const isDuplicate = prev.some(m => m._id === data.message._id);
-                    if (isDuplicate) return prev;
-                    return [...prev, data.message];
+                    const cleanPrev = prev.filter(Boolean);
+                    const isDuplicate = cleanPrev.some(m => m && m._id === data.message._id);
+                    if (isDuplicate) return cleanPrev;
+                    return [...cleanPrev, data.message];
                 });
+                
+                // If we are currently looking at this active conversation, mark this incoming message as read!
+                getToken().then(token => {
+                    communityService.markChatMessageAsRead(activeConversation._id, token);
+                });
+                
                 setTimeout(scrollToBottom, 50);
             }
 
             // Dynamically refresh sidebar previews
-            setConversations(prev => {
-                const matched = prev.find(c => c._id === data.conversationId);
-                if (matched) {
-                    return prev.map(conv => 
-                        conv._id === data.conversationId 
-                        ? { ...conv, lastMessage: data.message } 
-                        : conv
-                    );
-                } else {
-                    // Trigger dynamic reload of conversations to append new active partner in real time
-                    getToken().then(token => {
-                        communityService.getUserConversations(token).then(res => {
-                            if (res.success) setConversations(res.data);
+            if (data && data.message) {
+                setConversations(prev => {
+                    const matched = prev.find(c => c._id === data.conversationId);
+                    if (matched) {
+                        return prev.map(conv => 
+                            conv._id === data.conversationId 
+                            ? { ...conv, lastMessage: data.message } 
+                            : conv
+                        );
+                    } else {
+                        // Trigger dynamic reload of conversations to append new active partner in real time
+                        getToken().then(token => {
+                            communityService.getUserConversations(token).then(res => {
+                                if (res.success) setConversations(res.data);
+                            });
                         });
-                    });
-                    return prev;
-                }
-            });
+                        return prev;
+                    }
+                });
+            }
         });
 
         return () => {
             socket.off('chat:message');
         };
     }, [socket, activeConversation]);
+
+    // 3b. Setup Socket Online Status Receivers
+    useEffect(() => {
+        if (!socket) return;
+
+        socket.emit('get-online-users');
+
+        socket.on('online-users-list', (userIds) => {
+            setOnlineUserIds(new Set(userIds));
+        });
+
+        socket.on('user:online', (userId) => {
+            setOnlineUserIds(prev => {
+                const next = new Set(prev);
+                next.add(userId);
+                return next;
+            });
+        });
+
+        socket.on('user:offline', (userId) => {
+            setOnlineUserIds(prev => {
+                const next = new Set(prev);
+                next.delete(userId);
+                return next;
+            });
+        });
+
+        return () => {
+            socket.off('online-users-list');
+            socket.off('user:online');
+            socket.off('user:offline');
+        };
+    }, [socket]);
 
     // 4. Send Message Handler
     const handleSend = async (e) => {
@@ -184,7 +243,9 @@ const ChatPage = () => {
     });
 
     return (
-        <div className="flex h-[calc(100vh-80px)] bg-black overflow-hidden font-inter border-t border-white/5">
+        <div className="h-screen bg-black flex flex-col overflow-hidden">
+            <NavBar />
+            <div className="flex-1 flex bg-black overflow-hidden font-inter border-t border-white/5 pt-[80px]">
             {/* Sidebar List panel */}
             <div className={`w-full md:w-[400px] border-r border-white/5 flex flex-col bg-[#07090e] transition-all duration-300 ${showMobileSidebar ? 'flex' : 'hidden md:flex'}`}>
                 {/* Header */}
@@ -226,6 +287,7 @@ const ChatPage = () => {
                     ) : (
                         filteredConversations.map((conv) => {
                             const recipient = getRecipientProfile(conv);
+                            const isOnline = recipient && onlineUserIds.has(recipient.clerkUserId);
                             const isActive = activeConversation?._id === conv._id;
                             const avatarUrl = recipient?.profilepicture;
 
@@ -246,7 +308,7 @@ const ChatPage = () => {
                                                 <span>{recipient?.fullname?.charAt(0).toUpperCase() || 'T'}</span>
                                             )}
                                         </div>
-                                        {recipient?.onlineStatus === 'online' && (
+                                        {isOnline && (
                                             <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-[#07090e]" />
                                         )}
                                     </div>
@@ -277,7 +339,7 @@ const ChatPage = () => {
                         {/* Chat Bar Header */}
                         {(() => {
                             const recipient = getRecipientProfile(activeConversation);
-                            const isOnline = recipient?.onlineStatus === 'online';
+                            const isOnline = recipient && onlineUserIds.has(recipient.clerkUserId);
 
                             return (
                                 <div className="h-20 border-b border-white/5 flex items-center justify-between px-6 bg-[#07090e]/80 backdrop-blur-xl z-10">
@@ -290,7 +352,7 @@ const ChatPage = () => {
                                         >
                                             <ArrowLeft size={20} />
                                         </Button>
-
+ 
                                         <div 
                                             className="cursor-pointer flex items-center gap-4"
                                             onClick={() => navigate(`/user/profile/${recipient?.clerkUserId}`)}
@@ -307,14 +369,14 @@ const ChatPage = () => {
                                                     <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-slate-950" />
                                                 )}
                                             </div>
-
+ 
                                             <div>
                                                 <h2 className="font-black text-white tracking-tight text-sm flex items-center gap-2 hover:text-primary transition-colors">
                                                     {recipient?.fullname || 'Traveler'}
                                                 </h2>
                                                 <div className="flex items-center gap-2 mt-0.5">
-                                                    <span className={`text-[9px] uppercase tracking-widest font-black ${isOnline ? 'text-emerald-500' : 'text-white/30'}`}>
-                                                        {isOnline ? 'Online Status Live' : 'Traveler offline'}
+                                                    <span className={`text-[9px] uppercase tracking-widest font-black ${isOnline ? 'text-emerald-500 animate-pulse' : 'text-white/30'}`}>
+                                                        {isOnline ? 'Active Online Line' : 'Traveler offline'}
                                                     </span>
                                                 </div>
                                             </div>
@@ -354,7 +416,15 @@ const ChatPage = () => {
                                             </div>
                                             <div className={`flex items-center gap-1.5 text-[9px] text-white/20 font-black uppercase tracking-widest ${isMe ? 'justify-end' : 'justify-start'}`}>
                                                 <span>{formatMessageTime(msg.createdAt)}</span>
-                                                {isMe && <CheckCheck size={12} className="text-emerald-400" />}
+                                                {isMe && (
+                                                    msg.status === 'seen' ? (
+                                                        <CheckCheck size={12} className="text-emerald-400" title="Seen" />
+                                                    ) : msg.status === 'delivered' ? (
+                                                        <CheckCheck size={12} className="text-white/30" title="Delivered" />
+                                                    ) : (
+                                                        <Check size={12} className="text-white/30" title="Sent" />
+                                                    )
+                                                )}
                                             </div>
                                         </div>
                                     </motion.div>
@@ -401,6 +471,7 @@ const ChatPage = () => {
                 )}
             </div>
         </div>
+    </div>
     );
 };
 

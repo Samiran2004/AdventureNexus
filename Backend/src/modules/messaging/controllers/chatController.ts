@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import Conversation from '../../../shared/database/models/conversationModel';
 import Message from '../../../shared/database/models/messageModel';
 import User from '../../../shared/database/models/userModel';
-import { broadcastRealtimeEvent, sendChatRealtimeMessage } from '../../../shared/socket/socket';
+import { broadcastRealtimeEvent, sendChatRealtimeMessage, isUserOnline } from '../../../shared/socket/socket';
 
 /**
  * Get or create a private conversation between two users
@@ -82,12 +82,15 @@ export const sendMessage = async (req: Request, res: Response) => {
             return res.status(404).json({ success: false, message: 'Conversation not found or access denied' });
         }
 
+        // Check if recipient is online to set status as 'delivered'
+        const recipientsOnline = conversation.participants.some(pId => pId !== senderClerkUserId && isUserOnline(pId));
+
         const message = new Message({
             conversationId,
             senderClerkUserId,
             content,
             type,
-            status: 'sent'
+            status: recipientsOnline ? 'delivered' : 'sent'
         });
 
         await message.save();
@@ -130,6 +133,23 @@ export const getMessages = async (req: Request, res: Response) => {
         if (!conversation || !conversation.participants.includes(userClerkUserId)) {
             return res.status(404).json({ success: false, message: 'Conversation not found or access denied' });
         }
+
+        // Mark messages as seen
+        await Message.updateMany(
+            { conversationId, senderClerkUserId: { $ne: userClerkUserId }, status: { $ne: 'seen' } },
+            { $set: { status: 'seen' } }
+        );
+
+        // Notify other participants via socket that messages are seen!
+        conversation.participants.forEach(participantId => {
+            if (participantId !== userClerkUserId) {
+                sendChatRealtimeMessage(participantId, {
+                    type: 'messages:seen',
+                    conversationId,
+                    seenBy: userClerkUserId
+                });
+            }
+        });
 
         const messages = await Message.find({ conversationId })
             .sort({ createdAt: -1 })
@@ -204,6 +224,42 @@ export const getConversations = async (req: Request, res: Response) => {
         });
     } catch (error: any) {
         console.error('Error fetching conversations:', error);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+};
+
+/**
+ * Mark all messages in a conversation as read
+ * PUT /api/messaging/messages/read/:conversationId
+ */
+export const markAsRead = async (req: Request, res: Response) => {
+    try {
+        const { conversationId } = req.params;
+        const userClerkUserId = (req as any).user?.clerkUserId;
+
+        const conversation = await Conversation.findById(conversationId);
+        if (!conversation || !conversation.participants.includes(userClerkUserId)) {
+            return res.status(404).json({ success: false, message: 'Conversation not found or access denied' });
+        }
+
+        await Message.updateMany(
+            { conversationId, senderClerkUserId: { $ne: userClerkUserId }, status: { $ne: 'seen' } },
+            { $set: { status: 'seen' } }
+        );
+
+        conversation.participants.forEach(participantId => {
+            if (participantId !== userClerkUserId) {
+                sendChatRealtimeMessage(participantId, {
+                    type: 'messages:seen',
+                    conversationId,
+                    seenBy: userClerkUserId
+                });
+            }
+        });
+
+        return res.status(200).json({ success: true });
+    } catch (error: any) {
+        console.error('Error marking messages as read:', error);
         return res.status(500).json({ success: false, message: 'Internal server error' });
     }
 };
