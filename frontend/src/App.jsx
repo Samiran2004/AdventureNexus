@@ -30,7 +30,6 @@ import { SocialHubPage } from './features/community/pages/SocialHubPage';
 import { GroupPage } from './features/community/pages/GroupPage';
 import PublicProfilePage from './features/user/pages/PublicProfilePage';
 import TravelStoriesPage from './features/marketing/pages/TravelStoriesPage';
-import TravelGuidesPage from './features/marketing/pages/TravelGuidesPage';
 import SocialHub from './components/SocialHub';
 import TermsPage from './features/legal/pages/TermsPage';
 import PrivacyPage from './features/legal/pages/PrivacyPage';
@@ -111,7 +110,6 @@ const AppContent = () => {
         <Route path='/community' element={<SocialHubPage />} />
         <Route path='/community/group/:groupId' element={<GroupPage />} />
         <Route path='/stories' element={<TravelStoriesPage />} />
-        <Route path='/guides' element={<TravelGuidesPage />} />
         <Route path='/social-search' element={<SocialSearchPage />} />
         <Route path='/chat' element={
           <ProtectedRoute>

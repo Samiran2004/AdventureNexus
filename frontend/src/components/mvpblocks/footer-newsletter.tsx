@@ -17,7 +17,6 @@ const footerColumns = [
     links: [
       { name: 'AI Trip Planner', href: '/search' },
       { name: 'Travel Stories', href: '/stories' },
-      { name: 'Travel Guides', href: '/guides' },
       { name: 'Local Experiences', href: '/experiences' },
       { name: 'Adventure Tours', href: '/tours' },
     ],

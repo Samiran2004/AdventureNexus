@@ -48,13 +48,6 @@ function NavBar() {
             color: 'text-purple-500'
         },
         { 
-            name: 'Travel Guides', 
-            path: '/guides', 
-            icon: Award, 
-            desc: 'Expert advice for your next journey.',
-            color: 'text-orange-500'
-        },
-        { 
             name: 'Experiences', 
             path: '/experiences', 
             icon: Sparkles, 
