@@ -43,6 +43,7 @@ import bookingRoute from './modules/bookings/routes/booking.routes';
 import trainRoute from './modules/trains/routes/train.routes';
 import socialRoute from './modules/social/routes/socialRoutes';
 import messagingRoute from './modules/messaging/routes/messagingRoutes';
+import experiencesRoute from './modules/experiences/routes/experiencesRoutes';
 
 // Swagger
 import swaggerJSDoc from 'swagger-jsdoc';
@@ -193,6 +194,7 @@ app.use('/api/v1/community', communityRoutes);
 // Social & Messaging Routes
 app.use('/api/v1/social', socialRoute);
 app.use('/api/v1/messaging', messagingRoute);
+app.use('/api/v1/experiences', experiencesRoute);
 
 
 
