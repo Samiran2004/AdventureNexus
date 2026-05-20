@@ -1,4 +1,4 @@
-import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react'; // Clerk components for auth UI
+import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from '@clerk/clerk-react'; // Clerk components for auth UI
 import { 
     Menu, X, Sun, Moon, Search, Compass, ChevronDown, 
     Sparkles, MapPin, Globe, Award, TrendingUp,
@@ -14,6 +14,7 @@ import NotificationCenter from '@/features/social/components/NotificationCenter'
 import { Button } from '@/components/ui/button';
 
 function NavBar() {
+    const { user } = useUser();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const navigate = useNavigate();
@@ -62,6 +63,16 @@ function NavBar() {
             color: 'text-indigo-500'
         }
     ];
+
+    if (user) {
+        discoverItems.push({
+            name: 'My Profile',
+            path: '/profile',
+            icon: UserIcon,
+            desc: 'Manage your profile and explore your control center.',
+            color: 'text-emerald-500'
+        });
+    }
 
     const [discoverOpen, setDiscoverOpen] = useState(false);
 

@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document, model } from 'mongoose';
 
-export type ActivityType = 'post_created' | 'like_given' | 'group_joined';
+export type ActivityType = string;
 
 export interface IActivityLog extends Document {
     clerkUserId: string;
@@ -14,10 +14,11 @@ const activityLogSchema = new Schema<IActivityLog>(
         clerkUserId: { type: String, required: true, index: true },
         activityType: { 
             type: String, 
-            enum: ['post_created', 'like_given', 'group_joined'], 
             required: true 
         },
         targetId: { type: String, required: true },
+        username: { type: String },
+        details: { type: String }
     },
     { timestamps: true }
 );

@@ -11,7 +11,14 @@ import {
     getSystemHealth,
     getAuditLogs,
     getGrowthStats,
-    getApiAnalytics
+    getApiAnalytics,
+    getDashboardMetrics,
+    getDashboardTimeSeries,
+    getDashboardActivityLogs,
+    getSimulatorStatus,
+    toggleSimulator,
+    getModerationAlerts,
+    resolveModerationAlert
 } from '../controllers/adminDashboard.controller';
 import { broadcastMessage } from '../controllers/adminCommunication.controller';
 import {
@@ -29,6 +36,10 @@ router.post('/login', adminLogin);
 
 // Protected Admin Routes
 router.use(protectAdmin);
+
+router.get('/metrics', getDashboardMetrics);
+router.get('/timeseries', getDashboardTimeSeries);
+router.get('/activity', getDashboardActivityLogs);
 
 router.get('/stats', getDashboardStats);
 
@@ -55,5 +66,13 @@ router.patch('/settings', updateSystemSetting);
 // Newsletter Management
 router.get('/subscribers', getSubscribers);
 router.delete('/subscribers/:id', deleteSubscriber);
+
+// Dynamic Traffic Simulator Control Center
+router.get('/simulator/status', getSimulatorStatus);
+router.post('/simulator/toggle', toggleSimulator);
+
+// Content Toxicity Moderation Shield
+router.get('/moderation', getModerationAlerts);
+router.post('/moderation/resolve', resolveModerationAlert);
 
 export default router;

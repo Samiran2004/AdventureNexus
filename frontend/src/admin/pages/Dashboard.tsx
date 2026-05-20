@@ -1,405 +1,233 @@
 import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { Shield, Activity, RefreshCw, Play, Square, AlertTriangle } from 'lucide-react';
+import { useAdminMetrics } from '../hooks/useAdminMetrics';
+import { useRealtimeEvents } from '../hooks/useRealtimeEvents';
+import MetricsGrid from '../components/MetricsGrid';
+import ChartCard from '../components/ChartCard';
+import LiveActivityFeed from '../components/LiveActivityFeed';
+import SystemHealthPanel from '../components/SystemHealthPanel';
+import SystemLogsPanel from '../components/SystemLogsPanel';
+import ToxicityRadar from '../components/ToxicityRadar';
 import api from '../services/adminApi';
-import { useSocket } from '../context/AdminSocketContext';
-import {
-    Users, Map, MessageSquare, TrendingUp, Activity, Clock, Shield,
-    ArrowUpRight, ArrowDownRight, Cpu, Database, Zap, Bell,
-    Server, Terminal, AlertCircle
-} from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
-import { motion, AnimatePresence } from 'framer-motion';
-
-interface Stats {
-    totalUsers: number;
-    totalPlans: number;
-    totalReviews: number;
-    recentPlans: any[];
-}
-
-interface GrowthPoint {
-    date: string;
-    users: number;
-    plans: number;
-}
-
-interface Health {
-    cpuLoad: number;
-    memory: {
-        total: number;
-        free: number;
-        used: number;
-        percentage: string;
-    };
-    uptime: number;
-    platform: string;
-    arch: string;
-}
-
-interface ActivityEvent {
-    id: string;
-    type: string;
-    message: string;
-    timestamp: Date;
-    severity: 'info' | 'warning' | 'critical';
-}
 
 const Dashboard: React.FC = () => {
-    const [stats, setStats] = useState<Stats | null>(null);
-    const [health, setHealth] = useState<Health | null>(null);
-    const [growth, setGrowth] = useState<GrowthPoint[]>([]);
-    const [activities, setActivities] = useState<ActivityEvent[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [broadcastMsg, setBroadcastMsg] = useState('');
-    const [sendingBroadcast, setSendingBroadcast] = useState(false);
-    const { socket } = useSocket();
+    const {
+        metrics,
+        timeSeries,
+        systemHealth,
+        loading: metricsLoading,
+        error: metricsError,
+        refresh: refreshMetrics
+    } = useAdminMetrics();
+
+    const {
+        events,
+        loading: eventsLoading,
+        error: eventsError,
+        refresh: refreshEvents
+    } = useRealtimeEvents();
+
+    const [simulatorActive, setSimulatorActive] = useState(false);
+    const [simulatorLoading, setSimulatorLoading] = useState(false);
 
     useEffect(() => {
-        const fetchData = async () => {
+        const checkSimulatorStatus = async () => {
             try {
-                const [statsRes, healthRes, growthRes] = await Promise.all([
-                    api.get('/stats'),
-                    api.get('/health'),
-                    api.get('/growth')
-                ]);
-                setStats(statsRes.data.data);
-                setHealth(healthRes.data.data);
-                setGrowth(growthRes.data.data);
-            } catch (error) {
-                console.error('Failed to fetch data', error);
-            } finally {
-                setLoading(false);
+                const res = await api.get('/simulator/status');
+                setSimulatorActive(res.data.data.active);
+            } catch (err) {
+                console.error('Failed to query simulator status', err);
             }
         };
-
-        fetchData();
-        const healthInterval = setInterval(async () => {
-            try {
-                const healthRes = await api.get('/health');
-                setHealth(healthRes.data.data);
-            } catch (e) { /* ignore periodic errors */ }
-        }, 5000);
-
-        return () => clearInterval(healthInterval);
+        checkSimulatorStatus();
     }, []);
 
-    useEffect(() => {
-        if (!socket) return;
-
-        const handleNewUser = (userId: string) => {
-            addActivity('NEW_USER', `New adventurer joined: ${userId.slice(-6)}`, 'info');
-        };
-        const handlePlanDeleted = (planId: string) => {
-            addActivity('PLAN_DELETE', `Expedition decommissioned: ${planId.slice(-6)}`, 'warning');
-        };
-        const handleUserOnline = (userId: string) => {
-            addActivity('USER_ONLINE', `User ${userId.slice(-6)} logged into Terminal`, 'info');
-        };
-
-        socket.on('user:online', handleUserOnline);
-        socket.on('plan:deleted', handlePlanDeleted);
-
-        return () => {
-            socket.off('user:online', handleUserOnline);
-            socket.off('plan:deleted', handlePlanDeleted);
-        };
-    }, [socket]);
-
-    const addActivity = (type: string, message: string, severity: 'info' | 'warning' | 'critical') => {
-        const newEvent: ActivityEvent = {
-            id: Math.random().toString(36).substr(2, 9),
-            type,
-            message,
-            timestamp: new Date(),
-            severity
-        };
-        setActivities(prev => [newEvent, ...prev].slice(0, 20));
-    };
-
-    const handleBroadcast = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!broadcastMsg.trim()) return;
-        setSendingBroadcast(true);
+    const handleToggleSimulator = async () => {
+        setSimulatorLoading(true);
         try {
-            await api.post('/broadcast', { message: broadcastMsg, severity: 'info' });
-            addActivity('BROADCAST', `System-wide alert: ${broadcastMsg}`, 'critical');
-            setBroadcastMsg('');
-        } catch (error) {
-            alert('Failed to send broadcast');
+            const res = await api.post('/simulator/toggle');
+            setSimulatorActive(res.data.data.active);
+            // Refresh systems immediately to capture initial mock signals
+            setTimeout(() => {
+                refreshMetrics();
+                refreshEvents();
+            }, 1000);
+        } catch (err) {
+            alert('Failed to toggle traffic simulator');
         } finally {
-            setSendingBroadcast(false);
+            setSimulatorLoading(false);
         }
     };
 
-    if (loading) return (
-        <div className="flex items-center justify-center h-64 text-white">
-            <div className="relative w-12 h-12">
-                <div className="absolute inset-0 border-4 border-indigo-500/20 rounded-full"></div>
-                <div className="absolute inset-0 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-            </div>
-        </div>
-    );
-
-    const formatUptime = (seconds: number) => {
-        const hrs = Math.floor(seconds / 3600);
-        const mins = Math.floor((seconds % 3600) / 60);
-        return `${hrs}h ${mins}m`;
+    const handleManualRefresh = () => {
+        refreshMetrics();
+        refreshEvents();
     };
 
-    const sysCards = [
-        { title: 'CPU Load', value: health?.cpuLoad.toFixed(2) || '0.00', icon: Cpu, color: 'text-indigo-400', sub: 'OS 1m Average' },
-        { title: 'Memory', value: `${health?.memory.percentage}%` || '0%', icon: Database, color: 'text-emerald-400', sub: 'Allocated vs Free' },
-        { title: 'System Uptime', value: formatUptime(health?.uptime || 0), icon: Clock, color: 'text-orange-400', sub: 'Node Continuity' },
-    ];
+    if (metricsLoading && !metrics) {
+        return (
+            <div className="flex flex-col items-center justify-center h-[70vh] text-white gap-4">
+                <div className="relative w-16 h-16">
+                    <div className="absolute inset-0 border-4 border-emerald-500/10 rounded-full"></div>
+                    <div className="absolute inset-0 border-4 border-t-emerald-500 border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                    <span className="text-xs font-black tracking-widest text-emerald-400 uppercase animate-pulse">Initializing Observability Tunnel...</span>
+                    <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">AdventureNexus Command Center</span>
+                </div>
+            </div>
+        );
+    }
+
+    if (metricsError || eventsError) {
+        return (
+            <div className="flex flex-col items-center justify-center h-[70vh] text-white gap-4 bg-red-950/15 border border-red-500/10 rounded-3xl p-8 max-w-lg mx-auto">
+                <div className="p-4 rounded-full bg-red-500/10 text-red-500 border border-red-500/20">
+                    <Shield className="w-10 h-10" />
+                </div>
+                <h3 className="text-lg font-black tracking-wider uppercase text-red-400">Observability Connection Failure</h3>
+                <p className="text-xs text-gray-400 font-medium text-center leading-relaxed">
+                    The admin client was unable to establish a secure stream with the AdventureNexus Core endpoints. Please ensure the backend is running.
+                </p>
+                <button
+                    onClick={handleManualRefresh}
+                    className="mt-2 bg-red-500 hover:bg-red-600 px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all active:scale-[0.98]"
+                >
+                    Retry Connection
+                </button>
+            </div>
+        );
+    }
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-10 pb-20"
+            transition={{ duration: 0.4 }}
+            className="space-y-6 pb-20 select-none font-sans"
         >
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                <div className="flex flex-col gap-2">
-                    <h1 className="text-4xl font-black text-white tracking-tight">Intelligence</h1>
-                    <p className="text-gray-500 font-medium italic">Live operational data from Nexus Core.</p>
-                </div>
-                <div className="flex items-center gap-4 bg-gray-900/40 p-1 rounded-2xl border border-white/5">
-                    <div className="px-4 py-2 bg-indigo-500/10 rounded-xl border border-indigo-500/20">
-                        <span className="text-xs font-black text-indigo-400 uppercase tracking-widest">Master Terminal</span>
+            {/* Header telemetry info */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/5 pb-6">
+                <div className="flex flex-col gap-1.5">
+                    <div className="flex items-center gap-2">
+                        <div className={`w-2.5 h-2.5 rounded-full ${simulatorActive ? 'bg-indigo-500 animate-ping' : 'bg-emerald-500 animate-pulse'}`}></div>
+                        <h1 className="text-3xl font-black text-white tracking-tight uppercase font-mono">
+                            Core Observability <span className="text-emerald-400 font-sans">Panel</span>
+                        </h1>
                     </div>
-                </div>
-            </div>
-
-            {/* TOP Metrics - Pulse Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {sysCards.map((card, index) => (
-                    <motion.div
-                        key={card.title}
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: index * 0.1 }}
-                        className="bg-gray-800/20 backdrop-blur-md p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden group shadow-2xl"
-                    >
-                        <div className="flex flex-col gap-4 relative z-10">
-                            <div className="flex items-center justify-between">
-                                <div className={`p-3 rounded-2xl bg-white/5 border border-white/10 ${card.color}`}>
-                                    <card.icon className="w-6 h-6" />
-                                </div>
-                                <Activity className="w-4 h-4 text-gray-700 animate-pulse" />
-                            </div>
-                            <div>
-                                <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.2em] mb-1">{card.title}</p>
-                                <p className="text-3xl font-black text-white tracking-tighter tabular-nums">{card.value}</p>
-                                <p className="text-[10px] text-gray-600 font-bold mt-2 uppercase">{card.sub}</p>
-                            </div>
-                        </div>
-                        <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-indigo-500/5 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    </motion.div>
-                ))}
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                {/* Global Broadcast Center */}
-                <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="lg:col-span-1 bg-indigo-500/5 backdrop-blur-sm p-8 rounded-[2.5rem] border border-indigo-500/10 shadow-xl"
-                >
-                    <div className="flex items-center gap-3 mb-8">
-                        <div className="p-2 rounded-lg bg-indigo-500/20 border border-indigo-500/30 shadow-[0_0_15px_rgba(99,102,241,0.2)]">
-                            <Bell className="w-5 h-5 text-indigo-400" />
-                        </div>
-                        <h2 className="text-xl font-bold text-white tracking-tight">Broadcast Center</h2>
-                    </div>
-                    <form onSubmit={handleBroadcast} className="space-y-4">
-                        <textarea
-                            value={broadcastMsg}
-                            onChange={(e) => setBroadcastMsg(e.target.value)}
-                            placeholder="System-wide announcement..."
-                            className="w-full h-32 bg-gray-900 border border-white/5 rounded-2xl p-4 text-sm text-gray-200 focus:outline-none focus:border-indigo-500/50 transition-colors resize-none placeholder:text-gray-700 font-medium"
-                        />
-                        <button
-                            type="submit"
-                            disabled={sendingBroadcast || !broadcastMsg.trim()}
-                            className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-600/50 text-white rounded-xl py-4 font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-3 transition-all active:scale-[0.98] shadow-lg shadow-indigo-600/20"
-                        >
-                            {sendingBroadcast ? <Zap className="w-4 h-4 animate-spin" /> : <>
-                                <Zap className="w-4 h-4" />
-                                Initialize Global Alert
-                            </>}
-                        </button>
-                    </form>
-                    <p className="mt-6 text-[10px] text-gray-600 font-bold uppercase tracking-widest text-center">
-                        <Shield className="w-3 h-3 inline-block mr-2" />
-                        Encrypted Hub Node-01
+                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest font-mono">
+                        Master node terminal session // live stream logs & system health
                     </p>
-                </motion.div>
+                </div>
 
-                {/* Live Activity Stream */}
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="lg:col-span-2 bg-gray-800/10 backdrop-blur-md p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden"
-                >
-                    <div className="flex items-center justify-between mb-8">
-                        <h2 className="text-xl font-bold text-white flex items-center gap-3">
-                            <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-                                <Terminal className="w-5 h-5 text-emerald-400" />
-                            </div>
-                            Activity Stream
-                        </h2>
-                        <span className="text-[10px] font-black text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-full uppercase animate-pulse">Live</span>
+                <div className="flex items-center gap-3 flex-wrap">
+                    {/* Live Traffic Simulator controls */}
+                    <button
+                        onClick={handleToggleSimulator}
+                        disabled={simulatorLoading}
+                        className={`flex items-center gap-2 px-4 py-2 border rounded-full text-[10px] font-bold transition-all uppercase tracking-widest font-mono ${
+                            simulatorActive 
+                            ? 'border-indigo-500/30 text-indigo-400 bg-indigo-500/10 hover:bg-indigo-500/15 shadow-[0_0_15px_rgba(99,102,241,0.25)]' 
+                            : 'border-white/10 text-gray-400 hover:text-white bg-white/[0.01] hover:bg-white/[0.03]'
+                        }`}
+                        title="Toggle synthetic mock operational traffic feed"
+                    >
+                        {simulatorActive ? <Square className="w-3 h-3 fill-indigo-400" /> : <Play className="w-3 h-3 fill-gray-400 hover:fill-white" />}
+                        {simulatorActive ? 'STOP TRAFFIC SIMULATION' : 'START TRAFFIC SIMULATION'}
+                    </button>
+
+                    <button
+                        onClick={handleManualRefresh}
+                        className="flex items-center gap-2 px-4 py-2 border border-white/10 hover:border-white/20 rounded-full text-[10px] font-bold text-gray-400 hover:text-white bg-white/[0.01] hover:bg-white/[0.03] transition-all uppercase tracking-widest font-mono"
+                    >
+                        <RefreshCw className="w-3 h-3" />
+                        SYNC CORE SYSTEMS
+                    </button>
+                    <div className="hidden lg:flex items-center gap-2.5 bg-white/[0.01] border border-white/10 rounded-full px-4 py-2 font-mono text-[10px] font-bold text-emerald-400">
+                        <Activity className="w-3.5 h-3.5 animate-pulse" />
+                        <span>SOCKET PIPELINE SYNCED</span>
                     </div>
+                </div>
+            </div>
 
-                    <div className="space-y-3 h-[22rem] overflow-y-auto custom-scrollbar pr-4">
-                        <AnimatePresence initial={false}>
-                            {activities.map((ev) => (
-                                <motion.div
-                                    key={ev.id}
-                                    initial={{ opacity: 0, x: 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, scale: 0.95 }}
-                                    className={`p-4 rounded-2xl bg-white/5 border border-white/5 flex items-start gap-4 hover:bg-white/10 transition-colors`}
-                                >
-                                    <div className={`mt-1 h-2 w-2 rounded-full shrink-0 ${ev.severity === 'critical' ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' :
-                                        ev.severity === 'warning' ? 'bg-orange-500' : 'bg-blue-500'
-                                        }`}></div>
-                                    <div className="flex-1 space-y-1">
-                                        <p className="text-xs text-gray-300 font-bold tracking-wide">{ev.message}</p>
-                                        <div className="flex items-center gap-3">
-                                            <span className="text-[9px] text-gray-600 font-black uppercase tracking-widest">{ev.type}</span>
-                                            <span className="text-[9px] text-gray-700">{ev.timestamp.toLocaleTimeString()}</span>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            ))}
-                        </AnimatePresence>
-                        {activities.length === 0 && (
-                            <div className="h-full flex flex-col items-center justify-center text-gray-600 gap-3 opacity-30">
-                                <Terminal className="w-10 h-10" />
-                                <p className="text-xs uppercase font-black tracking-[0.2em]">Awaiting system signals...</p>
-                            </div>
+            {/* TOP Grid: Live Metrics MetricsGrid */}
+            {metrics && <MetricsGrid metrics={metrics} />}
+
+            {/* MIDDLE Grid: Charts & Telemetry + Sidebar Feed */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Visualizations (Left + Center Columns) */}
+                <div className="lg:col-span-2 space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Registration Trends Chart */}
+                        {timeSeries && (
+                            <ChartCard
+                                title="24-Hour Traveler Ingestion"
+                                subtitle="Adventures Registrations"
+                                type="line"
+                                data={timeSeries.hourlyRegistrations}
+                                dataKey="registrations"
+                                xKey="hour"
+                                color="#3b82f6"
+                                glow="rgba(59, 130, 246, 0.4)"
+                                gradientId="regGrad"
+                            />
+                        )}
+
+                        {/* Community post volume Chart */}
+                        {timeSeries && (
+                            <ChartCard
+                                title="Weekly Social Feed Volume"
+                                subtitle="Community Posts Ingestion"
+                                type="bar"
+                                data={timeSeries.dailyPosts}
+                                dataKey="count"
+                                xKey="date"
+                                color="#8b5cf6"
+                                glow="rgba(139, 92, 246, 0.4)"
+                                gradientId="postGrad"
+                            />
                         )}
                     </div>
-                </motion.div>
+
+                    {/* Latency telemetric chart (wide width) */}
+                    {timeSeries && (
+                        <ChartCard
+                            title="Average Telemetry API Response Times"
+                            subtitle="Core Server Latency Ingestion (ms)"
+                            type="area"
+                            data={timeSeries.apiLatency}
+                            dataKey="value"
+                            xKey="date"
+                            color="#10b981"
+                            glow="rgba(16, 185, 129, 0.4)"
+                            gradientId="latencyGrad"
+                        />
+                    )}
+                </div>
+
+                {/* Live activity logs Feed (Right Column Sidebar) */}
+                <div className="lg:col-span-1">
+                    <LiveActivityFeed events={events} loading={eventsLoading} />
+                </div>
             </div>
 
-            {/* INTELLIGENCE GRAPHS (NEW) */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                {/* System Growth - AreaChart */}
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="bg-gray-800/10 backdrop-blur-md p-8 rounded-[2.5rem] border border-white/5 shadow-2xl"
-                >
-                    <div className="flex items-center justify-between mb-8">
-                        <div className="space-y-1">
-                            <h3 className="text-xl font-bold text-white flex items-center gap-3">
-                                <span className="p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/20">
-                                    <TrendingUp className="w-5 h-5 text-indigo-400" />
-                                </span>
-                                System Growth
-                            </h3>
-                            <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest pl-11">User Acquisition (Last 7 Days)</p>
-                        </div>
-                    </div>
+            {/* NEW ROW: Toxicity Moderation Shield Radar */}
+            <div className="grid grid-cols-1 gap-6">
+                <ToxicityRadar />
+            </div>
 
-                    <div className="h-[250px] w-full mt-4">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={growth}>
-                                <defs>
-                                    <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
-                                        <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
-                                <XAxis
-                                    dataKey="date"
-                                    stroke="#555"
-                                    fontSize={10}
-                                    tickLine={false}
-                                    axisLine={false}
-                                    tick={{ fill: '#555' }}
-                                />
-                                <YAxis
-                                    stroke="#555"
-                                    fontSize={10}
-                                    tickLine={false}
-                                    axisLine={false}
-                                    tickFormatter={(v) => `${v}`}
-                                    tick={{ fill: '#555' }}
-                                />
-                                <Tooltip
-                                    contentStyle={{ background: '#0a0a0a', border: '1px solid #333', borderRadius: '12px' }}
-                                    itemStyle={{ color: '#fff', fontSize: '12px' }}
-                                />
-                                <Area
-                                    type="monotone"
-                                    dataKey="users"
-                                    stroke="#6366f1"
-                                    strokeWidth={3}
-                                    fillOpacity={1}
-                                    fill="url(#colorUsers)"
-                                />
-                            </AreaChart>
-                        </ResponsiveContainer>
-                    </div>
-                </motion.div>
+            {/* BOTTOM Grid: Health + Audit Log Trail */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* System health panel */}
+                <div className="lg:col-span-1">
+                    {systemHealth && <SystemHealthPanel health={systemHealth} />}
+                </div>
 
-                {/* Operational Volume - BarChart */}
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="bg-gray-800/10 backdrop-blur-md p-8 rounded-[2.5rem] border border-white/5 shadow-2xl"
-                >
-                    <div className="flex items-center justify-between mb-8">
-                        <div className="space-y-1">
-                            <h3 className="text-xl font-bold text-white flex items-center gap-3">
-                                <span className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-                                    <Activity className="w-5 h-5 text-emerald-400" />
-                                </span>
-                                Operational Volume
-                            </h3>
-                            <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest pl-11">Expeditions Created (Last 7 Days)</p>
-                        </div>
-                    </div>
-
-                    <div className="h-[250px] w-full mt-4">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={growth}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
-                                <XAxis
-                                    dataKey="date"
-                                    stroke="#555"
-                                    fontSize={10}
-                                    tickLine={false}
-                                    axisLine={false}
-                                    tick={{ fill: '#555' }}
-                                />
-                                <YAxis
-                                    stroke="#555"
-                                    fontSize={10}
-                                    tickLine={false}
-                                    axisLine={false}
-                                    tick={{ fill: '#555' }}
-                                />
-                                <Tooltip
-                                    cursor={{ fill: 'rgba(255,255,255,0.02)' }}
-                                    contentStyle={{ background: '#0a0a0a', border: '1px solid #333', borderRadius: '12px' }}
-                                    itemStyle={{ color: '#fff', fontSize: '12px' }}
-                                />
-                                <Bar
-                                    dataKey="plans"
-                                    fill="#10b981"
-                                    radius={[6, 6, 0, 0]}
-                                    barSize={40}
-                                />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </div>
-                </motion.div>
+                {/* Incidents audit log panel */}
+                <div className="lg:col-span-2">
+                    <SystemLogsPanel />
+                </div>
             </div>
         </motion.div>
     );

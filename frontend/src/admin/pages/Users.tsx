@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../services/adminApi';
-import { Trash2, Search, User as UserIcon, Shield, Mail, Calendar, MapPin, Activity, Clock, Eye, Trash, CheckCircle2, ChevronRight, Ban, Activity as ActivityIcon } from 'lucide-react';
+import { Trash2, Search, User as UserIcon, Mail, Calendar, Activity, Clock, Eye, ShieldCheck, RefreshCw, AlertTriangle } from 'lucide-react';
 import { useSocket } from '../context/AdminSocketContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import DetailPanel from '../components/DetailPanel';
@@ -12,6 +12,18 @@ const UsersPage: React.FC = () => {
     const [onlineUserIds, setOnlineUserIds] = useState<Set<string>>(new Set());
     const [selectedUser, setSelectedUser] = useState<any | null>(null);
     const { socket } = useSocket();
+
+    const fetchUsers = async () => {
+        try {
+            setLoading(true);
+            const res = await api.get('/users');
+            setUsers(res.data.data);
+        } catch (error) {
+            console.error('Failed to fetch users', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
         fetchUsers();
@@ -40,20 +52,9 @@ const UsersPage: React.FC = () => {
         }
     }, [socket]);
 
-    const fetchUsers = async () => {
-        try {
-            const res = await api.get('/users');
-            setUsers(res.data.data);
-        } catch (error) {
-            console.error('Failed to fetch users', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
     const handleDelete = async (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
-        if (!window.confirm('WARNING: Irreversibly delete this user?')) return;
+        if (!window.confirm('WARNING: Irreversibly delete this user? All their comments, posts, likes, and group memberships will be permanently deleted from MongoDB and Cloudinary.')) return;
         try {
             await api.delete(`/users/${id}`);
             setUsers(users.filter(u => u._id !== id));
@@ -80,247 +81,243 @@ const UsersPage: React.FC = () => {
         return past.toLocaleDateString();
     };
 
-    if (loading) return (
-        <div className="space-y-6">
-            <div className="flex justify-between items-center px-2">
-                <div className="h-10 w-48 bg-white/5 rounded-xl animate-pulse"></div>
-                <div className="h-12 w-64 bg-white/5 rounded-2xl animate-pulse"></div>
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center h-[50vh] text-white gap-3">
+                <span className="w-8 h-8 border-2 border-t-emerald-500 border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400">Synchronizing Operators Logs...</span>
             </div>
-            <div className="bg-gray-900/40 rounded-[2.5rem] border border-white/5 h-[500px] overflow-hidden">
-                <div className="p-8 space-y-6">
-                    {[...Array(6)].map((_, i) => (
-                        <div key={i} className="flex items-center gap-6">
-                            <div className="w-12 h-12 bg-white/5 rounded-2xl animate-pulse"></div>
-                            <div className="space-y-2 flex-1">
-                                <div className="h-4 w-32 bg-white/5 rounded-lg animate-pulse"></div>
-                                <div className="h-3 w-24 bg-white/5 rounded-lg animate-pulse"></div>
-                            </div>
-                            <div className="h-8 w-24 bg-white/5 rounded-full animate-pulse"></div>
-                            <div className="h-10 w-32 bg-white/5 rounded-xl animate-pulse"></div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </div>
-    );
+        );
+    }
 
     return (
         <motion.div
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="space-y-8"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-6 pb-20 select-none font-sans"
         >
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div className="space-y-1">
-                    <h1 className="text-4xl font-black text-white tracking-tight">Community</h1>
-                    <p className="text-gray-500 font-medium">Synchronized user database monitoring.</p>
-                </div>
-
-                <div className="flex items-center gap-4 bg-gray-800/40 backdrop-blur-md p-1.5 rounded-2xl border border-white/5 shadow-lg group focus-within:border-indigo-500/50 transition-all duration-300">
-                    <div className="relative">
-                        <Search className="absolute left-3 top-2.5 w-5 h-5 text-gray-500 group-focus-within:text-indigo-400 transition-colors" />
-                        <input
-                            type="text"
-                            placeholder="Identify user..."
-                            className="bg-transparent text-white pl-10 pr-4 py-2 rounded-xl focus:outline-none w-64 placeholder-gray-600 font-medium"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
+            {/* Header section */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-b-white/5 pb-6">
+                <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                        <UserIcon className="w-5 h-5 text-emerald-400" />
+                        <h1 className="text-3xl font-black text-white tracking-tight uppercase font-mono">
+                            Ecosystem Operators <span className="text-emerald-400 font-sans">Database</span>
+                        </h1>
                     </div>
+                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest font-mono">
+                        Active community user node directories and online status triggers
+                    </p>
+                </div>
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={fetchUsers}
+                        className="flex items-center gap-2 px-4 py-2 border border-white/10 hover:border-white/20 rounded-full text-[10px] font-bold text-gray-400 hover:text-white bg-white/[0.01] hover:bg-white/[0.03] transition-all uppercase tracking-widest font-mono"
+                    >
+                        <RefreshCw className="w-3 h-3" />
+                        Sync Operators
+                    </button>
                 </div>
             </div>
 
-            <div className="bg-gray-900/40 backdrop-blur-xl rounded-[2.5rem] border border-white/5 shadow-2xl overflow-hidden relative">
+            {/* Filter controls */}
+            <div className="bg-[#0c0c0c]/80 backdrop-blur-md border border-white/10 rounded-2xl p-2.5 flex items-center gap-3 shadow-sm">
+                <Search className="w-4 h-4 text-gray-500 ml-2" />
+                <input
+                    type="text"
+                    placeholder="Search by full name, registered username, or contact email..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="bg-transparent text-sm text-gray-200 focus:outline-none w-full placeholder:text-gray-700 font-mono"
+                />
+            </div>
+
+            {/* Users grid list */}
+            <div className="bg-[#0c0c0c]/80 backdrop-blur-md border border-white/10 rounded-3xl overflow-hidden relative shadow-2xl">
+                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-emerald-500 to-teal-600"></div>
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left">
-                        <thead className="bg-gray-900/60 border-b border-white/5">
+                    <table className="w-full text-left font-mono">
+                        <thead className="bg-white/[0.02] border-b border-white/10">
                             <tr>
-                                <th className="px-8 py-6 text-xs font-bold text-gray-500 uppercase tracking-[0.2em]">Operator</th>
-                                <th className="px-6 py-6 text-xs font-bold text-gray-500 uppercase tracking-[0.2em]">Contact & Role</th>
-                                <th className="px-6 py-6 text-xs font-bold text-gray-500 uppercase tracking-[0.2em]">Live Status</th>
-                                <th className="px-8 py-6 text-right text-xs font-bold text-gray-500 uppercase tracking-[0.2em]">Actions</th>
+                                <th className="px-8 py-4 text-xs font-black text-gray-500 uppercase tracking-widest">Operator Identity</th>
+                                <th className="px-6 py-4 text-xs font-black text-gray-500 uppercase tracking-widest">Contact Information</th>
+                                <th className="px-6 py-4 text-xs font-black text-gray-500 uppercase tracking-widest">Live Status</th>
+                                <th className="px-8 py-4 text-xs font-black text-gray-500 uppercase tracking-widest text-right">Inspect</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-white/5 font-medium">
-                            <AnimatePresence>
-                                {filteredUsers.map((user) => (
-                                    <motion.tr
+                        <tbody className="divide-y divide-white/5 text-[11px]">
+                            {filteredUsers.map((user) => {
+                                const isOnline = onlineUserIds.has(user.clerkUserId);
+                                return (
+                                    <tr
                                         key={user._id}
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, x: -20 }}
                                         onClick={() => setSelectedUser(user)}
-                                        className="hover:bg-white/[0.02] transition-colors group cursor-pointer"
+                                        className="hover:bg-white/[0.01] transition-colors group cursor-pointer"
                                     >
-                                        <td className="px-8 py-5">
+                                        <td className="px-8 py-4">
                                             <div className="flex items-center gap-4">
                                                 <div className="relative">
                                                     <img
-                                                        src={user.profilepicture || `https://ui-avatars.com/api/?name=${user.username}&background=6366f1&color=fff`}
+                                                        src={user.profilepicture || `https://ui-avatars.com/api/?name=${user.username}&background=10b981&color=fff`}
                                                         alt={user.username}
-                                                        className="w-12 h-12 rounded-2xl object-cover border-2 border-white/5 group-hover:border-indigo-500/50 transition-colors"
+                                                        className="w-10 h-10 rounded-xl object-cover border border-white/10 group-hover:border-emerald-500/50 transition-all"
                                                     />
-                                                    {onlineUserIds.has(user.clerkUserId) && (
-                                                        <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-4 border-[#0A0A0A] rounded-full animate-pulse shadow-lg shadow-emerald-500/20"></span>
+                                                    {isOnline && (
+                                                        <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-4 border-[#0c0c0c] rounded-full animate-pulse shadow-lg shadow-emerald-500/30"></span>
                                                     )}
                                                 </div>
                                                 <div>
-                                                    <div className="text-gray-100 font-bold tracking-tight">{user.fullname || user.username}</div>
-                                                    <div className="text-xs text-gray-500 font-bold uppercase tracking-wider">@{user.username}</div>
+                                                    <div className="text-gray-200 font-bold tracking-tight">{user.fullname || user.username}</div>
+                                                    <div className="text-[8px] text-gray-500 font-black uppercase tracking-widest mt-0.5">@{user.username}</div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-5">
-                                            <div className="flex flex-col gap-1">
-                                                <div className="text-sm text-gray-300 flex items-center gap-2">
-                                                    <Mail className="w-3.5 h-3.5 text-indigo-400" />
-                                                    {user.email}
+                                        <td className="px-6 py-4">
+                                            <div className="flex flex-col gap-1 text-gray-300 font-medium">
+                                                <div className="flex items-center gap-1.5">
+                                                    <Mail className="w-3.5 h-3.5 text-emerald-400" />
+                                                    <span>{user.email}</span>
                                                 </div>
-                                                <div className={`text-[10px] font-black px-2 py-0.5 rounded-md w-fit uppercase tracking-widest ${user.role === 'admin' ? 'bg-indigo-500 text-white' : 'bg-gray-800 text-gray-400'}`}>
+                                                <span className={`text-[8px] font-black px-1.5 py-0.5 rounded w-fit uppercase tracking-widest mt-1 border ${
+                                                    user.role === 'admin' ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' : 'bg-white/5 text-gray-400 border-white/5'
+                                                }`}>
                                                     {user.role}
-                                                </div>
+                                                </span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-5">
-                                            {onlineUserIds.has(user.clerkUserId) ? (
-                                                <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full w-fit">
-                                                    <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]"></div>
-                                                    <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Active Now</span>
+                                        <td className="px-6 py-4">
+                                            {isOnline ? (
+                                                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full w-fit text-emerald-400 font-bold uppercase tracking-widest text-[9px]">
+                                                    <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></span>
+                                                    <span>ACTIVE</span>
                                                 </div>
                                             ) : (
                                                 <div className="flex flex-col">
-                                                    <span className="text-xs text-gray-500 font-bold uppercase tracking-widest">Persistent</span>
-                                                    <span className="text-[10px] text-gray-600 font-medium">Seen {getRelativeTime(user.lastActive || user.updatedAt)}</span>
+                                                    <span className="text-[8px] text-gray-500 font-black uppercase tracking-widest">PERSISTENT NODE</span>
+                                                    <span className="text-[9px] text-gray-600 font-medium mt-0.5">Seen {getRelativeTime(user.lastActive || user.updatedAt)}</span>
                                                 </div>
                                             )}
                                         </td>
-                                        <td className="px-8 py-5 text-right">
+                                        <td className="px-8 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
                                                 <button
                                                     onClick={(e) => { e.stopPropagation(); setSelectedUser(user); }}
-                                                    className="p-2.5 text-gray-500 hover:text-indigo-400 hover:bg-indigo-400/10 rounded-xl transition-all"
-                                                    title="View Profile"
+                                                    className="p-1.5 rounded-lg border border-white/5 hover:border-white/20 text-gray-500 hover:text-white bg-white/[0.01] hover:bg-white/[0.03] transition-all"
                                                 >
-                                                    <Eye className="w-4.5 h-4.5" />
+                                                    <Eye className="w-3.5 h-3.5" />
                                                 </button>
                                                 <button
                                                     onClick={(e) => handleDelete(user._id, e)}
-                                                    className="p-2.5 text-gray-500 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all"
-                                                    title="Deep Delete"
+                                                    className="p-1.5 rounded-lg border border-white/5 hover:border-rose-500/20 text-gray-500 hover:text-rose-500 bg-white/[0.01] hover:bg-rose-500/5 transition-all"
                                                 >
-                                                    <Trash2 className="w-4.5 h-4.5" />
+                                                    <Trash2 className="w-3.5 h-3.5" />
                                                 </button>
                                             </div>
                                         </td>
-                                    </motion.tr>
-                                ))}
-                            </AnimatePresence>
+                                    </tr>
+                                );
+                            })}
+
+                            {filteredUsers.length === 0 && (
+                                <tr>
+                                    <td colSpan={4} className="py-20 text-center flex flex-col items-center justify-center gap-3">
+                                        <UserIcon className="w-10 h-10 text-gray-800 animate-pulse" />
+                                        <p className="text-gray-600 text-xs font-black uppercase tracking-widest">No operators directories matched your query</p>
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
-                    {!filteredUsers.length && (
-                        <div className="py-20 text-center flex flex-col items-center justify-center gap-4 text-gray-500">
-                            <div className="w-20 h-20 bg-gray-800/30 rounded-full flex items-center justify-center border border-white/5">
-                                <Search className="w-8 h-8 opacity-20" />
-                            </div>
-                            <p className="font-bold tracking-tight">No operators found matching identifying parameters</p>
-                        </div>
-                    )}
                 </div>
             </div>
 
-            {/* User Detail Panel */}
+            {/* User detail dossier */}
             <DetailPanel
                 isOpen={!!selectedUser}
                 onClose={() => setSelectedUser(null)}
-                title="User Profile"
-                description={`Identifying system record for @${selectedUser?.username}`}
+                title="Operator Dossier"
+                description={`Verification statistics for community node @${selectedUser?.username}`}
             >
                 {selectedUser && (
-                    <div className="space-y-10">
-                        {/* Profile Header */}
-                        <div className="flex flex-col items-center text-center space-y-4">
-                            <div className="relative group">
-                                <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-emerald-500 rounded-3xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                    <div className="space-y-6 select-none font-mono">
+                        {/* Avatar block */}
+                        <div className="flex items-center gap-5 bg-white/[0.02] border border-white/5 p-5 rounded-2xl">
+                            <div className="relative">
                                 <img
-                                    src={selectedUser.profilepicture || `https://ui-avatars.com/api/?name=${selectedUser.username}&background=111&color=fff&size=128`}
+                                    src={selectedUser.profilepicture || `https://ui-avatars.com/api/?name=${selectedUser.username}&background=10b981&color=fff`}
                                     alt={selectedUser.username}
-                                    className="relative w-32 h-32 rounded-[2.5rem] object-cover border-4 border-gray-900 shadow-2xl"
+                                    className="w-16 h-16 rounded-xl object-cover border border-white/10"
                                 />
                                 {onlineUserIds.has(selectedUser.clerkUserId) && (
-                                    <span className="absolute bottom-2 right-2 w-6 h-6 bg-emerald-500 border-4 border-gray-900 rounded-full shadow-lg shadow-emerald-500/20"></span>
+                                    <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-4 border-[#0c0c0c] rounded-full animate-pulse"></span>
                                 )}
                             </div>
-                            <div className="space-y-1">
-                                <h3 className="text-3xl font-black text-white tracking-tight">{selectedUser.fullname || selectedUser.username}</h3>
-                                <div className="flex items-center justify-center gap-3">
-                                    <span className="text-indigo-400 font-bold tracking-wider uppercase text-xs">@{selectedUser.username}</span>
+                            <div>
+                                <h3 className="text-lg font-black text-white">{selectedUser.fullname || selectedUser.username}</h3>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <span className="text-[9px] text-emerald-400 font-black uppercase tracking-widest">@{selectedUser.username}</span>
                                     <span className="w-1 h-1 bg-gray-700 rounded-full"></span>
-                                    <span className={`text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-widest ${selectedUser.role === 'admin' ? 'bg-indigo-500 text-white' : 'bg-gray-800 text-gray-400'}`}>
+                                    <span className={`text-[8px] font-black px-1.5 py-0.5 rounded border uppercase tracking-widest ${
+                                        selectedUser.role === 'admin' ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' : 'bg-white/5 text-gray-400 border-white/5'
+                                    }`}>
                                         {selectedUser.role}
                                     </span>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Grid Stats */}
+                        {/* Status split */}
                         <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-white/5 border border-white/5 p-5 rounded-3xl space-y-1">
-                                <Activity className="w-5 h-5 text-indigo-400 mb-2" />
-                                <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest">Network Status</p>
-                                <p className="text-white font-bold">{onlineUserIds.has(selectedUser.clerkUserId) ? 'ONLINE' : 'OFFLINE'}</p>
+                            <div className="bg-white/[0.02] border border-white/5 p-4 rounded-2xl space-y-1">
+                                <Activity className="w-4 h-4 text-emerald-400" />
+                                <span className="text-gray-500 text-[8px] font-black uppercase tracking-widest block mt-1">CONNECTION LINE</span>
+                                <span className="text-white font-black text-[10px] uppercase">
+                                    {onlineUserIds.has(selectedUser.clerkUserId) ? 'ACTIVE TELEMETRY' : 'PERSISTENT DISCONNECTED'}
+                                </span>
                             </div>
-                            <div className="bg-white/5 border border-white/5 p-5 rounded-3xl space-y-1">
-                                <Clock className="w-5 h-5 text-emerald-400 mb-2" />
-                                <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest">Last Activity</p>
-                                <p className="text-white font-bold">{getRelativeTime(selectedUser.lastActive || selectedUser.updatedAt)}</p>
+                            <div className="bg-white/[0.02] border border-white/5 p-4 rounded-2xl space-y-1">
+                                <Clock className="w-4 h-4 text-cyan-400" />
+                                <span className="text-gray-500 text-[8px] font-black uppercase tracking-widest block mt-1">LAST SEEN SIGNALS</span>
+                                <span className="text-white font-black text-[10px] uppercase">{getRelativeTime(selectedUser.lastActive || selectedUser.updatedAt)}</span>
                             </div>
                         </div>
 
-                        {/* Metadata Sections */}
-                        <div className="space-y-6">
-                            <div className="space-y-4">
-                                <h4 className="text-sm font-black text-gray-400 uppercase tracking-[0.2em] px-1">System Metadata</h4>
-                                <div className="bg-gray-900/50 border border-white/5 rounded-[2rem] overflow-hidden">
-                                    <div className="p-6 space-y-4">
-                                        <div className="flex items-start gap-4">
-                                            <div className="p-2 rounded-lg bg-gray-800">
-                                                <Mail className="w-4 h-4 text-gray-400" />
-                                            </div>
-                                            <div className="space-y-0.5">
-                                                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Primary Contact</p>
-                                                <p className="text-sm font-medium text-gray-200">{selectedUser.email}</p>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-start gap-4">
-                                            <div className="p-2 rounded-lg bg-gray-800">
-                                                <Shield className="w-4 h-4 text-gray-400" />
-                                            </div>
-                                            <div className="space-y-0.5">
-                                                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Clerk Identity</p>
-                                                <code className="text-[11px] font-mono text-indigo-300 bg-indigo-500/10 px-2 py-0.5 rounded-md">{selectedUser.clerkUserId}</code>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-start gap-4">
-                                            <div className="p-2 rounded-lg bg-gray-800">
-                                                <Calendar className="w-4 h-4 text-gray-400" />
-                                            </div>
-                                            <div className="space-y-0.5">
-                                                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Account Created</p>
-                                                <p className="text-sm font-medium text-gray-200">{new Date(selectedUser.createdAt).toLocaleString()}</p>
-                                            </div>
-                                        </div>
-                                    </div>
+                        {/* Telemetry specs */}
+                        <div className="space-y-2">
+                            <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Operator Registry Specifications</span>
+                            <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl space-y-3.5 text-xs text-gray-300">
+                                <div className="flex justify-between">
+                                    <span className="text-gray-500 text-[9px] font-black uppercase tracking-widest">Ecosystem Mail</span>
+                                    <span className="text-gray-200 font-bold">{selectedUser.email}</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-gray-500 text-[9px] font-black uppercase tracking-widest">Clerk Node ID</span>
+                                    <code className="text-[9px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded">{selectedUser.clerkUserId}</code>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="text-gray-500 text-[9px] font-black uppercase tracking-widest">Account Created</span>
+                                    <span className="text-gray-200 font-bold">{new Date(selectedUser.createdAt).toLocaleString()}</span>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Actions */}
-                        <div className="pt-6">
+                        {/* Danger zone actions */}
+                        <div className="bg-rose-500/[0.02] border border-rose-500/10 p-5 rounded-2xl space-y-3.5">
+                            <div className="flex items-start gap-3">
+                                <AlertTriangle className="w-5 h-5 text-rose-500 mt-0.5 animate-pulse" />
+                                <div>
+                                    <span className="text-[10px] font-black text-rose-500 uppercase tracking-widest">Danger Zone Clearance Enforced</span>
+                                    <p className="text-[8px] text-gray-500 uppercase tracking-widest mt-1">
+                                        Account de-registrations automatically expunge matching itinerary datasets, community posts, commented traces, and likeness values across Mongo and Cloudinary stores.
+                                    </p>
+                                </div>
+                            </div>
                             <button
                                 onClick={(e) => handleDelete(selectedUser._id, e)}
-                                className="w-full py-4 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white border border-red-500/20 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all shadow-lg hover:shadow-red-500/20"
+                                className="w-full py-3 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white border border-rose-500/20 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all shadow-lg hover:shadow-rose-500/20"
                             >
-                                Danger Zone: Decommission Account
+                                Expunge Operator Account
                             </button>
                         </div>
                     </div>

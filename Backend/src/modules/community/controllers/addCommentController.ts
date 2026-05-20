@@ -94,3 +94,62 @@ export const addComment = async (req: Request, res: Response) => {
         });
     }
 };
+
+/**
+ * Controller to delete a community comment.
+ */
+export const deleteComment = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const clerkUserId = req.user?.clerkUserId;
+
+        if (!id) {
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                success: false,
+                message: 'Comment ID is required'
+            });
+        }
+
+        const comment = await CommunityComment.findById(id);
+        if (!comment) {
+            return res.status(StatusCodes.NOT_FOUND).json({
+                success: false,
+                message: 'Comment not found'
+            });
+        }
+
+        // Verify ownership
+        if (comment.clerkUserId !== clerkUserId) {
+            return res.status(StatusCodes.FORBIDDEN).json({
+                success: false,
+                message: 'You are not authorized to delete this comment'
+            });
+        }
+
+        // Decrement repliesCount on the post
+        const post = await CommunityPost.findById(comment.postId);
+        if (post) {
+            post.repliesCount = Math.max(0, post.repliesCount - 1);
+            await post.save();
+        }
+
+        // Delete children comments if any
+        await CommunityComment.deleteMany({ parentId: id });
+
+        // Delete the comment itself
+        await CommunityComment.findByIdAndDelete(id);
+
+        logger.info(`Comment ${id} and replies deleted by ${clerkUserId}`);
+
+        return res.status(StatusCodes.OK).json({
+            success: true,
+            message: 'Comment deleted successfully'
+        });
+    } catch (error: any) {
+        logger.error(`Error deleting comment: ${error.message}`);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            success: false,
+            message: 'Failed to delete comment'
+        });
+    }
+};

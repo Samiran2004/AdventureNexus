@@ -11,7 +11,7 @@ import AdventureNexusReviews from './features/reviews/pages/ReviewPage';
 import SearchPage from './features/planning/pages/SearchPage';
 import AboutPage from './features/marketing/pages/AboutPage';
 import SocialSearchPage from './features/social/pages/SocialSearchPage';
-import ProfilePage from './features/social/pages/ProfilePage';
+import ProfilePage from './features/user/pages/ProfilePage';
 import ChatPage from './features/social/pages/ChatPage';
 import TripInspirationPage from './features/planning/pages/TripInspirationPage';
 import SharedPlanPage from './features/planning/pages/SharedPlanPage';

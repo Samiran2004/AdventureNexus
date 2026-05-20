@@ -4,7 +4,7 @@ import { getTrending } from './controllers/getTrendingController';
 import { createPost } from './controllers/createPostController';
 import { getPostById } from './controllers/getPostByIdController';
 import { toggleLike } from './controllers/toggleLikeController';
-import { addComment } from './controllers/addCommentController';
+import { addComment, deleteComment } from './controllers/addCommentController';
 import { protect, optionalProtect } from '../../shared/middleware/authClerkTokenMiddleware';
 import { upload } from '../../shared/middleware/multer';
 import { toggleSavePost } from './controllers/toggleSavePostController';
@@ -76,6 +76,7 @@ route.post('/like', protect, toggleLike);
  * @access Private
  */
 route.post('/comments', protect, addComment);
+route.delete('/comments/:id', protect, deleteComment);
 
 /**
  * @route GET /api/v1/community/events

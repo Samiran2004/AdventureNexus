@@ -1,6 +1,7 @@
 import { Server } from 'socket.io';
 import { Server as HttpServer } from 'http';
 import logger from '../utils/logger';
+import os from 'os';
 
 let io: Server;
 
@@ -14,6 +15,32 @@ export const initSocket = (server: HttpServer): Server => {
             methods: ["GET", "POST"]
         }
     });
+
+    // Periodic system metrics broadcast (Phase 4 Grafana Real-Time Observability)
+    setInterval(() => {
+        try {
+            if (io) {
+                const cpuUsage = os.loadavg();
+                const totalMem = os.totalmem();
+                const freeMem = os.freemem();
+                const usedMem = totalMem - freeMem;
+                const memPercent = parseFloat(((usedMem / totalMem) * 100).toFixed(2));
+                
+                io.emit('system:metrics:update', {
+                    cpuLoad: cpuUsage[0],
+                    memory: {
+                        total: totalMem,
+                        free: freeMem,
+                        used: usedMem,
+                        percentage: memPercent
+                    },
+                    uptime: os.uptime()
+                });
+            }
+        } catch (err) {
+            // Fail-safe to prevent crash
+        }
+    }, 5000);
 
     io.on('connection', (socket) => {
         console.log(`[DEBUG] New client connected: ${socket.id}`);
